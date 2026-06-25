@@ -1,5 +1,4 @@
 @Component
-@ExecSpace("ClientOnly")
 script StorySequenceController extends Component
 
 	property Entity storyRoot = nil
@@ -66,11 +65,11 @@ script StorySequenceController extends Component
 		if self.mapleMapPlayer == nil then
 			self.mapleMapPlayer = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
 		end
-
+		
 		self.storyImageSprite = self:GetSpriteComponent(self.storyImageEntity)
 		self.captionText = self:GetTextComponent(self.captionTextEntity)
 		self.skipButton = self:GetButtonComponent(self.skipButtonEntity)
-
+		
 		log("[StorySequenceController] StoryRoot found: " .. tostring(self.storyRoot ~= nil))
 		log("[StorySequenceController] StoryImage found: " .. tostring(self.storyImageEntity ~= nil))
 		log("[StorySequenceController] CaptionText found: " .. tostring(self.captionTextEntity ~= nil))
@@ -103,7 +102,7 @@ script StorySequenceController extends Component
 		self.lineIndex = 1
 		self.lineElapsed = 0
 		self.lastAppliedStoryImageIndex = 0
-
+		
 		self:SetEntityEnabled(self.storyRoot, true)
 		self:SetEntityVisible(self.storyRoot, true)
 		self:SetEntityVisible(self.storyImageEntity, true)
@@ -113,7 +112,7 @@ script StorySequenceController extends Component
 		self:SetSpriteAlpha(self.storyImageSprite, 0)
 		self:SetCaptionText("", 0)
 		self:HideGameplay()
-
+		
 		-- Style verification logs
 		if self.captionText ~= nil and isvalid(self.captionText.Entity) then
 			log("[StorySequenceController] CaptionText font applied: Font=" .. tostring(self.captionText.Font))
@@ -138,14 +137,14 @@ script StorySequenceController extends Component
 	method void HideGameplay()
 		-- Keeps lobby, DefaultGroup, and player hidden while story is running.
 		if self.completed then return end
-
+		
 		if self.lobby == nil or isvalid(self.lobby) == false then
 			self.lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
 		end
 		if self.lobby ~= nil and isvalid(self.lobby) then
 			self.lobby.Visible = false
 		end
-
+		
 		if self.defaultGroup == nil or isvalid(self.defaultGroup) == false then
 			self.defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
 		end
@@ -155,7 +154,7 @@ script StorySequenceController extends Component
 			end
 			self.defaultGroup.Visible = false
 		end
-
+		
 		if self.mapleMapPlayer == nil or isvalid(self.mapleMapPlayer) == false then
 			self.mapleMapPlayer = _UserService.LocalPlayer
 			if self.mapleMapPlayer == nil then
@@ -175,13 +174,13 @@ script StorySequenceController extends Component
 				self.skipButtonHandler = self.skipButton.Entity:ConnectEvent(ButtonClickEvent, self.OnSkipClicked)
 			end
 		end
-
+		
 		if self.storyImageEntity ~= nil and isvalid(self.storyImageEntity) then
 			if self.storyTouchHandler == nil then
 				self.storyTouchHandler = self.storyImageEntity:ConnectEvent(UITouchDownEvent, self.OnStoryTouch)
 			end
 		end
-
+		
 		if self.storyKeyHandler == nil then
 			self.storyKeyHandler = _InputService:ConnectEvent(KeyDownEvent, self.OnStoryKeyDown)
 		end
@@ -192,15 +191,15 @@ script StorySequenceController extends Component
 		if self.skipButtonHandler ~= nil and self.skipButton ~= nil and self.skipButton.Entity ~= nil and isvalid(self.skipButton.Entity) then
 			self.skipButton.Entity:DisconnectEvent(ButtonClickEvent, self.skipButtonHandler)
 		end
-
+		
 		if self.storyTouchHandler ~= nil and self.storyImageEntity ~= nil and isvalid(self.storyImageEntity) then
 			self.storyImageEntity:DisconnectEvent(UITouchDownEvent, self.storyTouchHandler)
 		end
-
+		
 		if self.storyKeyHandler ~= nil then
 			_InputService:DisconnectEvent(KeyDownEvent, self.storyKeyHandler)
 		end
-
+		
 		self.skipButtonHandler = nil
 		self.storyTouchHandler = nil
 		self.storyKeyHandler = nil
@@ -322,7 +321,7 @@ script StorySequenceController extends Component
 			textAlpha = math.max(0, 1 - outT / fadeOut)
 		end
 		textAlpha = self:Clamp01(textAlpha)
-
+		
 		local imageAlpha = 1
 		if self.lineIndex == 1 and t < fadeIn then
 			imageAlpha = t / fadeIn

@@ -1,5 +1,4 @@
 @Component
-@ExecSpace("ClientOnly")
 script IntroSequenceController extends Component
 
 	property Entity introRoot = nil
@@ -57,11 +56,11 @@ script IntroSequenceController extends Component
 		if self.mapleMapPlayer == nil then
 			self.mapleMapPlayer = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
 		end
-
+		
 		self.stage01Sprite = self:GetSpriteComponent(self.stage01SpriteEntity)
 		self.stage02Sprite = self:GetSpriteComponent(self.stage02SpriteEntity)
 		self.logoSprite = self:GetSpriteComponent(self.stage03SpriteEntity)
-
+		
 		self:LogFound("IntroRoot", self.introRoot)
 		self:LogFound("Stage01", self.stage01)
 		self:LogFound("Stage02", self.stage02)
@@ -113,47 +112,47 @@ script IntroSequenceController extends Component
 		-- Per-frame logo animation: Stage01 → Stage02 → Stage03 (fade in/out) → FinishLogo.
 		if self.completed then return end
 		self:EnsureGameplayHidden()
-
+		
 		self.elapsed = self.elapsed + delta
 		local t = self.elapsed
-
+		
 		if t < 1.8 then
 			self:SetStage01Visible(true)
 			self:SetStage02Visible(false)
 			self:SetStage03Visible(false, 0)
 			return
 		end
-
+		
 		self:SetStage01Visible(false)
 		self:SetStage02Visible(true)
-
+		
 		if t < 2.2 then
 			self:SetStage03Visible(false, 0)
 			return
 		end
-
+		
 		if t < 3.0 then
 			self:SetStage03Visible(true, (t - 2.2) / 0.8)
 			return
 		end
-
+		
 		if t < 4.2 then
 			self:SetStage03Visible(true, 1)
 			return
 		end
-
+		
 		if t < 5.0 then
 			self:SetStage03Visible(true, 1 - ((t - 4.2) / 0.8))
 			return
 		end
-
+		
 		self:SetStage03Visible(false, 0)
 		self:SetStage02Visible(true)
-
+		
 		if t < 5.3 then
 			return
 		end
-
+		
 		self:FinishLogo()
 	end
 
@@ -175,14 +174,14 @@ script IntroSequenceController extends Component
 	method void EnsureGameplayHidden()
 		-- Hides lobby, DefaultGroup, and player every frame during the logo sequence.
 		if self.completed then return end
-
+		
 		if self.lobby == nil or isvalid(self.lobby) == false then
 			self.lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
 		end
 		if self.lobby ~= nil and isvalid(self.lobby) then
 			self.lobby.Visible = false
 		end
-
+		
 		if self.defaultGroup == nil or isvalid(self.defaultGroup) == false then
 			self.defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
 		end
@@ -192,7 +191,7 @@ script IntroSequenceController extends Component
 			end
 			self.defaultGroup.Visible = false
 		end
-
+		
 		if self.mapleMapPlayer == nil or isvalid(self.mapleMapPlayer) == false then
 			self.mapleMapPlayer = _UserService.LocalPlayer
 			if self.mapleMapPlayer == nil then

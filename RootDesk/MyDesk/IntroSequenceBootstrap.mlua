@@ -1,5 +1,4 @@
 @Component
-@ExecSpace("ClientOnly")
 script IntroSequenceBootstrap extends Component
 
 	property integer timerId = 0
@@ -14,18 +13,18 @@ script IntroSequenceBootstrap extends Component
 		self.elapsed = 0
 		self.attached = false
 		self:TryAttach()
-
+		
 		if self.attached == false then
 			self.timerId = _TimerService:SetTimerRepeat(function()
 				self.elapsed = self.elapsed + 0.1
 				self:TryAttach()
-
+		
 				if self.attached == true or self.elapsed >= 5 then
 					if self.timerId > 0 then
 						_TimerService:ClearTimer(self.timerId)
 						self.timerId = 0
 					end
-
+		
 					if self.attached == false then
 						log_warning("[IntroSequenceBootstrap] /ui/UI_IntroSequence was not found")
 					end
@@ -40,9 +39,9 @@ script IntroSequenceBootstrap extends Component
 		if intro == nil or isvalid(intro) == false then
 			return
 		end
-
+		
 		intro:SetEnable(true)
-
+		
 		local existing = intro:GetComponent("script.IntroSequenceController")
 		if existing == nil then
 			intro:AddComponent("script.IntroSequenceController")
@@ -50,7 +49,7 @@ script IntroSequenceBootstrap extends Component
 		else
 			log("[IntroSequenceBootstrap] IntroSequenceController already exists")
 		end
-
+		
 		self.attached = true
 	end
 

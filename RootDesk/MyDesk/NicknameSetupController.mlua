@@ -1,14 +1,12 @@
 @Component
-@ExecSpace("ClientOnly")
 script NicknameSetupController extends Component
 
-	-- ⚠️ TEST ONLY: set to true to show nickname UI immediately for standalone debugging.
-	-- Must be false before publishing. Normal flow: IntroFlowController calls ShowNicknameSetup()
-	-- via Client RPC — this controller is pre-attached in UI_NicknameSetup.ui.
 	property boolean DEBUG_SHOW_NICKNAME_SETUP = false
 
 	property any clickHandlerConfirm = nil
+
 	property any clickHandlerRandom = nil
+
 	property any textChangeHandler = nil
 
 	method void OnBeginPlay()
@@ -16,7 +14,6 @@ script NicknameSetupController extends Component
 		-- ShowNicknameSetup() is called explicitly by IntroFlowController, not here.
 		log("[NicknameSetupController] UI_NicknameSetup ready (pre-attached)")
 		log("[NicknameSetupController] DEBUG_SHOW_NICKNAME_SETUP=" .. tostring(self.DEBUG_SHOW_NICKNAME_SETUP))
-		log("[NicknameSetupController] NicknameBackground ruid=352e24ddc62c43e9ace037abf9930528")
 		self:ApplyNicknameBackgroundVisuals()
 		self:VerifyEntities()
 		self:WireButtonEvents()
@@ -94,7 +91,8 @@ script NicknameSetupController extends Component
 	end
 
 	method void ApplyNicknameBackgroundVisuals()
-		-- Applies the required nickname background RUID and verifies the visible state.
+		-- ImageRUID는 UI_NicknameSetup.ui에서만 관리합니다 (mlua에서 덮어쓰지 않음).
+		-- 여기서는 transform 정렬, 가시성, 알파만 설정합니다.
 		local bg = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup/NicknameRoot/NicknameBackground")
 		if bg == nil or isvalid(bg) == false then
 			log_warning("[NicknameSetupController] NicknameBackground applied failed: entity missing")
@@ -117,7 +115,6 @@ script NicknameSetupController extends Component
 
 		if bg.SpriteGUIRendererComponent ~= nil then
 			bg.SpriteGUIRendererComponent.Enable = false
-			bg.SpriteGUIRendererComponent.ImageRUID = DataRef("352e24ddc62c43e9ace037abf9930528")
 			bg.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
 			bg.SpriteGUIRendererComponent.RaycastTarget = false
 			bg.SpriteGUIRendererComponent.Enable = true
@@ -127,8 +124,6 @@ script NicknameSetupController extends Component
 			return
 		end
 
-		log("[NicknameSetupController] NicknameBackground ruid=352e24ddc62c43e9ace037abf9930528")
-		log("[NicknameSetupController] NicknameBackground ImageRUID DataId=352e24ddc62c43e9ace037abf9930528")
 		log("[NicknameSetupController] NicknameBackground visible=true alpha=1")
 		log("[NicknameSetupController] NicknameBackground applied success")
 	end
