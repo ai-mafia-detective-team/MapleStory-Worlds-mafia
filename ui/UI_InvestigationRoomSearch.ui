@@ -120,7 +120,7 @@
           "name": "SearchRoot",
           "path": "/ui/UI_InvestigationRoomSearch/SearchRoot",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 0,
