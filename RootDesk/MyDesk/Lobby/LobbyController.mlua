@@ -1,0 +1,2043 @@
+﻿@Component
+@ExecSpace("ClientOnly")
+script LobbyController extends Component
+
+	-- Event handler references for cleanup.
+	property any keyDownHandler = nil
+	property any btnProfileHandler = nil
+	property any btnFriendHandler = nil
+	property any btnMenuHandler = nil
+	property any btnCodexHandler = nil
+	property any btnBagHandler = nil
+	property any btnAchievementHandler = nil
+	property any btnStartHandler = nil
+	property any btnCreateHandler = nil
+	property any btnFindHandler = nil
+	property any btnShopHandler = nil
+	property any btnAlertHandler = nil
+	property any btnSettingsHandler = nil
+	property any btnSettingsCloseHandler = nil
+	property any btnSettingsInfoTabHandler = nil
+	property any btnSettingsSoundTabHandler = nil
+	property any btnSettingsMuteHandler = nil
+	property any friendPopupCloseHandler = nil
+	property any shopPopupCloseHandler = nil
+	property any shopPopupCancelHandler = nil
+	property any alertPopupCloseHandler = nil
+	property any btnMatchCancelHandler = nil
+	property any searchButtonHandlers = nil
+	property any createRoomDimHandler = nil
+	property any createRoomCloseHandler = nil
+	property any createRoomCancelHandler = nil
+	property any createRoomMinusHandler = nil
+	property any createRoomPlusHandler = nil
+	property any createRoomPrivateHandler = nil
+	property any createRoomSubmitHandler = nil
+
+	-- Create room modal entity references.
+	property Entity createRoomModalRoot = "35496bfd-2a1e-4457-8d17-41471c4fad9b"
+	property ButtonComponent createRoomDimOverlayButton = "4358859f-1696-47e2-b217-85a01fe74cb3"
+	property ButtonComponent createRoomCloseButton = "7523caee-a667-43ed-acc1-8ed231ea5e0b"
+	property TextInputComponent createRoomNameInput = "401c5493-7bfb-4fe6-9f5e-5c84d1b96544"
+	property ButtonComponent createRoomMinusButton = "9205cf76-2285-47ff-9047-3ea6c9829461"
+	property TextComponent createRoomPlayerCountText = "ba1b60b3-3bca-4713-ab31-bf607631874b"
+	property ButtonComponent createRoomPlusButton = "f52f2d96-5b7d-4497-b406-83377448053c"
+	property ButtonComponent createRoomPrivateToggleButton = "c2caf6aa-5c3d-4148-957d-5c857d81b7cf"
+	property SpriteGUIRendererComponent createRoomPrivateToggleSprite = "72c34929-f6dc-4619-8a04-ac57fd0cd8c1"
+	property SpriteGUIRendererComponent createRoomPasswordInputBoxSprite = "aaba027a-0cdc-476c-b033-456da71d23ab"
+	property TextInputComponent createRoomPasswordInput = "ff92531c-2b63-4d74-acf6-92956c5a38e1"
+	property Entity createRoomErrorBox = "5bb56e4e-032c-46ce-bca6-072074921d10"
+	property TextComponent createRoomErrorText = "dd9ec90f-df6b-480e-8704-ea38884466e2"
+	property ButtonComponent createRoomCancelButton = "fb180e9d-fde8-439f-8f07-d334350a9f26"
+	property ButtonComponent createRoomSubmitButton = "d4960e55-3b35-4499-aa62-41eb1f52e625"
+
+	-- Profile modal entity references (UUID injected by UIBuilder).
+	property Entity modalGroup = "3dac29b0-0699-4861-ae29-966fbeee9cdf"
+	property Entity modalDimOverlay = "de557570-c6df-484b-ad8e-0a0243a19158"
+	property Entity modalBg = "9c1d15b0-d964-46b0-906d-debd80e99b05"
+	property ButtonComponent btnProfileSlot1 = "4334d4f1-681c-442c-ab14-120b5e831986"
+	property ButtonComponent btnProfileSlot2 = "e39a8543-cc9e-497d-8184-a359636a55d2"
+	property ButtonComponent btnProfileSlot3 = "c32b64fd-be9c-4fe1-a08f-ca86440dd048"
+	property ButtonComponent btnProfileSlot4 = "ba25d53e-ac11-4131-8291-afb765fe957e"
+	property Entity profileSlot1Border = "253deaf0-a56a-4adc-b120-7ce06aa59a8a"
+	property Entity profileSlot2Border = "ad66192f-71a2-4440-8aae-38a9bc3da7b0"
+	property Entity profileSlot3Border = "3de25652-55a8-479d-8c8a-d58edf7cad4a"
+	property Entity profileSlot4Border = "c88838dc-a38d-42e6-8dcd-ffd29f9a3df5"
+	property ButtonComponent btnProfileModalClose = "e9551409-7040-4320-9c14-5b66de23d702"
+	property ButtonComponent btnProfileModalSave = "4232e8f1-8c6b-412f-b64c-70f960224f57"
+	property ButtonComponent btnProfileModalCancel = "bd7699f6-b47b-4ab2-9fcd-00505ee6de52"
+	property TextInputComponent modalNicknameInput = "cb97b231-6b73-46a7-96d3-89b7e0cac7e7"
+	property TextComponent modalPreviewNicknameText = "46632819-0385-4317-9098-c7a6b8744b9e"
+	property TextComponent modalPreviewTitleText = "2826d538-a067-4ec9-acf7-022e2a3a3e0b"
+	property TextComponent modalTitleDisplayText = "6134ab0c-4c4d-4e91-b321-db7a0738529f"
+	property Entity modalPreviewProfileImage = "56cf7b5b-fdc2-4c03-9250-bdc92d47e521"
+	property Entity profileButtonEntity = "d2f4f00e-5ef8-4faa-aa6c-58cad6a3e797"
+	property Entity profileAvatarSprite = "dab79fb8-c220-4c31-8caf-46e680fc34d5"
+	property Entity findRoomButtonEntity = "00cd24e3-8977-4072-96cf-fd6e3b548da1"
+	property SpriteGUIRendererComponent settingsMuteButtonSprite = "4fbabe71-d5f0-4c4e-b541-f08fd145bb3b"
+
+	-- Profile image selection state.
+	property string selectedProfileRuid = "ef1ba8b05d0a4d9e8d4033c9e797f708"
+	property string currentProfileNickname = "수사관"
+	property string currentProfileTitle = "신입 수사관"
+	property boolean profileModalOpen = false
+
+	-- Profile modal event handlers.
+	property any btnProfileSlot1Handler = nil
+	property any btnProfileSlot2Handler = nil
+	property any btnProfileSlot3Handler = nil
+	property any btnProfileSlot4Handler = nil
+	property any btnProfileModalCloseHandler = nil
+	property any btnProfileModalSaveHandler = nil
+	property any btnProfileModalCancelHandler = nil
+	property any dimOverlayHandler = nil
+
+	-- Cached entity references (set in ShowLobby; avoids per-frame path lookups).
+	property any avatarCache = nil
+	property any profileAvatarCache = nil
+	property any nameTextCache = nil
+	property any fallbackCache = nil
+
+	-- Timer for deferred avatar visibility check.
+	property integer avatarCheckTimerId = 0
+
+	-- Avatar simulation state in LobbyAvatarArea local coords.
+	-- Area: 600x660. Avatar: 120x220.
+	-- GROUND_Y is tuned against the lobby background platform image.
+	-- MIN_X/MAX_X allow wider movement while avoiding lobby buttons.
+	-- NAME_OFFSET_Y keeps the nametag just below the resized avatar's feet.
+	property number avatarPosX = 0
+	property number avatarPosY = -196
+	property number avatarVelY = 0
+	property boolean isOnGround = true
+
+	property number MOVE_SPEED = 230
+	property number JUMP_FORCE = 650
+	property number GRAVITY = 1400
+	property number GROUND_Y = -196
+	property number MIN_X = -416
+	property number MAX_X = 476
+	property number NAME_OFFSET_Y = -105
+	property number AVATAR_WIDTH = 115
+	property number AVATAR_HEIGHT = 170
+
+	-- Visual-only avatar state. Movement physics and input remain unchanged.
+	property string currentAvatarState = ""
+	property string currentAvatarDirection = "right"
+	property boolean avatarAnimationApiFound = false
+	property boolean avatarStructureDiagnosed = false
+	property boolean WALK_VISUAL_FALLBACK_ENABLED = true
+	property boolean JUMP_VISUAL_FALLBACK_ENABLED = true
+	property boolean jumpPressedLastFrame = false
+	property boolean walkBobEnabledLogged = false
+	property boolean avatarScaleSquashed = false
+	property number walkBobTime = 0
+	property number walkBobLogTimer = 0
+	property number updateLogTimer = 0
+	property number jumpSquashTime = 0
+	property number JUMP_SQUASH_DURATION = 0.08
+	property number jumpReturnTime = 0
+	property number JUMP_RETURN_DURATION = 0.18
+	property number WALK_BOB_SPEED = 14
+	property number WALK_BOB_AMOUNT = 3
+	property number actionReapplyInterval = 0.2
+	property number actionReapplyTimer = 0
+
+	-- Matchmaking modal state.
+	property boolean isMatchmaking = false
+	property number matchmakingElapsed = 0
+	property number dotAnimTime = 0
+	property integer lastMatchmakingElapsedSecond = -1
+
+	-- Create room modal state.
+	property boolean isCreateRoomModalOpen = false
+	property integer selectedMaxPlayers = 8
+	property boolean isPrivateRoom = false
+	property boolean isSettingsSoundOn = true
+
+	method void OnBeginPlay()
+		-- Fires when UI_Lobby is enabled by IntroFlowController (SetEnable → OnBeginPlay).
+		-- ShowLobby(nickname) is called immediately after.
+		log("[LobbyController] OnBeginPlay")
+		log("[LobbyController] self.Entity.Path=" .. tostring(self.Entity.Path))
+		self:WireKeyboardInput()
+	end
+
+	method void ShowLobby(string nickname)
+		-- Enables LobbyRoot, configures avatar renderer, applies nickname, wires buttons.
+		log("[LobbyController] ShowLobby called nickname=" .. nickname)
+		log("[LobbyController] Avatar constants GROUND_Y=" .. tostring(self.GROUND_Y) .. " MIN_X=" .. tostring(self.MIN_X) .. " MAX_X=" .. tostring(self.MAX_X))
+		log("[LobbyController] Avatar SD ratio adjusted=true")
+		log("[LobbyController] LobbyAvatar size=" .. tostring(self.AVATAR_WIDTH) .. "x" .. tostring(self.AVATAR_HEIGHT))
+		log("[LobbyController] Avatar foot realigned after ratio change=true")
+		log("[LobbyController] Nickname position adjusted=true")
+		log("[LobbyController] Walk visual fallback enabled=" .. tostring(self.WALK_VISUAL_FALLBACK_ENABLED))
+		log("[LobbyController] Walk bob amplitude=" .. tostring(self.WALK_BOB_AMOUNT))
+		log("[LobbyController] Jump visual fallback enabled=" .. tostring(self.JUMP_VISUAL_FALLBACK_ENABLED))
+		log("[LobbyController] Move range adjusted MIN_X=" .. tostring(self.MIN_X) .. " MAX_X=" .. tostring(self.MAX_X))
+		log("[LobbyController] AvatarNameText offset adjusted to " .. tostring(self.NAME_OFFSET_Y))
+
+		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
+		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
+			lobbyRoot:SetEnable(true)
+			lobbyRoot.Visible = true
+			log("[LobbyController] LobbyRoot visible=true enable=true")
+		else
+			log_warning("[LobbyController] LobbyRoot not found")
+		end
+
+		self:ApplyLobbyBackgroundVisuals()
+		self:DisableBlackOverlayBlockers()
+
+		-- Hide world LocalPlayer character: IntroFlowController.ShowLobby() makes it visible,
+		-- so we override here. Lobby uses UI Avatar only.
+		local worldPlayer = _UserService.LocalPlayer
+		if worldPlayer ~= nil and isvalid(worldPlayer) then
+			log("[LobbyController] LocalPlayer found=true")
+			worldPlayer.Visible = false
+			local spriteComp = worldPlayer.SpriteRendererComponent
+			if spriteComp ~= nil then
+				spriteComp.Enable = false
+			end
+			local skeletonComp = worldPlayer.SkeletonRendererComponent
+			if skeletonComp ~= nil then
+				skeletonComp.Enable = false
+			end
+			log("[LobbyController] World character hidden for lobby")
+		else
+			log_warning("[LobbyController] LocalPlayer not found — cannot hide world character")
+		end
+
+		self:HideBottomChatPanel()
+		self:HideLegacyLobbyButtons()
+		self:HideMatchmakingPopup()
+		self:HideSettingsPopup()
+		self:HideExternalPopups()
+		self:SetCreateRoomModalVisible(false)
+
+		-- Cache fallback entity (disabled by default)
+		local fallbackEnt = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback")
+		if fallbackEnt ~= nil and isvalid(fallbackEnt) then
+			self.fallbackCache = fallbackEnt
+			self:HideAvatarFallback()
+		end
+
+		-- Diagnose and configure LobbyAvatar
+		local avatarPath = "/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar"
+		log("[LobbyController] Avatar renderer target path=" .. avatarPath)
+		local avatarEntity = _EntityService:GetEntityByPath(avatarPath)
+		local avatarFound = avatarEntity ~= nil and isvalid(avatarEntity)
+		log("[LobbyController] LobbyAvatar found=" .. tostring(avatarFound))
+
+		if avatarFound then
+			log("[LobbyController] LobbyAvatar visible=" .. tostring(avatarEntity.Visible) .. " enable=" .. tostring(avatarEntity.Enable))
+			log("[LobbyController] LobbyAvatar displayOrder=80")
+			self.avatarCache = avatarEntity
+
+			local avatarComp = avatarEntity.AvatarGUIRendererComponent
+			log("[LobbyController] AvatarGUIRendererComponent found=" .. tostring(avatarComp ~= nil))
+			self.avatarAnimationApiFound = avatarComp ~= nil
+			log("[LobbyController] Avatar animation API found=" .. tostring(self.avatarAnimationApiFound))
+
+			-- LocalPlayer identity needed by CostumeManagerComponent
+			local player = _UserService.LocalPlayer
+			local playerFound = player ~= nil and isvalid(player)
+			log("[LobbyController] LocalPlayer found=" .. tostring(playerFound))
+
+			if playerFound then
+				-- Set DefaultEquipUserId so CostumeManagerComponent mirrors LocalPlayer's avatar
+				local playerComp = player.PlayerComponent
+				local costumeComp = avatarEntity.CostumeManagerComponent
+				if playerComp ~= nil and costumeComp ~= nil then
+					costumeComp.DefaultEquipUserId = playerComp.UserId
+					costumeComp.UseCustomEquipOnly = false
+					log("[LobbyController] Avatar renderer configured userId=" .. tostring(playerComp.UserId))
+				elseif costumeComp ~= nil then
+					-- Fallback: empty DefaultEquipUserId → engine may default to LocalPlayer
+					costumeComp.UseCustomEquipOnly = false
+					log("[LobbyController] Avatar renderer configured (PlayerComponent nil, using empty userId)")
+				end
+			end
+
+			self.currentAvatarState = ""
+			self.currentAvatarDirection = "left"
+			self.walkBobTime = 0
+			self.walkBobLogTimer = 0
+			self.walkBobEnabledLogged = false
+			log("[LobbyController] Avatar action API sample found=true")
+			log("[LobbyController] Avatar action apply method=ActionStateChangedEvent")
+			log("[LobbyController] Avatar action map idle=stand1 walk=walk1 jump=jump")
+			log("[LobbyController] Avatar facing direction=left")
+			self:ApplyAvatarState("idle")
+			log("[LobbyController] Avatar renderer applied success=true")
+			self:HideAvatarFallback()
+		else
+			self.avatarAnimationApiFound = false
+			log("[LobbyController] Avatar animation API found=false")
+		end
+
+		self:ConfigureProfilePortrait()
+
+		-- Cache AvatarNameText
+		local nameText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarNameText")
+		if nameText ~= nil and isvalid(nameText) then
+			self.nameTextCache = nameText
+			log("[LobbyController] AvatarNameText cached")
+		else
+			log_warning("[LobbyController] AvatarNameText not found")
+		end
+
+		self:ResetAvatarPosition()
+		self:ApplyNickname(nickname)
+		self:WireButtonEvents()
+	end
+
+	method void ConfigureProfilePortrait()
+		-- Applies default profile image and requests saved RUID from server DataStorage.
+		log("[LobbyController] ConfigureProfilePortrait: applying default + requesting saved profile")
+		self:ApplyProfileImage(self.selectedProfileRuid)
+		_ProfileStorageLogic:RequestLoadAllProfile()
+	end
+
+	method void ApplyLobbyBackgroundVisuals()
+		-- Applies the lobby background RUID and restores full-screen stretch at runtime.
+		local bg = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyBackground")
+		if bg == nil or isvalid(bg) == false then
+			log_warning("[LobbyController] LobbyBackground not found")
+			return
+		end
+
+		bg:SetEnable(true)
+		bg.Visible = true
+
+		local transform = bg.UITransformComponent
+		if transform ~= nil then
+			transform.AlignmentOption = AlignmentType.StretchAll
+			transform.AnchorsMin = Vector2(0, 0)
+			transform.AnchorsMax = Vector2(1, 1)
+			transform.OffsetMin = Vector2(0, 0)
+			transform.OffsetMax = Vector2(0, 0)
+			transform.RectSize = Vector2(1920, 1080)
+			transform.anchoredPosition = Vector2(0, 0)
+		end
+
+		local bgComp = bg.SpriteGUIRendererComponent
+		if bgComp ~= nil then
+			bgComp.Enable = false
+			bgComp.ImageRUID = DataRef("0d05aa81d6ee49f2985466d55c1eacb9")
+			bgComp.Color = Color(1, 1, 1, 1)
+			bgComp.RaycastTarget = false
+			bgComp.Enable = true
+			bgComp:SetAlpha(1)
+		end
+
+		local fullStretch = false
+		local rectText = "nil"
+		if transform ~= nil then
+			fullStretch = transform.AlignmentOption == AlignmentType.StretchAll and transform.OffsetMin.x == 0 and transform.OffsetMin.y == 0 and transform.OffsetMax.x == 0 and transform.OffsetMax.y == 0
+			rectText = tostring(transform.RectSize.x) .. "x" .. tostring(transform.RectSize.y)
+		end
+
+		log("[LobbyController] LobbyBackground found=true")
+		log("[LobbyController] LobbyBackground ruid=0d05aa81d6ee49f2985466d55c1eacb9")
+		log("[LobbyController] LobbyBackground ImageRUID DataId=0d05aa81d6ee49f2985466d55c1eacb9")
+		log("[LobbyController] LobbyBackground ImageRUID format matched with working image component")
+		log("[LobbyController] LobbyBackground visible=true alpha=1")
+		log("[LobbyController] LobbyBackground applied success")
+		log("[LobbyController] LobbyBackground full stretch=" .. tostring(fullStretch))
+		log("[LobbyController] LobbyBackground rect=" .. rectText)
+	end
+
+	method void DisableBlackOverlayBlockers()
+		-- Disables only large dark sprite overlays that can cover the lobby background.
+		local found = false
+		local disabled = false
+		local paths = {
+			"/ui/UI_Lobby/LobbyRoot",
+			"/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea",
+			"/ui/UI_Lobby/LobbyRoot/TopHud",
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons",
+			"/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback"
+		}
+
+		for _, path in ipairs(paths) do
+			local ent = _EntityService:GetEntityByPath(path)
+			if ent ~= nil and isvalid(ent) then
+				local sprite = ent.SpriteGUIRendererComponent
+				local transform = ent.UITransformComponent
+				if sprite ~= nil and transform ~= nil then
+					local color = sprite.Color
+					local isDark = color.r <= 0.08 and color.g <= 0.08 and color.b <= 0.08 and color.a > 0.1
+					local isLarge = transform.RectSize.x >= 500 or transform.RectSize.y >= 500
+					if isDark and isLarge then
+						found = true
+						sprite:SetAlpha(0)
+						sprite.Enable = false
+						disabled = true
+					end
+				end
+			end
+		end
+
+		log("[LobbyController] black overlay blocker found=" .. tostring(found))
+		log("[LobbyController] black overlay blocker disabled=" .. tostring(disabled))
+	end
+
+	method void HideBottomChatPanel()
+		-- Keeps the unused chat panel and its children hidden.
+		local paths = {
+			"/ui/UI_Lobby/LobbyRoot/BottomChatPanel",
+			"/ui/UI_Lobby/LobbyRoot/BottomChatPanel/ChatInput",
+			"/ui/UI_Lobby/LobbyRoot/BottomChatPanel/ChatLogArea"
+		}
+		for _, path in ipairs(paths) do
+			local ent = _EntityService:GetEntityByPath(path)
+			if ent ~= nil and isvalid(ent) then
+				ent:SetEnable(false)
+				ent.Visible = false
+			end
+		end
+		log("[LobbyController] BottomChatPanel hidden")
+	end
+
+	method void SetEntityActive(string path, boolean active)
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent ~= nil and isvalid(ent) then
+			ent:SetEnable(active)
+			ent.Visible = active
+		end
+	end
+
+	method void HideLegacyLobbyButtons()
+		-- The new Maple-style ButtonGroup replaces the old placeholder button containers.
+		local paths = {
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu",
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu/CodexButton",
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu/BagButton",
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu/AchievementButton",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons/StartButton",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons/CreateRoomButton",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons/FindRoomButton",
+			"/ui/UI_Lobby/LobbyRoot/TopHud/FriendButton",
+			"/ui/UI_Lobby/LobbyRoot/TopHud/MenuButton"
+		}
+		for _, path in ipairs(paths) do
+			self:SetEntityActive(path, false)
+		end
+		log("[LobbyController] Legacy placeholder lobby buttons hidden")
+	end
+
+	method void SetMatchmakingPopup(boolean active)
+		-- Shows or hides the matchmaking modal entity tree.
+		local popup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking")
+		if popup ~= nil and isvalid(popup) then
+			popup:SetEnable(active)
+			popup.Visible = active
+			local canvas = popup.CanvasGroupComponent
+			if canvas ~= nil then
+				canvas.GroupAlpha = active and 1 or 0
+				canvas.Interactable = active
+				canvas.BlocksRaycasts = active
+			end
+			local dimmer = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking/Dimmer")
+			if dimmer ~= nil and isvalid(dimmer) then
+				dimmer:SetEnable(active)
+				dimmer.Visible = active
+			end
+		end
+		log("[LobbyController] Matchmaking popup active=" .. tostring(active))
+	end
+
+	method void HideMatchmakingPopup()
+		-- Hides matchmaking without emitting cancel-specific logs during lobby setup.
+		self:CloseMatchmakingModal()
+	end
+
+	method string FormatMatchmakingTime(integer elapsedSeconds)
+		-- Converts elapsed seconds to mm:ss text.
+		if elapsedSeconds < 0 then elapsedSeconds = 0 end
+		local minutes = math.floor(elapsedSeconds / 60)
+		local seconds = elapsedSeconds - minutes * 60
+		local minuteText = tostring(minutes)
+		local secondText = tostring(seconds)
+		if minutes < 10 then minuteText = "0" .. minuteText end
+		if seconds < 10 then secondText = "0" .. secondText end
+		return minuteText .. ":" .. secondText
+	end
+
+	method void SetMatchmakingElapsedText(string text)
+		-- Writes the elapsed timer label when the text entity exists.
+		local elapsed = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking/Box/Elapsed")
+		if elapsed ~= nil and isvalid(elapsed) and elapsed.TextComponent ~= nil then
+			elapsed.TextComponent.Text = text
+		end
+	end
+
+	method void SetMatchmakingDotAlpha(string path, number alpha)
+		-- Applies alpha to one loading dot.
+		local dot = _EntityService:GetEntityByPath(path)
+		if dot ~= nil and isvalid(dot) and dot.SpriteGUIRendererComponent ~= nil then
+			local color = dot.SpriteGUIRendererComponent.Color
+			dot.SpriteGUIRendererComponent.Color = Color(color.r, color.g, color.b, alpha)
+		end
+	end
+
+	method void SetMatchmakingDotScale(string path, number scale)
+		-- Applies uniform XY scale to one loading dot for the pulse highlight effect.
+		local dot = _EntityService:GetEntityByPath(path)
+		if dot ~= nil and isvalid(dot) and dot.UITransformComponent ~= nil then
+			dot.UITransformComponent.UIScale = Vector3(scale, scale, 1)
+		end
+	end
+
+	method void ResetMatchmakingDots()
+		-- Restores all loading dots to their idle alpha and default scale.
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking/Box/"
+		self:SetMatchmakingDotAlpha(base .. "Dot1", 0.35)
+		self:SetMatchmakingDotAlpha(base .. "Dot2", 0.35)
+		self:SetMatchmakingDotAlpha(base .. "Dot3", 0.35)
+		self:SetMatchmakingDotScale(base .. "Dot1", 1.0)
+		self:SetMatchmakingDotScale(base .. "Dot2", 1.0)
+		self:SetMatchmakingDotScale(base .. "Dot3", 1.0)
+	end
+
+	method void OpenMatchmakingModal()
+		-- Opens matchmaking modal and starts its local timer.
+		self.isMatchmaking = true
+		self.matchmakingElapsed = 0
+		self.dotAnimTime = 0
+		self.lastMatchmakingElapsedSecond = -1
+		self:SetMatchmakingElapsedText("00:00")
+		self:ResetMatchmakingDots()
+		self:SetMatchmakingPopup(true)
+		log("[LobbyController] Matchmaking modal opened")
+		log("[LobbyController] Matchmaking timer started")
+	end
+
+	method void CloseMatchmakingModal()
+		-- Closes matchmaking modal and resets timer/dot state.
+		self.isMatchmaking = false
+		self.matchmakingElapsed = 0
+		self.dotAnimTime = 0
+		self.lastMatchmakingElapsedSecond = -1
+		self:SetMatchmakingElapsedText("00:00")
+		self:ResetMatchmakingDots()
+		self:SetMatchmakingPopup(false)
+		log("[LobbyController] Matchmaking modal closed")
+	end
+
+	method void CancelMatchmaking()
+		-- Cancels the local matchmaking wait UI.
+		self:CloseMatchmakingModal()
+		log("[LobbyController] Matchmaking cancelled")
+	end
+
+	method void UpdateMatchmakingModal(number delta)
+		-- Advances timer text and loading dots while matchmaking is open.
+		if self.isMatchmaking == false then return end
+
+		self.matchmakingElapsed += delta
+		self.dotAnimTime += delta
+
+		local elapsedSeconds = math.floor(self.matchmakingElapsed)
+		if elapsedSeconds ~= self.lastMatchmakingElapsedSecond then
+			self.lastMatchmakingElapsedSecond = elapsedSeconds
+			self:SetMatchmakingElapsedText(self:FormatMatchmakingTime(elapsedSeconds))
+		end
+
+		local phase = math.floor(self.dotAnimTime / 0.3) % 3
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking/Box/"
+		self:SetMatchmakingDotAlpha(base .. "Dot1", phase == 0 and 1 or 0.35)
+		self:SetMatchmakingDotAlpha(base .. "Dot2", phase == 1 and 1 or 0.35)
+		self:SetMatchmakingDotAlpha(base .. "Dot3", phase == 2 and 1 or 0.35)
+		self:SetMatchmakingDotScale(base .. "Dot1", phase == 0 and 1.22 or 1.0)
+		self:SetMatchmakingDotScale(base .. "Dot2", phase == 1 and 1.22 or 1.0)
+		self:SetMatchmakingDotScale(base .. "Dot3", phase == 2 and 1.22 or 1.0)
+	end
+
+	method void SetSettingsPopup(boolean active)
+		-- Shows or hides the settings popup and resets it to the sound tab when opened.
+		local popup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/SettingsPopup")
+		if popup ~= nil and isvalid(popup) then
+			popup:SetEnable(active)
+			popup.Visible = active
+		end
+		if active == true then
+			self:SyncSettingsSoundState()
+			self:ShowSettingsTab("sound")
+		end
+		log("[LobbyController] Settings popup active=" .. tostring(active))
+	end
+
+	method void HideSettingsPopup()
+		-- Hides the settings popup.
+		self:SetSettingsPopup(false)
+	end
+
+	method void ShowSettingsTab(string tabName)
+		-- Switches the settings modal between the info and sound content panels.
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/SettingsPopup/Panel"
+		local info = _EntityService:GetEntityByPath(base .. "/ContentInfo")
+		local sound = _EntityService:GetEntityByPath(base .. "/ContentSound")
+		local showSound = (tabName == "sound")
+
+		if info ~= nil and isvalid(info) then
+			info:SetEnable(showSound == false)
+			info.Visible = (showSound == false)
+		else
+			log_warning("[LobbyController] Settings ContentInfo not found")
+		end
+
+		if sound ~= nil and isvalid(sound) then
+			sound:SetEnable(showSound)
+			sound.Visible = showSound
+		else
+			log_warning("[LobbyController] Settings ContentSound not found")
+		end
+
+		log("[LobbyController] Settings tab selected=" .. tabName)
+	end
+
+	method void SyncSettingsSoundState()
+		-- Reads the current BGM setting and mirrors it into the settings sound toggle image.
+		local enabled = true
+		if _MainFlowBgmController ~= nil then
+			enabled = _MainFlowBgmController:IsBgmEnabled()
+		end
+		self.isSettingsSoundOn = enabled
+		self:UpdateSettingsSoundToggleImage()
+		log("[LobbyController] Settings sound synced enabled=" .. tostring(enabled))
+	end
+
+	method void UpdateSettingsSoundToggleImage()
+		-- Applies the configured ON/OFF RUID to the settings sound toggle button.
+		local sprite = self.settingsMuteButtonSprite
+		if sprite == nil then
+			local ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/SettingsPopup/Panel/ContentSound/MuteBtn")
+			if ent ~= nil and isvalid(ent) then
+				sprite = ent.SpriteGUIRendererComponent
+			end
+		end
+
+		if sprite == nil then
+			log_warning("[LobbyController] Settings sound toggle sprite not found")
+			return
+		end
+
+		if self.isSettingsSoundOn then
+			sprite.ImageRUID = DataRef("fa19757f61774010aa40c38df7127bde")
+		else
+			sprite.ImageRUID = DataRef("10c17c89f4604376abd28854f5628c3a")
+		end
+		log("[LobbyController] Settings sound toggle image on=" .. tostring(self.isSettingsSoundOn))
+	end
+
+	method void SetExternalPopupVisible(string popupName, boolean active)
+		-- Shows or hides one of the lobby popups under ButtonGroup.
+		local popupPath = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/" .. popupName
+		local popup = _EntityService:GetEntityByPath(popupPath)
+		if popup ~= nil and isvalid(popup) then
+			popup:SetEnable(active)
+			popup.Visible = active
+			local uiTransform = popup.UITransformComponent
+			if active == true and uiTransform ~= nil then
+				_UILogic:SetSiblingIndex(uiTransform, 1000000)
+			end
+		else
+			log_warning("[LobbyController] External popup not found: " .. popupPath)
+		end
+	end
+
+	method void HideExternalPopups()
+		self:SetExternalPopupVisible("FriendPopup", false)
+		self:SetExternalPopupVisible("ShopPopup", false)
+		self:SetExternalPopupVisible("AlertPopup", false)
+	end
+
+	method void OpenExternalPopup(string popupName)
+		self:HideSettingsPopup()
+		self:HideExternalPopups()
+		self:SetExternalPopupVisible(popupName, true)
+		log("[LobbyController] External popup opened=" .. popupName)
+	end
+
+	method void OnExternalPopupCloseClicked(ButtonClickEvent event)
+		self:HideExternalPopups()
+		log("[LobbyController] External popup close clicked")
+	end
+
+	method void SetCreateRoomModalVisible(boolean active)
+		-- Shows or hides the create-room modal tree.
+		local modal = self.createRoomModalRoot
+		if modal == nil or isvalid(modal) == false then
+			modal = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/CreateRoomModalRoot")
+			self.createRoomModalRoot = modal
+		end
+		if modal ~= nil and isvalid(modal) then
+			modal:SetEnable(active)
+			modal.Visible = active
+			if active then
+				local uiTransform = modal.UITransformComponent
+				if uiTransform ~= nil then
+					_UILogic:SetSiblingIndex(uiTransform, 1000000)
+				end
+			end
+			local canvas = modal.CanvasGroupComponent
+			if canvas ~= nil then
+				canvas.GroupAlpha = active and 1 or 0
+				canvas.Interactable = active
+				canvas.BlocksRaycasts = active
+			end
+		else
+			log_warning("[LobbyController] CreateRoomModalRoot not found")
+		end
+	end
+
+	method void OpenCreateRoomModal()
+		-- Opens the create-room modal and resets the form to its default values.
+		self.isCreateRoomModalOpen = true
+		self:ResetCreateRoomForm()
+		self:UpdateCreateRoomFormView()
+		self:WireCreateRoomModalEvents()
+		self:SetCreateRoomModalVisible(true)
+		log("[LobbyController] create room modal opened")
+	end
+
+	method void CloseCreateRoomModal()
+		-- Closes the create-room modal and disconnects its temporary button handlers.
+		if self.isCreateRoomModalOpen == false then
+			self:SetCreateRoomModalVisible(false)
+			self:DisconnectCreateRoomModalEvents()
+			return
+		end
+		self:SetCreateRoomModalVisible(false)
+		self.isCreateRoomModalOpen = false
+		self:DisconnectCreateRoomModalEvents()
+		log("[LobbyController] create room modal closed")
+	end
+
+	method void ResetCreateRoomForm()
+		-- Restores default create-room form values.
+		self.selectedMaxPlayers = 8
+		self.isPrivateRoom = false
+		if self.createRoomNameInput ~= nil then
+			self.createRoomNameInput.Text = ""
+		end
+		if self.createRoomPasswordInput ~= nil then
+			self.createRoomPasswordInput.Text = ""
+		end
+		self:SetCreateRoomError("")
+		self:UpdateCreateRoomFormView()
+	end
+
+	method void UpdateCreateRoomFormView()
+		-- Mirrors create-room state into the visible modal fields.
+		if self.createRoomPlayerCountText ~= nil then
+			self.createRoomPlayerCountText.Text = tostring(self.selectedMaxPlayers)
+		end
+
+		if self.isPrivateRoom then
+			if self.createRoomPrivateToggleSprite ~= nil then
+				self.createRoomPrivateToggleSprite.ImageRUID = DataRef("fa19757f61774010aa40c38df7127bde")
+			end
+			if self.createRoomPasswordInputBoxSprite ~= nil then
+				self.createRoomPasswordInputBoxSprite.ImageRUID = DataRef("ab06ee62fa5446a187655d369e7f9ef3")
+			end
+			if self.createRoomPasswordInput ~= nil then
+				self.createRoomPasswordInput.Enable = true
+			end
+		else
+			if self.createRoomPrivateToggleSprite ~= nil then
+				self.createRoomPrivateToggleSprite.ImageRUID = DataRef("10c17c89f4604376abd28854f5628c3a")
+			end
+			if self.createRoomPasswordInputBoxSprite ~= nil then
+				self.createRoomPasswordInputBoxSprite.ImageRUID = DataRef("c79b19bcc42246f89c1343278e7c9a99")
+			end
+			if self.createRoomPasswordInput ~= nil then
+				self.createRoomPasswordInput.Text = ""
+				self.createRoomPasswordInput.Enable = false
+			end
+		end
+	end
+
+	method void TogglePrivateRoom()
+		-- Toggles private-room mode and updates password input availability.
+		self.isPrivateRoom = not self.isPrivateRoom
+		self:UpdateCreateRoomFormView()
+		log("[LobbyController] private room=" .. tostring(self.isPrivateRoom))
+	end
+
+	method void IncreaseMaxPlayers()
+		-- Raises max players up to 8.
+		if self.selectedMaxPlayers < 8 then
+			self.selectedMaxPlayers += 1
+		end
+		self:UpdateCreateRoomFormView()
+	end
+
+	method void DecreaseMaxPlayers()
+		-- Lowers max players down to 4.
+		if self.selectedMaxPlayers > 4 then
+			self.selectedMaxPlayers -= 1
+		end
+		self:UpdateCreateRoomFormView()
+	end
+
+	method string TrimCreateRoomText(string value)
+		-- Trims leading and trailing whitespace from a form value.
+		if value == nil then return "" end
+		local result = string.match(value, "^%s*(.-)%s*$")
+		if result == nil then return "" end
+		return result
+	end
+
+	method integer GetCreateRoomNameLength(string value)
+		-- Counts UTF-8 characters without relying on optional library globals.
+		if value == nil then return 0 end
+		local count = 0
+		local totalBytes = string.len(value)
+		for i = 1, totalBytes do
+			local byteValue = string.byte(value, i)
+			if byteValue ~= nil and (byteValue < 128 or byteValue >= 192) then
+				count += 1
+			end
+		end
+		return count
+	end
+
+	method void SetCreateRoomError(string message)
+		-- Shows or hides the create-room validation error area.
+		local hasError = message ~= nil and message ~= ""
+		if self.createRoomErrorText ~= nil then
+			self.createRoomErrorText.Text = hasError and message or ""
+			if self.createRoomErrorText.Entity ~= nil then
+				self.createRoomErrorText.Entity:SetEnable(hasError)
+				self.createRoomErrorText.Entity.Visible = hasError
+			end
+		end
+		if self.createRoomErrorBox ~= nil and isvalid(self.createRoomErrorBox) then
+			self.createRoomErrorBox:SetEnable(hasError)
+			self.createRoomErrorBox.Visible = hasError
+		end
+	end
+
+	method boolean ValidateCreateRoomForm()
+		-- Validates current create-room input fields and displays the first error.
+		local roomName = ""
+		if self.createRoomNameInput ~= nil then
+			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
+			self.createRoomNameInput.Text = roomName
+		end
+
+		if roomName == "" then
+			self:SetCreateRoomError("수사방 이름을 입력하세요.")
+			return false
+		end
+		if self:GetCreateRoomNameLength(roomName) > 12 then
+			self:SetCreateRoomError("수사방 이름은 12자 이하로 입력하세요.")
+			return false
+		end
+
+		if self.isPrivateRoom then
+			local password = ""
+			if self.createRoomPasswordInput ~= nil then
+				password = self:TrimCreateRoomText(self.createRoomPasswordInput.Text)
+				self.createRoomPasswordInput.Text = password
+			end
+			if password == "" then
+				self:SetCreateRoomError("비공개 수사방은 비밀번호가 필요합니다.")
+				return false
+			end
+			if string.match(password, "^%d%d%d%d$") == nil then
+				self:SetCreateRoomError("비밀번호는 숫자 4자리로 입력하세요.")
+				return false
+			end
+		end
+
+		self:SetCreateRoomError("")
+		return true
+	end
+
+	method void SubmitCreateRoomForm()
+		-- Validates and logs a local create-room request without server room creation.
+		if self:ValidateCreateRoomForm() == false then return end
+		local roomName = ""
+		if self.createRoomNameInput ~= nil then
+			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
+		end
+		log("[LobbyController] create room requested name=" .. roomName .. " maxPlayers=" .. tostring(self.selectedMaxPlayers) .. " private=" .. tostring(self.isPrivateRoom))
+		self:CloseCreateRoomModal()
+	end
+
+	method void WireCreateRoomModalEvents()
+		-- Wires create-room modal buttons while it is open.
+		if self.createRoomSubmitHandler ~= nil then return end
+		if self.createRoomDimOverlayButton ~= nil and isvalid(self.createRoomDimOverlayButton) then
+			self.createRoomDimHandler = self.createRoomDimOverlayButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseCreateRoomModal()
+			end)
+		end
+		if self.createRoomCloseButton ~= nil and isvalid(self.createRoomCloseButton) then
+			self.createRoomCloseHandler = self.createRoomCloseButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseCreateRoomModal()
+			end)
+		end
+		if self.createRoomCancelButton ~= nil and isvalid(self.createRoomCancelButton) then
+			self.createRoomCancelHandler = self.createRoomCancelButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseCreateRoomModal()
+			end)
+		end
+		if self.createRoomMinusButton ~= nil and isvalid(self.createRoomMinusButton) then
+			self.createRoomMinusHandler = self.createRoomMinusButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:DecreaseMaxPlayers()
+			end)
+		end
+		if self.createRoomPlusButton ~= nil and isvalid(self.createRoomPlusButton) then
+			self.createRoomPlusHandler = self.createRoomPlusButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:IncreaseMaxPlayers()
+			end)
+		end
+		if self.createRoomPrivateToggleButton ~= nil and isvalid(self.createRoomPrivateToggleButton) then
+			self.createRoomPrivateHandler = self.createRoomPrivateToggleButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:TogglePrivateRoom()
+			end)
+		end
+		if self.createRoomSubmitButton ~= nil and isvalid(self.createRoomSubmitButton) then
+			self.createRoomSubmitHandler = self.createRoomSubmitButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SubmitCreateRoomForm()
+			end)
+		end
+	end
+
+	method void DisconnectCreateRoomModalEvents()
+		-- Disconnects create-room modal handlers to avoid duplicate callbacks after reopen.
+		if self.createRoomDimHandler ~= nil and self.createRoomDimOverlayButton ~= nil and isvalid(self.createRoomDimOverlayButton) then
+			self.createRoomDimOverlayButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomDimHandler)
+			self.createRoomDimHandler = nil
+		end
+		if self.createRoomCloseHandler ~= nil and self.createRoomCloseButton ~= nil and isvalid(self.createRoomCloseButton) then
+			self.createRoomCloseButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomCloseHandler)
+			self.createRoomCloseHandler = nil
+		end
+		if self.createRoomCancelHandler ~= nil and self.createRoomCancelButton ~= nil and isvalid(self.createRoomCancelButton) then
+			self.createRoomCancelButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomCancelHandler)
+			self.createRoomCancelHandler = nil
+		end
+		if self.createRoomMinusHandler ~= nil and self.createRoomMinusButton ~= nil and isvalid(self.createRoomMinusButton) then
+			self.createRoomMinusButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomMinusHandler)
+			self.createRoomMinusHandler = nil
+		end
+		if self.createRoomPlusHandler ~= nil and self.createRoomPlusButton ~= nil and isvalid(self.createRoomPlusButton) then
+			self.createRoomPlusButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomPlusHandler)
+			self.createRoomPlusHandler = nil
+		end
+		if self.createRoomPrivateHandler ~= nil and self.createRoomPrivateToggleButton ~= nil and isvalid(self.createRoomPrivateToggleButton) then
+			self.createRoomPrivateToggleButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomPrivateHandler)
+			self.createRoomPrivateHandler = nil
+		end
+		if self.createRoomSubmitHandler ~= nil and self.createRoomSubmitButton ~= nil and isvalid(self.createRoomSubmitButton) then
+			self.createRoomSubmitButton.Entity:DisconnectEvent(ButtonClickEvent, self.createRoomSubmitHandler)
+			self.createRoomSubmitHandler = nil
+		end
+	end
+
+	method void HideAvatarFallback()
+		-- Keeps the fallback placeholder hidden now that AvatarGUIRenderer is working.
+		local fallback = self.fallbackCache
+		if fallback == nil or isvalid(fallback) == false then
+			fallback = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback")
+			self.fallbackCache = fallback
+		end
+		if fallback ~= nil and isvalid(fallback) then
+			fallback:SetEnable(false)
+			fallback.Visible = false
+			local sprite = fallback.SpriteGUIRendererComponent
+			if sprite ~= nil then
+				sprite:SetAlpha(0)
+				sprite.Enable = false
+			end
+			log("[LobbyController] Avatar fallback hidden=true")
+		else
+			log("[LobbyController] Avatar fallback hidden=false")
+		end
+	end
+
+	method void CheckAvatarFallback()
+		-- Legacy safety hook; fallback is intentionally kept hidden.
+		self.avatarCheckTimerId = 0
+		self:HideAvatarFallback()
+	end
+
+	method void ShowAvatarFallback()
+		-- Legacy compatibility hook; fallback should not be displayed in the final lobby.
+		self:HideAvatarFallback()
+	end
+
+	method void WireKeyboardInput()
+		-- Connects KeyDownEvent for jump. Guards against double-wiring.
+		if self.keyDownHandler ~= nil then return end
+		self.keyDownHandler = self.Entity:ConnectEvent(KeyDownEvent, self.OnKeyDown)
+		log("[LobbyController] Keyboard wired")
+	end
+
+	method void WireExternalPopupEvents()
+		-- Wires close buttons for the lobby popup entities inside UI_Lobby.
+		local ent
+
+		if self.friendPopupCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.friendPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
+			end
+		end
+
+		if self.shopPopupCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.shopPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
+			end
+		end
+
+		if self.shopPopupCancelHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.shopPopupCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
+			end
+		end
+
+		if self.alertPopupCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/AlertPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.alertPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
+			end
+		end
+	end
+
+	method void DisconnectExternalPopupEvents()
+		-- Disconnects close-button handlers attached by WireExternalPopupEvents.
+		local ent
+
+		if self.friendPopupCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendPopupCloseHandler) end
+			self.friendPopupCloseHandler = nil
+		end
+
+		if self.shopPopupCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCloseHandler) end
+			self.shopPopupCloseHandler = nil
+		end
+
+		if self.shopPopupCancelHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCancelHandler) end
+			self.shopPopupCancelHandler = nil
+		end
+
+		if self.alertPopupCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/AlertPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.alertPopupCloseHandler) end
+			self.alertPopupCloseHandler = nil
+		end
+	end
+
+	method void WireButtonEvents()
+		-- Wires the active lobby UI: profile elements live under LobbyRoot, buttons live under ButtonGroup.
+		local base = "/ui/UI_Lobby/LobbyRoot"
+		local buttonBase = base .. "/ButtonGroup"
+		local ent
+
+		ent = self.profileButtonEntity
+		if ent == nil or isvalid(ent) == false then
+			ent = _EntityService:GetEntityByPath(base .. "/ProfileRoot/ProfileButton")
+		end
+		if ent ~= nil and isvalid(ent) then
+			self.btnProfileHandler = ent:ConnectEvent(ButtonClickEvent, self.OnProfileClicked)
+		end
+
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/친구")
+		if ent ~= nil and isvalid(ent) then
+			self.btnFriendHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/도감")
+		if ent ~= nil and isvalid(ent) then
+			self.btnCodexHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCodexClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/가방")
+		if ent ~= nil and isvalid(ent) then
+			self.btnBagHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/업적")
+		if ent ~= nil and isvalid(ent) then
+			self.btnAchievementHandler = ent:ConnectEvent(ButtonClickEvent, self.OnAchievementClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/start")
+		if ent ~= nil and isvalid(ent) then
+			self.btnStartHandler = ent:ConnectEvent(ButtonClickEvent, self.OnStartClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/방만들기")
+		if ent ~= nil and isvalid(ent) then
+			self.btnCreateHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCreateRoomClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/찾기")
+		if ent ~= nil and isvalid(ent) then
+			self.btnFindHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFindRoomClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/상점")
+		if ent ~= nil and isvalid(ent) then
+			self.btnShopHandler = ent:ConnectEvent(ButtonClickEvent, self.OnShopClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/알림")
+		if ent ~= nil and isvalid(ent) then
+			self.btnAlertHandler = ent:ConnectEvent(ButtonClickEvent, self.OnAlertClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/설정")
+		if ent ~= nil and isvalid(ent) then
+			self.btnSettingsHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/Header/CloseBtn")
+		if ent ~= nil and isvalid(ent) then
+			self.btnSettingsCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsCloseClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/TabBar/TabInfo")
+		if ent ~= nil and isvalid(ent) then
+			self.btnSettingsInfoTabHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsInfoTabClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/TabBar/TabSound")
+		if ent ~= nil and isvalid(ent) then
+			self.btnSettingsSoundTabHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsSoundTabClicked)
+		end
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/ContentSound/MuteBtn")
+		if ent ~= nil and isvalid(ent) then
+			self.btnSettingsMuteHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsMuteClicked)
+		end
+		self:WireExternalPopupEvents()
+		ent = _EntityService:GetEntityByPath(buttonBase .. "/Matchmaking/Box/CancelBtn")
+		if ent ~= nil and isvalid(ent) then
+			self.btnMatchCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnMatchmakingCancelClicked)
+		end
+
+		if self.btnFindHandler == nil then
+			ent = self.findRoomButtonEntity
+			if ent ~= nil and isvalid(ent) then
+				self.btnFindHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFindRoomClicked)
+				log("[LobbyController] FindRoomButton wired by uuid")
+			end
+		end
+
+		log("[LobbyController] ButtonGroup events wired")
+	end
+
+	method void WireInvestigationRoomSearchEvents()
+		-- The room search UI is a separate UI group; LobbyController owns its placeholder click logs.
+		if self.searchButtonHandlers ~= nil then return end
+
+		self.searchButtonHandlers = {}
+		self:SetInvestigationRoomSearchVisible(false)
+
+		self:ConnectInvestigationSearchButton("ModeFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton")
+		self:ConnectInvestigationSearchButton("StatusFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton")
+		self:ConnectInvestigationSearchButton("HidePasswordRoom", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
+		self:ConnectInvestigationSearchButton("Refresh", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/RefreshButton")
+
+		for i = 1, 8 do
+			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
+		end
+
+		self:ConnectInvestigationSearchButton("PageFirst", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageFirstButton")
+		self:ConnectInvestigationSearchButton("PagePrev", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PagePrevButton")
+		self:ConnectInvestigationSearchButton("PageNext", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageNextButton")
+		self:ConnectInvestigationSearchButton("PageLast", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageLastButton")
+
+		self:ConnectInvestigationSearchButton("CreateRoom", "/ui/UI_InvestigationRoomSearch/SearchRoot/CreateRoomButton")
+		self:ConnectInvestigationSearchButton("EnterRoomCode", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
+		self:ConnectInvestigationSearchButton("JoinRoom", "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomDetailPanel/JoinButton")
+		self:ConnectInvestigationSearchButton("Close", "/ui/UI_InvestigationRoomSearch/SearchRoot/CloseButton")
+		log("[InvestigationRoomSearch] Button events wired")
+	end
+
+	method void SetInvestigationRoomSearchVisible(boolean visible)
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		if searchRoot ~= nil and isvalid(searchRoot) then
+			searchRoot.Enable = visible
+		end
+	end
+
+	method void ConnectInvestigationSearchButton(string logName, string path)
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent == nil or not isvalid(ent) then
+			log_warning("[InvestigationRoomSearch] Missing button: " .. logName)
+			return
+		end
+
+		local eventHandler = ent:ConnectEvent(ButtonClickEvent, function(evt)
+			self:OnInvestigationSearchClicked(logName)
+		end)
+		table.insert(self.searchButtonHandlers, { Target = ent, EventHandler = eventHandler })
+	end
+
+	method void OnInvestigationSearchClicked(string logName)
+		if logName == "Close" then
+			self:SetInvestigationRoomSearchVisible(false)
+			log("[InvestigationRoomSearch] Close clicked")
+			return
+		end
+
+		log("[InvestigationRoomSearch] " .. logName .. " clicked")
+	end
+
+	method void DisconnectInvestigationRoomSearchEvents()
+		if self.searchButtonHandlers == nil then return end
+
+		for _, record in ipairs(self.searchButtonHandlers) do
+			if record.Target ~= nil and isvalid(record.Target) and record.EventHandler ~= nil then
+				record.Target:DisconnectEvent(ButtonClickEvent, record.EventHandler)
+			end
+		end
+		self.searchButtonHandlers = nil
+	end
+
+	method void OnKeyDown(KeyDownEvent event)
+		-- Triggers a single jump when Space is pressed while avatar is on the ground.
+		if event.key == KeyboardKey.Space then
+			log("[LobbyController] Space input detected")
+			self:TryAvatarJump()
+		end
+	end
+
+	method void OnUpdate(number delta)
+		-- Simulates avatar movement/gravity; keeps AvatarNameText above avatar each frame.
+		self:UpdateMatchmakingModal(delta)
+
+		local avatarEntity = self.avatarCache
+		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
+
+		-- Horizontal input: A / LeftArrow = left,  D / RightArrow = right
+		local moveDir = 0
+		if _InputService:IsKeyPressed(KeyboardKey.A) or _InputService:IsKeyPressed(KeyboardKey.LeftArrow) then
+			moveDir -= 1
+		end
+		if _InputService:IsKeyPressed(KeyboardKey.D) or _InputService:IsKeyPressed(KeyboardKey.RightArrow) then
+			moveDir += 1
+		end
+
+		local spacePressed = _InputService:IsKeyPressed(KeyboardKey.Space)
+		if spacePressed and self.jumpPressedLastFrame == false then
+			log("[LobbyController] Space input detected")
+			self:TryAvatarJump()
+		end
+		self.jumpPressedLastFrame = spacePressed
+
+		self.avatarPosX += moveDir * self.MOVE_SPEED * delta
+		if self.avatarPosX < self.MIN_X then self.avatarPosX = self.MIN_X end
+		if self.avatarPosX > self.MAX_X then self.avatarPosX = self.MAX_X end
+
+		self:ApplyAvatarDirection(moveDir)
+
+		-- Gravity while airborne
+		local landedThisFrame = false
+		if self.isOnGround == false then
+			self.avatarVelY -= self.GRAVITY * delta
+			self.avatarPosY += self.avatarVelY * delta
+			if self.avatarPosY <= self.GROUND_Y then
+				self.avatarPosY = self.GROUND_Y
+				self.avatarVelY = 0
+				self.isOnGround = true
+				landedThisFrame = true
+				log("[LobbyController] Avatar landed")
+				self.jumpSquashTime = 0
+				self.jumpReturnTime = 0
+			end
+		end
+
+		local nextState = "idle"
+		if self.isOnGround == false then
+			nextState = "jump"
+		elseif moveDir ~= 0 then
+			nextState = "walk"
+		end
+		if landedThisFrame then
+			log("[LobbyController] Avatar state after landing=" .. nextState)
+		end
+		self:ApplyAvatarState(nextState)
+
+		-- Periodic action re-apply: ensures animation state sticks when it resets mid-motion.
+		-- Walk and jump states are re-sent every actionReapplyInterval seconds.
+		self.actionReapplyTimer -= delta
+		if self.actionReapplyTimer <= 0 then
+			if nextState == "walk" or nextState == "jump" then
+				self:ForceApplyAvatarAction(nextState)
+				self.actionReapplyTimer = self.actionReapplyInterval
+				log("[LobbyController] Avatar action reapplied=true interval=" .. tostring(self.actionReapplyInterval))
+			else
+				self.actionReapplyTimer = 0
+			end
+		end
+
+		local visualY = self.avatarPosY
+		if self.WALK_VISUAL_FALLBACK_ENABLED and nextState == "walk" then
+			if self.walkBobEnabledLogged == false then
+				log("[LobbyController] Walk bob enabled")
+				self.walkBobEnabledLogged = true
+			end
+			self.walkBobTime += delta
+			local walkBob = math.sin(self.walkBobTime * self.WALK_BOB_SPEED) * self.WALK_BOB_AMOUNT
+			visualY += walkBob
+			self.walkBobLogTimer -= delta
+			if self.walkBobLogTimer <= 0 then
+				log("[LobbyController] Walk bob value=" .. tostring(walkBob))
+				self.walkBobLogTimer = 0.35
+			end
+		else
+			self.walkBobTime = 0
+			self.walkBobLogTimer = 0
+		end
+
+		-- Apply avatar position via UITransform
+		local transform = avatarEntity.UITransformComponent
+		if transform ~= nil then
+			transform.anchoredPosition = Vector2(self.avatarPosX, visualY)
+			if self.JUMP_VISUAL_FALLBACK_ENABLED and self.jumpSquashTime > 0 then
+				-- Phase 1: hold max squash at jump start for JUMP_SQUASH_DURATION (0.08s)
+				transform.UIScale = Vector3(1.03, 0.96, 1)
+				self.avatarScaleSquashed = true
+				self.jumpSquashTime -= delta
+				if self.jumpSquashTime <= 0 then
+					self.jumpReturnTime = self.JUMP_RETURN_DURATION
+				end
+			elseif self.jumpReturnTime > 0 then
+				-- Phase 2: lerp back to (1,1) over JUMP_RETURN_DURATION (0.18s)
+				local t = self.jumpReturnTime / self.JUMP_RETURN_DURATION
+				local sx = 1.0 + 0.03 * t
+				local sy = 1.0 - 0.04 * t
+				transform.UIScale = Vector3(sx, sy, 1)
+				self.avatarScaleSquashed = true
+				self.jumpReturnTime -= delta
+			elseif self.avatarScaleSquashed then
+				transform.UIScale = Vector3(1, 1, 1)
+				self.avatarScaleSquashed = false
+				log("[LobbyController] Avatar base scale restored x=1 y=1")
+			elseif landedThisFrame then
+				transform.UIScale = Vector3(1, 1, 1)
+				self.jumpReturnTime = 0
+				log("[LobbyController] Avatar base scale restored x=1 y=1")
+			end
+		end
+
+		-- Move fallback placeholder alongside avatar (position matches avatar)
+		local fallback = self.fallbackCache
+		if fallback ~= nil and isvalid(fallback) and fallback.Enable then
+			local fb = fallback.UITransformComponent
+			if fb ~= nil then
+				fb.anchoredPosition = Vector2(self.avatarPosX, self.avatarPosY)
+			end
+		end
+
+		-- AvatarNameText tracks avatar: stays NAME_OFFSET_Y units from avatar center.
+		local nameText = self.nameTextCache
+		if nameText ~= nil and isvalid(nameText) then
+			local nameTransform = nameText.UITransformComponent
+			if nameTransform ~= nil then
+				nameTransform.anchoredPosition = Vector2(self.avatarPosX, self.avatarPosY + self.NAME_OFFSET_Y)
+			end
+		end
+
+		self.updateLogTimer -= delta
+		if self.updateLogTimer <= 0 then
+			log("[LobbyController] OnUpdate active")
+			log("[LobbyController] Avatar position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.avatarPosY))
+			log("[LobbyController] Avatar ground position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.GROUND_Y))
+			self.updateLogTimer = 0.5
+		end
+	end
+
+	method void TryAvatarJump()
+		-- Starts a jump only while grounded; repeated Space presses in air are ignored.
+		if self.isOnGround == false then return end
+		self.avatarVelY = self.JUMP_FORCE
+		self.isOnGround = false
+		if self.JUMP_VISUAL_FALLBACK_ENABLED then
+			self.jumpSquashTime = self.JUMP_SQUASH_DURATION
+			self.jumpReturnTime = 0
+			self.avatarScaleSquashed = false
+			log("[LobbyController] Avatar jump visual applied")
+		end
+		log("[LobbyController] Avatar jump")
+	end
+
+	method void ApplyNickname(string nickname)
+		-- Sets the ProfileRoot nickname plate and AvatarNameText text.
+		local displayName = self:NormalizeProfileNickname(nickname)
+		self.currentProfileNickname = displayName
+
+		local plate = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileRoot/NicknamePlate/NicknameText")
+		if plate ~= nil and isvalid(plate) and plate.TextComponent ~= nil then
+			plate.TextComponent.Text = displayName
+		end
+		local titleEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileRoot/NicknamePlate/TitleText")
+		if titleEntity ~= nil and isvalid(titleEntity) and titleEntity.TextComponent ~= nil then
+			titleEntity.TextComponent.Text = self.currentProfileTitle
+		end
+		local nameText = self.nameTextCache
+		if nameText ~= nil and isvalid(nameText) and nameText.TextComponent ~= nil then
+			nameText.TextComponent.Text = displayName
+		end
+		log("[LobbyController] ProfileRoot nickname applied: " .. displayName)
+	end
+
+	method string NormalizeProfileNickname(string nickname)
+		local displayName = nickname
+		if displayName ~= nil then
+			displayName = string.match(displayName, "^%s*(.-)%s*$")
+		end
+		if displayName == nil or displayName == "" or displayName == "?섏궗愿" then
+			displayName = "수사관"
+		end
+		return displayName
+	end
+
+	method void ApplyAllProfile(string nickname, string title, string ruid)
+		-- Applies profile values loaded from DataStorage.
+		if title == nil or title == "" then
+			title = "신입 수사관"
+		end
+		self.currentProfileTitle = title
+		self:ApplyNickname(nickname)
+		if ruid ~= nil and ruid ~= "" then
+			self:ApplyProfileImage(ruid)
+		end
+		if self.profileModalOpen then
+			self:RefreshProfileModalFields()
+		end
+		log("[LobbyController] ApplyAllProfile complete nickname=" .. self.currentProfileNickname .. " title=" .. self.currentProfileTitle .. " ruid=" .. self.selectedProfileRuid)
+	end
+
+	method void RefreshProfileModalFields()
+		-- Mirrors the saved profile values into the settings modal. Nickname is real text, not placeholder.
+		local displayName = self:NormalizeProfileNickname(self.currentProfileNickname)
+		self.currentProfileNickname = displayName
+		if self.currentProfileTitle == nil or self.currentProfileTitle == "" then
+			self.currentProfileTitle = "신입 수사관"
+		end
+
+		if self.modalNicknameInput ~= nil then
+			self.modalNicknameInput.Text = displayName
+			if displayName ~= "" then
+				self.modalNicknameInput.PlaceHolder = ""
+			else
+				self.modalNicknameInput.PlaceHolder = "닉네임 입력"
+			end
+		end
+		if self.modalPreviewNicknameText ~= nil then
+			self.modalPreviewNicknameText.Text = displayName
+		end
+		if self.modalPreviewTitleText ~= nil then
+			self.modalPreviewTitleText.Text = self.currentProfileTitle
+		end
+		if self.modalTitleDisplayText ~= nil then
+			self.modalTitleDisplayText.Text = self.currentProfileTitle
+		end
+		if self.modalPreviewProfileImage ~= nil and isvalid(self.modalPreviewProfileImage) then
+			local spriteComp = self.modalPreviewProfileImage.SpriteGUIRendererComponent
+			if spriteComp ~= nil then
+				spriteComp.ImageRUID = DataRef(self.selectedProfileRuid)
+			end
+		end
+		log("[LobbyController] ProfileModal fields refreshed nickname=" .. displayName .. " title=" .. self.currentProfileTitle .. " ruid=" .. self.selectedProfileRuid)
+	end
+
+	method void ResetAvatarPosition()
+		-- Resets avatar simulation to center-ground starting position.
+		self.avatarPosX = 0
+		self.avatarPosY = self.GROUND_Y
+		self.avatarVelY = 0
+		self.isOnGround = true
+		self.jumpPressedLastFrame = false
+		self.walkBobTime = 0
+		self.walkBobLogTimer = 0
+		self.jumpSquashTime = 0
+		self.jumpReturnTime = 0
+		self.avatarScaleSquashed = false
+		self.actionReapplyTimer = 0
+		self.avatarStructureDiagnosed = false
+		self.updateLogTimer = 0
+		log("[LobbyController] Avatar ground position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.avatarPosY))
+		self:ApplyAvatarState("idle")
+	end
+
+	method void ApplyAvatarDirection(integer moveDir)
+		-- Flips the avatar only when movement direction actually changes.
+		-- AvatarGUIRendererComponent.FlipX is independent of UIScale (jump squash) — no conflict.
+		-- Default avatar faces right (FlipX=false). Left movement needs FlipX=true to flip toward left.
+		if moveDir == 0 then return end
+		local nextDirection = "right"
+		if moveDir < 0 then nextDirection = "left" end
+		if nextDirection == self.currentAvatarDirection then return end
+
+		self.currentAvatarDirection = nextDirection
+		local avatarEntity = self.avatarCache
+		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
+
+		local avatarComp = avatarEntity.AvatarGUIRendererComponent
+		if avatarComp ~= nil then
+			-- MSW avatar default facing is LEFT (FlipX=false=left).
+			-- To face right: FlipX=true. To face left: FlipX=false.
+			avatarComp.FlipX = nextDirection == "right"
+			log("[LobbyController] Avatar facing direction=" .. nextDirection)
+			log("[LobbyController] Avatar flip mapping corrected=true")
+			log("[LobbyController] Avatar final scaleX=" .. tostring(avatarComp.FlipX and -1 or 1))
+		end
+	end
+
+	method void DiagnoseAvatarBodyStructure()
+		-- Runs once on first action apply to diagnose whether the avatar entity supports animation.
+		local avatarEntity = self.avatarCache
+		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
+		local avatarComp = avatarEntity.AvatarGUIRendererComponent
+		if avatarComp == nil then return end
+
+		local avatarPath = "/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar"
+		log("[LobbyController] AvatarGUIRendererComponent entity path=" .. avatarPath)
+
+		-- Avatar root entity
+		local rootEntity = avatarComp:GetAvatarRootEntity()
+		local rootValid = rootEntity ~= nil and isvalid(rootEntity)
+		if rootValid then
+			log("[LobbyController] Avatar root entity path=" .. tostring(rootEntity.Name))
+			local rootASA  = rootEntity.AvatarStateAnimationComponent ~= nil
+			local rootABAS = rootEntity.AvatarBodyActionSelectorComponent ~= nil
+			local rootSC   = rootEntity.StateComponent ~= nil
+			log("[LobbyController] Avatar root components=StateAnim:" .. tostring(rootASA) .. " BodyActionSelector:" .. tostring(rootABAS) .. " StateComp:" .. tostring(rootSC))
+		else
+			log("[LobbyController] Avatar root entity path=nil")
+			log("[LobbyController] Avatar root components=nil")
+		end
+
+		-- Body entity (target of BodyActionStateChangeEvent)
+		local bodyEntity = avatarComp:GetBodyEntity()
+		local bodyValid = bodyEntity ~= nil and isvalid(bodyEntity)
+		if bodyValid then
+			log("[LobbyController] Avatar body entity path=" .. tostring(bodyEntity.Name))
+			local bodyASA  = bodyEntity.AvatarStateAnimationComponent ~= nil
+			local bodyABAS = bodyEntity.AvatarBodyActionSelectorComponent ~= nil
+			local bodySC   = bodyEntity.StateComponent ~= nil
+			local bodySSTA = bodyEntity.StateStringToAvatarActionComponent ~= nil
+			log("[LobbyController] Avatar body components=StateAnim:" .. tostring(bodyASA) .. " BodyActionSelector:" .. tostring(bodyABAS) .. " StateComp:" .. tostring(bodySC) .. " StateStrToAction:" .. tostring(bodySSTA))
+			log("[LobbyController] AvatarStateAnimationComponent found=" .. tostring(bodyASA))
+			log("[LobbyController] AvatarBodyActionSelectorComponent found=" .. tostring(bodyABAS))
+			log("[LobbyController] StateStringToAvatarActionComponent found=" .. tostring(bodySSTA))
+			log("[LobbyController] StateComponent found=" .. tostring(bodySC))
+
+			-- ActionState readback via AvatarBodyActionSelectorComponent
+			local selector = bodyEntity.AvatarBodyActionSelectorComponent
+			if selector ~= nil then
+				log("[LobbyController] Avatar action readback=" .. tostring(selector.ActionState))
+			else
+				log("[LobbyController] Avatar action readback=current action readback unsupported")
+			end
+
+			local animSupported = bodyASA or bodyABAS
+			log("[LobbyController] Avatar GUI body animation supported=" .. tostring(animSupported))
+			if not animSupported then
+				log_warning("[LobbyController] AvatarGUIRendererComponent body action animation component missing")
+				log_warning("[LobbyController] Walk/Fall motion not playable via BodyActionStateChangeEvent — required components absent from body entity")
+			end
+		else
+			log("[LobbyController] Avatar body entity path=nil")
+			log("[LobbyController] Avatar body components=nil")
+			log("[LobbyController] AvatarStateAnimationComponent found=false")
+			log("[LobbyController] AvatarBodyActionSelectorComponent found=false")
+			log("[LobbyController] StateStringToAvatarActionComponent found=false")
+			log("[LobbyController] StateComponent found=false")
+			log("[LobbyController] Avatar action readback=current action readback unsupported")
+			log("[LobbyController] Avatar GUI body animation supported=false")
+		end
+	end
+
+	method void ForceApplyAvatarAction(string state)
+		-- ActionStateChangedEvent → body entity (GetBodyEntity()).
+		-- Ref: MSW docs "Playing Animation" sample; coreActionName drives torso+parts animation directly.
+		local avatarEntity = self.avatarCache
+		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
+
+		local avatarComp = avatarEntity.AvatarGUIRendererComponent
+		if avatarComp == nil then
+			self.avatarAnimationApiFound = false
+			return
+		end
+		self.avatarAnimationApiFound = true
+
+		if self.avatarStructureDiagnosed == false then
+			self.avatarStructureDiagnosed = true
+			self:DiagnoseAvatarBodyStructure()
+		end
+
+		local bodyEntity = avatarComp:GetBodyEntity()
+		local bodyValid = bodyEntity ~= nil and isvalid(bodyEntity)
+		log("[LobbyController] Avatar body entity found=" .. tostring(bodyValid))
+		if not bodyValid then
+			log_warning("[LobbyController] Avatar body entity nil — cannot send action")
+			return
+		end
+
+		log("[LobbyController] Avatar action apply method=ActionStateChangedEvent")
+
+		local coreAction = "stand1"
+		local partsAction = "stand1"
+		local playRate = 1.0
+
+		if state == "walk" then
+			coreAction = "walk1"
+			partsAction = "walk1"
+			playRate = 1.35
+			log("[LobbyController] Avatar direct action core=walk1 parts=walk1 playRate=1.35")
+		elseif state == "jump" then
+			coreAction = "jump"
+			partsAction = "jump"
+			playRate = 1.0
+			log("[LobbyController] Avatar direct action core=jump parts=jump playRate=1")
+		else
+			log("[LobbyController] Avatar direct action core=stand1 parts=stand1 playRate=1")
+		end
+
+		local event = ActionStateChangedEvent(coreAction, partsAction, playRate, SpriteAnimClipPlayType.Loop, 0, 2147483647)
+		bodyEntity:SendEvent(event)
+		log("[LobbyController] ActionStateChangedEvent sent=true")
+	end
+
+	method void ApplyAvatarState(string nextState)
+		-- Applies idle/walk/jump visual state only on transitions.
+		if nextState == self.currentAvatarState then return end
+		local prevState = self.currentAvatarState
+		if prevState == "" then prevState = "none" end
+		self.currentAvatarState = nextState
+		self.actionReapplyTimer = 0
+
+		log("[LobbyController] Avatar state changed " .. prevState .. " -> " .. nextState)
+		log("[LobbyController] Avatar state=" .. nextState)
+
+		self:ForceApplyAvatarAction(nextState)
+		if nextState == "walk" then
+			log("[LobbyController] Walk visual fallback enabled=" .. tostring(self.WALK_VISUAL_FALLBACK_ENABLED))
+		end
+	end
+
+	-- ── Button click handlers (log-only placeholders) ──────────────────────
+
+	method void OnProfileClicked(ButtonClickEvent event)
+		-- Opens the profile image selection modal.
+		log("[LobbyController] ProfileButton clicked → opening modal")
+		self:OpenProfileModal()
+	end
+
+	method void OnFriendClicked(ButtonClickEvent event)
+		log("[LobbyController] FriendButton clicked")
+		self:OpenExternalPopup("FriendPopup")
+	end
+
+	method void OnMenuClicked(ButtonClickEvent event)
+		log("[LobbyController] MenuButton clicked")
+		self:HideExternalPopups()
+		self:SetSettingsPopup(true)
+	end
+
+	method void OnCodexClicked(ButtonClickEvent event)
+		-- Placeholder: codex (도감) not implemented.
+		log("[LobbyController] CodexButton clicked")
+	end
+
+	method void OnBagClicked(ButtonClickEvent event)
+		-- Placeholder: bag (가방) not implemented.
+		log("[LobbyController] BagButton clicked")
+	end
+
+	method void OnAchievementClicked(ButtonClickEvent event)
+		-- Placeholder: achievements not implemented.
+		log("[LobbyController] AchievementButton clicked")
+	end
+
+	method void OnStartClicked(ButtonClickEvent event)
+		log("[LobbyController] StartButton clicked")
+		self:OpenMatchmakingModal()
+	end
+
+	method void OnCreateRoomClicked(ButtonClickEvent event)
+		-- Opens the create-room modal.
+		log("[LobbyController] CreateRoomButton clicked")
+		self:OpenCreateRoomModal()
+	end
+
+	method void OnFindRoomClicked(ButtonClickEvent event)
+		log("[LobbyController] FindRoomButton clicked")
+		self:WireInvestigationRoomSearchEvents()
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		if searchRoot == nil or not isvalid(searchRoot) then
+			log_warning("[LobbyController] InvestigationRoomSearch SearchRoot not found")
+			return
+		end
+
+		searchRoot.Enable = true
+		log("[InvestigationRoomSearch] Open")
+	end
+
+
+	method void OnShopClicked(ButtonClickEvent event)
+		log("[LobbyController] ShopButton clicked")
+		self:OpenExternalPopup("ShopPopup")
+	end
+
+	method void OnAlertClicked(ButtonClickEvent event)
+		log("[LobbyController] AlertButton clicked")
+		self:OpenExternalPopup("AlertPopup")
+	end
+
+	method void OnSettingsClicked(ButtonClickEvent event)
+		-- Opens the settings popup on the sound tab.
+		log("[LobbyController] SettingsButton clicked")
+		self:HideExternalPopups()
+		self:SetSettingsPopup(true)
+	end
+
+	method void OnSettingsCloseClicked(ButtonClickEvent event)
+		-- Closes the settings popup.
+		log("[LobbyController] SettingsPopup close clicked")
+		self:SetSettingsPopup(false)
+	end
+
+	method void OnSettingsInfoTabClicked(ButtonClickEvent event)
+		-- Shows the info content inside the settings popup.
+		log("[LobbyController] Settings info tab clicked")
+		self:ShowSettingsTab("info")
+	end
+
+	method void OnSettingsSoundTabClicked(ButtonClickEvent event)
+		-- Shows the sound content inside the settings popup.
+		log("[LobbyController] Settings sound tab clicked")
+		self:ShowSettingsTab("sound")
+	end
+
+	method void OnSettingsMuteClicked(ButtonClickEvent event)
+		-- Toggles the main flow BGM and updates the settings sound button image.
+		self.isSettingsSoundOn = self.isSettingsSoundOn == false
+		if _MainFlowBgmController ~= nil then
+			_MainFlowBgmController:SetBgmEnabled(self.isSettingsSoundOn)
+		end
+		self:UpdateSettingsSoundToggleImage()
+		log("[LobbyController] Settings sound toggle clicked enabled=" .. tostring(self.isSettingsSoundOn))
+	end
+
+	method void OnMatchmakingCancelClicked(ButtonClickEvent event)
+		self:CancelMatchmaking()
+	end
+
+	-- ── Profile image selection methods ────────────────────────────────────
+
+	method void ApplyProfileImage(string ruid)
+		-- Updates ProfileAvatar sprite to display the given RUID image.
+		log("[LobbyController] ApplyProfileImage ruid=" .. ruid)
+		self.selectedProfileRuid = ruid
+		local avatar = self.profileAvatarSprite
+		if avatar == nil or isvalid(avatar) == false then
+			local ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileRoot/ProfileAvatarClip/ProfileImage")
+			if ent ~= nil and isvalid(ent) then
+				avatar = ent
+			end
+		end
+		if avatar ~= nil and isvalid(avatar) then
+			local spriteComp = avatar.SpriteGUIRendererComponent
+			if spriteComp ~= nil then
+				spriteComp.ImageRUID = DataRef(ruid)
+				log("[LobbyController] ProfileAvatar image updated ruid=" .. ruid)
+			else
+				log_warning("[LobbyController] ProfileAvatar SpriteGUIRendererComponent not found")
+			end
+		else
+			log_warning("[LobbyController] ProfileAvatar entity not found")
+		end
+		self:UpdateSelectedIndicators()
+	end
+
+	method void OpenProfileModal()
+		-- Shows the profile selection modal and wires slot/close/dim click handlers.
+		if self.profileModalOpen then return end
+		log("[LobbyController] OpenProfileModal")
+		self.profileModalOpen = true
+		self:SetAvatarNameTextVisible(false)
+		_ProfileStorageLogic:RequestLoadAllProfile()
+		local modal = self.modalGroup
+		if modal ~= nil and isvalid(modal) then
+			modal.Enable = true
+		end
+		self:RefreshProfileModalFields()
+		self:UpdateSelectedIndicators()
+		-- Wire slot buttons
+		if self.btnProfileSlot1 ~= nil and isvalid(self.btnProfileSlot1) then
+			self.btnProfileSlot1Handler = self.btnProfileSlot1.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SelectProfileSlot("ef1ba8b05d0a4d9e8d4033c9e797f708")
+			end)
+		end
+		if self.btnProfileSlot2 ~= nil and isvalid(self.btnProfileSlot2) then
+			self.btnProfileSlot2Handler = self.btnProfileSlot2.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SelectProfileSlot("ba1ad8baabb5492b8030f62062bac632")
+			end)
+		end
+		if self.btnProfileSlot3 ~= nil and isvalid(self.btnProfileSlot3) then
+			self.btnProfileSlot3Handler = self.btnProfileSlot3.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SelectProfileSlot("889918f7b8454392867298470d9ed43a")
+			end)
+		end
+		if self.btnProfileSlot4 ~= nil and isvalid(self.btnProfileSlot4) then
+			self.btnProfileSlot4Handler = self.btnProfileSlot4.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SelectProfileSlot("f54ce587be5a462d846f64b2de315e3d")
+			end)
+		end
+		if self.btnProfileModalClose ~= nil and isvalid(self.btnProfileModalClose) then
+			self.btnProfileModalCloseHandler = self.btnProfileModalClose.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseProfileModal()
+			end)
+		end
+		if self.btnProfileModalSave ~= nil and isvalid(self.btnProfileModalSave) then
+			self.btnProfileModalSaveHandler = self.btnProfileModalSave.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:SaveProfileModal()
+			end)
+		end
+		if self.btnProfileModalCancel ~= nil and isvalid(self.btnProfileModalCancel) then
+			self.btnProfileModalCancelHandler = self.btnProfileModalCancel.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseProfileModal()
+			end)
+		end
+		if self.modalDimOverlay ~= nil and isvalid(self.modalDimOverlay) then
+			local dimBtn = self.modalDimOverlay.ButtonComponent
+			if dimBtn ~= nil then
+				self.dimOverlayHandler = self.modalDimOverlay:ConnectEvent(ButtonClickEvent, function(evt)
+					self:CloseProfileModal()
+				end)
+			end
+		end
+		log("[LobbyController] ProfileModal opened handlers wired")
+	end
+
+	method void CloseProfileModal()
+		-- Hides the profile selection modal and disconnects all modal event handlers.
+		if self.profileModalOpen == false then return end
+		log("[LobbyController] CloseProfileModal")
+		self.profileModalOpen = false
+		self:SetAvatarNameTextVisible(true)
+		if self.btnProfileSlot1Handler ~= nil and self.btnProfileSlot1 ~= nil and isvalid(self.btnProfileSlot1) then
+			self.btnProfileSlot1.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot1Handler)
+			self.btnProfileSlot1Handler = nil
+		end
+		if self.btnProfileSlot2Handler ~= nil and self.btnProfileSlot2 ~= nil and isvalid(self.btnProfileSlot2) then
+			self.btnProfileSlot2.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot2Handler)
+			self.btnProfileSlot2Handler = nil
+		end
+		if self.btnProfileSlot3Handler ~= nil and self.btnProfileSlot3 ~= nil and isvalid(self.btnProfileSlot3) then
+			self.btnProfileSlot3.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot3Handler)
+			self.btnProfileSlot3Handler = nil
+		end
+		if self.btnProfileSlot4Handler ~= nil and self.btnProfileSlot4 ~= nil and isvalid(self.btnProfileSlot4) then
+			self.btnProfileSlot4.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot4Handler)
+			self.btnProfileSlot4Handler = nil
+		end
+		if self.btnProfileModalCloseHandler ~= nil and self.btnProfileModalClose ~= nil and isvalid(self.btnProfileModalClose) then
+			self.btnProfileModalClose.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileModalCloseHandler)
+			self.btnProfileModalCloseHandler = nil
+		end
+		if self.btnProfileModalSaveHandler ~= nil and self.btnProfileModalSave ~= nil and isvalid(self.btnProfileModalSave) then
+			self.btnProfileModalSave.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileModalSaveHandler)
+			self.btnProfileModalSaveHandler = nil
+		end
+		if self.btnProfileModalCancelHandler ~= nil and self.btnProfileModalCancel ~= nil and isvalid(self.btnProfileModalCancel) then
+			self.btnProfileModalCancel.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileModalCancelHandler)
+			self.btnProfileModalCancelHandler = nil
+		end
+		if self.dimOverlayHandler ~= nil and self.modalDimOverlay ~= nil and isvalid(self.modalDimOverlay) then
+			self.modalDimOverlay:DisconnectEvent(ButtonClickEvent, self.dimOverlayHandler)
+			self.dimOverlayHandler = nil
+		end
+		local modal = self.modalGroup
+		if modal ~= nil and isvalid(modal) then
+			modal.Enable = false
+		end
+		log("[LobbyController] ProfileModal closed handlers disconnected")
+	end
+
+	method void SetAvatarNameTextVisible(boolean visible)
+		-- Shows or hides the lobby avatar name while the profile modal is open.
+		local nameText = self.nameTextCache
+		if nameText == nil or isvalid(nameText) == false then
+			nameText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarNameText")
+			if nameText ~= nil and isvalid(nameText) then
+				self.nameTextCache = nameText
+			end
+		end
+		if nameText ~= nil and isvalid(nameText) then
+			nameText:SetEnable(visible)
+			nameText.Visible = visible
+			log("[LobbyController] AvatarNameText visible=" .. tostring(visible))
+		else
+			log_warning("[LobbyController] AvatarNameText visibility target not found")
+		end
+	end
+
+	method void SaveProfileModal()
+		local saveNickname = self.currentProfileNickname
+		if self.modalNicknameInput ~= nil then
+			saveNickname = self.modalNicknameInput.Text
+		end
+		saveNickname = self:NormalizeProfileNickname(saveNickname)
+		self.currentProfileNickname = saveNickname
+		if self.currentProfileTitle == nil or self.currentProfileTitle == "" then
+			self.currentProfileTitle = "신입 수사관"
+		end
+
+		self:ApplyNickname(saveNickname)
+		self:RefreshProfileModalFields()
+		_ProfileStorageLogic:RequestSaveAllProfile(saveNickname, self.currentProfileTitle, self.selectedProfileRuid)
+		log("[LobbyController] ProfileModal saved nickname=" .. saveNickname .. " title=" .. self.currentProfileTitle .. " ruid=" .. self.selectedProfileRuid)
+		self:CloseProfileModal()
+	end
+
+	method void SelectProfileSlot(string ruid)
+		-- Selects a profile image and previews it. SaveButton commits nickname/image/title together.
+		log("[LobbyController] SelectProfileSlot ruid=" .. ruid)
+		self:ApplyProfileImage(ruid)
+		self:RefreshProfileModalFields()
+	end
+
+	method void UpdateSelectedIndicators()
+		-- Shows gold border on the selected slot, hides borders on others.
+		local slots = {
+			{ border = self.profileSlot1Border, ruid = "ef1ba8b05d0a4d9e8d4033c9e797f708" },
+			{ border = self.profileSlot2Border, ruid = "ba1ad8baabb5492b8030f62062bac632" },
+			{ border = self.profileSlot3Border, ruid = "889918f7b8454392867298470d9ed43a" },
+			{ border = self.profileSlot4Border, ruid = "f54ce587be5a462d846f64b2de315e3d" },
+		}
+		for _, entry in ipairs(slots) do
+			local border = entry.border
+			if border ~= nil and isvalid(border) then
+				local spriteComp = border.SpriteGUIRendererComponent
+				if spriteComp ~= nil then
+					if entry.ruid == self.selectedProfileRuid then
+						spriteComp:SetAlpha(1)
+					else
+						spriteComp:SetAlpha(0)
+					end
+				end
+			end
+		end
+		log("[LobbyController] UpdateSelectedIndicators selected=" .. self.selectedProfileRuid)
+	end
+
+	method void OnEndPlay()
+		-- Disconnects keyboard, button handlers, and cancels any pending timer.
+		if self.keyDownHandler ~= nil then
+			self.Entity:DisconnectEvent(KeyDownEvent, self.keyDownHandler)
+			self.keyDownHandler = nil
+		end
+
+		if self.avatarCheckTimerId ~= 0 then
+			_TimerService:ClearTimer(self.avatarCheckTimerId)
+			self.avatarCheckTimerId = 0
+		end
+
+		-- Disconnect profile modal handlers.
+		self:CloseProfileModal()
+		self:CloseCreateRoomModal()
+		self:DisconnectInvestigationRoomSearchEvents()
+		self:DisconnectExternalPopupEvents()
+
+		local base = "/ui/UI_Lobby/LobbyRoot"
+		local buttonBase = base .. "/ButtonGroup"
+		local ent
+
+		if self.btnProfileHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(base .. "/ProfileFrame")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnProfileHandler) end
+			self.btnProfileHandler = nil
+		end
+		if self.btnFriendHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/친구")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnFriendHandler) end
+			self.btnFriendHandler = nil
+		end
+		if self.btnCodexHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/도감")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnCodexHandler) end
+			self.btnCodexHandler = nil
+		end
+		if self.btnBagHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/가방")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnBagHandler) end
+			self.btnBagHandler = nil
+		end
+		if self.btnAchievementHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/업적")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnAchievementHandler) end
+			self.btnAchievementHandler = nil
+		end
+		if self.btnStartHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/start")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnStartHandler) end
+			self.btnStartHandler = nil
+		end
+		if self.btnCreateHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/방만들기")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnCreateHandler) end
+			self.btnCreateHandler = nil
+		end
+		if self.btnFindHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/찾기")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnFindHandler) end
+			self.btnFindHandler = nil
+		end
+		if self.btnShopHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/상점")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnShopHandler) end
+			self.btnShopHandler = nil
+		end
+		if self.btnAlertHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/알림")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnAlertHandler) end
+			self.btnAlertHandler = nil
+		end
+		if self.btnSettingsHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/설정")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnSettingsHandler) end
+			self.btnSettingsHandler = nil
+		end
+		if self.btnSettingsCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnSettingsCloseHandler) end
+			self.btnSettingsCloseHandler = nil
+		end
+		if self.btnSettingsInfoTabHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/TabBar/TabInfo")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnSettingsInfoTabHandler) end
+			self.btnSettingsInfoTabHandler = nil
+		end
+		if self.btnSettingsSoundTabHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/TabBar/TabSound")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnSettingsSoundTabHandler) end
+			self.btnSettingsSoundTabHandler = nil
+		end
+		if self.btnSettingsMuteHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/SettingsPopup/Panel/ContentSound/MuteBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnSettingsMuteHandler) end
+			self.btnSettingsMuteHandler = nil
+		end
+		if self.btnMatchCancelHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(buttonBase .. "/Matchmaking/Box/CancelBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnMatchCancelHandler) end
+			self.btnMatchCancelHandler = nil
+		end
+
+		self.avatarCache = nil
+		self.nameTextCache = nil
+		self.fallbackCache = nil
+	end
+
+end

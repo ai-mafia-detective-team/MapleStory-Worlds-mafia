@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://a3f10ca220714ddc9c7ec5788731f0d4",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/a3f10ca220714ddc9c7ec5788731f0d4/639176985160581189",
+      "upload_hash": "A4DF58F0ED8EA36D74B5AA0B7820F3ADDD7D28D0A281B1A0ED02CF391849C1CE",
+      "name": "초대2",
+      "resource_guid": "a3f10ca220714ddc9c7ec5788731f0d4",
+      "resource_version": "6a38b6d42c6a274be88a7e79"
+    }
+  }
+}
