@@ -1,0 +1,109 @@
+@Logic
+script ProfileStorageLogic extends Logic
+
+	property string DEFAULT_NICKNAME = "수사관"
+	property string DEFAULT_TITLE = "신입 수사관"
+	property string DEFAULT_RUID = "ef1ba8b05d0a4d9e8d4033c9e797f708"
+	property any storage = nil
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- Initializes the UserDataStorage handle for profile persistence.
+		self.storage = _DataStorageService:GetUserDataStorage("PlayerProfile")
+		log("[ProfileStorageLogic] OnBeginPlay storage=PlayerProfile initialized")
+	end
+
+	@ExecSpace("Server")
+	method void RequestLoadAllProfile()
+		-- Loads nickname, title, and profile image RUID for the calling client.
+		local userId = senderUserId
+		log("[ProfileStorageLogic] RequestLoadAllProfile userId=" .. tostring(userId))
+
+		local userStorage = _DataStorageService:GetUserDataStorage(tostring(userId))
+		local errN, nickname = userStorage:GetAndWait("player_nickname_v1")
+		local nicknameSource = "userStorage"
+		if errN ~= 0 or nickname == nil or nickname == "" then
+			local legacyErrN, legacyNickname = self.storage:GetAndWait("player_nickname_v1_" .. tostring(userId))
+			if legacyErrN == 0 and legacyNickname ~= nil and legacyNickname ~= "" then
+				nickname = legacyNickname
+				nicknameSource = "profileStorage"
+			end
+		end
+		local errT, title = userStorage:GetAndWait("player_title_v1")
+		if errT ~= 0 or title == nil or title == "" then
+			local legacyErrT, legacyTitle = self.storage:GetAndWait("player_title_v1_" .. tostring(userId))
+			if legacyErrT == 0 and legacyTitle ~= nil and legacyTitle ~= "" then
+				title = legacyTitle
+			end
+		end
+
+		local errR, ruid = userStorage:GetAndWait("selected_profile_image_ruid_v1")
+		if errR ~= 0 or ruid == nil or ruid == "" then
+			local legacyErrR, legacyRuid = self.storage:GetAndWait("player_profile_image_v1_" .. tostring(userId))
+			if legacyErrR == 0 and legacyRuid ~= nil and legacyRuid ~= "" then
+				ruid = legacyRuid
+			end
+		end
+
+		if nickname == nil or nickname == "" then
+			nickname = self.DEFAULT_NICKNAME
+			nicknameSource = "default"
+		end
+		if title == nil or title == "" then title = self.DEFAULT_TITLE end
+		if ruid == nil or ruid == "" then ruid = self.DEFAULT_RUID end
+
+		local validRuids = {
+			"ef1ba8b05d0a4d9e8d4033c9e797f708",
+			"ba1ad8baabb5492b8030f62062bac632",
+			"889918f7b8454392867298470d9ed43a",
+			"f54ce587be5a462d846f64b2de315e3d",
+		}
+		local ruidValid = false
+		for _, v in ipairs(validRuids) do
+			if v == ruid then ruidValid = true end
+		end
+		if not ruidValid then ruid = self.DEFAULT_RUID end
+
+		log("[ProfileStorageLogic] Profile loaded nickname=" .. nickname .. " source=" .. nicknameSource .. " title=" .. title .. " ruid=" .. ruid)
+		self:DeliverAllProfileToClient(nickname, title, ruid, userId)
+	end
+
+	@ExecSpace("Client")
+	method void DeliverAllProfileToClient(string nickname, string title, string ruid)
+		-- Receives all 3 profile values on the client and applies them via LobbyController.
+		log("[ProfileStorageLogic] DeliverAllProfileToClient nickname=" .. nickname .. " title=" .. title .. " ruid=" .. ruid)
+		local lobbyEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobbyEntity == nil or isvalid(lobbyEntity) == false then
+			log_warning("[ProfileStorageLogic] /ui/UI_Lobby entity not found")
+			return
+		end
+		local controller = lobbyEntity:GetComponent("script.LobbyController")
+		if controller == nil then
+			log_warning("[ProfileStorageLogic] LobbyController component not found on /ui/UI_Lobby")
+			return
+		end
+		controller:ApplyAllProfile(nickname, title, ruid)
+		log("[ProfileStorageLogic] Profile delivered nickname=" .. nickname .. " title=" .. title .. " ruid=" .. ruid)
+	end
+
+	@ExecSpace("Server")
+	method void RequestSaveAllProfile(string nickname, string title, string ruid)
+		-- Saves all 3 profile values for the calling client.
+		local userId = senderUserId
+		log("[ProfileStorageLogic] RequestSaveAllProfile userId=" .. tostring(userId) .. " nickname=" .. nickname .. " title=" .. title .. " ruid=" .. ruid)
+		local saveNickname = nickname
+		if saveNickname == nil or saveNickname == "" then
+			saveNickname = self.DEFAULT_NICKNAME
+		end
+		local userStorage = _DataStorageService:GetUserDataStorage(tostring(userId))
+		userStorage:SetAsync("player_nickname_v1", saveNickname, nil)
+		userStorage:SetAsync("nickname_set_v1", "true", nil)
+		userStorage:SetAsync("player_title_v1", title, nil)
+		userStorage:SetAsync("selected_profile_image_ruid_v1", ruid, nil)
+		self.storage:SetAsync("player_nickname_v1_"      .. tostring(userId), saveNickname, nil)
+		self.storage:SetAsync("player_title_v1_"         .. tostring(userId), title,        nil)
+		self.storage:SetAsync("player_profile_image_v1_" .. tostring(userId), ruid,         nil)
+		log("[ProfileStorageLogic] Profile save dispatched nickname=" .. saveNickname .. " title=" .. title .. " ruid=" .. ruid)
+	end
+
+end

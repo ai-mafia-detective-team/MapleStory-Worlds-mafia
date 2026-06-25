@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://fbdeb2310525426ca6b746fdc0997bc0",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/fbdeb2310525426ca6b746fdc0997bc0/639176985160472953",
+      "upload_hash": "0300A8FE8AA621AA66EF4B1781D6BFD948EA868623184C01614ACD7B23807B05",
+      "name": "모달",
+      "resource_guid": "fbdeb2310525426ca6b746fdc0997bc0",
+      "resource_version": "6a38b6d4187369c88e899f49"
+    }
+  }
+}

@@ -1,0 +1,252 @@
+@Logic
+script IntroFlowController extends Logic
+
+	-- ⚠️ TEST ONLY: forces story every run. Revert to false before publishing.
+	property boolean DEBUG_FORCE_STORY = true
+
+	-- ⚠️ TEST ONLY: forces nickname setup regardless of saved nickname. Revert to false before publishing.
+	property boolean DEBUG_FORCE_NICKNAME_SETUP = true
+
+	-- ⚠️ TEST ONLY: treats saved nickname as absent so the setup screen always shows. Revert to false before publishing.
+	property boolean DEBUG_RESET_NICKNAME = false
+
+	property any storage = nil
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- Initializes DataStorage handle for per-user intro progress tracking.
+		self.storage = _DataStorageService:GetGlobalDataStorage("IntroProgress")
+		log("[IntroFlowController] OnBeginPlay server ready")
+	end
+
+	@ExecSpace("Server")
+	method void OnLogoFinished()
+		-- Client RPC from IntroSequenceController after logo Stage01-03 completes.
+		log("[IntroFlowController] Intro logo finished")
+		_MainFlowBgmController:LoadBgmSettingsForUser(tostring(senderUserId))
+		_MainFlowBgmController:SetCurrentFlowScreen("logo", senderUserId)
+		if self.storage == nil then
+			self.storage = _DataStorageService:GetGlobalDataStorage("IntroProgress")
+		end
+		local errorCode, val = self.storage:GetAndWait(tostring(senderUserId))
+		local seen = (errorCode == 0 and val == "true")
+		log("[IntroFlowController] HasSeenIntroStory result: seen=" .. tostring(seen) .. " errorCode=" .. tostring(errorCode) .. " DEBUG_FORCE=" .. tostring(self.DEBUG_FORCE_STORY))
+		if seen and self.DEBUG_FORCE_STORY == false then
+			log("[IntroFlowController] Story skipped because already seen")
+			self:CheckNicknameStep(senderUserId)
+		else
+			log("[IntroFlowController] Story started for first-time user")
+			self:StartStory(senderUserId)
+		end
+	end
+
+	@ExecSpace("Client")
+	method void StartStory()
+		-- Server dispatches to the target client to enable and attach the story controller.
+		_MainFlowBgmController:SetCurrentFlowScreen("story")
+		_MainFlowBgmController:PlayMainFlowBgm()
+		local storyUI = _EntityService:GetEntityByPath("/ui/UI_StorySequence")
+		if storyUI == nil or isvalid(storyUI) == false then
+			log_warning("[IntroFlowController] /ui/UI_StorySequence not found")
+			return
+		end
+		storyUI:SetEnable(true)
+		local ctrl = storyUI:GetComponent("script.StorySequenceController")
+		if ctrl == nil then
+			storyUI:AddComponent("script.StorySequenceController")
+		end
+	end
+
+	@ExecSpace("Server")
+	method void OnStoryFinished()
+		-- Client RPC from StorySequenceController when all cuts finish or skip is pressed.
+		-- Marks the intro story as seen in DataStorage, then proceeds to nickname step.
+		if self.storage == nil then
+			self.storage = _DataStorageService:GetGlobalDataStorage("IntroProgress")
+		end
+		local errorCode = self.storage:SetAndWait(tostring(senderUserId), "true")
+		if errorCode ~= 0 then
+			log_warning("[IntroFlowController] SetAndWait failed errorCode=" .. tostring(errorCode))
+		end
+		log("[IntroFlowController] Story marked as seen")
+		self:CheckNicknameStep(senderUserId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CheckNicknameStep(string userId)
+		-- Checks if the user has a nickname; routes to nickname setup or lobby.
+		log("[IntroFlowController] CheckNicknameStep called")
+		log("[IntroFlowController] DEBUG_FORCE_NICKNAME_SETUP=" .. tostring(self.DEBUG_FORCE_NICKNAME_SETUP))
+		local hasNickname = self:HasNickname(userId)
+		log("[IntroFlowController] HasNickname result=" .. tostring(hasNickname))
+		if self.DEBUG_RESET_NICKNAME then
+			log("[IntroFlowController] DEBUG_RESET_NICKNAME=true: overriding hasNickname to false")
+			hasNickname = false
+		end
+		if hasNickname and self.DEBUG_FORCE_NICKNAME_SETUP == false then
+			log("[IntroFlowController] Nickname setup skipped because nickname already exists")
+			-- Fetch existing nickname to pass to lobby.
+			local userStorage = _DataStorageService:GetUserDataStorage(userId)
+			local ec, nick = userStorage:GetAndWait("player_nickname_v1")
+			local lobbyNick = "수사관"
+			if ec == 0 and nick ~= nil and nick ~= "" then
+				lobbyNick = nick
+			end
+			self:ShowLobby(lobbyNick, userId)
+		else
+			log("[IntroFlowController] Nickname setup required")
+			log("[IntroFlowController] ShowNicknameSetup requested")
+			self:ShowNicknameSetup(userId)
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean HasNickname(string userId)
+		-- Returns true only when BOTH storage keys exist and nickname is ≥ 2 chars.
+		local userStorage = _DataStorageService:GetUserDataStorage(userId)
+		local ec1, setVal = userStorage:GetAndWait("nickname_set_v1")
+		local ec2, nickVal = userStorage:GetAndWait("player_nickname_v1")
+		log("[IntroFlowController] HasNickname storage nickname_set_v1=" .. tostring(setVal) .. " player_nickname_v1=" .. tostring(nickVal) .. " errorCode1=" .. tostring(ec1) .. " errorCode2=" .. tostring(ec2))
+		if ec1 ~= 0 or setVal ~= "true" then return false end
+		if ec2 ~= 0 or nickVal == nil or nickVal == "" then return false end
+		if #nickVal < 2 then return false end
+		return true
+	end
+
+	@ExecSpace("Client")
+	method void ShowNicknameSetup()
+		-- Server dispatches to the target client to directly show NicknameRoot.
+		-- NicknameSetupController is pre-attached in UI_NicknameSetup.ui — no AddComponent.
+		_MainFlowBgmController:SetCurrentFlowScreen("nickname")
+		_MainFlowBgmController:PlayMainFlowBgm()
+		log("[IntroFlowController] ShowNicknameSetupClient fired")
+		local nicknameUI = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup")
+		log("[IntroFlowController] UI_NicknameSetup found=" .. tostring(nicknameUI ~= nil and isvalid(nicknameUI)))
+		if nicknameUI == nil or isvalid(nicknameUI) == false then
+			log_warning("[IntroFlowController] /ui/UI_NicknameSetup not found — aborting")
+			return
+		end
+		nicknameUI:SetEnable(true)
+
+		local nicknameRoot = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup/NicknameRoot")
+		log("[IntroFlowController] NicknameRoot found=" .. tostring(nicknameRoot ~= nil and isvalid(nicknameRoot)))
+		if nicknameRoot == nil or isvalid(nicknameRoot) == false then
+			log_warning("[IntroFlowController] /ui/UI_NicknameSetup/NicknameRoot not found — aborting")
+			return
+		end
+
+		log("[IntroFlowController] NicknameRoot before visible=" .. tostring(nicknameRoot.Visible) .. " enable=" .. tostring(nicknameRoot.Enable))
+		nicknameRoot:SetEnable(true)
+		nicknameRoot.Visible = true
+		log("[IntroFlowController] NicknameRoot after visible=" .. tostring(nicknameRoot.Visible) .. " enable=" .. tostring(nicknameRoot.Enable))
+
+		local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
+		log("[IntroFlowController] NicknameSetupController found=" .. tostring(ctrl ~= nil))
+		if ctrl ~= nil then
+			---@type NicknameSetupController
+			local typedCtrl = ctrl
+			typedCtrl:ShowNicknameSetup()
+		end
+	end
+
+	@ExecSpace("Server")
+	method void OnNicknameSetupFinished(string nickname)
+		-- Client RPC from NicknameSetupController after the user confirms their nickname.
+		-- Saves the nickname to UserDataStorage, then shows the lobby.
+		log("[IntroFlowController] OnNicknameSetupFinished nickname=" .. nickname)
+		local userId = senderUserId
+		local userStorage = _DataStorageService:GetUserDataStorage(tostring(userId))
+		local data = {}
+		data["player_nickname_v1"] = nickname
+		data["nickname_set_v1"] = "true"
+		local ec, _ = userStorage:BatchSetAndWait(data)
+		if ec ~= 0 then
+			log_warning("[IntroFlowController] Nickname save failed ec=" .. tostring(ec))
+			self:ShowNicknameSaveError(userId)
+			return
+		end
+		log("[IntroFlowController] Nickname saved: " .. nickname)
+		self:ShowLobby(nickname, userId)
+	end
+
+	@ExecSpace("Client")
+	method void ShowNicknameSaveError()
+		-- Server dispatches to the client to display a save-failure message in the nickname UI.
+		local nicknameUI = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup")
+		if nicknameUI ~= nil and isvalid(nicknameUI) then
+			local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
+			if ctrl ~= nil then
+				---@type NicknameSetupController
+				local typedCtrl = ctrl
+				typedCtrl:ShowError("저장에 실패했습니다. 다시 시도해주세요.")
+			end
+		end
+	end
+
+	@ExecSpace("Client")
+	method void ShowLobby(string nickname)
+		-- Server dispatches to the target client to restore game UI and show lobby.
+		_MainFlowBgmController:SetCurrentFlowScreen("lobby")
+		_MainFlowBgmController:PlayMainFlowBgm()
+		local introUI = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		if introUI ~= nil and isvalid(introUI) then
+			introUI:SetEnable(false)
+		end
+
+		local storyUI = _EntityService:GetEntityByPath("/ui/UI_StorySequence")
+		if storyUI ~= nil and isvalid(storyUI) then
+			storyUI:SetEnable(false)
+		end
+
+		-- Hide nickname UI if it was shown during this flow.
+		local nicknameUI = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup")
+		if nicknameUI ~= nil and isvalid(nicknameUI) then
+			local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
+			if ctrl ~= nil then
+				---@type NicknameSetupController
+				local typedCtrl = ctrl
+				typedCtrl:HideNicknameSetup()
+				log("[IntroFlowController] Lobby shown after nickname setup")
+			end
+		end
+
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby ~= nil and isvalid(lobby) then
+			if lobby.Enable == false then
+				lobby:SetEnable(true)
+			end
+			lobby.Visible = true
+			-- LobbyController.OnBeginPlay fires synchronously on SetEnable(true) above.
+			-- Now call ShowLobby(nickname) to enable LobbyRoot and apply the nickname.
+			local lobbyCtrl = lobby:GetComponent("script.LobbyController")
+			if lobbyCtrl ~= nil then
+				---@type LobbyController
+				local typedLobbyCtrl = lobbyCtrl
+				typedLobbyCtrl:ShowLobby(nickname)
+				log("[IntroFlowController] LobbyController.ShowLobby called")
+			else
+				log_warning("[IntroFlowController] LobbyController not found on /ui/UI_Lobby")
+			end
+		end
+
+		local defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
+		if defaultGroup ~= nil and isvalid(defaultGroup) then
+			if defaultGroup.Enable == false then
+				defaultGroup:SetEnable(true)
+			end
+			defaultGroup.Visible = true
+		end
+
+		local player = _UserService.LocalPlayer
+		if player == nil then
+			player = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
+		end
+		if player ~= nil and isvalid(player) then
+			player:SetEnable(true)
+			player.Visible = true
+		end
+
+		log("[IntroFlowController] Lobby shown")
+	end
+
+end

@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://f911a7b1eff3492892c0ad04305acb03",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/f911a7b1eff3492892c0ad04305acb03/639178829324438478",
+      "upload_hash": "DAA0F47AD699BA6A0E3B663804EA809C27D79B0A74E54C5D91C226CADDCB2BC3",
+      "name": "제목친구",
+      "resource_guid": "f911a7b1eff3492892c0ad04305acb03",
+      "resource_version": "6a3b87349c3c6c308bfe5a25"
+    }
+  }
+}

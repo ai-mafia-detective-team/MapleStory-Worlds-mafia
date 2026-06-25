@@ -1,0 +1,65 @@
+@Component
+@ExecSpace("ClientOnly")
+script IntroSequenceBootstrap extends Component
+
+	property integer timerId = 0
+
+	property number elapsed = 0
+
+	property boolean attached = false
+
+	method void OnBeginPlay()
+		-- Polls briefly because UI entities can appear after logic initialization.
+		log("[IntroSequenceBootstrap] OnBeginPlay")
+		self.elapsed = 0
+		self.attached = false
+		self:TryAttach()
+
+		if self.attached == false then
+			self.timerId = _TimerService:SetTimerRepeat(function()
+				self.elapsed = self.elapsed + 0.1
+				self:TryAttach()
+
+				if self.attached == true or self.elapsed >= 5 then
+					if self.timerId > 0 then
+						_TimerService:ClearTimer(self.timerId)
+						self.timerId = 0
+					end
+
+					if self.attached == false then
+						log_warning("[IntroSequenceBootstrap] /ui/UI_IntroSequence was not found")
+					end
+				end
+			end, 0.1)
+		end
+	end
+
+	method void TryAttach()
+		-- Adds IntroSequenceController to /ui/UI_IntroSequence when it exists.
+		local intro = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		if intro == nil or isvalid(intro) == false then
+			return
+		end
+
+		intro:SetEnable(true)
+
+		local existing = intro:GetComponent("script.IntroSequenceController")
+		if existing == nil then
+			intro:AddComponent("script.IntroSequenceController")
+			log("[IntroSequenceBootstrap] IntroSequenceController attached")
+		else
+			log("[IntroSequenceBootstrap] IntroSequenceController already exists")
+		end
+
+		self.attached = true
+	end
+
+	method void OnEndPlay()
+		-- Clears polling when play mode ends.
+		if self.timerId > 0 then
+			_TimerService:ClearTimer(self.timerId)
+			self.timerId = 0
+		end
+	end
+
+end
