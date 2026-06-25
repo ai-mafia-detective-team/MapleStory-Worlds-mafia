@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
@@ -216,56 +216,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# MSW local agent / MCP state
-.agents/
-.codex/
-.mswai/
-.claude/
-.builder-work/
-.mcp.json
-skills-lock.json
-AGENTS.md
-CLAUDE.md
-
-# MSW IDE / editor local settings
-.vscode/
-.idea/
-.cursor/
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# MSW logs, caches, and temporary files
-logs/
-log/
-tmp/
-temp/
-.tmp/
-cache/
-*.tmp
-*.temp
-*.bak
-*.backup
-*.swp
-*.swo
-
-# Node / local tooling output
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# One-off local builder/audit scripts created while editing the project
-/build_*.cjs
-/check_*.cjs
-/patch_*.cjs
-
-# MSW generated/editor-local artifacts
-*.codeblock
-*.directory
-
-# MSW engine API dump; project content remains tracked under RootDesk, Global, map, and ui.
-Environment/NativeScripts/
