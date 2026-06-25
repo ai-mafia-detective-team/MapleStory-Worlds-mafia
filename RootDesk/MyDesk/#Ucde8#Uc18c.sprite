@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://7c73ef04f67047549963c896340330ff",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/7c73ef04f67047549963c896340330ff/639176985160398152",
+      "upload_hash": "2F0EA5F345EEF3C5FAE1224140930777871614ADC0190BF13E02A82A27AEA128",
+      "name": "취소",
+      "resource_guid": "7c73ef04f67047549963c896340330ff",
+      "resource_version": "6a38b6d4a43134e1b8a3fac4"
+    }
+  }
+}
