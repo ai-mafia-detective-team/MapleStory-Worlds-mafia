@@ -1,0 +1,257 @@
+@Component
+@ExecSpace("ClientOnly")
+script IntroSequenceController extends Component
+
+	property Entity introRoot = nil
+
+	property Entity stage01 = nil
+
+	property Entity stage01SpriteEntity = nil
+
+	property Entity stage02 = nil
+
+	property Entity stage02SpriteEntity = nil
+
+	property Entity stage03 = nil
+
+	property Entity stage03SpriteEntity = nil
+
+	property Entity lobby = nil
+
+	property Entity defaultGroup = nil
+
+	property Entity mapleMapPlayer = nil
+
+	property SpriteGUIRendererComponent stage01Sprite = nil
+
+	property SpriteGUIRendererComponent stage02Sprite = nil
+
+	property SpriteGUIRendererComponent logoSprite = nil
+
+	property integer timerId = 0
+
+	property number elapsed = 0
+
+	property boolean completed = false
+
+	method void OnBeginPlay()
+		-- Resolves entities, applies initial state, then starts the logo timeline.
+		log("[IntroSequenceController] OnBeginPlay")
+		self:ResolveEntities()
+		self:ApplyInitialState()
+		self:StartTimeline()
+	end
+
+	method void ResolveEntities()
+		-- Looks up logo UI entities by path.
+		self.introRoot = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		self.stage01 = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage01_Background")
+		self.stage01SpriteEntity = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage01_Background/UISprite")
+		self.stage02 = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage02_DarkBackground")
+		self.stage02SpriteEntity = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage02_DarkBackground/UISprite")
+		self.stage03 = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage03_MafiaLogo")
+		self.stage03SpriteEntity = _EntityService:GetEntityByPath("/ui/UI_IntroSequence/Stage03_MafiaLogo/UISprite")
+		self.lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		self.defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
+		self.mapleMapPlayer = _UserService.LocalPlayer
+		if self.mapleMapPlayer == nil then
+			self.mapleMapPlayer = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
+		end
+
+		self.stage01Sprite = self:GetSpriteComponent(self.stage01SpriteEntity)
+		self.stage02Sprite = self:GetSpriteComponent(self.stage02SpriteEntity)
+		self.logoSprite = self:GetSpriteComponent(self.stage03SpriteEntity)
+
+		self:LogFound("IntroRoot", self.introRoot)
+		self:LogFound("Stage01", self.stage01)
+		self:LogFound("Stage02", self.stage02)
+		self:LogFound("Stage03", self.stage03)
+		self:LogFound("UI_Lobby", self.lobby)
+		self:LogFound("LocalPlayer", self.mapleMapPlayer)
+	end
+
+	method SpriteGUIRendererComponent GetSpriteComponent(Entity entity)
+		-- Returns the SpriteGUIRendererComponent on the entity, or nil.
+		if entity == nil or isvalid(entity) == false then return nil end
+		return entity.SpriteGUIRendererComponent
+	end
+
+	method void LogFound(string label, any target)
+		-- Logs whether a required entity was found.
+		log("[IntroSequenceController] " .. label .. " found: " .. tostring(target ~= nil))
+	end
+
+	method void ApplyInitialState()
+		-- Hides gameplay and shows Stage01 to begin the logo sequence.
+		self.completed = false
+		self.elapsed = 0
+		self:EnsureGameplayHidden()
+		self:SetEntityVisible(self.introRoot, true)
+		self:SetStage01Visible(true)
+		self:SetStage02Visible(false)
+		self:SetStage03Visible(false, 0)
+		self:SetEntityVisible(self.lobby, false)
+		log("[IntroSequenceController] Intro logo started")
+	end
+
+	method void StartTimeline()
+		-- Starts the per-frame timer that drives the logo animation.
+		if self.timerId > 0 then
+			_TimerService:ClearTimer(self.timerId)
+			self.timerId = 0
+		end
+		local previousTime = _UtilLogic.ElapsedSeconds
+		self.timerId = _TimerService:SetTimerRepeat(function()
+			local now = _UtilLogic.ElapsedSeconds
+			local delta = now - previousTime
+			previousTime = now
+			self:UpdateTimeline(delta)
+		end, 1 / 60)
+	end
+
+	method void UpdateTimeline(number delta)
+		-- Per-frame logo animation: Stage01 → Stage02 → Stage03 (fade in/out) → FinishLogo.
+		if self.completed then return end
+		self:EnsureGameplayHidden()
+
+		self.elapsed = self.elapsed + delta
+		local t = self.elapsed
+
+		if t < 1.8 then
+			self:SetStage01Visible(true)
+			self:SetStage02Visible(false)
+			self:SetStage03Visible(false, 0)
+			return
+		end
+
+		self:SetStage01Visible(false)
+		self:SetStage02Visible(true)
+
+		if t < 2.2 then
+			self:SetStage03Visible(false, 0)
+			return
+		end
+
+		if t < 3.0 then
+			self:SetStage03Visible(true, (t - 2.2) / 0.8)
+			return
+		end
+
+		if t < 4.2 then
+			self:SetStage03Visible(true, 1)
+			return
+		end
+
+		if t < 5.0 then
+			self:SetStage03Visible(true, 1 - ((t - 4.2) / 0.8))
+			return
+		end
+
+		self:SetStage03Visible(false, 0)
+		self:SetStage02Visible(true)
+
+		if t < 5.3 then
+			return
+		end
+
+		self:FinishLogo()
+	end
+
+	method void FinishLogo()
+		-- Called once when the logo animation completes; notifies IntroFlowController.
+		if self.completed then return end
+		self.completed = true
+		if self.timerId > 0 then
+			_TimerService:ClearTimer(self.timerId)
+			self.timerId = 0
+		end
+		self:SetStage01Visible(false)
+		self:SetStage02Visible(false)
+		self:SetStage03Visible(false, 0)
+		log("[IntroSequenceController] Intro logo finished")
+		_IntroFlowController:OnLogoFinished()
+	end
+
+	method void EnsureGameplayHidden()
+		-- Hides lobby, DefaultGroup, and player every frame during the logo sequence.
+		if self.completed then return end
+
+		if self.lobby == nil or isvalid(self.lobby) == false then
+			self.lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		end
+		if self.lobby ~= nil and isvalid(self.lobby) then
+			self.lobby.Visible = false
+		end
+
+		if self.defaultGroup == nil or isvalid(self.defaultGroup) == false then
+			self.defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
+		end
+		if self.defaultGroup ~= nil and isvalid(self.defaultGroup) then
+			if self.defaultGroup.Enable == false then
+				self.defaultGroup:SetEnable(true)
+			end
+			self.defaultGroup.Visible = false
+		end
+
+		if self.mapleMapPlayer == nil or isvalid(self.mapleMapPlayer) == false then
+			self.mapleMapPlayer = _UserService.LocalPlayer
+			if self.mapleMapPlayer == nil then
+				self.mapleMapPlayer = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
+			end
+		end
+		if self.mapleMapPlayer ~= nil and isvalid(self.mapleMapPlayer) then
+			self.mapleMapPlayer.Visible = false
+			self.mapleMapPlayer:SetEnable(false)
+		end
+	end
+
+	method void SetStage01Visible(boolean visible)
+		-- Shows or hides Stage01 (solid background).
+		self:SetEntityVisible(self.stage01, visible)
+		self:SetEntityVisible(self.stage01SpriteEntity, visible)
+		self:SetSpriteAlpha(self.stage01Sprite, 1)
+	end
+
+	method void SetStage02Visible(boolean visible)
+		-- Shows or hides Stage02 (dark background).
+		self:SetEntityVisible(self.stage02, visible)
+		self:SetEntityVisible(self.stage02SpriteEntity, visible)
+		self:SetSpriteAlpha(self.stage02Sprite, 1)
+	end
+
+	method void SetStage03Visible(boolean visible, number alpha)
+		-- Shows or hides Stage03 (Mafia Logo) with a given fade alpha.
+		self:SetSpriteAlpha(self.logoSprite, alpha)
+		self:SetEntityVisible(self.stage03SpriteEntity, true)
+		self:SetEntityVisible(self.stage03, visible)
+	end
+
+	method void SetEntityEnabled(Entity entity, boolean enabled)
+		-- Safe SetEnable wrapper.
+		if entity == nil or isvalid(entity) == false then return end
+		entity:SetEnable(enabled)
+	end
+
+	method void SetEntityVisible(Entity entity, boolean visible)
+		-- Safe Visible setter; enables entity first if needed.
+		if entity == nil or isvalid(entity) == false then return end
+		if entity.Enable == false then entity:SetEnable(true) end
+		entity.Visible = visible
+	end
+
+	method void SetSpriteAlpha(SpriteGUIRendererComponent sprite, number alpha)
+		-- Safe alpha setter on a SpriteGUIRendererComponent.
+		if sprite == nil or isvalid(sprite.Entity) == false then return end
+		alpha = math.max(0, math.min(1, alpha))
+		sprite:SetAlpha(alpha)
+	end
+
+	method void OnEndPlay()
+		-- Clears the timeline timer.
+		if self.timerId > 0 then
+			_TimerService:ClearTimer(self.timerId)
+			self.timerId = 0
+		end
+	end
+
+end

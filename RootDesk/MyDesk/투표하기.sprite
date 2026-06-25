@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://6bc8b62c1a52412eb7a970529a4d1ab8",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/6bc8b62c1a52412eb7a970529a4d1ab8/639176985160143425",
+      "upload_hash": "4AA6415D47D1260641FAE6C6EE71E10C0E62945A0EDFB0C34291C4AF4EAEA875",
+      "name": "투표하기",
+      "resource_guid": "6bc8b62c1a52412eb7a970529a4d1ab8",
+      "resource_version": "6a38b6d4da7c2c34ebc4b8a4"
+    }
+  }
+}
