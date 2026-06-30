@@ -1,0 +1,2812 @@
+@Logic
+@ExecSpace("ClientOnly")
+script MafiaUIFlow extends Logic
+
+property Entity lobbyRoot = nil
+property Entity dayRoot = nil
+property Entity legacyRoot = nil
+
+property any lobbyReadyButton = nil
+property any lobbyReadyText = nil
+property any lobbyInviteButton = nil
+property any lobbyPlayerCountText = nil
+property any lobbyReadyStatusText = nil
+property any lobbyReadyHintText = nil
+property any lobbyChatLogText = nil
+property any lobbyChatScroll = nil
+property any lobbyChatInput = nil
+property any lobbyChatSendButton = nil
+property Entity lobbyOtherChatBubble = nil
+property any lobbyOtherChatNameText = nil
+property any lobbyOtherChatMessageText = nil
+property Entity lobbyOwnChatBubble = nil
+property any lobbyOwnChatMessageText = nil
+property table lobbyChatSlotRoots = nil
+property table lobbyChatSlotFrames = nil
+property table lobbyChatSlotOtherBubbles = nil
+property table lobbyChatSlotOtherNames = nil
+property table lobbyChatSlotOtherMessages = nil
+property table lobbyChatSlotOwnBubbles = nil
+property table lobbyChatSlotOwnMessages = nil
+property integer lobbyChatSlotCount = 8
+property integer lobbyChatBubbleScrollOffset = 0
+property integer lobbyChatBubbleTotalCount = 0
+
+property table lobbyAvatarEntities = nil
+property table lobbyRoomTexts = nil
+property table cachedLobbySeats = nil
+
+property any dayPlayerCountText = nil
+property any dayText = nil
+property any dayTimerText = nil
+property any dayPhaseTitleText = nil
+property any dayPhaseDescriptionText = nil
+property any dayChatLogText = nil
+property any dayChatScroll = nil
+property any dayVoteStatusText = nil
+property any dayVoteHintText = nil
+property any dayChatInput = nil
+property any dayChatSendButton = nil
+property any daySkipButton = nil
+property any nightChatLogText = nil
+property any nightChatScroll = nil
+property any nightChatInput = nil
+property any nightChatSendButton = nil
+
+property any readyClickHandler = nil
+property any inviteClickHandler = nil
+property any lobbyChatSubmitHandler = nil
+property any lobbyChatClickHandler = nil
+property any lobbyChatValueChangeHandler = nil
+property any dayChatSubmitHandler = nil
+property any dayChatClickHandler = nil
+property any dayChatValueChangeHandler = nil
+property any nightChatSubmitHandler = nil
+property any nightChatClickHandler = nil
+property any nightChatValueChangeHandler = nil
+property any daySkipClickHandler = nil
+
+property number refreshAccumulator = 0.0
+property integer cachedPhase = -1
+property boolean uiResolved = false
+property any readyTween = nil
+property string lastLobbyChatLog = "__UNSET__"
+property string lastDayChatLog = "__UNSET__"
+property string lastNightChatLog = "__UNSET__"
+property string lastLobbySentMessage = ""
+property string lobbyChatDraft = ""
+property string lobbyChatLastNonEmptyDraft = ""
+property string dayChatDraft = ""
+property string dayChatLastNonEmptyDraft = ""
+property string nightChatDraft = ""
+property string nightChatLastNonEmptyDraft = ""
+
+property any lobbyScrollUpButton = nil
+property any lobbyScrollDownButton = nil
+property Entity lobbyScrollTrack = nil
+property Entity lobbyScrollRail = nil
+property Entity lobbyScrollHitArea = nil
+property any lobbyScrollThumb = nil
+property Entity lobbyScrollThumbGlow = nil
+property Entity lobbyScrollThumbCore = nil
+property any lobbyScrollThumbSmall = nil
+property any scrollUpClickHandler = nil
+property any scrollDownClickHandler = nil
+property any lobbyMouseScrollHandler = nil
+property any lobbyScrollThumbDragHandler = nil
+property any lobbyScrollThumbDownHandler = nil
+property any lobbyScrollThumbUpHandler = nil
+property any lobbyScrollTrackDownHandler = nil
+property any lobbyScrollHitDownHandler = nil
+property any lobbyScrollHitDragHandler = nil
+property any lobbyScreenTouchHandler = nil
+property any lobbyScreenTouchHoldHandler = nil
+property any lobbyScreenTouchReleaseHandler = nil
+property table phaseScrollUpHandlers = nil
+property table phaseScrollDownHandlers = nil
+property table phaseScrollThumbDownHandlers = nil
+property table phaseScrollThumbDragHandlers = nil
+property table phaseScrollThumbUpHandlers = nil
+property table phaseScrollTrackDownHandlers = nil
+property boolean lobbyScrollThumbDragging = false
+property boolean lobbyScrollPointerActive = false
+property integer lobbyScrollPointerId = 0
+property number lobbyScrollThumbBottomY = -191
+property number lobbyScrollThumbTopY = 200
+property number lobbyScrollThumbTargetY = -191
+property number lobbyScrollThumbCurrentY = -191
+
+property any invitePanel = nil
+property any inviteSearchInput = nil
+property any inviteSearchHint = nil
+property table inviteSlotTexts = nil
+property table inviteFilteredPlayers = nil
+property table inviteCheckedPlayers = nil
+property integer inviteScrollOffset = 0
+property any inviteCloseBtn4 = nil
+property any inviteCloseBtn6 = nil
+property any inviteConfirmBtn = nil
+property any inviteScrollUpBtn = nil
+property any inviteScrollDownBtn = nil
+property Entity inviteScrollThumb = nil
+property any inviteCloseHandler4 = nil
+property any inviteCloseHandler6 = nil
+property any inviteConfirmHandler = nil
+property any inviteScrollUpHandler = nil
+property any inviteScrollDownHandler = nil
+property any inviteSearchHandler = nil
+
+property Entity roomSettingsPanel = nil
+property any roomSettingsIconButton = nil
+property any roomTitleInput = nil
+property any roomPrivateToggleButton = nil
+property any roomPrivateSwitchButton = nil
+property Entity roomPrivateCheckSprite = nil
+property Entity roomPrivateLegacyCheckSprite = nil
+property any roomPasswordInput = nil
+property any roomCloseButton = nil
+property any roomCancelButton = nil
+property any roomConfirmButton = nil
+property table roomPlayerButtons = nil
+property table roomPlayerButtonTexts = nil
+property table roomPlayerVisuals = nil
+property table roomMafiaButtons = nil
+property table roomMafiaButtonTexts = nil
+property table roomMafiaVisuals = nil
+property any roomSettingsIconHandler = nil
+property any roomPrivateToggleHandler = nil
+property any roomPrivateSwitchHandler = nil
+property any roomCloseHandler = nil
+property any roomCancelHandler = nil
+property any roomConfirmHandler = nil
+property any roomPlayer6Handler = nil
+property any roomPlayer7Handler = nil
+property any roomPlayer8Handler = nil
+property any roomMafia1Handler = nil
+property any roomMafia2Handler = nil
+property any roomMafia3Handler = nil
+property boolean roomSettingPrivate = true
+property integer roomSettingMaxPlayers = 8
+property integer roomSettingMafiaCount = 2
+property string roomSettingNormalRuid = "55e6a19fb39c4b37be46ca384b7425a0"
+property string roomSettingSelectedRuid = "bb32d1d9b7804884a9d42178fc8ed6e6"
+property string roomCheckOffRuid = "450d8be65a494b58accf7a5c1f9541d9"
+property string roomCheckOnRuid = "1b2a5fa1d9434bbba21c87ba798cd725"
+
+property Entity votePanel = nil
+property Entity voteConfirmEntity = nil
+property Entity voteAbstainEntity = nil
+property any voteConfirmBtn = nil
+property any voteConfirmRenderer = nil
+property any voteAbstainBtn = nil
+property any voteTitleComp = nil
+property table voteCardEntities = nil
+property table voteAvatarEntities = nil
+property table voteNameTexts = nil
+property table voteCircleOffEntities = nil
+property table voteCircleOnEntities = nil
+property table voteCardHandlers = nil
+property any voteConfirmHandler = nil
+property any voteAbstainHandler = nil
+property integer voteSelectedSlot = 0
+property boolean voteSubmitted = false
+property boolean voteUIShown = false
+property table votePlayerUserIds = nil
+property Entity voteStampEntity = nil
+property any voteStampRenderer = nil
+property number voteStampAlpha = 0
+property integer voteStampTimerId = 0
+property string voteCircleOffRuid = "9914a9c3421d4673bc93bf7a826169be"
+property string voteCircleOnRuid  = "6e56adb9e92a4713b7b54303311c791a"
+
+-- Night HUD
+property Entity nightRoot = nil
+property Entity nightMafiaPanel = nil
+property Entity nightPolicePanel = nil
+property Entity nightDoctorPanel = nil
+
+property any nightMafiaTitleComp = nil
+property any nightPoliceTitleComp = nil
+property any nightDoctorTitleComp = nil
+
+property Entity nightMafiaConfirmEnt = nil
+property Entity nightPoliceConfirmEnt = nil
+property Entity nightDoctorConfirmEnt = nil
+property Entity nightMafiaHideEnt = nil
+
+property table nightMafiaCards = nil
+property table nightMafiaAvatars = nil
+property table nightMafiaNames = nil
+property table nightMafiaCircles = nil
+property table nightMafiaHandlers = nil
+property table nightMafiaPlayerIds = nil
+
+property table nightPoliceCards = nil
+property table nightPoliceAvatars = nil
+property table nightPoliceNames = nil
+property table nightPoliceCircles = nil
+property table nightPoliceHandlers = nil
+property table nightPolicePlayerIds = nil
+
+property table nightDoctorCards = nil
+property table nightDoctorAvatars = nil
+property table nightDoctorNames = nil
+property table nightDoctorCircles = nil
+property table nightDoctorHandlers = nil
+property table nightDoctorPlayerIds = nil
+
+property any nightConfirmMafiaHandler = nil
+property any nightConfirmPoliceHandler = nil
+property any nightConfirmDoctorHandler = nil
+property any nightHideHandler = nil
+
+property integer nightSelectedSlot = 0
+property boolean nightSubmitted = false
+property boolean nightUIShown = false
+property integer nightActiveRole = -1
+
+method void OnBeginPlay()
+    self.lobbyAvatarEntities = {}
+    self.lobbyRoomTexts = {}
+    self.cachedLobbySeats = {}
+    self.inviteSlotTexts = {}
+    self.inviteFilteredPlayers = {}
+    self.inviteCheckedPlayers = {}
+    self.roomPlayerButtons = {}
+    self.roomPlayerButtonTexts = {}
+    self.roomPlayerVisuals = {}
+    self.roomMafiaButtons = {}
+    self.roomMafiaButtonTexts = {}
+    self.roomMafiaVisuals = {}
+    self.voteCardEntities = {}
+    self.voteAvatarEntities = {}
+    self.voteNameTexts = {}
+    self.voteCircleOffEntities = {}
+    self.voteCircleOnEntities = {}
+    self.voteCardHandlers = {}
+    self.votePlayerUserIds = {}
+    self.nightMafiaCards    = {}
+    self.nightMafiaAvatars  = {}
+    self.nightMafiaNames    = {}
+    self.nightMafiaCircles  = {}
+    self.nightMafiaHandlers = {}
+    self.nightMafiaPlayerIds = {}
+    self.nightPoliceCards    = {}
+    self.nightPoliceAvatars  = {}
+    self.nightPoliceNames    = {}
+    self.nightPoliceCircles  = {}
+    self.nightPoliceHandlers = {}
+    self.nightPolicePlayerIds = {}
+    self.nightDoctorCards    = {}
+    self.nightDoctorAvatars  = {}
+    self.nightDoctorNames    = {}
+    self.nightDoctorCircles  = {}
+    self.nightDoctorHandlers = {}
+    self.nightDoctorPlayerIds = {}
+    self:ResolveUI()
+    self:RefreshUI(true)
+    log("[MafiaUIFlow] initialized")
+end
+
+method void OnUpdate(number delta)
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumb.UITransformComponent ~= nil then
+        local curr = self.lobbyScrollThumbCurrentY
+        local target = self.lobbyScrollThumbTargetY
+        if math.abs(target - curr) > 0.5 then
+            local factor = math.min(1.0, delta * 14)
+            local newY = curr + (target - curr) * factor
+            self.lobbyScrollThumbCurrentY = newY
+            local pos = self.lobbyScrollThumb.UITransformComponent.anchoredPosition
+            self.lobbyScrollThumb.UITransformComponent.anchoredPosition = Vector2(pos.x, newY)
+        elseif curr ~= target then
+            self.lobbyScrollThumbCurrentY = target
+            local pos = self.lobbyScrollThumb.UITransformComponent.anchoredPosition
+            self.lobbyScrollThumb.UITransformComponent.anchoredPosition = Vector2(pos.x, target)
+        end
+    end
+    self.refreshAccumulator = self.refreshAccumulator + delta
+    if self.refreshAccumulator < 0.1 then return end
+    self.refreshAccumulator = 0.0
+    if not self.uiResolved then self:ResolveUI() end
+    self:RefreshUI(false)
+end
+
+method void OnEndPlay()
+    if self.lobbyReadyButton ~= nil and self.readyClickHandler ~= nil then
+        self.lobbyReadyButton.Entity:DisconnectEvent(ButtonClickEvent, self.readyClickHandler)
+    end
+    if self.lobbyInviteButton ~= nil and self.inviteClickHandler ~= nil then
+        self.lobbyInviteButton.Entity:DisconnectEvent(ButtonClickEvent, self.inviteClickHandler)
+    end
+    if self.lobbyChatInput ~= nil and self.lobbyChatSubmitHandler ~= nil then
+        self.lobbyChatInput.Entity:DisconnectEvent(TextInputSubmitEvent, self.lobbyChatSubmitHandler)
+    end
+    if self.lobbyChatInput ~= nil and self.lobbyChatValueChangeHandler ~= nil then
+        self.lobbyChatInput.Entity:DisconnectEvent(TextInputValueChangeEvent, self.lobbyChatValueChangeHandler)
+    end
+    if self.lobbyChatSendButton ~= nil and self.lobbyChatClickHandler ~= nil then
+        self.lobbyChatSendButton.Entity:DisconnectEvent(ButtonClickEvent, self.lobbyChatClickHandler)
+    end
+    if self.dayChatInput ~= nil and self.dayChatSubmitHandler ~= nil then
+        self.dayChatInput.Entity:DisconnectEvent(TextInputSubmitEvent, self.dayChatSubmitHandler)
+    end
+    if self.dayChatInput ~= nil and self.dayChatValueChangeHandler ~= nil then
+        self.dayChatInput.Entity:DisconnectEvent(TextInputValueChangeEvent, self.dayChatValueChangeHandler)
+    end
+    if self.dayChatSendButton ~= nil and self.dayChatClickHandler ~= nil then
+        self.dayChatSendButton.Entity:DisconnectEvent(ButtonClickEvent, self.dayChatClickHandler)
+    end
+    if self.nightChatInput ~= nil and self.nightChatSubmitHandler ~= nil then
+        self.nightChatInput.Entity:DisconnectEvent(TextInputSubmitEvent, self.nightChatSubmitHandler)
+    end
+    if self.nightChatInput ~= nil and self.nightChatValueChangeHandler ~= nil then
+        self.nightChatInput.Entity:DisconnectEvent(TextInputValueChangeEvent, self.nightChatValueChangeHandler)
+    end
+    if self.nightChatSendButton ~= nil and self.nightChatClickHandler ~= nil then
+        self.nightChatSendButton.Entity:DisconnectEvent(ButtonClickEvent, self.nightChatClickHandler)
+    end
+    if self.daySkipButton ~= nil and self.daySkipClickHandler ~= nil then
+        self.daySkipButton.Entity:DisconnectEvent(ButtonClickEvent, self.daySkipClickHandler)
+    end
+    if self.lobbyScrollUpButton ~= nil and self.scrollUpClickHandler ~= nil then
+        self.lobbyScrollUpButton.Entity:DisconnectEvent(ButtonClickEvent, self.scrollUpClickHandler)
+    end
+    if self.lobbyScrollDownButton ~= nil and self.scrollDownClickHandler ~= nil then
+        self.lobbyScrollDownButton.Entity:DisconnectEvent(ButtonClickEvent, self.scrollDownClickHandler)
+    end
+    if self.lobbyMouseScrollHandler ~= nil then
+        _InputService:DisconnectEvent(MouseScrollEvent, self.lobbyMouseScrollHandler)
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbDownHandler ~= nil then
+        self.lobbyScrollThumb:DisconnectEvent(UITouchDownEvent, self.lobbyScrollThumbDownHandler)
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbDragHandler ~= nil then
+        self.lobbyScrollThumb:DisconnectEvent(UITouchDragEvent, self.lobbyScrollThumbDragHandler)
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbUpHandler ~= nil then
+        self.lobbyScrollThumb:DisconnectEvent(UITouchUpEvent, self.lobbyScrollThumbUpHandler)
+    end
+    if self.lobbyScrollTrack ~= nil and self.lobbyScrollTrackDownHandler ~= nil then
+        self.lobbyScrollTrack:DisconnectEvent(UITouchDownEvent, self.lobbyScrollTrackDownHandler)
+    end
+    if self.lobbyScrollHitArea ~= nil and self.lobbyScrollHitDownHandler ~= nil then
+        self.lobbyScrollHitArea:DisconnectEvent(UITouchDownEvent, self.lobbyScrollHitDownHandler)
+    end
+    if self.lobbyScrollHitArea ~= nil and self.lobbyScrollHitDragHandler ~= nil then
+        self.lobbyScrollHitArea:DisconnectEvent(UITouchDragEvent, self.lobbyScrollHitDragHandler)
+    end
+    if self.lobbyScreenTouchHandler ~= nil then
+        _InputService:DisconnectEvent(ScreenTouchEvent, self.lobbyScreenTouchHandler)
+    end
+    if self.lobbyScreenTouchHoldHandler ~= nil then
+        _InputService:DisconnectEvent(ScreenTouchHoldEvent, self.lobbyScreenTouchHoldHandler)
+    end
+    if self.lobbyScreenTouchReleaseHandler ~= nil then
+        _InputService:DisconnectEvent(ScreenTouchReleaseEvent, self.lobbyScreenTouchReleaseHandler)
+    end
+    if self.inviteCloseBtn4 ~= nil and self.inviteCloseHandler4 ~= nil then
+        self.inviteCloseBtn4.Entity:DisconnectEvent(ButtonClickEvent, self.inviteCloseHandler4)
+    end
+    if self.inviteCloseBtn6 ~= nil and self.inviteCloseHandler6 ~= nil then
+        self.inviteCloseBtn6.Entity:DisconnectEvent(ButtonClickEvent, self.inviteCloseHandler6)
+    end
+    if self.inviteConfirmBtn ~= nil and self.inviteConfirmHandler ~= nil then
+        self.inviteConfirmBtn.Entity:DisconnectEvent(ButtonClickEvent, self.inviteConfirmHandler)
+    end
+    if self.inviteScrollUpBtn ~= nil and self.inviteScrollUpHandler ~= nil then
+        self.inviteScrollUpBtn.Entity:DisconnectEvent(ButtonClickEvent, self.inviteScrollUpHandler)
+    end
+    if self.inviteScrollDownBtn ~= nil and self.inviteScrollDownHandler ~= nil then
+        self.inviteScrollDownBtn.Entity:DisconnectEvent(ButtonClickEvent, self.inviteScrollDownHandler)
+    end
+    if self.inviteSearchInput ~= nil and self.inviteSearchHandler ~= nil then
+        self.inviteSearchInput.Entity:DisconnectEvent(TextInputValueChangeEvent, self.inviteSearchHandler)
+    end
+    if self.roomSettingsIconButton ~= nil and self.roomSettingsIconHandler ~= nil then
+        self.roomSettingsIconButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomSettingsIconHandler)
+    end
+    if self.roomPrivateToggleButton ~= nil and self.roomPrivateToggleHandler ~= nil then
+        self.roomPrivateToggleButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomPrivateToggleHandler)
+    end
+    if self.roomPrivateSwitchButton ~= nil and self.roomPrivateSwitchHandler ~= nil then
+        self.roomPrivateSwitchButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomPrivateSwitchHandler)
+    end
+    if self.roomCloseButton ~= nil and self.roomCloseHandler ~= nil then
+        self.roomCloseButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomCloseHandler)
+    end
+    if self.roomCancelButton ~= nil and self.roomCancelHandler ~= nil then
+        self.roomCancelButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomCancelHandler)
+    end
+    if self.roomConfirmButton ~= nil and self.roomConfirmHandler ~= nil then
+        self.roomConfirmButton.Entity:DisconnectEvent(ButtonClickEvent, self.roomConfirmHandler)
+    end
+    if self.roomPlayerButtons ~= nil then
+        if self.roomPlayerButtons[6] ~= nil and self.roomPlayer6Handler ~= nil then self.roomPlayerButtons[6].Entity:DisconnectEvent(ButtonClickEvent, self.roomPlayer6Handler) end
+        if self.roomPlayerButtons[7] ~= nil and self.roomPlayer7Handler ~= nil then self.roomPlayerButtons[7].Entity:DisconnectEvent(ButtonClickEvent, self.roomPlayer7Handler) end
+        if self.roomPlayerButtons[8] ~= nil and self.roomPlayer8Handler ~= nil then self.roomPlayerButtons[8].Entity:DisconnectEvent(ButtonClickEvent, self.roomPlayer8Handler) end
+    end
+    if self.roomMafiaButtons ~= nil then
+        if self.roomMafiaButtons[1] ~= nil and self.roomMafia1Handler ~= nil then self.roomMafiaButtons[1].Entity:DisconnectEvent(ButtonClickEvent, self.roomMafia1Handler) end
+        if self.roomMafiaButtons[2] ~= nil and self.roomMafia2Handler ~= nil then self.roomMafiaButtons[2].Entity:DisconnectEvent(ButtonClickEvent, self.roomMafia2Handler) end
+        if self.roomMafiaButtons[3] ~= nil and self.roomMafia3Handler ~= nil then self.roomMafiaButtons[3].Entity:DisconnectEvent(ButtonClickEvent, self.roomMafia3Handler) end
+    end
+    if self.voteCardHandlers ~= nil then
+        for i = 1, 8 do
+            if self.voteCardEntities ~= nil and self.voteCardEntities[i] ~= nil and self.voteCardHandlers[i] ~= nil then
+                self.voteCardEntities[i]:DisconnectEvent(ButtonClickEvent, self.voteCardHandlers[i])
+            end
+        end
+    end
+    if self.voteConfirmEntity ~= nil and self.voteConfirmHandler ~= nil then
+        self.voteConfirmEntity:DisconnectEvent(ButtonClickEvent, self.voteConfirmHandler)
+    end
+    if self.voteAbstainEntity ~= nil and self.voteAbstainHandler ~= nil then
+        self.voteAbstainEntity:DisconnectEvent(ButtonClickEvent, self.voteAbstainHandler)
+    end
+end
+
+method void ResolveUI()
+    self.lobbyRoot = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD")
+    self.dayRoot   = _EntityService:GetEntityByPath("/ui/MafiaDayHUD")
+    self.nightRoot = _EntityService:GetEntityByPath("/ui/MafiaNightHUD")
+    self.legacyRoot = _EntityService:GetEntityByPath("/ui/MafiaPlayHUD")
+    if self.lobbyRoot == nil or self.dayRoot == nil then return end
+
+    if self.lobbyAvatarEntities == nil then self.lobbyAvatarEntities = {} end
+    if self.lobbyRoomTexts == nil then self.lobbyRoomTexts = {} end
+    if self.cachedLobbySeats == nil then self.cachedLobbySeats = {} end
+
+    for i = 1, 8 do
+        local avatarEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/PlayerAvatar")
+        local textEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/Text")
+        self.lobbyAvatarEntities[i] = avatarEntity
+        if textEntity ~= nil then self.lobbyRoomTexts[i] = textEntity.TextComponent end
+    end
+
+    local entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/SkipButton")
+    if entity ~= nil then
+        self.lobbyReadyButton = entity.ButtonComponent
+        self.lobbyReadyText = entity.TextComponent
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/InviteButton")
+    if entity ~= nil then self.lobbyInviteButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/PlayerCountText")
+    if entity ~= nil then self.lobbyPlayerCountText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/VoteStatusText")
+    if entity ~= nil then self.lobbyReadyStatusText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/VoteHintText")
+    if entity ~= nil then self.lobbyReadyHintText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatScroll")
+    if entity ~= nil then self.lobbyChatScroll = entity.ScrollLayoutGroupComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatScroll/ChatLogText")
+    if entity ~= nil then
+        self.lobbyChatLogText = entity.TextComponent
+        entity.Enable = false
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatInput")
+    if entity ~= nil then self.lobbyChatInput = entity.TextInputComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatSendButton")
+    if entity ~= nil then self.lobbyChatSendButton = entity.ButtonComponent end
+    self.lobbyOtherChatBubble = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/text")
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/text/NameText")
+    if entity ~= nil then self.lobbyOtherChatNameText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/text/MessageText")
+    if entity ~= nil then self.lobbyOtherChatMessageText = entity.TextComponent end
+    self.lobbyOwnChatBubble = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/text1")
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/text1/MessageText")
+    if entity ~= nil then self.lobbyOwnChatMessageText = entity.TextComponent end
+    if self.lobbyOtherChatBubble ~= nil then self.lobbyOtherChatBubble.Enable = false end
+    if self.lobbyOwnChatBubble ~= nil then self.lobbyOwnChatBubble.Enable = false end
+
+    if self.lobbyChatSlotRoots == nil then self.lobbyChatSlotRoots = {} end
+    if self.lobbyChatSlotFrames == nil then self.lobbyChatSlotFrames = {} end
+    if self.lobbyChatSlotOtherBubbles == nil then self.lobbyChatSlotOtherBubbles = {} end
+    if self.lobbyChatSlotOtherNames == nil then self.lobbyChatSlotOtherNames = {} end
+    if self.lobbyChatSlotOtherMessages == nil then self.lobbyChatSlotOtherMessages = {} end
+    if self.lobbyChatSlotOwnBubbles == nil then self.lobbyChatSlotOwnBubbles = {} end
+    if self.lobbyChatSlotOwnMessages == nil then self.lobbyChatSlotOwnMessages = {} end
+    for i = 1, self.lobbyChatSlotCount do
+        local slotIndex = tostring(i)
+        local slotBasePath = "/ui/MafiaLobbyHUD/CenterPanel/LobbyChatSlot" .. slotIndex
+        local slotRoot = _EntityService:GetEntityByPath(slotBasePath)
+        if slotRoot == nil then
+            slotBasePath = "/ui/MafiaLobbyHUD/LobbyChatSlot" .. slotIndex
+            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
+        end
+        self.lobbyChatSlotRoots[i] = slotRoot
+        if slotRoot ~= nil then slotRoot.Enable = false end
+
+        local frameEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/LobbyChatFrameSlot" .. slotIndex)
+        if frameEntity == nil then
+            frameEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/LobbyChatFrameSlot" .. slotIndex)
+        end
+        self.lobbyChatSlotFrames[i] = frameEntity
+        if frameEntity ~= nil then frameEntity.Enable = false end
+
+        local nameEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/LobbyChatNameSlot" .. slotIndex)
+        if nameEntity == nil then
+            nameEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/LobbyChatNameSlot" .. slotIndex)
+        end
+        if nameEntity ~= nil then
+            self.lobbyChatSlotOtherNames[i] = nameEntity.TextComponent
+            nameEntity.Enable = false
+        end
+
+        local otherBubble = slotRoot
+        self.lobbyChatSlotOtherBubbles[i] = otherBubble
+        if otherBubble ~= nil then otherBubble.Enable = false end
+
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OtherBubble/NameText")
+        if entity ~= nil then self.lobbyChatSlotOtherNames[i] = entity.TextComponent end
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OtherBubble/MessageText")
+        if entity ~= nil then self.lobbyChatSlotOtherMessages[i] = entity.TextComponent end
+        if self.lobbyChatSlotOtherMessages[i] == nil and slotRoot ~= nil then
+            self.lobbyChatSlotOtherMessages[i] = slotRoot.TextComponent
+        end
+
+        local ownBubble = slotRoot
+        self.lobbyChatSlotOwnBubbles[i] = ownBubble
+        if ownBubble ~= nil then ownBubble.Enable = false end
+
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OwnBubble/MessageText")
+        if entity ~= nil then self.lobbyChatSlotOwnMessages[i] = entity.TextComponent end
+        if self.lobbyChatSlotOwnMessages[i] == nil and slotRoot ~= nil then
+            self.lobbyChatSlotOwnMessages[i] = slotRoot.TextComponent
+        end
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/UISprite_2")
+    if entity ~= nil then self.lobbyScrollUpButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/UISprite_3")
+    if entity ~= nil then self.lobbyScrollDownButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/UISprite_1")
+    if entity ~= nil then self.lobbyScrollThumb = entity end
+    self.lobbyScrollTrack = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/UISprite")
+    self.invitePanel = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite")
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_3/InviteSearch")
+    if entity ~= nil then self.inviteSearchInput = entity.TextInputComponent end
+    self.inviteSearchHint = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_3/SearchHintText")
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_4")
+    if entity ~= nil then self.inviteCloseBtn4 = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_5")
+    if entity ~= nil then self.inviteConfirmBtn = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_6")
+    if entity ~= nil then self.inviteCloseBtn6 = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_2/_2_6")
+    if entity ~= nil then self.inviteScrollUpBtn = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_2/InviteScrollDown")
+    if entity ~= nil then self.inviteScrollDownBtn = entity.ButtonComponent end
+    self.inviteScrollThumb = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_2/InviteScrollThumb")
+    if self.inviteSlotTexts == nil then self.inviteSlotTexts = {} end
+    for i = 1, 4 do
+        entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/Invite/_2/_2_" .. tostring(i) .. "/PlayerNameText")
+        if entity ~= nil then self.inviteSlotTexts[i] = entity.TextComponent end
+    end
+
+    self.roomSettingsPanel = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings")
+    if self.roomSettingsPanel ~= nil then self.roomSettingsPanel.Enable = false end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/RoomSettingsIcon")
+    if entity ~= nil then
+        self.roomSettingsIconButton = entity.ButtonComponent
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/RoomTitleInput")
+    if entity ~= nil then self.roomTitleInput = entity.TextInputComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/PrivateToggleButton")
+    if entity ~= nil then self.roomPrivateToggleButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/PrivateSwitchHotspot")
+    if entity ~= nil then self.roomPrivateSwitchButton = entity.ButtonComponent end
+    self.roomPrivateCheckSprite = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/PrivateCheckboxSprite")
+    self.roomPrivateLegacyCheckSprite = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_4")
+    if self.roomPrivateCheckSprite == nil then self.roomPrivateCheckSprite = self.roomPrivateLegacyCheckSprite end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/PasswordInput")
+    if entity ~= nil then self.roomPasswordInput = entity.TextInputComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/CloseButton")
+    if entity ~= nil then self.roomCloseButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/CancelButton")
+    if entity ~= nil then self.roomCancelButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/ConfirmButton")
+    if entity ~= nil then self.roomConfirmButton = entity.ButtonComponent end
+
+    if self.roomPlayerButtons == nil then self.roomPlayerButtons = {} end
+    if self.roomPlayerButtonTexts == nil then self.roomPlayerButtonTexts = {} end
+    if self.roomPlayerVisuals == nil then self.roomPlayerVisuals = {} end
+    if self.roomMafiaButtons == nil then self.roomMafiaButtons = {} end
+    if self.roomMafiaButtonTexts == nil then self.roomMafiaButtonTexts = {} end
+    if self.roomMafiaVisuals == nil then self.roomMafiaVisuals = {} end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Player6Button")
+    if entity ~= nil then self.roomPlayerButtons[6] = entity.ButtonComponent; self.roomPlayerButtonTexts[6] = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Player7Button")
+    if entity ~= nil then self.roomPlayerButtons[7] = entity.ButtonComponent; self.roomPlayerButtonTexts[7] = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Player8Button")
+    if entity ~= nil then self.roomPlayerButtons[8] = entity.ButtonComponent; self.roomPlayerButtonTexts[8] = entity.TextComponent end
+    self.roomPlayerVisuals[6] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_10")
+    self.roomPlayerVisuals[7] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_9")
+    self.roomPlayerVisuals[8] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_8")
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Mafia1Button")
+    if entity ~= nil then self.roomMafiaButtons[1] = entity.ButtonComponent; self.roomMafiaButtonTexts[1] = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Mafia2Button")
+    if entity ~= nil then self.roomMafiaButtons[2] = entity.ButtonComponent; self.roomMafiaButtonTexts[2] = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/Mafia3Button")
+    if entity ~= nil then self.roomMafiaButtons[3] = entity.ButtonComponent; self.roomMafiaButtonTexts[3] = entity.TextComponent end
+    self.roomMafiaVisuals[1] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_11")
+    self.roomMafiaVisuals[2] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_12")
+    self.roomMafiaVisuals[3] = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomSettings/_13")
+
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/PlayerCountText")
+    if entity ~= nil then self.dayPlayerCountText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/DayText")
+    if entity ~= nil then self.dayText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/TimerText")
+    if entity ~= nil then self.dayTimerText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/PhaseTitleText")
+    if entity ~= nil then self.dayPhaseTitleText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/PhaseDescriptionText")
+    if entity ~= nil then self.dayPhaseDescriptionText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatScroll")
+    if entity ~= nil then self.dayChatScroll = entity.ScrollLayoutGroupComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatScroll/ChatLogText")
+    if entity ~= nil then
+        self.dayChatLogText = entity.TextComponent
+        entity.Enable = false
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/VoteStatusText")
+    if entity ~= nil then self.dayVoteStatusText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/VoteHintText")
+    if entity ~= nil then self.dayVoteHintText = entity.TextComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatInput")
+    if entity ~= nil then self.dayChatInput = entity.TextInputComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatSendButton")
+    if entity ~= nil then self.dayChatSendButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/SkipButton")
+    if entity ~= nil then self.daySkipButton = entity.ButtonComponent end
+
+    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/ChatScroll")
+    if entity ~= nil then self.nightChatScroll = entity.ScrollLayoutGroupComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/ChatScroll/ChatLogText")
+    if entity ~= nil then
+        self.nightChatLogText = entity.TextComponent
+        entity.Enable = false
+    end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/ChatInput")
+    if entity ~= nil then self.nightChatInput = entity.TextInputComponent end
+    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/ChatSendButton")
+    if entity ~= nil then self.nightChatSendButton = entity.ButtonComponent end
+
+    if self.lobbyReadyButton ~= nil and self.readyClickHandler == nil then
+        self.readyClickHandler = self.lobbyReadyButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleReadyClick)
+    end
+    if self.lobbyInviteButton ~= nil and self.inviteClickHandler == nil then
+        self.inviteClickHandler = self.lobbyInviteButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteClick)
+    end
+    if self.lobbyChatInput ~= nil and self.lobbyChatSubmitHandler == nil then
+        self.lobbyChatInput.CharacterLimit = 100
+        self.lobbyChatInput.AutoClear = true
+        self.lobbyChatSubmitHandler = self.lobbyChatInput.Entity:ConnectEvent(TextInputSubmitEvent, self.HandleLobbyChatSubmit)
+    end
+    if self.lobbyChatInput ~= nil and self.lobbyChatValueChangeHandler == nil then
+        self.lobbyChatValueChangeHandler = self.lobbyChatInput.Entity:ConnectEvent(TextInputValueChangeEvent, self.HandleLobbyChatValueChange)
+    end
+    if self.lobbyChatSendButton ~= nil and self.lobbyChatClickHandler == nil then
+        self.lobbyChatClickHandler = self.lobbyChatSendButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleLobbyChatClick)
+    end
+    if self.dayChatInput ~= nil and self.dayChatSubmitHandler == nil then
+        self.dayChatInput.CharacterLimit = 100
+        self.dayChatInput.AutoClear = true
+        self.dayChatSubmitHandler = self.dayChatInput.Entity:ConnectEvent(TextInputSubmitEvent, self.HandleDayChatSubmit)
+    end
+    if self.dayChatInput ~= nil and self.dayChatValueChangeHandler == nil then
+        self.dayChatValueChangeHandler = self.dayChatInput.Entity:ConnectEvent(TextInputValueChangeEvent, self.HandleDayChatValueChange)
+    end
+    if self.dayChatSendButton ~= nil and self.dayChatClickHandler == nil then
+        self.dayChatClickHandler = self.dayChatSendButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleDayChatClick)
+    end
+    if self.nightChatInput ~= nil and self.nightChatSubmitHandler == nil then
+        self.nightChatInput.CharacterLimit = 100
+        self.nightChatInput.AutoClear = true
+        self.nightChatSubmitHandler = self.nightChatInput.Entity:ConnectEvent(TextInputSubmitEvent, self.HandleNightChatSubmit)
+    end
+    if self.nightChatInput ~= nil and self.nightChatValueChangeHandler == nil then
+        self.nightChatValueChangeHandler = self.nightChatInput.Entity:ConnectEvent(TextInputValueChangeEvent, self.HandleNightChatValueChange)
+    end
+    if self.nightChatSendButton ~= nil and self.nightChatClickHandler == nil then
+        self.nightChatClickHandler = self.nightChatSendButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleNightChatClick)
+    end
+    if self.daySkipButton ~= nil and self.daySkipClickHandler == nil then
+        self.daySkipClickHandler = self.daySkipButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleDaySkipClick)
+    end
+    if self.lobbyScrollUpButton ~= nil and self.scrollUpClickHandler == nil then
+        self.scrollUpClickHandler = self.lobbyScrollUpButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleScrollUpClick)
+    end
+    if self.lobbyScrollDownButton ~= nil and self.scrollDownClickHandler == nil then
+        self.scrollDownClickHandler = self.lobbyScrollDownButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleScrollDownClick)
+    end
+    if self.lobbyMouseScrollHandler == nil then
+        self.lobbyMouseScrollHandler = _InputService:ConnectEvent(MouseScrollEvent, self.HandleLobbyMouseScroll)
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbDownHandler == nil then
+        self.lobbyScrollThumbDownHandler = self.lobbyScrollThumb:ConnectEvent(UITouchDownEvent, self.HandleLobbyScrollThumbDown)
+        log("[MafiaUIFlow] lobby scrollbar thumb down handler connected")
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbDragHandler == nil then
+        self.lobbyScrollThumbDragHandler = self.lobbyScrollThumb:ConnectEvent(UITouchDragEvent, self.HandleLobbyScrollThumbDrag)
+        log("[MafiaUIFlow] lobby scrollbar thumb drag handler connected")
+    end
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumbUpHandler == nil then
+        self.lobbyScrollThumbUpHandler = self.lobbyScrollThumb:ConnectEvent(UITouchUpEvent, self.HandleLobbyScrollThumbUp)
+        log("[MafiaUIFlow] lobby scrollbar thumb up handler connected")
+    end
+    if self.lobbyScrollTrack ~= nil and self.lobbyScrollTrackDownHandler == nil then
+        self.lobbyScrollTrackDownHandler = self.lobbyScrollTrack:ConnectEvent(UITouchDownEvent, self.HandleLobbyScrollTrackDown)
+        log("[MafiaUIFlow] lobby scrollbar track down handler connected")
+    end
+    if self.lobbyScrollHitArea ~= nil and self.lobbyScrollHitDownHandler == nil then
+        self.lobbyScrollHitDownHandler = self.lobbyScrollHitArea:ConnectEvent(UITouchDownEvent, self.HandleLobbyScrollHitDown)
+        log("[MafiaUIFlow] lobby scrollbar hit area down handler connected")
+    end
+    if self.lobbyScrollHitArea ~= nil and self.lobbyScrollHitDragHandler == nil then
+        self.lobbyScrollHitDragHandler = self.lobbyScrollHitArea:ConnectEvent(UITouchDragEvent, self.HandleLobbyScrollHitDrag)
+        log("[MafiaUIFlow] lobby scrollbar hit area drag handler connected")
+    end
+    if self.lobbyScreenTouchHandler == nil then
+        self.lobbyScreenTouchHandler = _InputService:ConnectEvent(ScreenTouchEvent, self.HandleLobbyScrollbarScreenTouch)
+        log("[MafiaUIFlow] lobby scrollbar screen touch handler connected")
+    end
+    if self.lobbyScreenTouchHoldHandler == nil then
+        self.lobbyScreenTouchHoldHandler = _InputService:ConnectEvent(ScreenTouchHoldEvent, self.HandleLobbyScrollbarScreenTouchHold)
+        log("[MafiaUIFlow] lobby scrollbar screen hold handler connected")
+    end
+    if self.lobbyScreenTouchReleaseHandler == nil then
+        self.lobbyScreenTouchReleaseHandler = _InputService:ConnectEvent(ScreenTouchReleaseEvent, self.HandleLobbyScrollbarScreenTouchRelease)
+        log("[MafiaUIFlow] lobby scrollbar screen release handler connected")
+    end
+    if self.inviteCloseBtn4 ~= nil and self.inviteCloseHandler4 == nil then
+        self.inviteCloseHandler4 = self.inviteCloseBtn4.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteClose)
+    end
+    if self.inviteCloseBtn6 ~= nil and self.inviteCloseHandler6 == nil then
+        self.inviteCloseHandler6 = self.inviteCloseBtn6.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteClose)
+    end
+    if self.inviteConfirmBtn ~= nil and self.inviteConfirmHandler == nil then
+        self.inviteConfirmHandler = self.inviteConfirmBtn.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteConfirm)
+    end
+    if self.inviteScrollUpBtn ~= nil and self.inviteScrollUpHandler == nil then
+        self.inviteScrollUpHandler = self.inviteScrollUpBtn.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteScrollUpClick)
+    end
+    if self.inviteScrollDownBtn ~= nil and self.inviteScrollDownHandler == nil then
+        self.inviteScrollDownHandler = self.inviteScrollDownBtn.Entity:ConnectEvent(ButtonClickEvent, self.HandleInviteScrollDownClick)
+    end
+    if self.inviteSearchInput ~= nil and self.inviteSearchHandler == nil then
+        self.inviteSearchHandler = self.inviteSearchInput.Entity:ConnectEvent(TextInputValueChangeEvent, self.HandleInviteSearchChange)
+    end
+    if self.roomSettingsIconButton ~= nil and self.roomSettingsIconHandler == nil then
+        self.roomSettingsIconHandler = self.roomSettingsIconButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomSettingsOpen)
+    end
+    if self.roomPrivateToggleButton ~= nil and self.roomPrivateToggleHandler == nil then
+        self.roomPrivateToggleHandler = self.roomPrivateToggleButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomPrivateToggle)
+    end
+    if self.roomPrivateSwitchButton ~= nil and self.roomPrivateSwitchHandler == nil then
+        self.roomPrivateSwitchHandler = self.roomPrivateSwitchButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomPrivateToggle)
+    end
+    if self.roomCloseButton ~= nil and self.roomCloseHandler == nil then
+        self.roomCloseHandler = self.roomCloseButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomSettingsClose)
+    end
+    if self.roomCancelButton ~= nil and self.roomCancelHandler == nil then
+        self.roomCancelHandler = self.roomCancelButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomSettingsClose)
+    end
+    if self.roomConfirmButton ~= nil and self.roomConfirmHandler == nil then
+        self.roomConfirmHandler = self.roomConfirmButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomSettingsConfirm)
+    end
+    if self.roomPlayerButtons ~= nil then
+        if self.roomPlayerButtons[6] ~= nil and self.roomPlayer6Handler == nil then self.roomPlayer6Handler = self.roomPlayerButtons[6].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomPlayer6) end
+        if self.roomPlayerButtons[7] ~= nil and self.roomPlayer7Handler == nil then self.roomPlayer7Handler = self.roomPlayerButtons[7].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomPlayer7) end
+        if self.roomPlayerButtons[8] ~= nil and self.roomPlayer8Handler == nil then self.roomPlayer8Handler = self.roomPlayerButtons[8].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomPlayer8) end
+    end
+    if self.roomMafiaButtons ~= nil then
+        if self.roomMafiaButtons[1] ~= nil and self.roomMafia1Handler == nil then self.roomMafia1Handler = self.roomMafiaButtons[1].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomMafia1) end
+        if self.roomMafiaButtons[2] ~= nil and self.roomMafia2Handler == nil then self.roomMafia2Handler = self.roomMafiaButtons[2].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomMafia2) end
+        if self.roomMafiaButtons[3] ~= nil and self.roomMafia3Handler == nil then self.roomMafia3Handler = self.roomMafiaButtons[3].Entity:ConnectEvent(ButtonClickEvent, self.HandleRoomMafia3) end
+    end
+    self:ResolveVoteUI()
+    self:ResolveNightUI()
+    self.uiResolved = self.lobbyReadyButton ~= nil and self.dayPlayerCountText ~= nil
+    if self.uiResolved then log("[MafiaUIFlow] UI references resolved") end
+end
+
+method void ResolvePhaseChatContext(string hudName)
+    local rootPath = "/ui/" .. hudName
+    local entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/ChatScroll")
+    if entity ~= nil then self.lobbyChatScroll = entity.ScrollLayoutGroupComponent end
+    entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/ChatScroll/ChatLogText")
+    if entity ~= nil then
+        self.lobbyChatLogText = entity.TextComponent
+        entity.Enable = false
+    end
+
+    if self.lobbyChatSlotRoots == nil then self.lobbyChatSlotRoots = {} end
+    if self.lobbyChatSlotFrames == nil then self.lobbyChatSlotFrames = {} end
+    if self.lobbyChatSlotOtherBubbles == nil then self.lobbyChatSlotOtherBubbles = {} end
+    if self.lobbyChatSlotOtherNames == nil then self.lobbyChatSlotOtherNames = {} end
+    if self.lobbyChatSlotOtherMessages == nil then self.lobbyChatSlotOtherMessages = {} end
+    if self.lobbyChatSlotOwnBubbles == nil then self.lobbyChatSlotOwnBubbles = {} end
+    if self.lobbyChatSlotOwnMessages == nil then self.lobbyChatSlotOwnMessages = {} end
+
+    local resolvedSlots = 0
+    for i = 1, self.lobbyChatSlotCount do
+        local slotIndex = tostring(i)
+        local slotBasePath = rootPath .. "/CenterPanel/LobbyChatSlot" .. slotIndex
+        local slotRoot = _EntityService:GetEntityByPath(slotBasePath)
+        if slotRoot == nil then
+            slotBasePath = rootPath .. "/LobbyChatSlot" .. slotIndex
+            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
+        end
+        self.lobbyChatSlotRoots[i] = slotRoot
+        if slotRoot ~= nil then
+            resolvedSlots = resolvedSlots + 1
+        end
+
+        local frameEntity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/LobbyChatFrameSlot" .. slotIndex)
+        if frameEntity == nil then frameEntity = _EntityService:GetEntityByPath(rootPath .. "/LobbyChatFrameSlot" .. slotIndex) end
+        self.lobbyChatSlotFrames[i] = frameEntity
+
+        local nameEntity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/LobbyChatNameSlot" .. slotIndex)
+        if nameEntity == nil then nameEntity = _EntityService:GetEntityByPath(rootPath .. "/LobbyChatNameSlot" .. slotIndex) end
+        if nameEntity ~= nil then
+            self.lobbyChatSlotOtherNames[i] = nameEntity.TextComponent
+        else
+            self.lobbyChatSlotOtherNames[i] = nil
+        end
+
+        self.lobbyChatSlotOtherBubbles[i] = slotRoot
+
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OtherBubble/NameText")
+        if entity ~= nil then self.lobbyChatSlotOtherNames[i] = entity.TextComponent end
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OtherBubble/MessageText")
+        if entity ~= nil then
+            self.lobbyChatSlotOtherMessages[i] = entity.TextComponent
+        elseif slotRoot ~= nil then
+            self.lobbyChatSlotOtherMessages[i] = slotRoot.TextComponent
+        else
+            self.lobbyChatSlotOtherMessages[i] = nil
+        end
+
+        self.lobbyChatSlotOwnBubbles[i] = slotRoot
+
+        entity = _EntityService:GetEntityByPath(slotBasePath .. "/OwnBubble/MessageText")
+        if entity ~= nil then
+            self.lobbyChatSlotOwnMessages[i] = entity.TextComponent
+        elseif slotRoot ~= nil then
+            self.lobbyChatSlotOwnMessages[i] = slotRoot.TextComponent
+        else
+            self.lobbyChatSlotOwnMessages[i] = nil
+        end
+    end
+
+    entity = _EntityService:GetEntityByPath(rootPath .. "/UISprite_2")
+    if entity ~= nil then self.lobbyScrollUpButton = entity.ButtonComponent end
+    entity = _EntityService:GetEntityByPath(rootPath .. "/UISprite_3")
+    if entity ~= nil then self.lobbyScrollDownButton = entity.ButtonComponent end
+    self.lobbyScrollTrack = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/UISprite")
+    entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/UISprite_1")
+    if entity ~= nil then self.lobbyScrollThumb = entity end
+
+    if hudName ~= "MafiaLobbyHUD" then
+        self:ConnectPhaseChatScrollControls(hudName)
+    end
+end
+
+method void ConnectPhaseChatScrollControls(string hudName)
+    if self.phaseScrollUpHandlers == nil then self.phaseScrollUpHandlers = {} end
+    if self.phaseScrollDownHandlers == nil then self.phaseScrollDownHandlers = {} end
+    if self.phaseScrollThumbDownHandlers == nil then self.phaseScrollThumbDownHandlers = {} end
+    if self.phaseScrollThumbDragHandlers == nil then self.phaseScrollThumbDragHandlers = {} end
+    if self.phaseScrollThumbUpHandlers == nil then self.phaseScrollThumbUpHandlers = {} end
+    if self.phaseScrollTrackDownHandlers == nil then self.phaseScrollTrackDownHandlers = {} end
+
+    if self.lobbyScrollUpButton ~= nil and self.phaseScrollUpHandlers[hudName] == nil then
+        self.phaseScrollUpHandlers[hudName] = self.lobbyScrollUpButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleScrollUpClick)
+    end
+    if self.lobbyScrollDownButton ~= nil and self.phaseScrollDownHandlers[hudName] == nil then
+        self.phaseScrollDownHandlers[hudName] = self.lobbyScrollDownButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleScrollDownClick)
+    end
+    if self.lobbyScrollThumb ~= nil and self.phaseScrollThumbDownHandlers[hudName] == nil then
+        self.phaseScrollThumbDownHandlers[hudName] = self.lobbyScrollThumb:ConnectEvent(UITouchDownEvent, self.HandleLobbyScrollThumbDown)
+    end
+    if self.lobbyScrollThumb ~= nil and self.phaseScrollThumbDragHandlers[hudName] == nil then
+        self.phaseScrollThumbDragHandlers[hudName] = self.lobbyScrollThumb:ConnectEvent(UITouchDragEvent, self.HandleLobbyScrollThumbDrag)
+    end
+    if self.lobbyScrollThumb ~= nil and self.phaseScrollThumbUpHandlers[hudName] == nil then
+        self.phaseScrollThumbUpHandlers[hudName] = self.lobbyScrollThumb:ConnectEvent(UITouchUpEvent, self.HandleLobbyScrollThumbUp)
+    end
+    if self.lobbyScrollTrack ~= nil and self.phaseScrollTrackDownHandlers[hudName] == nil then
+        self.phaseScrollTrackDownHandlers[hudName] = self.lobbyScrollTrack:ConnectEvent(UITouchDownEvent, self.HandleLobbyScrollTrackDown)
+    end
+end
+
+method void RefreshUI(boolean force)
+    if _MafiaGameLogic == nil or not self.uiResolved then return end
+    local phase = _MafiaGameLogic.CurrentPhase
+    if force or phase ~= self.cachedPhase then
+        self.cachedPhase = phase
+        local inLobby = (phase == _MafiaGameLogic.PHASE_LOBBY)
+        local inNight = (phase == _MafiaGameLogic.PHASE_NIGHT)
+        self.lobbyRoot.Enable = inLobby
+        self.dayRoot.Enable = (not inLobby) and (not inNight)
+        if self.nightRoot ~= nil then self.nightRoot.Enable = inNight end
+        if self.legacyRoot ~= nil then self.legacyRoot.Enable = false end
+        if not inNight and self.nightUIShown then self:HideNightPanel() end
+        if inLobby then
+            log("[MafiaUIFlow] showing lobby UI")
+        elseif inNight then
+            log("[MafiaUIFlow] showing night UI")
+        else
+            log("[MafiaUIFlow] showing day UI; phase=" .. tostring(phase))
+        end
+    end
+    if phase == _MafiaGameLogic.PHASE_LOBBY then
+        self:RefreshLobby()
+    elseif phase == _MafiaGameLogic.PHASE_NIGHT then
+        self:RefreshNight()
+    else
+        self:RefreshDay(phase)
+    end
+end
+
+method void RefreshLobby()
+    self:ResolvePhaseChatContext("MafiaLobbyHUD")
+    local playerCount = _MafiaGameLogic.LobbyPlayerCount
+    if playerCount <= 0 then playerCount = #(_UserService.Users.Keys) end
+    local readyCount = _MafiaGameLogic.ReadyCount
+    local maxPlayers = _MafiaGameLogic.RoomMaxPlayers
+    if maxPlayers == nil or maxPlayers <= 0 then maxPlayers = _MafiaGameLogic.MAX_PLAYERS end
+    if self.lobbyPlayerCountText ~= nil then
+        self.lobbyPlayerCountText.Text = "대기 인원 " .. tostring(playerCount) .. "/" .. tostring(maxPlayers)
+    end
+    if self.lobbyReadyStatusText ~= nil then
+        self.lobbyReadyStatusText.Text = "준비 현황 " .. tostring(readyCount) .. "/" .. tostring(playerCount)
+    end
+    if self.lobbyReadyHintText ~= nil then
+        if _MafiaGameLogic.DebugMode then
+            self.lobbyReadyHintText.Text = "준비하면 테스트 플레이가 시작됩니다."
+        elseif playerCount < _MafiaGameLogic.MIN_PLAYERS then
+            self.lobbyReadyHintText.Text = "최소 " .. tostring(_MafiaGameLogic.MIN_PLAYERS) .. "명이 필요합니다."
+        else
+            self.lobbyReadyHintText.Text = "모든 플레이어가 준비하면 게임을 시작합니다."
+        end
+    end
+    local localReady = self:IsLocalReady()
+    if self.lobbyReadyText ~= nil then
+        if localReady then self.lobbyReadyText.Text = "준비 취소" else self.lobbyReadyText.Text = "준비" end
+    end
+    local lobbyChatLog = _MafiaGameLogic.ChatLog or ""
+    if lobbyChatLog ~= self.lastLobbyChatLog then
+        self.lastLobbyChatLog = lobbyChatLog
+        self.lobbyChatBubbleScrollOffset = 0
+        self:HideLobbyRawChatLog()
+        self:ApplyLobbyChatBubbles(lobbyChatLog)
+    end
+    if self.lobbyReadyText ~= nil then
+        if localReady then
+            self.lobbyReadyText.Text = "준비완료"
+        else
+            self.lobbyReadyText.Text = "준비"
+        end
+    end
+    self:RefreshLobbyAvatars()
+end
+
+method void RefreshLobbyAvatars()
+	if self.lobbyAvatarEntities == nil then return end
+	local seats = {}
+	local seat = 1
+	for _, uid in ipairs(_UserService.Users.Keys) do
+		if seat <= 8 then seats[seat] = tostring(uid); seat = seat + 1 end
+	end
+
+    for i = 1, 8 do
+        local userId = seats[i]
+        local avatarEntity = self.lobbyAvatarEntities[i]
+        local roomText = self.lobbyRoomTexts[i]
+		if userId ~= nil and userId ~= "" then
+			if avatarEntity ~= nil then
+				local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+				local costume = avatarEntity.CostumeManagerComponent
+				if costume ~= nil then costume.Enable = true end
+				if avatarRenderer ~= nil then avatarRenderer.Enable = true end
+				avatarEntity.Enable = true
+				if self.cachedLobbySeats[i] ~= userId then
+					if costume ~= nil then
+						costume.UseCustomEquipOnly = false
+						costume.DefaultEquipUserId = userId
+                    end
+                    self.cachedLobbySeats[i] = userId
+                    log("[MafiaUIFlow] lobby avatar seat " .. tostring(i) .. " <- " .. userId)
+                end
+            end
+            if roomText ~= nil then
+                local nickname = "플레이어"
+                local user = _UserService.Users[userId]
+                if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then nickname = user.Nickname end
+                roomText.Text = tostring(i) .. "번 · " .. nickname
+            end
+		else
+			if avatarEntity ~= nil then
+				avatarEntity.Enable = false
+				if avatarEntity.AvatarGUIRendererComponent ~= nil then avatarEntity.AvatarGUIRendererComponent.Enable = false end
+				if avatarEntity.CostumeManagerComponent ~= nil then avatarEntity.CostumeManagerComponent.Enable = false end
+			end
+            if roomText ~= nil then roomText.Text = tostring(i) .. "번 자리 · 대기 중" end
+            self.cachedLobbySeats[i] = nil
+        end
+    end
+end
+
+method void RefreshDay(integer phase)
+    self:ResolvePhaseChatContext("MafiaDayHUD")
+    local playerCount = #(_UserService.Users.Keys)
+    if self.dayPlayerCountText ~= nil then
+        self.dayPlayerCountText.Text = "플레이어 " .. tostring(playerCount) .. "/" .. tostring(_MafiaGameLogic.MAX_PLAYERS)
+    end
+    if self.dayText ~= nil then self.dayText.Text = tostring(math.max(1, _MafiaGameLogic.DayCount)) .. "일차" end
+    if self.dayTimerText ~= nil then self.dayTimerText.Text = self:FormatTime(_MafiaGameLogic.PhaseTimer) end
+    if self.dayPhaseTitleText ~= nil and self.dayPhaseDescriptionText ~= nil then
+        if phase == _MafiaGameLogic.PHASE_FREE_ROAM then
+            self.dayPhaseTitleText.Text = "낮 토론"
+            self.dayPhaseDescriptionText.Text = "대화와 추리를 통해 마피아를 찾아보세요."
+        elseif phase == _MafiaGameLogic.PHASE_MEETING then
+            self.dayPhaseTitleText.Text = "투표"
+            self.dayPhaseDescriptionText.Text = "의심되는 플레이어를 선택하거나 스킵하세요."
+        else
+            self.dayPhaseTitleText.Text = "게임 진행 중"
+            self.dayPhaseDescriptionText.Text = "현재 페이즈가 진행 중입니다."
+        end
+    end
+    local dayChatLog = _MafiaGameLogic.ChatLog or ""
+    if dayChatLog ~= self.lastDayChatLog then
+        self.lastDayChatLog = dayChatLog
+        self.lobbyChatBubbleScrollOffset = 0
+        self:HideLobbyRawChatLog()
+        self:ApplyLobbyChatBubbles(dayChatLog)
+    end
+    if self.dayVoteStatusText ~= nil then
+        local count = self:CountCsv(_MafiaGameLogic.VoteStatusList)
+        self.dayVoteStatusText.Text = tostring(count) .. "/" .. tostring(playerCount) .. " 투표"
+    end
+    if self.dayVoteHintText ~= nil then
+        if phase == _MafiaGameLogic.PHASE_MEETING then
+            self.dayVoteHintText.Text = "투표할 플레이어를 선택해주세요."
+        else
+            self.dayVoteHintText.Text = "토론을 진행하며 단서를 모아보세요."
+        end
+    end
+    if phase == _MafiaGameLogic.PHASE_MEETING then
+        if not self.voteUIShown then
+            self:ShowVoteUI()
+        else
+            if self.voteTitleComp ~= nil then
+                self.voteTitleComp.Text = "투표  " .. tostring(math.max(0, math.ceil(_MafiaGameLogic.PhaseTimer)))
+            end
+        end
+    else
+        if self.voteUIShown then
+            self:HideVotePanel()
+        end
+    end
+end
+
+method void HandleReadyClick()
+    if _MafiaGameLogic == nil or _MafiaGameLogic.CurrentPhase ~= _MafiaGameLogic.PHASE_LOBBY then return end
+    local userId = self:GetLocalUserId()
+    if userId == "" then return end
+    if self:IsLocalReady() then return end
+    self:PlayReadyTransition()
+    _MafiaGameLogic:SetReady(userId, true)
+    log("[MafiaUIFlow] ready requested: " .. userId .. " -> true")
+end
+
+method void PlayReadyTransition()
+    if self.lobbyReadyButton == nil then return end
+    local buttonEntity = self.lobbyReadyButton.Entity
+    if buttonEntity == nil then return end
+    if self.readyTween ~= nil and self.readyTween.IsPlaying then self.readyTween:Complete() end
+    local shrink = _TweenLogic:ScaleTo(buttonEntity, Vector2(0.94, 0.94), 0.08, EaseType.QuadEaseOut)
+    self.readyTween = shrink
+    shrink:SetOnEndCallback(function()
+        if self.lobbyReadyText ~= nil then self.lobbyReadyText.Text = "준비완료" end
+        self.readyTween = _TweenLogic:ScaleTo(buttonEntity, Vector2(1, 1), 0.16, EaseType.BackEaseOut)
+    end)
+    log("[MafiaUIFlow] ready transition animation started")
+end
+
+method void HandleInviteClick()
+    if self.invitePanel ~= nil then
+        self.invitePanel.Enable = true
+        if self.inviteSearchInput ~= nil then self.inviteSearchInput.Text = "" end
+        if self.inviteSearchHint ~= nil then self.inviteSearchHint.Enable = true end
+        self:RefreshInviteList("")
+    end
+    log("[MafiaUIFlow] invite panel opened")
+end
+
+method void HandleInviteClose()
+    if self.invitePanel ~= nil then
+        self.invitePanel.Enable = false
+    end
+    log("[MafiaUIFlow] invite panel closed")
+end
+
+method void HandleInviteSearchChange(TextInputValueChangeEvent event)
+    if self.inviteSearchHint ~= nil then
+        self.inviteSearchHint.Enable = (event.text == nil or event.text == "")
+    end
+    self:RefreshInviteList(event.text)
+end
+
+method void HandleInviteScrollUpClick()
+    if self.inviteScrollOffset <= 0 then return end
+    self.inviteScrollOffset = self.inviteScrollOffset - 1
+    self:RenderInviteSlots()
+    log("[MafiaUIFlow] invite scroll up; offset=" .. tostring(self.inviteScrollOffset))
+end
+
+method void HandleInviteScrollDownClick()
+    if self.inviteFilteredPlayers == nil then return end
+    if self.inviteScrollOffset + 4 >= #self.inviteFilteredPlayers then return end
+    self.inviteScrollOffset = self.inviteScrollOffset + 1
+    self:RenderInviteSlots()
+    log("[MafiaUIFlow] invite scroll down; offset=" .. tostring(self.inviteScrollOffset))
+end
+
+method void RefreshInviteList(string searchText)
+    if self.inviteFilteredPlayers == nil then self.inviteFilteredPlayers = {} end
+    self.inviteFilteredPlayers = {}
+    local localUserId = self:GetLocalUserId()
+    for _, uid in ipairs(_UserService.Users.Keys) do
+        local userId = tostring(uid)
+        if userId ~= localUserId then
+            local name = self:GetUserDisplayName(userId)
+            local lower = string.lower(name)
+            local query = string.lower(searchText or "")
+            if query == "" or string.find(lower, query, 1, true) ~= nil then
+                self.inviteFilteredPlayers[#self.inviteFilteredPlayers + 1] = userId
+            end
+        end
+    end
+    self.inviteScrollOffset = 0
+    self:RenderInviteSlots()
+    log("[MafiaUIFlow] invite list refreshed; count=" .. tostring(#self.inviteFilteredPlayers))
+end
+
+method void RenderInviteSlots()
+    if self.inviteSlotTexts == nil then return end
+    if self.inviteFilteredPlayers == nil then return end
+    local startIdx = self.inviteScrollOffset + 1
+    for i = 1, 4 do
+        local textComp = self.inviteSlotTexts[i]
+        if textComp ~= nil then
+            local playerIdx = startIdx + i - 1
+            if playerIdx <= #self.inviteFilteredPlayers then
+                local userId = self.inviteFilteredPlayers[playerIdx]
+                textComp.Text = self:GetUserDisplayName(userId)
+                textComp.Entity.Enable = true
+            else
+                textComp.Text = ""
+                textComp.Entity.Enable = false
+            end
+        end
+    end
+    self:RefreshInviteScrollVisual()
+end
+
+method void RefreshInviteScrollVisual()
+    if self.inviteScrollThumb == nil then return end
+    if self.inviteScrollThumb.UITransformComponent == nil then return end
+    if self.inviteFilteredPlayers == nil then
+        self.inviteScrollThumb.Enable = false
+        return
+    end
+
+    local total = #self.inviteFilteredPlayers
+    local maxOffset = math.max(0, total - 4)
+    local hasOverflow = maxOffset > 0
+    self.inviteScrollThumb.Enable = hasOverflow
+    if not hasOverflow then return end
+
+    local topY = 125
+    local bottomY = -139
+    local ratio = 0
+    if maxOffset > 0 then ratio = self.inviteScrollOffset / maxOffset end
+    if ratio < 0 then ratio = 0 end
+    if ratio > 1 then ratio = 1 end
+
+    local y = topY + (bottomY - topY) * ratio
+    local pos = self.inviteScrollThumb.UITransformComponent.anchoredPosition
+    self.inviteScrollThumb.UITransformComponent.anchoredPosition = Vector2(pos.x, y)
+end
+
+method void HandleInviteConfirm()
+    log("[MafiaUIFlow] invite confirm clicked")
+end
+
+method void HandleRoomSettingsOpen()
+    if self.roomSettingsPanel == nil then return end
+    self.roomSettingPrivate = true
+    self.roomSettingMaxPlayers = 8
+    self.roomSettingMafiaCount = 2
+    local title = "커닝시티 마피아"
+    local password = ""
+    if _MafiaGameLogic ~= nil then
+        self.roomSettingPrivate = _MafiaGameLogic.IsPrivateRoom
+        if _MafiaGameLogic.RoomMaxPlayers ~= nil then self.roomSettingMaxPlayers = _MafiaGameLogic.RoomMaxPlayers end
+        if _MafiaGameLogic.MafiaPlayerCount ~= nil then self.roomSettingMafiaCount = _MafiaGameLogic.MafiaPlayerCount end
+        if _MafiaGameLogic.RoomTitle ~= nil and _MafiaGameLogic.RoomTitle ~= "" then title = _MafiaGameLogic.RoomTitle end
+        if _MafiaGameLogic.RoomPassword ~= nil then password = _MafiaGameLogic.RoomPassword end
+    end
+    self.roomSettingsPanel.Enable = true
+    if self.roomTitleInput ~= nil then self.roomTitleInput.Text = title end
+    if self.roomPasswordInput ~= nil then self.roomPasswordInput.Text = password end
+    self:RefreshRoomPasswordInputState()
+    _TimerService:SetTimerOnce(function()
+        if self.roomSettingsPanel ~= nil and self.roomSettingsPanel.Enable then
+            if self.roomTitleInput ~= nil then self.roomTitleInput.Text = title end
+            if self.roomPasswordInput ~= nil then self.roomPasswordInput.Text = password end
+            self:RefreshRoomPasswordInputState()
+            log("[MafiaUIFlow] room settings input values applied title=" .. tostring(title))
+        end
+    end, 0.03)
+    self:RefreshRoomSettingsVisual()
+    log("[MafiaUIFlow] room settings opened")
+end
+
+method void HandleRoomSettingsClose()
+    if self.roomSettingsPanel ~= nil then self.roomSettingsPanel.Enable = false end
+    log("[MafiaUIFlow] room settings closed")
+end
+
+method void HandleRoomSettingsConfirm()
+    local title = "커닝시티 마피아"
+    local password = ""
+    if self.roomTitleInput ~= nil and self.roomTitleInput.Text ~= nil and self.roomTitleInput.Text ~= "" then
+        title = self.roomTitleInput.Text
+    end
+    if self.roomPasswordInput ~= nil and self.roomPasswordInput.Text ~= nil then
+        password = self.roomPasswordInput.Text
+    end
+    if not self.roomSettingPrivate then
+        password = ""
+    end
+    if _MafiaGameLogic ~= nil then
+        _MafiaGameLogic:SetRoomSettings(title, self.roomSettingPrivate, password, self.roomSettingMaxPlayers, self.roomSettingMafiaCount)
+    end
+    if self.roomSettingsPanel ~= nil then self.roomSettingsPanel.Enable = false end
+    log("[MafiaUIFlow] room settings confirmed")
+end
+
+method void HandleRoomPrivateToggle()
+    self.roomSettingPrivate = not self.roomSettingPrivate
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomPlayer6()
+    self.roomSettingMaxPlayers = 6
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomPlayer7()
+    self.roomSettingMaxPlayers = 7
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomPlayer8()
+    self.roomSettingMaxPlayers = 8
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomMafia1()
+    self.roomSettingMafiaCount = 1
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomMafia2()
+    self.roomSettingMafiaCount = 2
+    self:RefreshRoomSettingsVisual()
+end
+
+method void HandleRoomMafia3()
+    self.roomSettingMafiaCount = 3
+    self:RefreshRoomSettingsVisual()
+end
+
+method void RefreshRoomSettingsVisual()
+    self:RefreshRoomPasswordInputState()
+    self:RefreshRoomPrivateCheckSprite(self.roomPrivateCheckSprite)
+    self:RefreshRoomPrivateCheckSprite(self.roomPrivateLegacyCheckSprite)
+    self:RefreshRoomSettingChoice(self.roomPlayerVisuals, self.roomPlayerButtonTexts, self.roomSettingMaxPlayers)
+    self:RefreshRoomSettingChoice(self.roomMafiaVisuals, self.roomMafiaButtonTexts, self.roomSettingMafiaCount)
+end
+
+method void RefreshRoomPasswordInputState()
+    -- Enables password entry only for private rooms while keeping the visual input frame visible.
+    if self.roomPasswordInput == nil then return end
+    self.roomPasswordInput.Enable = self.roomSettingPrivate
+    if self.roomSettingPrivate then
+        self.roomPasswordInput.PlaceHolder = "비밀번호"
+    else
+        self.roomPasswordInput.Text = ""
+        self.roomPasswordInput.PlaceHolder = "비공개 방에서 입력 가능"
+    end
+    log("[MafiaUIFlow] room password input enabled=" .. tostring(self.roomSettingPrivate))
+end
+
+method void RefreshRoomPrivateCheckSprite(Entity spriteEntity)
+    if spriteEntity == nil then return end
+    spriteEntity.Enable = true
+    if spriteEntity.SpriteGUIRendererComponent == nil then return end
+    if self.roomSettingPrivate then
+        spriteEntity.SpriteGUIRendererComponent.ImageRUID = self.roomCheckOnRuid
+    else
+        spriteEntity.SpriteGUIRendererComponent.ImageRUID = self.roomCheckOffRuid
+    end
+end
+
+method void RefreshRoomSettingChoice(table visuals, table texts, integer selectedValue)
+    if visuals == nil then return end
+    for value, entity in pairs(visuals) do
+        local selected = value == selectedValue
+        if entity ~= nil and entity.SpriteGUIRendererComponent ~= nil then
+            if selected then
+                entity.SpriteGUIRendererComponent.ImageRUID = self.roomSettingSelectedRuid
+            else
+                entity.SpriteGUIRendererComponent.ImageRUID = self.roomSettingNormalRuid
+            end
+        end
+        if texts ~= nil and texts[value] ~= nil then
+            if selected then
+                texts[value].FontColor = Color(1, 0.78, 0.22, 1)
+            else
+                texts[value].FontColor = Color(1, 1, 1, 1)
+            end
+        end
+    end
+end
+
+method void HandleLobbyChatSubmit(TextInputSubmitEvent event)
+    local message = event.Text
+    if message == nil or message == "" then message = self.lobbyChatDraft end
+    if message == nil or message == "" then message = self.lobbyChatLastNonEmptyDraft end
+    self:SendChat(message, self.lobbyChatInput)
+end
+
+method void HandleLobbyChatClick()
+    local message = ""
+    if self.lobbyChatInput ~= nil and self.lobbyChatInput.Text ~= nil then message = self.lobbyChatInput.Text end
+    if message == nil or message == "" then message = self.lobbyChatDraft end
+    if message == nil or message == "" then message = self.lobbyChatLastNonEmptyDraft end
+    self:SendChat(message, self.lobbyChatInput)
+    log("[MafiaUIFlow] lobby chat send button clicked")
+end
+
+method void HandleDayChatSubmit(TextInputSubmitEvent event)
+    local message = event.Text
+    if message == nil or message == "" then message = self.dayChatDraft end
+    if message == nil or message == "" then message = self.dayChatLastNonEmptyDraft end
+    self:SendChat(message, self.dayChatInput)
+end
+
+method void HandleDayChatClick()
+    local message = ""
+    if self.dayChatInput ~= nil and self.dayChatInput.Text ~= nil then message = self.dayChatInput.Text end
+    if message == nil or message == "" then message = self.dayChatDraft end
+    if message == nil or message == "" then message = self.dayChatLastNonEmptyDraft end
+    self:SendChat(message, self.dayChatInput)
+    log("[MafiaUIFlow] day chat send button clicked")
+end
+
+method void HandleNightChatSubmit(TextInputSubmitEvent event)
+    local message = event.Text
+    if message == nil or message == "" then message = self.nightChatDraft end
+    if message == nil or message == "" then message = self.nightChatLastNonEmptyDraft end
+    self:SendChat(message, self.nightChatInput)
+end
+
+method void HandleNightChatClick()
+    local message = ""
+    if self.nightChatInput ~= nil and self.nightChatInput.Text ~= nil then message = self.nightChatInput.Text end
+    if message == nil or message == "" then message = self.nightChatDraft end
+    if message == nil or message == "" then message = self.nightChatLastNonEmptyDraft end
+    self:SendChat(message, self.nightChatInput)
+    log("[MafiaUIFlow] night chat send button clicked")
+end
+
+method void HandleLobbyChatValueChange(TextInputValueChangeEvent event)
+    self.lobbyChatDraft = event.text or ""
+    if self.lobbyChatDraft ~= "" then
+        self.lobbyChatLastNonEmptyDraft = self.lobbyChatDraft
+    end
+end
+
+method void HandleDayChatValueChange(TextInputValueChangeEvent event)
+    self.dayChatDraft = event.text or ""
+    if self.dayChatDraft ~= "" then
+        self.dayChatLastNonEmptyDraft = self.dayChatDraft
+    end
+end
+
+method void HandleNightChatValueChange(TextInputValueChangeEvent event)
+    self.nightChatDraft = event.text or ""
+    if self.nightChatDraft ~= "" then
+        self.nightChatLastNonEmptyDraft = self.nightChatDraft
+    end
+end
+
+method void SendChat(string message, any input)
+    if message == nil or message == "" then return end
+    local userId = self:GetLocalUserId()
+    if userId == "" then return end
+    if input == self.lobbyChatInput then
+        self.lastLobbySentMessage = message
+        self.lobbyChatDraft = ""
+        self.lobbyChatLastNonEmptyDraft = ""
+    elseif input == self.dayChatInput then
+        self.dayChatDraft = ""
+        self.dayChatLastNonEmptyDraft = ""
+    elseif input == self.nightChatInput then
+        self.nightChatDraft = ""
+        self.nightChatLastNonEmptyDraft = ""
+    end
+    _MafiaGameLogic:SendChat(userId, message)
+    if input ~= nil then
+        input.Text = ""
+        local targetInput = input
+        _TimerService:SetTimerOnce(function()
+            if targetInput ~= nil and targetInput.Entity ~= nil and isvalid(targetInput.Entity) then
+                targetInput:ActivateInputField()
+                log("[MafiaUIFlow] chat input refocused")
+            end
+        end, 0.05)
+    end
+end
+
+method void HandleDaySkipClick()
+    if _MafiaGameLogic == nil then return end
+    local userId = self:GetLocalUserId()
+    if userId == "" then return end
+    local phase = _MafiaGameLogic.CurrentPhase
+    if phase == _MafiaGameLogic.PHASE_FREE_ROAM then
+        _MafiaGameLogic:RequestSkipToMeeting(userId)
+    end
+end
+
+method boolean IsLocalReady()
+    local userId = self:GetLocalUserId()
+    if userId == "" then return false end
+    for id in string.gmatch(_MafiaGameLogic.ReadyStatusList or "", "[^,]+") do
+        if id == userId then return true end
+    end
+    return false
+end
+
+method string GetLocalUserId()
+    local localPlayer = _UserService.LocalPlayer
+    if localPlayer == nil then return "" end
+    for _, userId in ipairs(_UserService.Users.Keys) do
+        local entity = _UserService:GetUserEntityByUserId(tostring(userId))
+        if entity == localPlayer then return tostring(userId) end
+    end
+    return ""
+end
+
+method string FormatChat(string chatLog)
+    if chatLog == nil or chatLog == "" then return "아직 등록된 메시지가 없습니다." end
+    local lines = {}
+    for line in string.gmatch(chatLog, "[^\n]+") do
+        local splitIndex = string.match(line, "()\t")
+        if splitIndex ~= nil then
+            lines[#lines + 1] = string.sub(line, 1, splitIndex - 1) .. " : " .. string.sub(line, splitIndex + 1)
+        end
+    end
+    return table.concat(lines, "\n")
+end
+
+method void ApplyChatLog(any textComponent, any scrollComponent, string chatLog)
+    if textComponent == nil then return end
+    local formatted = self:FormatChat(chatLog)
+    textComponent.Text = formatted
+
+    local lineCount = 1
+    for _ in string.gmatch(formatted, "\n") do lineCount = lineCount + 1 end
+    local contentHeight = math.max(450, lineCount * 26 + 24)
+    local transform = textComponent.Entity.UITransformComponent
+    if transform ~= nil then transform.RectSize = Vector2(600, contentHeight) end
+
+    if scrollComponent ~= nil then
+        scrollComponent:SetScrollNormalizedPosition(UITransformAxis.Vertical, 0)
+        log("[MafiaUIFlow] chat scroll updated; lines=" .. tostring(lineCount))
+    end
+    if scrollComponent == self.lobbyChatScroll then
+        self:UpdateScrollThumb(lineCount, chatLog)
+    end
+end
+
+method void ApplyLobbyChatBubbles(string chatLog)
+    -- Renders each chat entry into its own speech-bubble slot.
+    local localUserId = self:GetLocalUserId()
+    local userIds = {}
+    local messages = {}
+
+    if chatLog ~= nil and chatLog ~= "" then
+        for line in string.gmatch(chatLog, "[^\n]+") do
+            local splitIndex = string.match(line, "()\t")
+            if splitIndex ~= nil then
+                local userId = string.sub(line, 1, splitIndex - 1)
+                local message = string.sub(line, splitIndex + 1)
+                userIds[#userIds + 1] = userId
+                messages[#messages + 1] = message
+            end
+        end
+    end
+
+    self:ClearLobbyChatSlots()
+
+    local total = #messages
+    self.lobbyChatBubbleTotalCount = total
+    if total <= 0 then
+        self:UpdateLobbyChatBubbleScrollVisual(0)
+        log("[MafiaUIFlow] lobby chat bubbles cleared")
+        return
+    end
+
+    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
+    if self.lobbyChatBubbleScrollOffset < 0 then self.lobbyChatBubbleScrollOffset = 0 end
+    if self.lobbyChatBubbleScrollOffset > maxOffset then self.lobbyChatBubbleScrollOffset = maxOffset end
+
+    local visibleLastIndex = total - self.lobbyChatBubbleScrollOffset
+    local startIndex = visibleLastIndex - self.lobbyChatSlotCount + 1
+    if startIndex < 1 then
+        startIndex = 1
+    end
+
+    local slotIndex = 1
+    for i = startIndex, visibleLastIndex do
+        local userId = userIds[i]
+        local message = messages[i]
+        local isOwn = false
+        if localUserId ~= "" and userId == localUserId then
+            isOwn = true
+        elseif self.lastLobbySentMessage ~= "" and message == self.lastLobbySentMessage then
+            isOwn = true
+        end
+
+        self:RenderLobbyChatSlot(slotIndex, userId, message, isOwn)
+        slotIndex = slotIndex + 1
+    end
+
+    self:UpdateLobbyChatBubbleScrollVisual(total)
+    log("[MafiaUIFlow] lobby chat bubble list updated; total=" .. tostring(total) .. " offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " start=" .. tostring(startIndex) .. " last=" .. tostring(visibleLastIndex))
+end
+
+method void HideLobbyRawChatLog()
+    -- Keeps the old center chat log from rendering because lobby chat is shown through speech bubbles.
+    if self.lobbyChatLogText ~= nil then
+        self.lobbyChatLogText.Text = ""
+        if self.lobbyChatLogText.Entity ~= nil then
+            self.lobbyChatLogText.Entity.Enable = false
+        end
+    end
+end
+
+method void ClearLobbyChatSlots()
+    if self.lobbyChatSlotRoots == nil then return end
+    for i = 1, self.lobbyChatSlotCount do
+        local root = self.lobbyChatSlotRoots[i]
+        if root ~= nil then root.Enable = false end
+        if self.lobbyChatSlotFrames ~= nil and self.lobbyChatSlotFrames[i] ~= nil then
+            self.lobbyChatSlotFrames[i].Enable = false
+        end
+
+        local otherBubble = self.lobbyChatSlotOtherBubbles[i]
+        local ownBubble = self.lobbyChatSlotOwnBubbles[i]
+
+        local nameText = self.lobbyChatSlotOtherNames[i]
+        if nameText ~= nil then
+            nameText.Text = ""
+            if nameText.Entity ~= nil then nameText.Entity.Enable = false end
+        end
+        local otherText = self.lobbyChatSlotOtherMessages[i]
+        if otherText ~= nil then otherText.Text = "" end
+        local ownText = self.lobbyChatSlotOwnMessages[i]
+        if ownText ~= nil then ownText.Text = "" end
+    end
+end
+
+method void RenderLobbyChatSlot(integer slotIndex, string userId, string message, boolean isOwn)
+    if self.lobbyChatSlotRoots == nil then return end
+    local root = self.lobbyChatSlotRoots[slotIndex]
+    if root == nil then return end
+    root.Enable = true
+
+    local rowBubble = self.lobbyChatSlotOtherBubbles[slotIndex]
+    if rowBubble ~= nil then rowBubble.Enable = true end
+    ---@type Entity
+    local rowFrame = nil
+    if self.lobbyChatSlotFrames ~= nil then rowFrame = self.lobbyChatSlotFrames[slotIndex] end
+    if rowFrame ~= nil then rowFrame:SetEnable(false) end
+    self:PositionLobbyChatSlot(rowBubble, rowFrame, self.lobbyChatSlotOtherNames[slotIndex], isOwn)
+
+    if isOwn then
+        self:StyleLobbyChatRow(rowBubble, rowFrame, true)
+        local nameText = self.lobbyChatSlotOtherNames[slotIndex]
+        if nameText ~= nil then
+            nameText.Text = ""
+            if nameText.Entity ~= nil then nameText.Entity.Enable = false end
+        end
+        local messageText = self.lobbyChatSlotOtherMessages[slotIndex]
+        if messageText ~= nil then
+            messageText.Text = message or ""
+            self:StyleLobbyOwnChatText(messageText)
+            self:ResizeLobbyChatBubble(rowBubble, messageText, nameText, message or "")
+        end
+    else
+        self:StyleLobbyChatRow(rowBubble, rowFrame, false)
+        local nameText = self.lobbyChatSlotOtherNames[slotIndex]
+        if nameText ~= nil then
+            nameText.Text = self:GetUserDisplayName(userId)
+            if nameText.Entity ~= nil then nameText.Entity.Enable = true end
+            self:StyleLobbyChatName(nameText)
+        end
+        local otherText = self.lobbyChatSlotOtherMessages[slotIndex]
+        if otherText ~= nil then
+            otherText.Text = message or ""
+            self:StyleLobbyChatText(otherText)
+            self:ResizeLobbyChatBubble(rowBubble, otherText, nameText, message or "")
+        end
+    end
+end
+
+method void PositionLobbyChatSlot(Entity rowBubble, Entity rowFrame, any nameText, boolean isOwn)
+    -- Moves the chat row into the invisible left/right lane while preserving the row's vertical slot.
+    local x = -176
+    if isOwn then x = 122 end
+
+    if rowFrame ~= nil and rowFrame.UITransformComponent ~= nil then
+        local framePos = rowFrame.UITransformComponent.anchoredPosition
+        rowFrame.UITransformComponent.anchoredPosition = Vector2(x, framePos.y)
+    end
+
+    if rowBubble ~= nil and rowBubble.UITransformComponent ~= nil then
+        local pos = rowBubble.UITransformComponent.anchoredPosition
+        rowBubble.UITransformComponent.anchoredPosition = Vector2(x, pos.y)
+    end
+
+    if nameText ~= nil and nameText.Entity ~= nil and nameText.Entity.UITransformComponent ~= nil then
+        local namePos = nameText.Entity.UITransformComponent.anchoredPosition
+        nameText.Entity.UITransformComponent.anchoredPosition = Vector2(x, namePos.y)
+    end
+end
+
+method void StyleLobbyChatRow(Entity rowBubble, Entity rowFrame, boolean isOwn)
+    if rowFrame ~= nil and rowFrame.SpriteGUIRendererComponent ~= nil then
+        if isOwn then
+            rowFrame.SpriteGUIRendererComponent.Color = Color(1.0, 0.72, 0.30, 0.34)
+        else
+            rowFrame.SpriteGUIRendererComponent.Color = Color(0.82, 0.72, 0.58, 0.22)
+        end
+    end
+    if rowBubble ~= nil and rowBubble.SpriteGUIRendererComponent ~= nil then
+        rowBubble.SpriteGUIRendererComponent.Color = Color(0, 0, 0, 0)
+    end
+end
+
+method void StyleLobbyChatText(any textComponent)
+    if textComponent == nil then return end
+    textComponent.Font = FontType.Maple
+    textComponent.FontSize = 25
+    textComponent.Bold = true
+    textComponent.Alignment = TextAlignmentType.MiddleLeft
+    textComponent.Overflow = OverflowType.Overflow
+    textComponent.UseConstraintX = true
+    textComponent.ConstraintX = 248
+    textComponent.UseConstraintY = true
+    textComponent.ConstraintY = 46
+    textComponent.LineSpacing = 0.78
+    textComponent.FontColor = Color(1, 1, 1, 1)
+    textComponent.DropShadow = true
+    textComponent.DropShadowColor = Color(0, 0, 0, 0.9)
+    textComponent.DropShadowDistance = 1.5
+    textComponent.DropShadowAngle = 315
+end
+
+method void StyleLobbyOwnChatText(any textComponent)
+    if textComponent == nil then return end
+    textComponent.Font = FontType.Maple
+    textComponent.FontSize = 25
+    textComponent.Bold = true
+    textComponent.Alignment = TextAlignmentType.MiddleRight
+    textComponent.Overflow = OverflowType.Overflow
+    textComponent.UseConstraintX = true
+    textComponent.ConstraintX = 248
+    textComponent.UseConstraintY = true
+    textComponent.ConstraintY = 46
+    textComponent.LineSpacing = 0.78
+    textComponent.FontColor = Color(1, 0.84, 0.42, 1)
+    textComponent.DropShadow = true
+    textComponent.DropShadowColor = Color(0, 0, 0, 0.9)
+    textComponent.DropShadowDistance = 1.5
+    textComponent.DropShadowAngle = 315
+end
+
+method void StyleLobbyChatName(any textComponent)
+    if textComponent == nil then return end
+    textComponent.Font = FontType.Maple
+    textComponent.FontSize = 21
+    textComponent.Bold = true
+    textComponent.Alignment = TextAlignmentType.MiddleLeft
+    textComponent.Overflow = 2
+    textComponent.FontColor = Color(0.86, 0.68, 0.36, 1)
+    textComponent.DropShadow = true
+    textComponent.DropShadowColor = Color(0, 0, 0, 0.9)
+    textComponent.DropShadowDistance = 1.5
+    textComponent.DropShadowAngle = 315
+end
+
+method void ResizeLobbyChatBubble(Entity bubble, any messageText, any nameText, string message)
+    if bubble == nil or messageText == nil then return end
+    if messageText.Entity == bubble then
+        local directTransform = bubble.UITransformComponent
+        if directTransform ~= nil then
+            directTransform.RectSize = Vector2(284, 52)
+        end
+        return
+    end
+
+    local bubbleTransform = bubble.UITransformComponent
+    if bubbleTransform ~= nil then
+        bubbleTransform.RectSize = Vector2(284, 52)
+        bubbleTransform.anchoredPosition = Vector2(0, 0)
+    end
+
+    local messageTransform = messageText.Entity.UITransformComponent
+    if messageTransform ~= nil then
+        if messageText.Entity == bubble then
+            messageTransform.RectSize = Vector2(642, 34)
+        elseif nameText ~= nil then
+            messageTransform.RectSize = Vector2(430, 30)
+            messageTransform.anchoredPosition = Vector2(182, 0)
+        else
+            messageTransform.RectSize = Vector2(594, 30)
+            messageTransform.anchoredPosition = Vector2(-24, 0)
+        end
+    end
+
+    if nameText ~= nil and nameText.Entity ~= nil then
+        local nameTransform = nameText.Entity.UITransformComponent
+        if nameTransform ~= nil then
+            nameTransform.RectSize = Vector2(150, 24)
+            nameTransform.anchoredPosition = Vector2(22, 0)
+        end
+    end
+end
+
+method void ShowLobbyOwnChatBubble(string message)
+    -- Deprecated: lobby chat now renders through LobbyChatSlot1..6.
+    self:ApplyLobbyChatBubbles(_MafiaGameLogic.ChatLog or "")
+end
+
+method string GetUserDisplayName(string userId)
+    -- Returns the best display name available for a user id.
+    if userId == nil or userId == "" then return "" end
+    local user = _UserService.Users[userId]
+    if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then
+        return user.Nickname
+    end
+    return "Player " .. tostring(userId)
+end
+
+method integer CountChatEntries(string chatLog)
+    local count = 0
+    if chatLog ~= nil and chatLog ~= "" then
+        for line in string.gmatch(chatLog, "[^\n]+") do
+            local splitIndex = string.match(line, "()\t")
+            if splitIndex ~= nil then
+                count = count + 1
+            end
+        end
+    end
+    return count
+end
+
+method integer CountCsv(string value)
+    local count = 0
+    if value ~= nil and value ~= "" then
+        for _ in string.gmatch(value, "[^,]+") do count = count + 1 end
+    end
+    return count
+end
+
+method string FormatTime(number seconds)
+    local safeSeconds = math.max(0, math.floor(seconds))
+    return string.format("%02d:%02d", math.floor(safeSeconds / 60), safeSeconds % 60)
+end
+
+method void HandleScrollUpClick()
+    -- 위로 스크롤 (오래된 메시지 방향)
+    local chatLog = ""
+    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+    local total = self:CountChatEntries(chatLog)
+    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
+    if self.lobbyChatBubbleScrollOffset >= maxOffset then
+        log("[MafiaUIFlow] lobby bubble scroll up ignored; offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " max=" .. tostring(maxOffset))
+        return
+    end
+    self.lobbyChatBubbleScrollOffset = self.lobbyChatBubbleScrollOffset + 1
+    self:ApplyLobbyChatBubbles(chatLog)
+    log("[MafiaUIFlow] lobby bubble scroll up; offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " total=" .. tostring(total))
+end
+
+method void HandleScrollDownClick()
+    -- 아래로 스크롤 (최신 메시지 방향)
+    local chatLog = ""
+    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+    local total = self:CountChatEntries(chatLog)
+    if self.lobbyChatBubbleScrollOffset <= 0 then
+        log("[MafiaUIFlow] lobby bubble scroll down ignored; offset=0 total=" .. tostring(total))
+        return
+    end
+    self.lobbyChatBubbleScrollOffset = self.lobbyChatBubbleScrollOffset - 1
+    self:ApplyLobbyChatBubbles(chatLog)
+    log("[MafiaUIFlow] lobby bubble scroll down; offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " total=" .. tostring(total))
+end
+
+method void HandleLobbyMouseScroll(MouseScrollEvent event)
+    if _MafiaGameLogic == nil then return end
+    local total = self:CountChatEntries(_MafiaGameLogic.ChatLog or "")
+    if total <= self.lobbyChatSlotCount then return end
+
+    if event.ScrollDelta > 0 then
+        self:HandleScrollUpClick()
+    elseif event.ScrollDelta < 0 then
+        self:HandleScrollDownClick()
+    end
+    log("[MafiaUIFlow] lobby mouse wheel scroll; delta=" .. tostring(event.ScrollDelta) .. " offset=" .. tostring(self.lobbyChatBubbleScrollOffset))
+end
+
+method void HandleLobbyScrollThumbDown(UITouchDownEvent event)
+    -- Starts dragging the custom lobby chat scrollbar thumb.
+    self.lobbyScrollThumbDragging = true
+    log("[MafiaUIFlow] lobby scrollbar thumb down")
+end
+
+method void HandleLobbyScrollThumbUp(UITouchUpEvent event)
+    -- Ends dragging the custom lobby chat scrollbar thumb.
+    self.lobbyScrollThumbDragging = false
+    log("[MafiaUIFlow] lobby scrollbar thumb up")
+end
+
+method void HandleLobbyScrollThumbDrag(UITouchDragEvent event)
+    -- Converts scrollbar-thumb drag distance into a lobby chat scroll offset.
+    if self.lobbyScrollThumb == nil then return end
+    if self.lobbyScrollThumb.UITransformComponent == nil then return end
+    local chatLog = ""
+    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+    local total = self:CountChatEntries(chatLog)
+    if total <= self.lobbyChatSlotCount then return end
+
+    local pos = self.lobbyScrollThumb.UITransformComponent.anchoredPosition
+    local targetY = pos.y + event.TouchDelta.y
+    self:ApplyLobbyChatScrollByThumbY(targetY, "thumb-drag")
+end
+
+method void HandleLobbyScrollTrackDown(UITouchDownEvent event)
+    -- Jumps the custom lobby chat scrollbar thumb to the clicked track location.
+    self:ApplyLobbyChatScrollByTouchPoint(event.TouchPoint, "track-click")
+end
+
+method void HandleLobbyScrollHitDown(UITouchDownEvent event)
+    -- Jumps the lobby chat scrollbar by the wide invisible hit area.
+    self:ApplyLobbyChatScrollByTouchPoint(event.TouchPoint, "hitarea-click")
+end
+
+method void HandleLobbyScrollHitDrag(UITouchDragEvent event)
+    -- Drags the lobby chat scrollbar through the wide invisible hit area.
+    self:ApplyLobbyChatScrollByTouchPoint(event.TouchPoint, "hitarea-drag")
+end
+
+method void HandleLobbyScrollbarScreenTouch(ScreenTouchEvent event)
+    -- Starts scrollbar dragging through screen coordinates when the UI touch layer misses the drag.
+    if not self:IsLobbyScrollbarTouchPoint(event.TouchPoint) then return end
+    self.lobbyScrollPointerActive = true
+    self.lobbyScrollPointerId = event.TouchId
+    self:ApplyLobbyChatScrollByTouchPoint(event.TouchPoint, "screen-touch")
+    log("[MafiaUIFlow] lobby scrollbar screen touch captured; id=" .. tostring(event.TouchId))
+end
+
+method void HandleLobbyScrollbarScreenTouchHold(ScreenTouchHoldEvent event)
+    -- Continues scrollbar dragging through screen coordinates.
+    if not self.lobbyScrollPointerActive then return end
+    if self.lobbyScrollPointerId ~= 0 and event.TouchId ~= self.lobbyScrollPointerId then return end
+    self:ApplyLobbyChatScrollByTouchPoint(event.TouchPoint, "screen-drag")
+end
+
+method void HandleLobbyScrollbarScreenTouchRelease(ScreenTouchReleaseEvent event)
+    -- Ends scrollbar dragging through screen coordinates.
+    if not self.lobbyScrollPointerActive then return end
+    if self.lobbyScrollPointerId ~= 0 and event.TouchId ~= self.lobbyScrollPointerId then return end
+    self.lobbyScrollPointerActive = false
+    self.lobbyScrollPointerId = 0
+    log("[MafiaUIFlow] lobby scrollbar screen touch released")
+end
+
+method boolean IsLobbyScrollbarTouchPoint(Vector2 touchPoint)
+    -- Returns whether the screen point is inside the custom lobby scrollbar hit zone.
+    if _MafiaGameLogic == nil then return false end
+    if self.lobbyScrollTrack == nil then return false end
+    if self.lobbyScrollTrack.UITransformComponent == nil then return false end
+    local total = self:CountChatEntries(_MafiaGameLogic.ChatLog or "")
+    if total <= self.lobbyChatSlotCount then return false end
+
+    local localPos = _UILogic:ScreenToLocalUIPosition(touchPoint, self.lobbyScrollTrack.UITransformComponent)
+    local trackY = self.lobbyScrollTrack.UITransformComponent.anchoredPosition.y
+    local halfHeight = self:GetLobbyScrollThumbHalfHeight()
+    local bottomLocalY = self:GetLobbyScrollThumbBottomCenterY() - trackY - halfHeight - 20
+    local topLocalY = self:GetLobbyScrollThumbTopCenterY() - trackY + halfHeight + 20
+    return localPos.x >= -80 and localPos.x <= 80 and localPos.y >= bottomLocalY and localPos.y <= topLocalY
+end
+
+method void ApplyLobbyChatScrollByTouchPoint(Vector2 touchPoint, string reason)
+    -- Converts a screen touch position to a scrollbar thumb position.
+    if self.lobbyScrollTrack == nil then return end
+    if self.lobbyScrollTrack.UITransformComponent == nil then return end
+    local chatLog = ""
+    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+    local total = self:CountChatEntries(chatLog)
+    if total <= self.lobbyChatSlotCount then return end
+
+    local trackTransform = self.lobbyScrollTrack.UITransformComponent
+    local trackPos = trackTransform.anchoredPosition
+    local localPos = _UILogic:ScreenToLocalUIPosition(touchPoint, trackTransform)
+    local targetY = trackPos.y + localPos.y
+    self:ApplyLobbyChatScrollByThumbY(targetY, reason)
+end
+
+method void ApplyLobbyChatScrollByThumbY(number targetY, string reason)
+    -- Applies a scrollbar Y position to the chat list and clamps it to the available range.
+    local chatLog = ""
+    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+    local total = self:CountChatEntries(chatLog)
+    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
+    if maxOffset <= 0 then
+        self.lobbyChatBubbleScrollOffset = 0
+        self:UpdateLobbyChatBubbleScrollVisual(total)
+        return
+    end
+
+    local bottomY = self:GetLobbyScrollThumbBottomCenterY()
+    local topY = self:GetLobbyScrollThumbTopCenterY()
+    if topY < bottomY then topY = bottomY end
+    if targetY < bottomY then targetY = bottomY end
+    if targetY > topY then targetY = topY end
+
+    local ratio = 0
+    if topY > bottomY then
+        ratio = (targetY - bottomY) / (topY - bottomY)
+    end
+    if ratio < 0 then ratio = 0 end
+    if ratio > 1 then ratio = 1 end
+
+    local nextOffset = math.floor(ratio * maxOffset + 0.5)
+    if nextOffset < 0 then nextOffset = 0 end
+    if nextOffset > maxOffset then nextOffset = maxOffset end
+
+    self.lobbyChatBubbleScrollOffset = nextOffset
+    self:ApplyLobbyChatBubbles(chatLog)
+    log("[MafiaUIFlow] lobby scrollbar " .. tostring(reason) .. "; targetY=" .. tostring(targetY) .. " offset=" .. tostring(nextOffset) .. " total=" .. tostring(total))
+end
+
+method void SetLobbyChatScrollThumbY(number y)
+    -- Sets the target Y; OnUpdate lerps towards it for smooth animation.
+    self.lobbyScrollThumbTargetY = y
+end
+
+method number GetLobbyScrollThumbHalfHeight()
+    -- Returns the current custom thumb half-height so edge-based cursor coordinates can drive center-based UI movement.
+    if self.lobbyScrollThumb ~= nil and self.lobbyScrollThumb.UITransformComponent ~= nil then
+        return self.lobbyScrollThumb.UITransformComponent.RectSize.y / 2
+    end
+    return 50
+end
+
+method number GetLobbyScrollThumbBottomCenterY()
+    -- Manual editor-tuned thumb center Y at the lower limit.
+    return self.lobbyScrollThumbBottomY
+end
+
+method number GetLobbyScrollThumbTopCenterY()
+    -- Manual editor-tuned thumb center Y at the upper limit.
+    return self.lobbyScrollThumbTopY
+end
+
+method void UpdateScrollThumb(integer lineCount, string chatLog)
+    -- 메시지 수 계산 (개행 기준)
+    local msgCount = 0
+    if chatLog ~= nil and chatLog ~= "" then
+        for _ in string.gmatch(chatLog, "\n") do msgCount = msgCount + 1 end
+    end
+    -- 스크롤 필요 여부: 콘텐츠 높이 > 뷰포트 높이(450)
+    local hasOverflow = (lineCount * 26 + 24) > 450
+    log("[MafiaUIFlow] thumb update; overflow=" .. tostring(hasOverflow) .. " msgs=" .. tostring(msgCount))
+end
+
+method void UpdateLobbyChatBubbleScrollVisual(integer total)
+    local hasOverflow = total > self.lobbyChatSlotCount
+    if self.lobbyScrollThumb ~= nil then
+        self.lobbyScrollThumb.Enable = hasOverflow
+        if hasOverflow and self.lobbyScrollThumb.UITransformComponent ~= nil then
+            local maxOffset = math.max(1, total - self.lobbyChatSlotCount)
+            local ratio = self.lobbyChatBubbleScrollOffset / maxOffset
+            if ratio < 0 then ratio = 0 end
+            if ratio > 1 then ratio = 1 end
+            local bottomY = self:GetLobbyScrollThumbBottomCenterY()
+            local topY = self:GetLobbyScrollThumbTopCenterY()
+            if topY < bottomY then topY = bottomY end
+            local y = bottomY + (topY - bottomY) * ratio
+            self:SetLobbyChatScrollThumbY(y)
+        end
+    end
+    log("[MafiaUIFlow] lobby bubble scroll visual; overflow=" .. tostring(hasOverflow) .. " total=" .. tostring(total) .. " offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " thumbY=" .. tostring(self.lobbyScrollThumbTargetY) .. " bottom=" .. tostring(self:GetLobbyScrollThumbBottomCenterY()) .. " top=" .. tostring(self:GetLobbyScrollThumbTopCenterY()))
+end
+
+method void ResolveVoteUI()
+    -- Resolves Vote entity references and wires button events.
+    if self.voteCardEntities == nil then self.voteCardEntities = {} end
+    if self.voteAvatarEntities == nil then self.voteAvatarEntities = {} end
+    if self.voteNameTexts == nil then self.voteNameTexts = {} end
+    if self.voteCircleOffEntities == nil then self.voteCircleOffEntities = {} end
+    if self.voteCircleOnEntities == nil then self.voteCircleOnEntities = {} end
+    if self.voteCardHandlers == nil then self.voteCardHandlers = {} end
+    if self.votePlayerUserIds == nil then self.votePlayerUserIds = {} end
+
+    self.votePanel = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote")
+
+    local titleEnt = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote/Vote_3")
+    if titleEnt ~= nil then self.voteTitleComp = titleEnt.TextComponent end
+
+    local cardPaths = {
+        "/ui/MafiaDayHUD/Vote/Vote_4",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_2",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_4",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_6",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_1",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_3",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_5",
+        "/ui/MafiaDayHUD/Vote/Vote_4/UISprite_7",
+    }
+
+    local grayCirclePaths = {
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_3",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_5",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_6",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_2",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_1",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_4",
+        "/ui/MafiaDayHUD/Vote/Vote_4/VoteCircleOff_7",
+    }
+    local yellowCirclePaths = {
+        "/ui/MafiaDayHUD/Vote/Vote_8",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_11",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_9",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_10",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_12",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_14",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_13",
+        "/ui/MafiaDayHUD/Vote/Vote_8/Vote_15",
+    }
+    for i = 1, 8 do
+        self.voteCircleOffEntities[i] = _EntityService:GetEntityByPath(grayCirclePaths[i])
+        self.voteCircleOnEntities[i]  = _EntityService:GetEntityByPath(yellowCirclePaths[i])
+    end
+
+    for i = 1, 8 do
+        local cardEnt = _EntityService:GetEntityByPath(cardPaths[i])
+        self.voteCardEntities[i] = cardEnt
+        if cardEnt ~= nil then
+            local avatarEnt = _EntityService:GetEntityByPath(cardPaths[i] .. "/VoteAvatar")
+            self.voteAvatarEntities[i] = avatarEnt
+            local nameEnt = _EntityService:GetEntityByPath(cardPaths[i] .. "/VoteNameText")
+            if nameEnt ~= nil then self.voteNameTexts[i] = nameEnt.TextComponent end
+            if self.voteCardHandlers[i] == nil and cardEnt.ButtonComponent ~= nil then
+                local slotIndex = i
+                self.voteCardHandlers[i] = cardEnt:ConnectEvent(ButtonClickEvent, function()
+                    self:SelectVoteTarget(slotIndex)
+                end)
+            end
+        end
+    end
+
+    local confirmEnt = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote/Vote_1")
+    if confirmEnt ~= nil then
+        self.voteConfirmEntity = confirmEnt
+        self.voteConfirmBtn = confirmEnt.ButtonComponent
+        self.voteConfirmRenderer = confirmEnt.SpriteGUIRendererComponent
+        if self.voteConfirmHandler == nil and confirmEnt.ButtonComponent ~= nil then
+            self.voteConfirmHandler = confirmEnt:ConnectEvent(ButtonClickEvent, self.HandleVoteConfirm)
+        end
+    end
+
+    local abstainEnt = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote/Vote_2")
+    if abstainEnt ~= nil then
+        self.voteAbstainEntity = abstainEnt
+        self.voteAbstainBtn = abstainEnt.ButtonComponent
+        if self.voteAbstainHandler == nil and abstainEnt.ButtonComponent ~= nil then
+            self.voteAbstainHandler = abstainEnt:ConnectEvent(ButtonClickEvent, self.HandleVoteAbstain)
+        end
+    end
+
+    self.voteStampEntity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote/Vote_7")
+    if self.voteStampEntity ~= nil then
+        self.voteStampRenderer = self.voteStampEntity.SpriteGUIRendererComponent
+    end
+
+    log("[MafiaUIFlow] vote UI resolved; panel=" .. tostring(self.votePanel ~= nil))
+end
+
+method void ShowVoteUI()
+    -- Populates card slots with alive players and shows the Vote panel.
+    if self.votePanel == nil then self:ResolveVoteUI() end
+    if self.votePanel == nil then return end
+
+    local aliveStr = _MafiaGameLogic.AlivePlayersList
+    local players = {}
+    if aliveStr ~= nil and aliveStr ~= "" then
+        players = self:SplitString(aliveStr, ",")
+    end
+    local count = #players
+    if count > 8 then count = 8 end
+
+    for i = 1, 8 do self.votePlayerUserIds[i] = nil end
+    for i = 1, count do self.votePlayerUserIds[i] = players[i] end
+
+    for i = 1, 8 do
+        local userId  = self.votePlayerUserIds[i]
+        local cardEnt = self.voteCardEntities[i]
+        local avEnt   = self.voteAvatarEntities[i]
+        local nameTc  = self.voteNameTexts[i]
+        local circOff = self.voteCircleOffEntities[i]
+        local circOn  = self.voteCircleOnEntities[i]
+
+        if avEnt ~= nil then
+            if userId ~= nil then
+                local costume  = avEnt.CostumeManagerComponent
+                local renderer = avEnt.AvatarGUIRendererComponent
+                if costume ~= nil then
+                    costume.UseCustomEquipOnly  = false
+                    costume.DefaultEquipUserId  = userId
+                    costume.Enable = true
+                end
+                if renderer ~= nil then renderer.Enable = true end
+                avEnt.Enable = true
+            else
+                avEnt.Enable = false
+            end
+        end
+        if nameTc ~= nil then
+            nameTc.Text = (userId ~= nil) and self:GetUserDisplayName(userId) or ""
+        end
+        -- Enable 토글: 회색(기본 보임) / 노란색 스프라이트(기본 숨김)
+        -- 노란색은 Vote_8 계층 문제로 SpriteGUIRendererComponent.Enable 사용
+        if circOff ~= nil then circOff.Enable = (userId ~= nil) end
+        if circOn ~= nil and circOn.SpriteGUIRendererComponent ~= nil then
+            circOn.SpriteGUIRendererComponent.Enable = false
+        end
+        if cardEnt ~= nil and cardEnt.ButtonComponent ~= nil then
+            cardEnt.ButtonComponent.Enable = (userId ~= nil)
+        end
+    end
+
+    self:LayoutVoteGrid(count)
+
+    self.voteSelectedSlot = 0
+    self.voteSubmitted    = false
+    if self.voteConfirmBtn ~= nil then self.voteConfirmBtn.Enable = false end
+    if self.voteConfirmRenderer ~= nil then self.voteConfirmRenderer:SetAlpha(0.35) end
+
+    if self.voteStampEntity ~= nil then self.voteStampEntity.Enable = false end
+
+    local timerNum = tostring(math.max(0, math.ceil(_MafiaGameLogic.PhaseTimer)))
+    if self.voteTitleComp ~= nil then
+        self.voteTitleComp.Text = "투표  " .. timerNum
+    end
+
+    self.votePanel.Enable = true
+    self.voteUIShown = true
+    log("[MafiaUIFlow] vote panel shown; alive=" .. tostring(count))
+end
+
+method void LayoutVoteGrid(integer count)
+    -- Adjusts card visibility and positions for 6, 7, or 8 alive players.
+    -- Vote_4 (slot1) base pos in Vote panel: [-448.9, 112.2]
+    -- Sibling col-spacing: ~298.7.  Row-2 relative y: -269.3
+    -- Center shift for 3-col vs 4-col: +149.3
+
+    local BASE_X  = -448.9
+    local BASE_Y  =  112.2
+    local COL_W   =  298.7
+    local ROW2_Y  = -269.3
+    local SHIFT3  =  149.3  -- offset to center 3 cols within 4-col width
+
+    local slot1 = self.voteCardEntities[1]  -- Vote_4 (parent)
+    local slot5 = self.voteCardEntities[5]  -- UISprite_1 (row2 col1)
+    local slot6 = self.voteCardEntities[6]  -- UISprite_3 (row2 col2)
+    local slot7 = self.voteCardEntities[7]  -- UISprite_5 (row2 col3)
+
+    -- Reset Vote_4 to base position
+    if slot1 ~= nil and slot1.UITransformComponent ~= nil then
+        slot1.UITransformComponent.anchoredPosition = Vector2(BASE_X, BASE_Y)
+    end
+    -- Reset row-2 sibling positions (relative to Vote_4)
+    if slot5 ~= nil and slot5.UITransformComponent ~= nil then
+        slot5.UITransformComponent.anchoredPosition = Vector2(0, ROW2_Y)
+    end
+    if slot6 ~= nil and slot6.UITransformComponent ~= nil then
+        slot6.UITransformComponent.anchoredPosition = Vector2(COL_W, ROW2_Y)
+    end
+    if slot7 ~= nil and slot7.UITransformComponent ~= nil then
+        slot7.UITransformComponent.anchoredPosition = Vector2(COL_W * 2, ROW2_Y)
+    end
+
+    -- Show/hide slots
+    for i = 1, 8 do
+        local e = self.voteCardEntities[i]
+        if e ~= nil then e.Enable = (i <= count) end
+    end
+
+    if count == 6 then
+        -- 3+3: shift Vote_4 right to center row1 (hide slot4=UISprite_6)
+        if slot1 ~= nil and slot1.UITransformComponent ~= nil then
+            slot1.UITransformComponent.anchoredPosition = Vector2(BASE_X + SHIFT3, BASE_Y)
+        end
+        local slot4 = self.voteCardEntities[4]
+        if slot4 ~= nil then slot4.Enable = false end
+    elseif count == 7 then
+        -- 4+3: keep row1; center row2 with 3 cards
+        if slot5 ~= nil and slot5.UITransformComponent ~= nil then
+            slot5.UITransformComponent.anchoredPosition = Vector2(SHIFT3, ROW2_Y)
+        end
+        if slot6 ~= nil and slot6.UITransformComponent ~= nil then
+            slot6.UITransformComponent.anchoredPosition = Vector2(SHIFT3 + COL_W, ROW2_Y)
+        end
+        if slot7 ~= nil and slot7.UITransformComponent ~= nil then
+            slot7.UITransformComponent.anchoredPosition = Vector2(SHIFT3 + COL_W * 2, ROW2_Y)
+        end
+    end
+    log("[MafiaUIFlow] vote grid layout; count=" .. tostring(count))
+end
+
+method void SelectVoteTarget(integer slotIndex)
+    -- Enable 토글로 원형 색상 변경: VoteCircleOff↔VoteCircleOn 교차 표시.
+    log("[MafiaUIFlow] SelectVoteTarget called; slot=" .. tostring(slotIndex) .. " submitted=" .. tostring(self.voteSubmitted))
+    if self.voteSubmitted then return end
+    if self.votePlayerUserIds == nil then return end
+    local userId = self.votePlayerUserIds[slotIndex]
+    log("[MafiaUIFlow] SelectVoteTarget userId=" .. tostring(userId))
+    if userId == nil then return end
+
+    -- 이전 선택 해제: 회색 다시 보임, 노란색 스프라이트 숨김
+    if self.voteSelectedSlot > 0 then
+        local prevOff = self.voteCircleOffEntities[self.voteSelectedSlot]
+        local prevOn  = self.voteCircleOnEntities[self.voteSelectedSlot]
+        if prevOff ~= nil then prevOff.Enable = true end
+        if prevOn ~= nil and prevOn.SpriteGUIRendererComponent ~= nil then
+            prevOn.SpriteGUIRendererComponent.Enable = false
+        end
+    end
+
+    self.voteSelectedSlot = slotIndex
+
+    -- 새 선택: 회색 숨김, 노란색 스프라이트 보임
+    local circOff = self.voteCircleOffEntities[slotIndex]
+    local circOn  = self.voteCircleOnEntities[slotIndex]
+    log("[MafiaUIFlow] SelectVoteTarget circOff=" .. tostring(circOff ~= nil) .. " circOn=" .. tostring(circOn ~= nil))
+    if circOff ~= nil then circOff.Enable = false end
+    if circOn ~= nil and circOn.SpriteGUIRendererComponent ~= nil then
+        circOn.SpriteGUIRendererComponent.Enable = true
+    end
+
+    if self.voteConfirmBtn ~= nil then self.voteConfirmBtn.Enable = true end
+    if self.voteConfirmRenderer ~= nil then self.voteConfirmRenderer:SetAlpha(1.0) end
+    log("[MafiaUIFlow] vote target selected; slot=" .. tostring(slotIndex))
+end
+
+method void HandleVoteConfirm()
+    -- Submits the vote for the selected player.
+    if self.voteSubmitted then return end
+    if self.voteSelectedSlot <= 0 then return end
+    if self.votePlayerUserIds == nil then return end
+    local userId = self.votePlayerUserIds[self.voteSelectedSlot]
+    if userId == nil then return end
+    local localUserId = self:GetLocalUserId()
+    if localUserId == "" then return end
+    self.voteSubmitted = true
+    if self.voteConfirmBtn ~= nil then self.voteConfirmBtn.Enable = false end
+    if self.voteConfirmRenderer ~= nil then self.voteConfirmRenderer:SetAlpha(0.35) end
+    _MafiaGameLogic:SubmitVote(localUserId, userId)
+    log("[MafiaUIFlow] vote submitted; target=" .. tostring(userId))
+end
+
+method void HandleVoteAbstain()
+    -- Submits an abstain (empty target).
+    if self.voteSubmitted then return end
+    local localUserId = self:GetLocalUserId()
+    if localUserId == "" then return end
+    self.voteSubmitted = true
+    _MafiaGameLogic:SubmitVote(localUserId, "")
+    log("[MafiaUIFlow] vote abstained")
+end
+
+method void HideVotePanel()
+    -- Hides the vote panel and resets state.
+    if self.voteStampTimerId ~= 0 then
+        _TimerService:ClearTimer(self.voteStampTimerId)
+        self.voteStampTimerId = 0
+    end
+    if self.votePanel ~= nil then self.votePanel.Enable = false end
+    self.voteUIShown = false
+    log("[MafiaUIFlow] vote panel hidden")
+end
+
+method void ShowExecutionStamp(string executedUserId)
+    -- Positions Vote_7 over the executed player's card and fades it in.
+    if self.voteStampEntity == nil then return end
+
+    -- Find which slot index the executed player is in
+    local targetSlot = 0
+    for i = 1, 8 do
+        if self.votePlayerUserIds[i] == executedUserId then
+            targetSlot = i
+            break
+        end
+    end
+    if targetSlot <= 0 then
+        -- Executed player not in current card list — show center
+        self.voteStampEntity.Enable = true
+        return
+    end
+
+    -- Card slot absolute positions in Vote panel space
+    local BASE_X = -448.9
+    local BASE_Y =  112.2
+    local COL_W  =  298.7
+    local ROW2_Y = -269.3
+    -- Positions: slot1..8
+    local posX = { BASE_X, BASE_X+COL_W, BASE_X+COL_W*2, BASE_X+COL_W*3,
+                   BASE_X, BASE_X+COL_W, BASE_X+COL_W*2, BASE_X+COL_W*3 }
+    local posY = { BASE_Y, BASE_Y, BASE_Y, BASE_Y,
+                   BASE_Y+ROW2_Y, BASE_Y+ROW2_Y, BASE_Y+ROW2_Y, BASE_Y+ROW2_Y }
+
+    if self.voteStampEntity.UITransformComponent ~= nil then
+        self.voteStampEntity.UITransformComponent.anchoredPosition =
+            Vector2(posX[targetSlot], posY[targetSlot])
+    end
+
+    -- Start fade-in animation via SpriteGUIRendererComponent:SetAlpha()
+    self.voteStampAlpha = 0
+    if self.voteStampRenderer ~= nil then self.voteStampRenderer:SetAlpha(0) end
+    self.voteStampEntity.Enable = true
+
+    if self.voteStampTimerId ~= 0 then
+        _TimerService:ClearTimer(self.voteStampTimerId)
+    end
+    self.voteStampTimerId = _TimerService:SetTimerRepeat(function()
+        self.voteStampAlpha = self.voteStampAlpha + 0.08
+        if self.voteStampAlpha >= 1 then
+            self.voteStampAlpha = 1
+            if self.voteStampRenderer ~= nil then self.voteStampRenderer:SetAlpha(1) end
+            _TimerService:ClearTimer(self.voteStampTimerId)
+            self.voteStampTimerId = 0
+        else
+            if self.voteStampRenderer ~= nil then
+                self.voteStampRenderer:SetAlpha(self.voteStampAlpha)
+            end
+        end
+    end, 0.016)
+    log("[MafiaUIFlow] execution stamp shown; slot=" .. tostring(targetSlot))
+end
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- NIGHT HUD
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+method table SplitString(string str, string sep)
+    -- Splits str by sep and returns a table of substrings.
+    local result = {}
+    local startIdx = 1
+    local posStart = nil
+    local posEnd = nil
+    while startIdx <= string.len(str) do
+        posStart, posEnd = string.find(str, sep, startIdx)
+        if posStart == nil then
+            result[#result + 1] = string.sub(str, startIdx)
+            break
+        end
+        result[#result + 1] = string.sub(str, startIdx, posStart - 1)
+        startIdx = posEnd + 1
+    end
+    return result
+end
+
+method integer GetLocalPlayerRole()
+    -- Returns ROLE_MAFIA/POLICE/DOCTOR/CITIZEN for the local player, or -1 if unknown.
+    local localId = self:GetLocalUserId()
+    if localId == "" then return -1 end
+    local roleData = _MafiaGameLogic.RoleData
+    if roleData == nil or roleData == "" then return -1 end
+    local parts = self:SplitString(roleData, ",")
+    local i = 1
+    while i + 1 <= #parts do
+        if parts[i] == localId then
+            local r = tonumber(parts[i + 1])
+            if r ~= nil then return r end
+        end
+        i += 2
+    end
+    return -1
+end
+
+method table GetNightTargets(integer role)
+    -- Returns list of userId strings that are valid targets for the given role.
+    local localId = self:GetLocalUserId()
+    local aliveStr = _MafiaGameLogic.AlivePlayersList
+    if aliveStr == nil or aliveStr == "" then return {} end
+    local aliveIds = self:SplitString(aliveStr, ",")
+
+    if role == _MafiaGameLogic.ROLE_MAFIA then
+        -- Build set of mafia userIds from RoleData to exclude them
+        local mafiaSet = {}
+        local roleData = _MafiaGameLogic.RoleData
+        if roleData ~= nil and roleData ~= "" then
+            local parts = self:SplitString(roleData, ",")
+            local j = 1
+            while j + 1 <= #parts do
+                if tonumber(parts[j + 1]) == _MafiaGameLogic.ROLE_MAFIA then
+                    mafiaSet[parts[j]] = true
+                end
+                j += 2
+            end
+        end
+        local result = {}
+        for _, uid in ipairs(aliveIds) do
+            if not mafiaSet[uid] then result[#result + 1] = uid end
+        end
+        return result
+    else
+        -- Police / Doctor: exclude self
+        local result = {}
+        for _, uid in ipairs(aliveIds) do
+            if uid ~= localId then result[#result + 1] = uid end
+        end
+        return result
+    end
+end
+
+method void ResolveNightUI()
+    -- Resolves entity references for all three night panels and wires button events.
+    if self.nightRoot == nil then return end
+
+    self.nightMafiaPanel = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Mafia")
+    self.nightPolicePanel = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Police")
+    self.nightDoctorPanel = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Doctor")
+
+    -- Title text components (for timer display)
+    local m1 = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Mafia/Mafia_1")
+    local p1 = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Police/Police_1")
+    local d1 = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Doctor/Doctor_1")
+    self.nightMafiaTitleComp  = (m1 ~= nil) and m1.TextComponent or nil
+    self.nightPoliceTitleComp = (p1 ~= nil) and p1.TextComponent or nil
+    self.nightDoctorTitleComp = (d1 ~= nil) and d1.TextComponent or nil
+
+    -- Confirm buttons
+    self.nightMafiaConfirmEnt  = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Mafia/Mafia_4")
+    self.nightPoliceConfirmEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Police/Police_3")
+    self.nightDoctorConfirmEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Doctor/Doctor_3")
+
+    -- Mafia hide-modal button
+    self.nightMafiaHideEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Mafia/Mafia_6")
+
+    -- Card slot paths per role
+    local mafiaSlotPaths = {
+        "/ui/MafiaNightHUD/Mafia/Mafia_5",
+        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_6",
+        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_7",
+        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_8",
+        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_9",
+        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_10",
+    }
+    local policeSlotPaths = {
+        "/ui/MafiaNightHUD/Police/Police_4",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite_1",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite_2",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite_3",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite_4",
+        "/ui/MafiaNightHUD/Police/Police_4/UISprite_5",
+    }
+    local doctorSlotPaths = {
+        "/ui/MafiaNightHUD/Doctor/Doctor_4",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_1",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_2",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_3",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_4",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_5",
+        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_6",
+    }
+
+    local function resolveSlots(paths, cards, avatars, names, circles, handlers, role)
+        for i, sp in ipairs(paths) do
+            local card = _EntityService:GetEntityByPath(sp)
+            cards[i] = card
+            if card ~= nil then
+                local av = _EntityService:GetEntityByPath(sp .. "/NightAvatar")
+                local nt = _EntityService:GetEntityByPath(sp .. "/NightNameText")
+                local nc = _EntityService:GetEntityByPath(sp .. "/NightCircle")
+                avatars[i] = av
+                names[i]   = (nt ~= nil) and nt.TextComponent or nil
+                circles[i] = nc
+                local slotIdx = i
+                local r = role
+                if handlers[i] == nil and card.ButtonComponent ~= nil then
+                    handlers[i] = card:ConnectEvent(ButtonClickEvent, function()
+                        self:SelectNightTarget(r, slotIdx)
+                    end)
+                end
+            end
+        end
+    end
+
+    resolveSlots(mafiaSlotPaths,  self.nightMafiaCards,  self.nightMafiaAvatars,  self.nightMafiaNames,  self.nightMafiaCircles,  self.nightMafiaHandlers,  _MafiaGameLogic.ROLE_MAFIA)
+    resolveSlots(policeSlotPaths, self.nightPoliceCards, self.nightPoliceAvatars, self.nightPoliceNames, self.nightPoliceCircles, self.nightPoliceHandlers, _MafiaGameLogic.ROLE_POLICE)
+    resolveSlots(doctorSlotPaths, self.nightDoctorCards, self.nightDoctorAvatars, self.nightDoctorNames, self.nightDoctorCircles, self.nightDoctorHandlers, _MafiaGameLogic.ROLE_DOCTOR)
+
+    -- Confirm button events
+    if self.nightMafiaConfirmEnt ~= nil and self.nightMafiaConfirmEnt.ButtonComponent ~= nil and self.nightConfirmMafiaHandler == nil then
+        self.nightConfirmMafiaHandler = self.nightMafiaConfirmEnt:ConnectEvent(ButtonClickEvent, function()
+            self:SubmitNightChoice(_MafiaGameLogic.ROLE_MAFIA)
+        end)
+    end
+    if self.nightPoliceConfirmEnt ~= nil and self.nightPoliceConfirmEnt.ButtonComponent ~= nil and self.nightConfirmPoliceHandler == nil then
+        self.nightConfirmPoliceHandler = self.nightPoliceConfirmEnt:ConnectEvent(ButtonClickEvent, function()
+            self:SubmitNightChoice(_MafiaGameLogic.ROLE_POLICE)
+        end)
+    end
+    if self.nightDoctorConfirmEnt ~= nil and self.nightDoctorConfirmEnt.ButtonComponent ~= nil and self.nightConfirmDoctorHandler == nil then
+        self.nightConfirmDoctorHandler = self.nightDoctorConfirmEnt:ConnectEvent(ButtonClickEvent, function()
+            self:SubmitNightChoice(_MafiaGameLogic.ROLE_DOCTOR)
+        end)
+    end
+    if self.nightMafiaHideEnt ~= nil and self.nightMafiaHideEnt.ButtonComponent ~= nil and self.nightHideHandler == nil then
+        self.nightHideHandler = self.nightMafiaHideEnt:ConnectEvent(ButtonClickEvent, function()
+            self:HideNightPanel()
+        end)
+    end
+
+    log("[MafiaUIFlow] night UI resolved")
+end
+
+method void ShowNightPanel()
+    -- Shows the panel matching the local player's role and populates card slots.
+    local role = self:GetLocalPlayerRole()
+    if role < 0 then return end
+    self.nightActiveRole = role
+    self.nightSelectedSlot = 0
+    self.nightSubmitted = false
+
+    local targets = self:GetNightTargets(role)
+    local maxSlots = 0
+    local cards    = nil
+    local avatars  = nil
+    local names    = nil
+    local circles  = nil
+    local playerIds = nil
+    local confirmEnt = nil
+
+    if role == _MafiaGameLogic.ROLE_MAFIA then
+        if self.nightMafiaPanel == nil then return end
+        self.nightMafiaPanel.Enable = true
+        maxSlots   = 6
+        cards      = self.nightMafiaCards
+        avatars    = self.nightMafiaAvatars
+        names      = self.nightMafiaNames
+        circles    = self.nightMafiaCircles
+        playerIds  = self.nightMafiaPlayerIds
+        confirmEnt = self.nightMafiaConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_POLICE then
+        if self.nightPolicePanel == nil then return end
+        self.nightPolicePanel.Enable = true
+        maxSlots   = 7
+        cards      = self.nightPoliceCards
+        avatars    = self.nightPoliceAvatars
+        names      = self.nightPoliceNames
+        circles    = self.nightPoliceCircles
+        playerIds  = self.nightPolicePlayerIds
+        confirmEnt = self.nightPoliceConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_DOCTOR then
+        if self.nightDoctorPanel == nil then return end
+        self.nightDoctorPanel.Enable = true
+        maxSlots   = 7
+        cards      = self.nightDoctorCards
+        avatars    = self.nightDoctorAvatars
+        names      = self.nightDoctorNames
+        circles    = self.nightDoctorCircles
+        playerIds  = self.nightDoctorPlayerIds
+        confirmEnt = self.nightDoctorConfirmEnt
+    else
+        return  -- CITIZEN: no panel
+    end
+
+    -- Reset player id table
+    for i = 1, maxSlots do playerIds[i] = nil end
+    local count = math.min(#targets, maxSlots)
+    for i = 1, count do playerIds[i] = targets[i] end
+
+    -- Populate slots
+    for i = 1, maxSlots do
+        local uid = playerIds[i]
+        local card   = cards[i]
+        local av     = avatars[i]
+        local nt     = names[i]
+        local circle = circles[i]
+
+        if card ~= nil then
+            local hasUser = (uid ~= nil)
+            if card.ButtonComponent ~= nil then
+                card.ButtonComponent.Enable = hasUser
+            end
+            if av ~= nil then
+                if hasUser then
+                    local costume = av.CostumeManagerComponent
+                    local renderer = av.AvatarGUIRendererComponent
+                    if costume ~= nil then
+                        costume.UseCustomEquipOnly = false
+                        costume.DefaultEquipUserId = uid
+                        costume.Enable = true
+                    end
+                    if renderer ~= nil then renderer.Enable = true end
+                    av.Enable = true
+                else
+                    av.Enable = false
+                end
+            end
+            if nt ~= nil then
+                nt.Text = (uid ~= nil) and self:GetUserDisplayName(uid) or ""
+            end
+            if circle ~= nil then circle.Enable = false end
+        end
+    end
+
+    -- Confirm button starts disabled (no selection yet)
+    if confirmEnt ~= nil then confirmEnt.Enable = false end
+
+    -- Initial timer display
+    local timer = tostring(math.max(0, math.ceil(_MafiaGameLogic.PhaseTimer)))
+    self:UpdateNightTimer(timer)
+
+    self.nightUIShown = true
+    log("[MafiaUIFlow] night panel shown; role=" .. tostring(role) .. " targets=" .. tostring(count))
+end
+
+method void UpdateNightTimer(string timerStr)
+    -- Updates the title text to show role name + remaining timer.
+    local role = self.nightActiveRole
+    if role == _MafiaGameLogic.ROLE_MAFIA and self.nightMafiaTitleComp ~= nil then
+        self.nightMafiaTitleComp.Text = "마피아  " .. timerStr
+    elseif role == _MafiaGameLogic.ROLE_POLICE and self.nightPoliceTitleComp ~= nil then
+        self.nightPoliceTitleComp.Text = "경찰  " .. timerStr
+    elseif role == _MafiaGameLogic.ROLE_DOCTOR and self.nightDoctorTitleComp ~= nil then
+        self.nightDoctorTitleComp.Text = "의사  " .. timerStr
+    end
+end
+
+method void RefreshNight()
+    -- Called every frame-batch during PHASE_NIGHT.
+    self:ResolvePhaseChatContext("MafiaNightHUD")
+    local nightChatLog = _MafiaGameLogic.ChatLog or ""
+    if nightChatLog ~= self.lastNightChatLog then
+        self.lastNightChatLog = nightChatLog
+        self.lobbyChatBubbleScrollOffset = 0
+        self:HideLobbyRawChatLog()
+        self:ApplyLobbyChatBubbles(nightChatLog)
+    end
+    if not self.nightUIShown then
+        if self.nightMafiaPanel == nil then self:ResolveNightUI() end
+        self:ShowNightPanel()
+    else
+        local timer = tostring(math.max(0, math.ceil(_MafiaGameLogic.PhaseTimer)))
+        self:UpdateNightTimer(timer)
+    end
+end
+
+method void SelectNightTarget(integer role, integer slotIndex)
+    -- Handles card click: deselect previous, select new, enable confirm button.
+    if self.nightSubmitted then return end
+    if role ~= self.nightActiveRole then return end
+
+    local cards    = nil
+    local circles  = nil
+    local playerIds = nil
+    local confirmEnt = nil
+
+    if role == _MafiaGameLogic.ROLE_MAFIA then
+        cards = self.nightMafiaCards; circles = self.nightMafiaCircles
+        playerIds = self.nightMafiaPlayerIds; confirmEnt = self.nightMafiaConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_POLICE then
+        cards = self.nightPoliceCards; circles = self.nightPoliceCircles
+        playerIds = self.nightPolicePlayerIds; confirmEnt = self.nightPoliceConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_DOCTOR then
+        cards = self.nightDoctorCards; circles = self.nightDoctorCircles
+        playerIds = self.nightDoctorPlayerIds; confirmEnt = self.nightDoctorConfirmEnt
+    else return end
+
+    local uid = playerIds[slotIndex]
+    if uid == nil then return end
+
+    -- Deselect previous
+    if self.nightSelectedSlot > 0 and circles ~= nil then
+        local prev = circles[self.nightSelectedSlot]
+        if prev ~= nil then prev.Enable = false end
+    end
+
+    self.nightSelectedSlot = slotIndex
+
+    -- Select new
+    local circle = circles[slotIndex]
+    if circle ~= nil then circle.Enable = true end
+
+    -- Enable confirm button
+    if confirmEnt ~= nil then confirmEnt.Enable = true end
+    log("[MafiaUIFlow] night target selected; role=" .. tostring(role) .. " slot=" .. tostring(slotIndex))
+end
+
+method void SubmitNightChoice(integer role)
+    -- Sends the selected target to the server and locks the panel.
+    if self.nightSubmitted then return end
+    if self.nightSelectedSlot <= 0 then return end
+
+    local playerIds = nil
+    local confirmEnt = nil
+
+    if role == _MafiaGameLogic.ROLE_MAFIA then
+        playerIds = self.nightMafiaPlayerIds; confirmEnt = self.nightMafiaConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_POLICE then
+        playerIds = self.nightPolicePlayerIds; confirmEnt = self.nightPoliceConfirmEnt
+    elseif role == _MafiaGameLogic.ROLE_DOCTOR then
+        playerIds = self.nightDoctorPlayerIds; confirmEnt = self.nightDoctorConfirmEnt
+    else return end
+
+    local targetId = playerIds[self.nightSelectedSlot]
+    if targetId == nil or targetId == "" then return end
+
+    local localId = self:GetLocalUserId()
+    if localId == "" then return end
+
+    self.nightSubmitted = true
+    if confirmEnt ~= nil then confirmEnt.Enable = false end
+
+    if role == _MafiaGameLogic.ROLE_MAFIA then
+        _MafiaGameLogic:MafiaChooseTarget(localId, targetId)
+    elseif role == _MafiaGameLogic.ROLE_POLICE then
+        _MafiaGameLogic:PoliceInvestigate(localId, targetId)
+    elseif role == _MafiaGameLogic.ROLE_DOCTOR then
+        _MafiaGameLogic:DoctorProtect(localId, targetId)
+    end
+    log("[MafiaUIFlow] night submitted; role=" .. tostring(role) .. " target=" .. tostring(targetId))
+end
+
+method void HideNightPanel()
+    -- Hides all night panels and resets state.
+    if self.nightMafiaPanel ~= nil then self.nightMafiaPanel.Enable = false end
+    if self.nightPolicePanel ~= nil then self.nightPolicePanel.Enable = false end
+    if self.nightDoctorPanel ~= nil then self.nightDoctorPanel.Enable = false end
+    self.nightUIShown = false
+    self.nightSelectedSlot = 0
+    self.nightSubmitted = false
+    self.nightActiveRole = -1
+    log("[MafiaUIFlow] night panel hidden")
+end
+
+end
