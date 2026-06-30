@@ -62,7 +62,7 @@
           "@components": [
             {
               "@type": "MOD.Core.BackgroundComponent",
-              "TemplateRUID": "794ad8421e2543d8a6d2c70307637450",
+              "TemplateRUID": "0214f07683334dda8fd0bafb2b3c98d6",
               "Type": 3,
               "WebUrl": "a2c2b651d4af4b0eb954dd2f46dc5e03",
               "Enable": true

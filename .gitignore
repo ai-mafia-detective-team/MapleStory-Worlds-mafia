@@ -266,6 +266,11 @@ pnpm-debug.log*
 # MSW generated/editor-local artifacts
 *.codeblock
 *.directory
+Mislocated/
+
+# Local-only UI resource candidates; keep files on disk until they are used in a committed UI.
+RootDesk/MyDesk/입장.sprite
+RootDesk/MyDesk/#Uc785#Uc7a5.sprite
 
 # MSW engine API dump; project content remains tracked under RootDesk, Global, map, and ui.
 Environment/NativeScripts/

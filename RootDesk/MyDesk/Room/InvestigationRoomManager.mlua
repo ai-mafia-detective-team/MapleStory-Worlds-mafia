@@ -1,0 +1,510 @@
+@Logic
+script InvestigationRoomManager extends Logic
+
+	property string REGISTRY_MEMORY = "InvestigationRoomRegistry"
+
+	property string REGISTRY_VARIABLE = "RoomsV1"
+
+	property integer MAX_WRITE_RETRIES = 3
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- Announces that the server-shared investigation room registry is ready.
+		log("[InvestigationRoomManager] server shared registry ready")
+	end
+
+	@ExecSpace("ServerOnly")
+	method table ReadRegistrySnapshot()
+		-- Loads the room registry and its ETag from RoomSharedMemory.
+		local memoryCode, memory = _RoomService:GetSharedMemory(self.REGISTRY_MEMORY)
+		if memoryCode ~= SharedMemoryResultCode.OK or memory == nil then
+			return { Ok = false, ErrorCode = tostring(memoryCode), Rooms = {} }
+		end
+
+		local getResult = memory:GetVariableAndWait(self.REGISTRY_VARIABLE)
+		if getResult.Code == SharedMemoryResultCode.NotFound then
+			return {
+				Ok = true,
+				Exists = false,
+				ETag = "",
+				Memory = memory,
+				Rooms = {},
+			}
+		end
+		if getResult.Code ~= SharedMemoryResultCode.OK or getResult.Info == nil then
+			return { Ok = false, ErrorCode = tostring(getResult.Code), Rooms = {} }
+		end
+
+		local rooms = {}
+		local encoded = getResult.Info.Value
+		if encoded ~= nil and encoded ~= "" then
+			local decoded = _HttpService:JSONDecode(encoded)
+			if decoded ~= nil and decoded.rooms ~= nil then
+				rooms = decoded.rooms
+			end
+		end
+
+		return {
+			Ok = true,
+			Exists = true,
+			ETag = getResult.Info.ETag,
+			Memory = memory,
+			Rooms = rooms,
+		}
+	end
+
+	@ExecSpace("ServerOnly")
+	method SharedMemoryResultCode WriteRegistrySnapshot(table snapshot, table rooms)
+		-- Writes the modified registry using optimistic ETag concurrency control.
+		local encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
+		if snapshot.Exists == false then
+			local createResult = snapshot.Memory:CreateVariableAndWait(self.REGISTRY_VARIABLE, encoded)
+			return createResult.Code
+		end
+
+		local keyInfo = SharedVariableKeyInfo(self.REGISTRY_VARIABLE, snapshot.ETag)
+		local updateResult = snapshot.Memory:UpdateVariableAndWait(keyInfo, encoded)
+		return updateResult.Code
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer FindRoomIndex(table rooms, string roomId)
+		-- Returns the one-based index of a room, or zero when it is absent.
+		for index, room in ipairs(rooms) do
+			if room.roomId == roomId then
+				return index
+			end
+		end
+		return 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ContainsUser(table room, string userId)
+		-- Returns whether the user is already a member of the room.
+		if room.memberUserIds == nil then return false end
+		for _, memberUserId in ipairs(room.memberUserIds) do
+			if tostring(memberUserId) == userId then
+				return true
+			end
+		end
+		return false
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RecalculateRoomStatus(table room)
+		-- Keeps currentPlayers and WAITING/FULL status consistent with membership.
+		if room.memberUserIds == nil then room.memberUserIds = {} end
+		room.currentPlayers = #room.memberUserIds
+		if room.status ~= "PLAYING" then
+			if room.currentPlayers >= room.maxPlayers then
+				room.status = "FULL"
+			else
+				room.status = "WAITING"
+			end
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method table ToPublicRoom(table room)
+		-- Copies room metadata without password or private membership data.
+		return {
+			roomId = room.roomId,
+			roomName = room.roomName,
+			mode = room.mode,
+			hostUserId = room.hostUserId,
+			hostNickname = room.hostNickname,
+			currentPlayers = room.currentPlayers,
+			maxPlayers = room.maxPlayers,
+			status = room.status,
+			isPrivate = room.isPrivate,
+			hasPassword = room.hasPassword,
+			createdAt = room.createdAt,
+		}
+	end
+
+	@ExecSpace("ServerOnly")
+	method string EncodePublicRooms(table rooms)
+		-- Serializes a password-free room list for delivery to a client.
+		local publicRooms = {}
+		for _, room in ipairs(rooms) do
+			self:RecalculateRoomStatus(room)
+			table.insert(publicRooms, self:ToPublicRoom(room))
+		end
+		table.sort(publicRooms, function(left, right)
+			return (left.createdAt or 0) > (right.createdAt or 0)
+		end)
+		return _HttpService:JSONEncode(publicRooms)
+	end
+
+	@ExecSpace("ServerOnly")
+	method string MakeRoomId(string userId)
+		-- Builds a collision-resistant room id from server time, user id, and randomness.
+		return "room_" .. _UtilLogic:NewGuid()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SendRoomListTo(string userId, string message)
+		-- Reads and sends the latest password-free room list to one client.
+		local snapshot = self:ReadRegistrySnapshot()
+		if snapshot.Ok == false then
+			log_warning("[InvestigationRoomManager] Room list refresh failed code=" .. tostring(snapshot.ErrorCode))
+			self:DeliverRoomList(false, "[]", "수사방 목록을 불러오지 못했습니다.", userId)
+			return
+		end
+		local encoded = self:EncodePublicRooms(snapshot.Rooms)
+		log("[InvestigationRoomManager] Room list refreshed count=" .. tostring(#snapshot.Rooms))
+		self:DeliverRoomList(true, encoded, message or "", userId)
+	end
+
+	@ExecSpace("Server")
+	method void CreateRoom(string roomName, string mode, integer maxPlayers, boolean isPrivate, string password, string hostNickname)
+		-- Validates and creates a shared investigation room for the requesting user.
+		local userId = tostring(senderUserId)
+		roomName = string.match(roomName or "", "^%s*(.-)%s*$") or ""
+		mode = string.match(mode or "", "^%s*(.-)%s*$") or ""
+		password = string.match(password or "", "^%s*(.-)%s*$") or ""
+		hostNickname = string.match(hostNickname or "", "^%s*(.-)%s*$") or ""
+		log("[InvestigationRoomManager] Room creation requested userId=" .. userId .. " roomName=" .. roomName)
+
+		if roomName == "" then
+			self:DeliverCreateResult(false, "방 이름을 입력하세요.", "", userId)
+			return
+		end
+		if string.len(roomName) > 48 then
+			self:DeliverCreateResult(false, "방 이름이 너무 깁니다.", "", userId)
+			return
+		end
+		if maxPlayers < 6 or maxPlayers > 8 then
+			self:DeliverCreateResult(false, "최대 인원은 6~8명만 가능합니다.", "", userId)
+			return
+		end
+		if isPrivate and string.match(password, "^%d%d%d%d$") == nil then
+			self:DeliverCreateResult(false, "비밀번호는 숫자 4자리로 입력하세요.", "", userId)
+			return
+		end
+		if mode == "" then mode = "기본 수사" end
+		if hostNickname == "" then hostNickname = "수사관" end
+
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then
+				log_warning("[InvestigationRoomManager] Room creation failed readCode=" .. tostring(snapshot.ErrorCode))
+				self:DeliverCreateResult(false, "수사방 저장소를 불러오지 못했습니다.", "", userId)
+				return
+			end
+
+			for _, room in ipairs(snapshot.Rooms) do
+				if string.lower(room.roomName or "") == string.lower(roomName) then
+					log_warning("[InvestigationRoomManager] Room creation failed duplicateName=" .. roomName)
+					self:DeliverCreateResult(false, "이미 같은 이름의 수사방이 있습니다.", "", userId)
+					return
+				end
+			end
+
+			local room = {
+				roomId = self:MakeRoomId(userId),
+				roomName = roomName,
+				mode = mode,
+				hostUserId = userId,
+				hostNickname = hostNickname,
+				currentPlayers = 1,
+				maxPlayers = maxPlayers,
+				status = "WAITING",
+				isPrivate = isPrivate,
+				hasPassword = isPrivate and password ~= "",
+				password = isPrivate and password or "",
+				createdAt = _UtilLogic.ServerElapsedSeconds,
+				memberUserIds = { userId },
+			}
+			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, room.roomId)
+			table.insert(snapshot.Rooms, room)
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				local publicJson = _HttpService:JSONEncode(self:ToPublicRoom(room))
+				log("[InvestigationRoomManager] Room created successfully roomId=" .. room.roomId)
+				self:DeliverCreateResult(true, "수사방을 만들었습니다.", publicJson, userId)
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed and writeCode ~= SharedMemoryResultCode.AlreadyExists then
+				log_warning("[InvestigationRoomManager] Room creation failed writeCode=" .. tostring(writeCode))
+				self:DeliverCreateResult(false, "수사방 생성에 실패했습니다.", "", userId)
+				return
+			end
+			log_warning("[InvestigationRoomManager] Room creation retry attempt=" .. tostring(attempt))
+		end
+
+		self:DeliverCreateResult(false, "동시에 많은 요청이 발생했습니다. 다시 시도하세요.", "", userId)
+	end
+
+	@ExecSpace("Server")
+	method void GetRoomList()
+		-- Sends the complete room list to the requesting client.
+		self:SendRoomListTo(tostring(senderUserId), "")
+	end
+
+	@ExecSpace("Server")
+	method void RefreshRooms()
+		-- Refreshes the complete room list for the requesting client.
+		self:SendRoomListTo(tostring(senderUserId), "목록을 새로고침했습니다.")
+	end
+
+	@ExecSpace("Server")
+	method void SearchRooms(string keyword, string modeFilter, string statusFilter, boolean hidePrivate)
+		-- Filters room metadata on the server and sends matching rooms to the requester.
+		local userId = tostring(senderUserId)
+		keyword = string.lower(string.match(keyword or "", "^%s*(.-)%s*$") or "")
+		local snapshot = self:ReadRegistrySnapshot()
+		if snapshot.Ok == false then
+			self:DeliverRoomList(false, "[]", "수사방 검색에 실패했습니다.", userId)
+			return
+		end
+
+		local filtered = {}
+		for _, room in ipairs(snapshot.Rooms) do
+			self:RecalculateRoomStatus(room)
+			local keywordOk = keyword == "" or string.find(string.lower(room.roomName or ""), keyword, 1, true) ~= nil
+			local modeOk = modeFilter == "" or modeFilter == "ALL" or room.mode == modeFilter
+			local statusOk = statusFilter == "" or statusFilter == "ALL" or room.status == statusFilter
+			local privateOk = hidePrivate == false or room.isPrivate == false
+			if keywordOk and modeOk and statusOk and privateOk then
+				table.insert(filtered, room)
+			end
+		end
+		self:DeliverRoomList(true, self:EncodePublicRooms(filtered), "", userId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ValidatePassword(string roomId, string password)
+		-- Checks a room password without exposing the stored password to clients.
+		local snapshot = self:ReadRegistrySnapshot()
+		if snapshot.Ok == false then return false end
+		local index = self:FindRoomIndex(snapshot.Rooms, roomId)
+		if index <= 0 then return false end
+		local room = snapshot.Rooms[index]
+		if room.hasPassword ~= true then return true end
+		return room.password == password
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RemoveUserFromOtherRooms(table rooms, string userId, string exceptRoomId)
+		-- Removes a user from previous rooms so one user belongs to at most one room.
+		for roomIndex = #rooms, 1, -1 do
+			local room = rooms[roomIndex]
+			if room.roomId ~= exceptRoomId and self:ContainsUser(room, userId) then
+				if room.hostUserId == userId then
+					table.remove(rooms, roomIndex)
+				else
+					for memberIndex = #room.memberUserIds, 1, -1 do
+						if tostring(room.memberUserIds[memberIndex]) == userId then
+							table.remove(room.memberUserIds, memberIndex)
+						end
+					end
+					self:RecalculateRoomStatus(room)
+				end
+			end
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ProcessJoin(string userId, string roomId, string password, boolean quickJoin)
+		-- Atomically validates capacity/password and joins a user to a room.
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then
+				self:DeliverJoinResult(false, "ROOM_STORE_ERROR", "수사방 목록을 불러오지 못했습니다.", "", userId)
+				return
+			end
+			local roomIndex = self:FindRoomIndex(snapshot.Rooms, roomId)
+			if roomIndex <= 0 then
+				self:DeliverJoinResult(false, "NOT_FOUND", "수사방을 찾을 수 없습니다.", "", userId)
+				return
+			end
+
+			local room = snapshot.Rooms[roomIndex]
+			self:RecalculateRoomStatus(room)
+			if room.status == "PLAYING" then
+				log_warning("[InvestigationRoomManager] Room already playing roomId=" .. roomId)
+				self:DeliverJoinResult(false, "PLAYING", "이미 진행 중인 수사방입니다.", "", userId)
+				return
+			end
+			if room.status == "FULL" or room.currentPlayers >= room.maxPlayers then
+				log_warning("[InvestigationRoomManager] Room full roomId=" .. roomId)
+				self:DeliverJoinResult(false, "FULL", "인원이 가득 찬 수사방입니다.", "", userId)
+				return
+			end
+			if room.hasPassword == true and (password == nil or password == "") then
+				log_warning("[InvestigationRoomManager] Password required roomId=" .. roomId)
+				self:DeliverJoinResult(false, "PASSWORD_REQUIRED", "비밀번호를 입력하세요.", "", userId)
+				return
+			end
+			if room.hasPassword == true and room.password ~= password then
+				log_warning("[InvestigationRoomManager] Password invalid roomId=" .. roomId)
+				self:DeliverJoinResult(false, "PASSWORD_INVALID", "비밀번호가 올바르지 않습니다.", "", userId)
+				return
+			end
+
+			if self:ContainsUser(room, userId) then
+				self:DeliverJoinResult(true, "OK", "이미 입장한 수사방입니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
+				return
+			end
+
+			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, roomId)
+			table.insert(room.memberUserIds, userId)
+			self:RecalculateRoomStatus(room)
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] Join room success roomId=" .. roomId .. " quick=" .. tostring(quickJoin))
+				self:DeliverJoinResult(true, "OK", "수사방에 입장했습니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then
+				self:DeliverJoinResult(false, "WRITE_FAILED", "수사방 입장에 실패했습니다.", "", userId)
+				return
+			end
+			log_warning("[InvestigationRoomManager] Join retry attempt=" .. tostring(attempt))
+		end
+		self:DeliverJoinResult(false, "BUSY", "입장 요청이 많습니다. 다시 시도하세요.", "", userId)
+	end
+
+	@ExecSpace("Server")
+	method void JoinRoom(string roomId, string password)
+		-- Processes a direct join request for the selected room.
+		log("[InvestigationRoomManager] Join room requested roomId=" .. tostring(roomId))
+		self:ProcessJoin(tostring(senderUserId), roomId, password or "", false)
+	end
+
+	@ExecSpace("Server")
+	method void QuickJoin()
+		-- Finds a random public waiting room with capacity and joins it.
+		local userId = tostring(senderUserId)
+		log("[InvestigationRoomManager] Quick join requested userId=" .. userId)
+		local snapshot = self:ReadRegistrySnapshot()
+		local candidates = {}
+		if snapshot.Ok == false then
+			self:DeliverJoinResult(false, "ROOM_STORE_ERROR", "수사방 목록을 불러오지 못했습니다.", "", userId)
+			return
+		end
+		for _, room in ipairs(snapshot.Rooms) do
+			self:RecalculateRoomStatus(room)
+			if room.status == "WAITING" and room.isPrivate ~= true and room.currentPlayers < room.maxPlayers then
+				table.insert(candidates, room)
+			end
+		end
+		if #candidates > 0 then
+			local selectedIndex = _UtilLogic:RandomIntegerRange(1, #candidates)
+			local selectedRoom = candidates[selectedIndex]
+			log("[InvestigationRoomManager] Quick join selected roomId=" .. tostring(selectedRoom.roomId))
+			self:ProcessJoin(userId, selectedRoom.roomId, "", true)
+			return
+		end
+		self:DeliverJoinResult(false, "NO_ROOM", "빠르게 입장할 수 있는 공개 수사방이 없습니다.", "", userId)
+	end
+
+	@ExecSpace("Server")
+	method void LeaveRoom(string roomId)
+		-- Removes the requesting user from a room and deletes host-owned rooms.
+		local userId = tostring(senderUserId)
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then
+				self:DeliverLeaveResult(false, "수사방 나가기에 실패했습니다.", userId)
+				return
+			end
+			local roomIndex = self:FindRoomIndex(snapshot.Rooms, roomId)
+			if roomIndex <= 0 then
+				self:DeliverLeaveResult(true, "이미 종료된 수사방입니다.", userId)
+				return
+			end
+			local room = snapshot.Rooms[roomIndex]
+			if room.hostUserId == userId then
+				table.remove(snapshot.Rooms, roomIndex)
+			else
+				for memberIndex = #room.memberUserIds, 1, -1 do
+					if tostring(room.memberUserIds[memberIndex]) == userId then
+						table.remove(room.memberUserIds, memberIndex)
+					end
+				end
+				self:RecalculateRoomStatus(room)
+			end
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] Leave room success roomId=" .. roomId)
+				self:DeliverLeaveResult(true, "수사방에서 나왔습니다.", userId)
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then
+				self:DeliverLeaveResult(false, "수사방 나가기에 실패했습니다.", userId)
+				return
+			end
+		end
+		self:DeliverLeaveResult(false, "나가기 요청이 많습니다. 다시 시도하세요.", userId)
+	end
+
+	@ExecSpace("Server")
+	method void UpdateRoomStatus(string roomId)
+		-- Recalculates a room's WAITING/FULL state and persists the result.
+		local userId = tostring(senderUserId)
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then return end
+			local roomIndex = self:FindRoomIndex(snapshot.Rooms, roomId)
+			if roomIndex <= 0 then return end
+			self:RecalculateRoomStatus(snapshot.Rooms[roomIndex])
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				self:SendRoomListTo(userId, "")
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then return end
+		end
+	end
+
+	@ExecSpace("Client")
+	method void DeliverRoomList(boolean success, string roomListJson, string message)
+		-- Forwards a room-list response to the existing lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or isvalid(lobby) == false then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:OnRoomListReceived(success, roomListJson, message)
+		end
+	end
+
+	@ExecSpace("Client")
+	method void DeliverCreateResult(boolean success, string message, string roomJson)
+		-- Forwards a room-creation result to the existing lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or isvalid(lobby) == false then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:OnRoomCreateResult(success, message, roomJson)
+		end
+	end
+
+	@ExecSpace("Client")
+	method void DeliverJoinResult(boolean success, string reason, string message, string roomJson)
+		-- Forwards a room-join result to the existing lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or isvalid(lobby) == false then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:OnRoomJoinResult(success, reason, message, roomJson)
+		end
+	end
+
+	@ExecSpace("Client")
+	method void DeliverLeaveResult(boolean success, string message)
+		-- Forwards a room-leave result to the existing lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or isvalid(lobby) == false then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:OnRoomLeaveResult(success, message)
+		end
+	end
+
+end
