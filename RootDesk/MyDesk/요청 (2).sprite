@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://470a3b35f5ea47c895261fd5c633523a",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/470a3b35f5ea47c895261fd5c633523a/639178858601364020",
+      "upload_hash": "E1A69CA1C8DEBF47032C38CA6BA3827BDEAA4084F61673739D8BDD70146528AA",
+      "name": "요청 (2)",
+      "resource_guid": "470a3b35f5ea47c895261fd5c633523a",
+      "resource_version": "6a3b92a48e39e1ee5ad80613"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+@Component
+script PuppetFollower extends Component
+
+	property string OwnerUserId = ""
+
+	@HideFromInspector
+	property Entity OwnerEntity = nil
+
+	@HideFromInspector
+	property boolean Initialized = false
+
+	@HideFromInspector
+	property boolean LastFaceLeft = false
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		log("[PuppetFollower] OnBeginPlay userId=" .. tostring(self.OwnerUserId))
+		-- Register standard avatar states so ChangeState() works without PlayerControllerComponent
+		-- IDLE and DEAD are built-in default states (already exist), so we skip them to avoid LWA-3008
+		local myState = self.Entity.StateComponent
+		if isvalid(myState) then
+			myState:AddState("MOVE")
+			myState:AddState("JUMP")
+			myState:AddState("FALL")
+			myState:AddState("CROUCH")
+			myState:AddState("CLIMB")
+			myState:AddState("LADDER")
+			myState:AddState("ATTACK")
+			myState:AddState("ATTACK_WAIT")
+			myState:AddState("SIT")
+			myState:AddState("HIT")
+			log("[PuppetFollower] states registered")
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- Lazy init: OwnerUserId is set after AddComponent, resolve on first valid frame
+		if self.Initialized == false then
+			if self.OwnerUserId == "" then return end
+			local owner = _UserService:GetUserEntityByUserId(self.OwnerUserId)
+			if isvalid(owner) == false then return end
+			self.OwnerEntity = owner
+			-- Clone owner's costume onto this Puppet
+			local costumeMgr = self.Entity.CostumeManagerComponent
+			if isvalid(costumeMgr) then
+				costumeMgr.DefaultEquipUserId = self.OwnerUserId
+				log("[PuppetFollower] costume set userId=" .. self.OwnerUserId)
+			end
+			self.Initialized = true
+			log("[PuppetFollower] initialized userId=" .. self.OwnerUserId)
+			return
+		end
+
+		if isvalid(self.OwnerEntity) == false then return end
+
+		local ownerTf = self.OwnerEntity.TransformComponent
+		if isvalid(ownerTf) == false then return end
+
+		local ownerPos = ownerTf.WorldPosition
+		local myMove = self.Entity.MovementComponent
+
+		if isvalid(myMove) then
+			-- Teleport Puppet to owner's world position
+			myMove:SetWorldPosition(Vector2(ownerPos.x, ownerPos.y))
+			myMove:Stop()
+
+			-- Sync facing direction (only update when it changes)
+			local ownerMove = self.OwnerEntity.MovementComponent
+			if isvalid(ownerMove) then
+				local faceLeft = ownerMove:IsFaceLeft()
+				if faceLeft ~= self.LastFaceLeft then
+					self.LastFaceLeft = faceLeft
+					local dirX = faceLeft and -1 or 1
+					myMove:MoveToDirection(Vector2(dirX, 0), 0)
+					myMove:Stop()
+				end
+			end
+		end
+
+		-- Sync animation state
+		local ownerState = self.OwnerEntity.StateComponent
+		local myState = self.Entity.StateComponent
+		if isvalid(ownerState) and isvalid(myState) then
+			local sn = ownerState.CurrentStateName
+			if sn ~= nil and sn ~= myState.CurrentStateName then
+				myState:ChangeState(sn)
+			end
+		end
+	end
+end

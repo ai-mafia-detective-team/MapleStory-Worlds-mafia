@@ -1,0 +1,148 @@
+@Logic
+script MainFlowBgmController extends Logic
+
+	property string MAIN_FLOW_BGM_RUID = "f2677ea116ba4474bd80277b32545758"
+
+	property string BGM_SETTING_KEY = "bgm_enabled_v1"
+
+	property string currentFlowScreen = "logo"
+
+	property boolean bgmEnabled = true
+
+	property boolean settingsLoaded = false
+
+	property boolean isMainFlowBgmPlaying = false
+
+	property number mainFlowBgmVolume = 0.55
+
+	@ExecSpace("ClientOnly")
+	method void OnBeginPlay()
+		-- Initializes the client-side flow state. BGM never starts on the logo screen.
+		self:SetCurrentFlowScreen("logo")
+		self.bgmEnabled = true
+		self.settingsLoaded = false
+		self.isMainFlowBgmPlaying = _SoundService:IsPlayBGM()
+	end
+
+	@ExecSpace("Server")
+	method void LoadBgmSettings()
+		-- Loads the user's saved BGM setting. Missing value resolves to enabled.
+		self:LoadBgmSettingsForUser(tostring(senderUserId))
+	end
+
+	@ExecSpace("ServerOnly")
+	method void LoadBgmSettingsForUser(string userId)
+		-- Server-side helper used by IntroFlowController before client screen transitions.
+		local userStorage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode, rawValue = userStorage:GetAndWait(self.BGM_SETTING_KEY)
+		local rawText = tostring(rawValue)
+		local resolved = true
+		if errorCode == 0 and rawValue == "false" then
+			resolved = false
+		end
+		log("[MainFlowBGM] LoadBgmSettings bgm_enabled_v1=" .. rawText .. " resolved=" .. tostring(resolved))
+		self:ApplyBgmSettings(rawText, resolved, userId)
+	end
+
+	@ExecSpace("Client")
+	method void ApplyBgmSettings(string rawValue, boolean resolved)
+		-- Applies the server-loaded setting to the local BGM controller cache.
+		self.bgmEnabled = resolved
+		self.settingsLoaded = true
+		if self.bgmEnabled == false and self.isMainFlowBgmPlaying then
+			self:StopMainFlowBgm()
+		end
+	end
+
+	@ExecSpace("Server")
+	method void SaveBgmSettings(boolean enabled)
+		-- Persists the user's BGM setting for future settings UI calls.
+		local userStorage = _DataStorageService:GetUserDataStorage(tostring(senderUserId))
+		local value = "false"
+		if enabled then
+			value = "true"
+		end
+		local errorCode = userStorage:SetAndWait(self.BGM_SETTING_KEY, value)
+		if errorCode == 0 then
+			log("[MainFlowBGM] SaveBgmSettings success enabled=" .. tostring(enabled))
+		else
+			log_warning("[MainFlowBGM] SaveBgmSettings failed errorCode=" .. tostring(errorCode) .. " enabled=" .. tostring(enabled))
+		end
+	end
+
+	method boolean IsBgmEnabled()
+		-- Returns the locally cached BGM setting.
+		return self.bgmEnabled
+	end
+
+	@ExecSpace("Client")
+	method void SetBgmEnabled(boolean enabled)
+		-- Future settings UI entry point for turning the main flow BGM on or off.
+		log("[MainFlowBGM] SetBgmEnabled enabled=" .. tostring(enabled))
+		self.bgmEnabled = enabled
+		self.settingsLoaded = true
+		self:SaveBgmSettings(enabled)
+		if enabled then
+			if self:ShouldPlayBgmForCurrentScreen() then
+				self:PlayMainFlowBgm()
+			end
+		else
+			if self.isMainFlowBgmPlaying or _SoundService:IsPlayBGM() then
+				self:StopMainFlowBgm()
+			end
+		end
+	end
+
+	@ExecSpace("Client")
+	method void PlayMainFlowBgm()
+		-- Starts the looping main-flow BGM if the current screen allows it.
+		log("[MainFlowBGM] Play requested ruid=" .. self.MAIN_FLOW_BGM_RUID)
+		if self.bgmEnabled == false then
+			log("[MainFlowBGM] BGM disabled, skip play")
+			return
+		end
+		if self:ShouldPlayBgmForCurrentScreen() == false then
+			log("[MainFlowBGM] Current screen does not allow BGM, skip play screen=" .. self.currentFlowScreen)
+			return
+		end
+		if self.isMainFlowBgmPlaying or _SoundService:IsPlayBGM() then
+			self.isMainFlowBgmPlaying = true
+			log("[MainFlowBGM] Already playing, skip duplicate")
+			return
+		end
+		_SoundService:LoadSound(self.MAIN_FLOW_BGM_RUID)
+		_SoundService:PlayBGM(self.MAIN_FLOW_BGM_RUID, self.mainFlowBgmVolume)
+		self.isMainFlowBgmPlaying = true
+		log("[MainFlowBGM] Started loop=true")
+	end
+
+	@ExecSpace("Client")
+	method void StopMainFlowBgm()
+		-- Stops the current BGM. Story-to-nickname flow intentionally does not call this.
+		log("[MainFlowBGM] Stop requested")
+		_SoundService:StopBGM(false)
+		self.isMainFlowBgmPlaying = false
+		log("[MainFlowBGM] Stopped")
+	end
+
+	method boolean IsMainFlowBgmPlaying()
+		-- Returns whether this controller believes the main-flow BGM is playing.
+		return self.isMainFlowBgmPlaying
+	end
+
+	@ExecSpace("Client")
+	method void SetCurrentFlowScreen(string screenName)
+		-- Tracks the current intro flow screen for BGM rules.
+		self.currentFlowScreen = screenName
+		log("[MainFlowBGM] SetCurrentFlowScreen " .. screenName)
+	end
+
+	method boolean ShouldPlayBgmForCurrentScreen()
+		-- BGM starts at story and continues through nickname and lobby.
+		if self.currentFlowScreen == "story" then return true end
+		if self.currentFlowScreen == "nickname" then return true end
+		if self.currentFlowScreen == "lobby" then return true end
+		return false
+	end
+
+end

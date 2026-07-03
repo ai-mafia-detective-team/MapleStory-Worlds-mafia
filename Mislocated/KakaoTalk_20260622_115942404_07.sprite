@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://01082c94ee174c46b882c378c640ae82",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/01082c94ee174c46b882c378c640ae82/639185101966367850",
+      "upload_hash": "14FD1D02A918AB945DF47D1CEAB49846EDE4B85DA3A509242BE5449CDD1572CE",
+      "name": "KakaoTalk_20260622_115942404_07",
+      "resource_guid": "01082c94ee174c46b882c378c640ae82",
+      "resource_version": "6a4519742d387480e7f3c2fa"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "sprite://1ba7d812a4b14ce8ae7ad020ce28518f",
+  "ContentType": "x-mod/sprite",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.5.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "upload_keyname": "75/b1/75b11f765dfe4616ae098882c1a5ec52/sprite/1ba7d812a4b14ce8ae7ad020ce28518f/639184674138443982",
+      "upload_hash": "A298B9C0E7E8E46AD243C4C5217527BE46E8498D354BB7D76718695E40AF38A4",
+      "name": "ChatGPT_Image_2026년_7월_1일_오전_10_34_18-removebg-preview",
+      "resource_guid": "1ba7d812a4b14ce8ae7ad020ce28518f",
+      "resource_version": "6a4472552a2802c0641aff9b"
+    }
+  }
+}
