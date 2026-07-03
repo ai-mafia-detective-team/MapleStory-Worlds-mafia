@@ -312,6 +312,12 @@ script MafiaGameLogic extends Logic
 		    local roleParts = {}
 		    for _, uid in ipairs(allUsers) do
 		        local r = self.playerRoles[uid]
+		        if string.sub(tostring(uid), 1, 4) ~= "BOT_" and _QAAchievementManager ~= nil then
+		            _QAAchievementManager:ReportServerAction(uid, "GAME_PLAY", "")
+		            if r ~= nil then
+		                _QAAchievementManager:ReportServerAction(uid, "ROLE_ASSIGNED", tostring(r))
+		            end
+		        end
 		        if r ~= nil then
 		            roleParts[#roleParts + 1] = uid
 		            roleParts[#roleParts + 1] = tostring(r)
@@ -434,6 +440,9 @@ script MafiaGameLogic extends Logic
 		    end
 		    self:UpdateVoteStatusList()
 		    log("[Mafia] ?ы몴: " .. voterId .. " -> " .. recorded)
+		    if string.sub(tostring(voterId), 1, 4) ~= "BOT_" and _QAAchievementManager ~= nil then
+		        _QAAchievementManager:ReportServerAction(voterId, "VOTE_COMPLETE", recorded)
+		    end
 		    if self:AllVoted() then
 		        self.InternalTimer = 0.0
 		        self:BeginMeetingResult()

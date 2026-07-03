@@ -1,0 +1,264 @@
+@Logic
+script MoneyManager extends Logic
+
+	property string KEY_PAID_MONEY = "player_paid_money_v1"
+	property string KEY_FREE_MONEY = "player_free_money_v1"
+	property string KEY_OWNED_COSTUMES = "player_owned_costumes_v1"
+	property integer DEFAULT_PAID_MONEY = 0
+	property integer DEFAULT_FREE_MONEY = 3000
+	property table UserMoney = {}
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		log("[MoneyManager] initialized paidKey=" .. self.KEY_PAID_MONEY .. " freeKey=" .. self.KEY_FREE_MONEY)
+	end
+
+	@ExecSpace("ServerOnly")
+	method table CreateDefaultState()
+		return {
+			paid = self.DEFAULT_PAID_MONEY,
+			free = self.DEFAULT_FREE_MONEY,
+			owned = { __schema = true },
+		}
+	end
+
+	@ExecSpace("ServerOnly")
+	method table LoadUserMoney(string userId)
+		local cached = self.UserMoney[userId]
+		if cached ~= nil then return cached end
+
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local paidError, paidRaw = storage:GetAndWait(self.KEY_PAID_MONEY)
+		local freeError, freeRaw = storage:GetAndWait(self.KEY_FREE_MONEY)
+		local ownedError, ownedRaw = storage:GetAndWait(self.KEY_OWNED_COSTUMES)
+		if paidError ~= 0 or freeError ~= 0 or ownedError ~= 0 then
+			log_error("[MoneyManager] Load failed userId=" .. userId .. " paidError=" .. tostring(paidError) .. " freeError=" .. tostring(freeError) .. " ownedError=" .. tostring(ownedError))
+			return nil
+		end
+
+		local state = self:CreateDefaultState()
+		local needsInitialSave = false
+		if paidRaw == nil or paidRaw == "" then
+			needsInitialSave = true
+		else
+			state.paid = math.max(0, math.floor(tonumber(paidRaw) or 0))
+		end
+		if freeRaw == nil or freeRaw == "" then
+			needsInitialSave = true
+		else
+			state.free = math.max(0, math.floor(tonumber(freeRaw) or 0))
+		end
+		if ownedRaw == nil or ownedRaw == "" then
+			needsInitialSave = true
+		else
+			local decoded = _HttpService:JSONDecode(ownedRaw)
+			if decoded ~= nil then state.owned = decoded end
+		end
+		state.owned = state.owned or {}
+		state.owned.__schema = true
+
+		if needsInitialSave and self:SaveMoney(userId, state) == false then
+			return nil
+		end
+		self.UserMoney[userId] = state
+		log("[MoneyManager] Loaded userId=" .. userId .. " paid=" .. tostring(state.paid) .. " free=" .. tostring(state.free))
+		return state
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean SaveMoney(string userId, table state)
+		if state == nil then return false end
+		state.paid = math.max(0, math.floor(state.paid or 0))
+		state.free = math.max(0, math.floor(state.free or 0))
+		state.owned = state.owned or { __schema = true }
+		state.owned.__schema = true
+		local saveData = {
+			[self.KEY_PAID_MONEY] = tostring(state.paid),
+			[self.KEY_FREE_MONEY] = tostring(state.free),
+			[self.KEY_OWNED_COSTUMES] = _HttpService:JSONEncode(state.owned),
+		}
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode = storage:BatchSetAndWait(saveData)
+		if errorCode ~= nil and errorCode ~= 0 then
+			log_error("[MoneyManager] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+			return false
+		end
+		log("[MoneyManager] Saved userId=" .. userId .. " paid=" .. tostring(state.paid) .. " free=" .. tostring(state.free))
+		return true
+	end
+
+	@ExecSpace("Server")
+	method void LoadMoney()
+		local userId = tostring(senderUserId)
+		local state = self:LoadUserMoney(userId)
+		if state == nil then
+			self:UpdateMoneyUI(0, 0, "", "머니 정보를 불러오지 못했습니다.", senderUserId)
+			return
+		end
+		self:SendMoneyState(userId, state, "")
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer GetPaidMoney(string userId)
+		local state = self:LoadUserMoney(userId)
+		if state == nil then return 0 end
+		return state.paid
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer GetFreeMoney(string userId)
+		local state = self:LoadUserMoney(userId)
+		if state == nil then return 0 end
+		return state.free
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean CanSpendPaidMoney(string userId, integer amount)
+		if amount == nil or amount < 0 then return false end
+		return self:GetPaidMoney(userId) >= amount
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean CanSpendFreeMoney(string userId, integer amount)
+		if amount == nil or amount < 0 then return false end
+		return self:GetFreeMoney(userId) >= amount
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ChangeMoney(string userId, string moneyType, integer delta, string reason)
+		local state = self:LoadUserMoney(userId)
+		if state == nil then return false end
+		local previousPaid = state.paid
+		local previousFree = state.free
+		if moneyType == "paid" then
+			if state.paid + delta < 0 then return false end
+			state.paid += delta
+		elseif moneyType == "free" then
+			if state.free + delta < 0 then return false end
+			state.free += delta
+		else
+			return false
+		end
+		if self:SaveMoney(userId, state) == false then
+			state.paid = previousPaid
+			state.free = previousFree
+			return false
+		end
+		log("[MoneyManager] Changed userId=" .. userId .. " type=" .. moneyType .. " delta=" .. tostring(delta) .. " reason=" .. tostring(reason))
+		self:SendMoneyState(userId, state, "")
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean AddPaidMoney(string userId, integer amount, string reason)
+		if amount == nil or amount <= 0 then return false end
+		return self:ChangeMoney(userId, "paid", amount, reason)
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean AddFreeMoney(string userId, integer amount, string reason)
+		if amount == nil or amount <= 0 then return false end
+		return self:ChangeMoney(userId, "free", amount, reason)
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean SpendPaidMoney(string userId, integer amount, string reason)
+		if self:CanSpendPaidMoney(userId, amount) == false then return false end
+		return self:ChangeMoney(userId, "paid", -amount, reason)
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean SpendFreeMoney(string userId, integer amount, string reason)
+		if self:CanSpendFreeMoney(userId, amount) == false then return false end
+		return self:ChangeMoney(userId, "free", -amount, reason)
+	end
+
+	@ExecSpace("ServerOnly")
+	method table GetShopPrice(integer itemId)
+		if itemId == 1 then return { priceType = "free", price = 1200 } end
+		if itemId == 2 then return { priceType = "paid", price = 280 } end
+		if itemId == 3 then return { priceType = "free", price = 600 } end
+		if itemId == 4 then return { priceType = "paid", price = 180 } end
+		if itemId == 5 then return { priceType = "free", price = 800 } end
+		if itemId == 6 then return { priceType = "paid", price = 90 } end
+		return nil
+	end
+
+	@ExecSpace("Server")
+	method void RequestPurchase(integer itemId)
+		local userId = tostring(senderUserId)
+		local state = self:LoadUserMoney(userId)
+		if state == nil then
+			self:PurchaseResult(false, "SAVE_FAILED", itemId, 0, 0, "", senderUserId)
+			return
+		end
+		local item = self:GetShopPrice(itemId)
+		if item == nil then
+			self:PurchaseResult(false, "INVALID_ITEM", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+			return
+		end
+		local ownedKey = tostring(itemId)
+		if state.owned[ownedKey] == true then
+			self:PurchaseResult(false, "ALREADY_OWNED", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+			return
+		end
+		if item.priceType == "free" and state.free < item.price then
+			self:PurchaseResult(false, "NOT_ENOUGH_FREE", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+			return
+		end
+		if item.priceType == "paid" and state.paid < item.price then
+			self:PurchaseResult(false, "NOT_ENOUGH_PAID", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+			return
+		end
+
+		local previousPaid = state.paid
+		local previousFree = state.free
+		if item.priceType == "free" then state.free -= item.price else state.paid -= item.price end
+		state.owned[ownedKey] = true
+		if self:SaveMoney(userId, state) == false then
+			state.paid = previousPaid
+			state.free = previousFree
+			state.owned[ownedKey] = nil
+			self:PurchaseResult(false, "SAVE_FAILED", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+			return
+		end
+		log("[MoneyManager] Purchase success userId=" .. userId .. " itemId=" .. tostring(itemId) .. " type=" .. item.priceType .. " price=" .. tostring(item.price))
+		self:PurchaseResult(true, "SUCCESS", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SendMoneyState(string userId, table state, string message)
+		self:UpdateMoneyUI(state.paid, state.free, _HttpService:JSONEncode(state.owned), message or "", userId)
+	end
+
+	@ExecSpace("Client")
+	method void UpdateMoneyUI(integer paidMoney, integer freeMoney, string ownedJson, string message)
+		local paidText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/PaidMoneyBar/PaidMoneyText")
+		local freeText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/FreeMoneyBar/FreeMoneyText")
+		if paidText ~= nil and paidText.TextComponent ~= nil then paidText.TextComponent.Text = "캐시  " .. self:FormatMoney(paidMoney) end
+		if freeText ~= nil and freeText.TextComponent ~= nil then freeText.TextComponent.Text = "코인  " .. self:FormatMoney(freeMoney) end
+		if ownedJson ~= nil and ownedJson ~= "" and _ShopController ~= nil then
+			_ShopController:ApplyOwnedState(ownedJson)
+		end
+		if message ~= nil and message ~= "" and _UIToast ~= nil then _UIToast:ShowMessage(message) end
+		log("[MoneyManager] UI updated paid=" .. tostring(paidMoney) .. " free=" .. tostring(freeMoney))
+	end
+
+	@ExecSpace("Client")
+	method void PurchaseResult(boolean success, string resultCode, integer itemId, integer paidMoney, integer freeMoney, string ownedJson)
+		self:UpdateMoneyUI(paidMoney, freeMoney, ownedJson, "")
+		if _ShopController ~= nil then _ShopController:HandlePurchaseResult(success, resultCode, itemId) end
+	end
+
+	@ExecSpace("ClientOnly")
+	method string FormatMoney(integer amount)
+		local value = tostring(math.max(0, math.floor(amount or 0)))
+		local result = ""
+		while #value > 3 do
+			result = "," .. string.sub(value, #value - 2) .. result
+			value = string.sub(value, 1, #value - 3)
+		end
+		return value .. result
+	end
+
+end

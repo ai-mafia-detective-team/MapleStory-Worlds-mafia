@@ -1,0 +1,314 @@
+@Logic
+script QAAchievementManager extends Logic
+
+	-- Safe, namespaced integration of MSWPackages quest-achievement-package.
+	-- It intentionally does not attach PlayerDBManager/PlayerAchievement to
+	-- DefaultPlayer, preventing a second load/save pipeline beside ProfileStorageLogic.
+	property string KEY_PROGRESS = "qa_achievement_progress_v1"
+	property table UserStates = {}
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		log("[QAAchievement] OnBeginPlay storage keys initialized")
+	end
+
+	method table GetDefinitions()
+		return {
+			{ id = "D_LOGIN", period = "DAILY", title = "로비 접속하기", description = "오늘 로비에 접속하세요.", actionType = "LOBBY_ENTER", target = 1, reward = 100 },
+			{ id = "D_ROOM", period = "DAILY", title = "수사방 입장하기", description = "수사방에 1회 입장하세요.", actionType = "ROOM_ENTER", target = 1, reward = 100 },
+			{ id = "D_GAME", period = "DAILY", title = "게임 1회 참여하기", description = "수사 게임에 1회 참여하세요.", actionType = "GAME_PLAY", target = 1, reward = 100 },
+			{ id = "D_VOTE", period = "DAILY", title = "투표 1회 참여하기", description = "회의에서 투표를 1회 완료하세요.", actionType = "VOTE_COMPLETE", target = 1, reward = 100 },
+			{ id = "W_GAME", period = "WEEKLY", title = "게임 5회 참여하기", description = "이번 주 수사 게임에 5회 참여하세요.", actionType = "GAME_PLAY", target = 5, reward = 500 },
+			{ id = "W_VOTE", period = "WEEKLY", title = "투표 10회 참여하기", description = "이번 주 투표를 10회 완료하세요.", actionType = "VOTE_COMPLETE", target = 10, reward = 500 },
+			{ id = "W_ROOM", period = "WEEKLY", title = "수사방 3회 입장하기", description = "이번 주 수사방에 3회 입장하세요.", actionType = "ROOM_ENTER", target = 3, reward = 500 },
+			{ id = "M_GAME", period = "MONTHLY", title = "게임 20회 참여하기", description = "이번 달 수사 게임에 20회 참여하세요.", actionType = "GAME_PLAY", target = 20, reward = 2000 },
+			{ id = "M_CLAIM", period = "MONTHLY", title = "누적 보상 10회 수령하기", description = "이번 달 업적 보상을 10회 수령하세요.", actionType = "REWARD_CLAIM", target = 10, reward = 2000 },
+			{ id = "M_ROLES", period = "MONTHLY", title = "다양한 역할 경험하기", description = "시민·마피아·경찰·의사 역할을 모두 경험하세요.", actionType = "ROLE_ASSIGNED", target = 4, reward = 2000 },
+		}
+	end
+
+	@ExecSpace("ServerOnly")
+	method table CreateState()
+		return {
+			counts = { __schema = 1 },
+			claimed = { __schema = true },
+			roles = { __schema = true },
+			nextDaily = 0,
+			nextWeekly = 0,
+			nextMonthly = 0,
+			lastSeen = 0,
+		}
+	end
+
+	@ExecSpace("ServerOnly")
+	method void EnsureStateTables(table state)
+		state.counts = state.counts or {}
+		state.claimed = state.claimed or {}
+		state.roles = state.roles or {}
+		state.counts.__schema = 1
+		state.claimed.__schema = true
+		state.roles.__schema = true
+	end
+
+	@ExecSpace("ServerOnly")
+	method table LoadUser(string userId)
+		local cached = self.UserStates[userId]
+		if cached ~= nil then
+			self:EnsureStateTables(cached)
+			self:ResetCyclesIfNeeded(userId, cached)
+			return cached
+		end
+
+		local state = self:CreateState()
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local err, raw = storage:GetAndWait(self.KEY_PROGRESS)
+		if err == 0 and raw ~= nil and raw ~= "" then
+			local loaded = _HttpService:JSONDecode(raw)
+			if loaded ~= nil then
+				state = loaded
+			end
+		end
+		self:EnsureStateTables(state)
+
+		self.UserStates[userId] = state
+		self:ResetCyclesIfNeeded(userId, state)
+		log("[QAAchievement] Loaded userId=" .. userId)
+		return state
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearPeriod(table state, string period)
+		for _, definition in ipairs(self:GetDefinitions()) do
+			if definition.period == period then
+				state.counts[definition.id] = nil
+				state.claimed[definition.id] = nil
+			end
+		end
+		if period == "MONTHLY" then state.roles = { __schema = true } end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResetCyclesIfNeeded(string userId, table state)
+		local now = _QADateTimeLogic:GetTimeElapsed()
+		local changed = false
+		if state.lastSeen ~= nil and state.lastSeen > now then
+			log_warning("[QAAchievement] Server time moved backwards userId=" .. userId)
+			state.nextDaily = 0
+			state.nextWeekly = 0
+			state.nextMonthly = 0
+			changed = true
+		end
+
+		if state.nextDaily == nil or state.nextDaily <= 0 then
+			state.nextDaily = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Day, now)
+			changed = true
+		elseif now >= state.nextDaily then
+			self:ClearPeriod(state, "DAILY")
+			state.nextDaily = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Day, now)
+			log("[QAAchievement] DAILY reset userId=" .. userId)
+			changed = true
+		end
+
+		if state.nextWeekly == nil or state.nextWeekly <= 0 then
+			state.nextWeekly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Week, now)
+			changed = true
+		elseif now >= state.nextWeekly then
+			self:ClearPeriod(state, "WEEKLY")
+			state.nextWeekly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Week, now)
+			log("[QAAchievement] WEEKLY reset userId=" .. userId)
+			changed = true
+		end
+
+		if state.nextMonthly == nil or state.nextMonthly <= 0 then
+			state.nextMonthly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Month, now)
+			changed = true
+		elseif now >= state.nextMonthly then
+			self:ClearPeriod(state, "MONTHLY")
+			state.nextMonthly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Month, now)
+			log("[QAAchievement] MONTHLY reset userId=" .. userId)
+			changed = true
+		end
+
+		state.lastSeen = now
+		if changed then self:SaveUser(userId, state) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean SaveUser(string userId, table state)
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode = storage:SetAndWait(self.KEY_PROGRESS, _HttpService:JSONEncode(state))
+		if errorCode ~= 0 then
+			log_error("[QAAchievement] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+			return false
+		end
+		log("[QAAchievement] Saved userId=" .. userId)
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ApplyAction(string userId, table state, string actionType, integer amount, string extraData)
+		local changed = false
+		for _, definition in ipairs(self:GetDefinitions()) do
+			if definition.actionType == actionType and state.claimed[definition.id] ~= true then
+				local value = state.counts[definition.id] or 0
+				if actionType == "ROLE_ASSIGNED" then
+					if extraData ~= nil and extraData ~= "" and state.roles[extraData] ~= true then
+						state.roles[extraData] = true
+						value = value + 1
+					else
+						continue
+					end
+				else
+					value = value + math.max(1, amount)
+				end
+				state.counts[definition.id] = math.min(value, definition.target)
+				changed = true
+			end
+		end
+		if changed then
+			log("[QAAchievement] Action userId=" .. userId .. " type=" .. actionType .. " amount=" .. tostring(amount))
+		end
+		return changed
+	end
+
+	@ExecSpace("ServerOnly")
+	method void DispatchAction(string userId, string actionType, integer amount, string extraData)
+		local event = QAActionEvent()
+		event.UserId = userId
+		event.ActionType = actionType
+		event.Amount = amount
+		event.ExtraData = extraData or ""
+		self:SendEvent(event)
+	end
+
+	@ExecSpace("Server")
+	method void ReportLobbyAction(string actionType, string extraData)
+		if actionType ~= "LOBBY_ENTER" and actionType ~= "ROOM_ENTER" then
+			log_warning("[QAAchievement] Rejected client action=" .. tostring(actionType))
+			return
+		end
+		self:DispatchAction(senderUserId, actionType, 1, extraData)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ReportServerAction(string userId, string actionType, string extraData)
+		self:DispatchAction(userId, actionType, 1, extraData)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ProcessActionEvent(any actionEvent)
+		if actionEvent.UserId == nil or actionEvent.UserId == "" then return end
+		local state = self:LoadUser(actionEvent.UserId)
+		if self:ApplyAction(actionEvent.UserId, state, actionEvent.ActionType, actionEvent.Amount, actionEvent.ExtraData) then
+			self:SaveUser(actionEvent.UserId, state)
+			self:DeliverState(actionEvent.UserId, state, "")
+		end
+	end
+
+	@ExecSpace("Server")
+	method void RequestData()
+		local state = self:LoadUser(senderUserId)
+		self:DeliverState(senderUserId, state, "")
+	end
+
+	@ExecSpace("ServerOnly")
+	method table FindDefinition(string achievementId)
+		for _, definition in ipairs(self:GetDefinitions()) do
+			if definition.id == achievementId then return definition end
+		end
+		return nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ClaimOne(string userId, table state, string achievementId)
+		local definition = self:FindDefinition(achievementId)
+		if definition == nil then return false end
+		if state.claimed[achievementId] == true then return false end
+		if (state.counts[achievementId] or 0) < definition.target then return false end
+		local previousRewardClaimCount = state.counts["M_CLAIM"] or 0
+		state.claimed[achievementId] = true
+		self:ApplyAction(userId, state, "REWARD_CLAIM", 1, achievementId)
+		if _MoneyManager:AddFreeMoney(userId, definition.reward, "achievement_reward") == false then
+			state.claimed[achievementId] = nil
+			state.counts["M_CLAIM"] = previousRewardClaimCount
+			log_error("[QAAchievement] Money reward failed userId=" .. userId .. " id=" .. achievementId)
+			return false
+		end
+		if self:SaveUser(userId, state) == false then
+			state.claimed[achievementId] = nil
+			state.counts["M_CLAIM"] = previousRewardClaimCount
+			_MoneyManager:SpendFreeMoney(userId, definition.reward, "achievement_reward_rollback")
+			return false
+		end
+		log("[QAAchievement] Reward claimed userId=" .. userId .. " id=" .. achievementId .. " reward=" .. tostring(definition.reward))
+		return true
+	end
+
+	@ExecSpace("Server")
+	method void ClaimReward(string achievementId)
+		local userId = tostring(senderUserId)
+		local state = self:LoadUser(userId)
+		local definition = self:FindDefinition(achievementId)
+		if self:ClaimOne(userId, state, achievementId) == false then
+			self:DeliverState(userId, state, "보상을 받을 수 없습니다.")
+			return
+		end
+		self:DeliverState(userId, state, "보상을 수령했습니다. 코인 +" .. tostring(definition.reward))
+	end
+
+	@ExecSpace("Server")
+	method void ClaimAll(string period)
+		local userId = tostring(senderUserId)
+		local state = self:LoadUser(userId)
+		local claimedCount = 0
+		local totalReward = 0
+		for _, definition in ipairs(self:GetDefinitions()) do
+			if definition.period == period and self:ClaimOne(userId, state, definition.id) then
+				claimedCount += 1
+				totalReward += definition.reward
+			end
+		end
+		self:DeliverState(userId, state, claimedCount > 0 and "보상을 수령했습니다. 코인 +" .. tostring(totalReward) or "수령 가능한 보상이 없습니다.")
+	end
+
+	@ExecSpace("ServerOnly")
+	method void DeliverState(string userId, table state, string message)
+		local items = {}
+		for _, definition in ipairs(self:GetDefinitions()) do
+			items[#items + 1] = {
+				id = definition.id,
+				period = definition.period,
+				title = definition.title,
+				description = definition.description,
+				target = definition.target,
+				reward = definition.reward,
+				progress = state.counts[definition.id] or 0,
+				claimed = state.claimed[definition.id] == true,
+			}
+		end
+		local freeMoney = _MoneyManager:GetFreeMoney(userId)
+		local payload = {
+			items = items,
+			rewardBalance = freeMoney,
+			nextDaily = state.nextDaily,
+			nextWeekly = state.nextWeekly,
+			nextMonthly = state.nextMonthly,
+		}
+		self:ReceiveState(_HttpService:JSONEncode(payload), message or "", userId)
+	end
+
+	@ExecSpace("Client")
+	method void ReceiveState(string payloadJson, string message)
+		local root = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/Controller")
+		if root == nil or isvalid(root) == false then return end
+		local ui = root:GetComponent("script.QAAchievementUI")
+		if ui ~= nil then ui:ApplyServerState(payloadJson, message) end
+	end
+
+	@ExecSpace("ServerOnly")
+	@EventSender("Self")
+	handler HandleQAActionEvent(QAActionEvent event)
+		self:ProcessActionEvent(event)
+	end
+
+end
