@@ -1,0 +1,312 @@
+@Logic
+script FriendManager extends Logic
+
+	property string KEY_FRIENDS = "friends_v1"
+	property string KEY_REQUESTS = "friend_requests_v1"
+	property string KEY_NICKNAME = "player_nickname_v1"
+	property string DIRECTORY_STORAGE = "FriendDirectory"
+	property integer MAX_FRIENDS = 50
+	property any directoryStorage = nil
+	property table nicknameRegistrationCache = nil
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- Initializes the nickname directory used to resolve friend requests.
+		self.directoryStorage = _DataStorageService:GetGlobalDataStorage(self.DIRECTORY_STORAGE)
+		self.nicknameRegistrationCache = {}
+		log("[FriendManager] server storage initialized")
+	end
+
+	method string Trim(string value)
+		-- Trims leading and trailing whitespace from user-entered text.
+		return string.match(value or "", "^%s*(.-)%s*$") or ""
+	end
+
+	method string NormalizeNickname(string nickname)
+		-- Produces the case-insensitive nickname directory key.
+		return string.lower(self:Trim(nickname))
+	end
+
+	@ExecSpace("ServerOnly")
+	method table DecodeList(string raw)
+		-- Decodes a persisted JSON list and falls back to an empty list.
+		if raw == nil or raw == "" then return {} end
+		local decoded = _HttpService:JSONDecode(raw)
+		if decoded == nil then return {} end
+		return decoded
+	end
+
+	@ExecSpace("ServerOnly")
+	method string EncodeList(table items)
+		-- Preserves an empty Lua list as a valid JSON array for client decoding.
+		if items == nil or #items == 0 then return "[]" end
+		return _HttpService:JSONEncode(items)
+	end
+
+	@ExecSpace("ServerOnly")
+	method table LoadList(string userId, string key)
+		-- Loads one cached friend-system list from the user's storage.
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode, raw = storage:GetAndWait(key)
+		if errorCode ~= 0 or raw == nil or raw == "" then return {} end
+		return self:DecodeList(raw)
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer SaveList(string userId, string key, table items)
+		-- Persists one changed list as a compact JSON value.
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode = storage:SetAndWait(key, self:EncodeList(items))
+		if errorCode ~= 0 then
+			log_warning("[FriendManager] SaveList failed userId=" .. userId .. " key=" .. key .. " errorCode=" .. tostring(errorCode))
+		end
+		return errorCode
+	end
+
+	@ExecSpace("ServerOnly")
+	method string LoadNickname(string userId)
+		-- Loads the authoritative in-world nickname for one user.
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode, nickname = storage:GetAndWait(self.KEY_NICKNAME)
+		if errorCode ~= 0 then return "" end
+		return self:Trim(nickname)
+	end
+
+	method integer FindRecordIndex(table items, string userId)
+		-- Finds a friend or request record by user ID.
+		for index, item in ipairs(items) do
+			if tostring(item.userId or "") == userId then return index end
+		end
+		return 0
+	end
+
+	method boolean RemoveRecord(table items, string userId)
+		-- Removes a matching record and reports whether the list changed.
+		local index = self:FindRecordIndex(items, userId)
+		if index <= 0 then return false end
+		table.remove(items, index)
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean IsUserOnline(string userId)
+		-- Checks the current world instance's user table without storage access.
+		return _UserService.Users[userId] ~= nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method table MakeClientList(table source)
+		-- Adds transient online state without persisting it.
+		local result = {}
+		for _, item in ipairs(source) do
+			table.insert(result, {
+				userId = tostring(item.userId or ""),
+				nickname = tostring(item.nickname or "수사관"),
+				online = self:IsUserOnline(tostring(item.userId or "")),
+			})
+		end
+		return result
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RegisterNicknameInternal(string userId, string nickname)
+		-- Registers the authoritative saved nickname for offline request lookup.
+		local savedNickname = self:LoadNickname(userId)
+		if savedNickname ~= "" then nickname = savedNickname end
+		nickname = self:Trim(nickname)
+		if nickname == "" then return end
+		if self.nicknameRegistrationCache == nil then self.nicknameRegistrationCache = {} end
+		if self.nicknameRegistrationCache[userId] == nickname then return end
+		if self.directoryStorage == nil then
+			self.directoryStorage = _DataStorageService:GetGlobalDataStorage(self.DIRECTORY_STORAGE)
+		end
+		local key = "nick:" .. self:NormalizeNickname(nickname)
+		local readCode, currentUserId = self.directoryStorage:GetAndWait(key)
+		if readCode == 0 and tostring(currentUserId or "") == userId then
+			self.nicknameRegistrationCache[userId] = nickname
+			return
+		end
+		local writeCode = self.directoryStorage:SetAndWait(key, userId)
+		if writeCode ~= 0 then
+			log_warning("[FriendManager] nickname registration failed nickname=" .. nickname .. " errorCode=" .. tostring(writeCode))
+			return
+		end
+		self.nicknameRegistrationCache[userId] = nickname
+		log("[FriendManager] nickname registered nickname=" .. nickname .. " userId=" .. userId)
+	end
+
+	@ExecSpace("Server")
+	method void RegisterNickname(string nickname)
+		-- Registers the calling user's saved nickname in the friend directory.
+		self:RegisterNicknameInternal(tostring(senderUserId), nickname)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SendSnapshot(string userId, string message, boolean isError)
+		-- Sends the current friend and request lists to one client.
+		local friends = self:MakeClientList(self:LoadList(userId, self.KEY_FRIENDS))
+		local requests = self:MakeClientList(self:LoadList(userId, self.KEY_REQUESTS))
+		log("[FriendManager] snapshot userId=" .. userId .. " friends=" .. tostring(#friends) .. " requests=" .. tostring(#requests))
+		self:DeliverFriendData(self:EncodeList(friends), self:EncodeList(requests), message or "", isError, userId)
+	end
+
+	@ExecSpace("Server")
+	method void RequestFriendData(string nickname)
+		-- Registers the caller and returns the latest friend-system state.
+		local userId = tostring(senderUserId)
+		self:RegisterNicknameInternal(userId, nickname)
+		self:SendSnapshot(userId, "", false)
+	end
+
+	@ExecSpace("Server")
+	method void RequestSendFriendRequest(string targetNickname)
+		-- Validates and stores an incoming request for the resolved nickname.
+		local userId = tostring(senderUserId)
+		targetNickname = self:Trim(targetNickname)
+		if targetNickname == "" then
+			self:SendSnapshot(userId, "친구 닉네임을 입력해 주세요.", true)
+			return
+		end
+		if self.directoryStorage == nil then
+			self.directoryStorage = _DataStorageService:GetGlobalDataStorage(self.DIRECTORY_STORAGE)
+		end
+		local lookupCode, targetUserId = self.directoryStorage:GetAndWait("nick:" .. self:NormalizeNickname(targetNickname))
+		targetUserId = tostring(targetUserId or "")
+		if lookupCode ~= 0 or targetUserId == "" then
+			self:SendSnapshot(userId, "해당 닉네임의 수사관을 찾을 수 없습니다.", true)
+			return
+		end
+		if targetUserId == userId then
+			self:SendSnapshot(userId, "자기 자신에게 친구 요청을 보낼 수 없습니다.", true)
+			return
+		end
+		local authoritativeTargetName = self:LoadNickname(targetUserId)
+		if self:NormalizeNickname(authoritativeTargetName) ~= self:NormalizeNickname(targetNickname) then
+			self:SendSnapshot(userId, "닉네임 정보가 변경되었습니다. 상대가 다시 접속한 뒤 시도해 주세요.", true)
+			return
+		end
+		local friends = self:LoadList(userId, self.KEY_FRIENDS)
+		if self:FindRecordIndex(friends, targetUserId) > 0 then
+			self:SendSnapshot(userId, "이미 친구로 등록된 수사관입니다.", true)
+			return
+		end
+		local requests = self:LoadList(targetUserId, self.KEY_REQUESTS)
+		if self:FindRecordIndex(requests, userId) > 0 then
+			self:SendSnapshot(userId, "이미 친구 요청을 보냈습니다.", true)
+			return
+		end
+		if #requests >= self.MAX_FRIENDS then
+			self:SendSnapshot(userId, "상대의 친구 요청 목록이 가득 찼습니다.", true)
+			return
+		end
+		local sourceNickname = self:LoadNickname(userId)
+		if sourceNickname == "" then sourceNickname = "수사관" end
+		table.insert(requests, { userId = userId, nickname = sourceNickname })
+		local saveCode = self:SaveList(targetUserId, self.KEY_REQUESTS, requests)
+		if saveCode ~= 0 then
+			self:SendSnapshot(userId, "친구 요청 저장에 실패했습니다.", true)
+			return
+		end
+		log("[FriendManager] request sent from=" .. userId .. " to=" .. targetUserId)
+		self:SendSnapshot(userId, "친구 요청을 보냈습니다.", false)
+		if self:IsUserOnline(targetUserId) then self:SendSnapshot(targetUserId, "새 친구 요청이 도착했습니다.", false) end
+	end
+
+	@ExecSpace("Server")
+	method void RequestAcceptFriend(string requesterUserId)
+		-- Accepts one pending request and creates the symmetric friendship.
+		local userId = tostring(senderUserId)
+		requesterUserId = tostring(requesterUserId or "")
+		local requests = self:LoadList(userId, self.KEY_REQUESTS)
+		local requestIndex = self:FindRecordIndex(requests, requesterUserId)
+		if requestIndex <= 0 then
+			self:SendSnapshot(userId, "이미 처리되었거나 존재하지 않는 요청입니다.", true)
+			return
+		end
+		local friends = self:LoadList(userId, self.KEY_FRIENDS)
+		local requesterFriends = self:LoadList(requesterUserId, self.KEY_FRIENDS)
+		if #friends >= self.MAX_FRIENDS or #requesterFriends >= self.MAX_FRIENDS then
+			self:SendSnapshot(userId, "친구 목록이 가득 찼습니다.", true)
+			return
+		end
+		local requesterNickname = tostring(requests[requestIndex].nickname or "수사관")
+		local myNickname = self:LoadNickname(userId)
+		if myNickname == "" then myNickname = "수사관" end
+		if self:FindRecordIndex(friends, requesterUserId) <= 0 then
+			table.insert(friends, { userId = requesterUserId, nickname = requesterNickname })
+		end
+		if self:FindRecordIndex(requesterFriends, userId) <= 0 then
+			table.insert(requesterFriends, { userId = userId, nickname = myNickname })
+		end
+		table.remove(requests, requestIndex)
+		local ownStorage = _DataStorageService:GetUserDataStorage(userId)
+		local ownValues = {}
+		ownValues[self.KEY_FRIENDS] = self:EncodeList(friends)
+		ownValues[self.KEY_REQUESTS] = self:EncodeList(requests)
+		local ownCode, ownKeys = ownStorage:BatchSetAndWait(ownValues)
+		local requesterCode = self:SaveList(requesterUserId, self.KEY_FRIENDS, requesterFriends)
+		if ownCode ~= 0 or requesterCode ~= 0 then
+			log_warning("[FriendManager] accept partial failure ownCode=" .. tostring(ownCode) .. " requesterCode=" .. tostring(requesterCode))
+			self:SendSnapshot(userId, "친구 수락 저장 중 오류가 발생했습니다.", true)
+			return
+		end
+		log("[FriendManager] request accepted userId=" .. userId .. " friend=" .. requesterUserId)
+		self:SendSnapshot(userId, "친구 요청을 수락했습니다.", false)
+		if self:IsUserOnline(requesterUserId) then self:SendSnapshot(requesterUserId, myNickname .. "님과 친구가 되었습니다.", false) end
+	end
+
+	@ExecSpace("Server")
+	method void RequestRejectFriend(string requesterUserId)
+		-- Rejects one pending request without changing either friend list.
+		local userId = tostring(senderUserId)
+		requesterUserId = tostring(requesterUserId or "")
+		local requests = self:LoadList(userId, self.KEY_REQUESTS)
+		if not self:RemoveRecord(requests, requesterUserId) then
+			self:SendSnapshot(userId, "이미 처리되었거나 존재하지 않는 요청입니다.", true)
+			return
+		end
+		if self:SaveList(userId, self.KEY_REQUESTS, requests) ~= 0 then
+			self:SendSnapshot(userId, "친구 요청 거절 저장에 실패했습니다.", true)
+			return
+		end
+		log("[FriendManager] request rejected userId=" .. userId .. " requester=" .. requesterUserId)
+		self:SendSnapshot(userId, "친구 요청을 거절했습니다.", false)
+	end
+
+	@ExecSpace("Server")
+	method void RequestDeleteFriend(string friendUserId)
+		-- Deletes a friendship from both users' persisted lists.
+		local userId = tostring(senderUserId)
+		friendUserId = tostring(friendUserId or "")
+		local friends = self:LoadList(userId, self.KEY_FRIENDS)
+		if not self:RemoveRecord(friends, friendUserId) then
+			self:SendSnapshot(userId, "이미 삭제되었거나 존재하지 않는 친구입니다.", true)
+			return
+		end
+		local otherFriends = self:LoadList(friendUserId, self.KEY_FRIENDS)
+		self:RemoveRecord(otherFriends, userId)
+		local ownCode = self:SaveList(userId, self.KEY_FRIENDS, friends)
+		local otherCode = self:SaveList(friendUserId, self.KEY_FRIENDS, otherFriends)
+		if ownCode ~= 0 or otherCode ~= 0 then
+			log_warning("[FriendManager] delete partial failure ownCode=" .. tostring(ownCode) .. " otherCode=" .. tostring(otherCode))
+			self:SendSnapshot(userId, "친구 삭제 저장 중 오류가 발생했습니다.", true)
+			return
+		end
+		log("[FriendManager] friendship deleted userId=" .. userId .. " friend=" .. friendUserId)
+		self:SendSnapshot(userId, "친구를 삭제했습니다.", false)
+		if self:IsUserOnline(friendUserId) then self:SendSnapshot(friendUserId, "친구 목록이 변경되었습니다.", false) end
+	end
+
+	@ExecSpace("Client")
+	method void DeliverFriendData(string friendsJson, string requestsJson, string message, boolean isError)
+		-- Forwards server-owned friend data to the lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or not isvalid(lobby) then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:ApplyFriendData(friendsJson, requestsJson, message, isError)
+		end
+	end
+
+end

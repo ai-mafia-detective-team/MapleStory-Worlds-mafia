@@ -69,6 +69,7 @@ property any daySkipClickHandler = nil
 property number refreshAccumulator = 0.0
 property integer cachedPhase = -1
 property boolean uiResolved = false
+property boolean roomFlowActive = false
 property any readyTween = nil
 property string lastLobbyChatLog = "__UNSET__"
 property string lastDayChatLog = "__UNSET__"
@@ -284,8 +285,8 @@ method void OnBeginPlay()
     self.nightDoctorHandlers = {}
     self.nightDoctorPlayerIds = {}
     self:ResolveUI()
-    self:RefreshUI(true)
-    log("[MafiaUIFlow] initialized")
+    self:ExitRoomLobby()
+    log("[MafiaUIFlow] initialized; room flow inactive")
 end
 
 method void OnUpdate(number delta)
@@ -920,7 +921,32 @@ method void ConnectPhaseChatScrollControls(string hudName)
     end
 end
 
+method void EnterRoomLobby()
+    self.roomFlowActive = true
+    self.cachedPhase = -1
+    if not self.uiResolved then self:ResolveUI() end
+    self:RefreshUI(true)
+    log("[MafiaUIFlow] room flow entered")
+end
+
+method void ExitRoomLobby()
+    self.roomFlowActive = false
+    self.cachedPhase = -1
+    if self.lobbyRoot ~= nil then self.lobbyRoot.Enable = false end
+    if self.dayRoot ~= nil then self.dayRoot.Enable = false end
+    if self.nightRoot ~= nil then self.nightRoot.Enable = false end
+    if self.legacyRoot ~= nil then self.legacyRoot.Enable = false end
+    log("[MafiaUIFlow] room flow exited")
+end
+
 method void RefreshUI(boolean force)
+    if not self.roomFlowActive then
+        if self.lobbyRoot ~= nil then self.lobbyRoot.Enable = false end
+        if self.dayRoot ~= nil then self.dayRoot.Enable = false end
+        if self.nightRoot ~= nil then self.nightRoot.Enable = false end
+        if self.legacyRoot ~= nil then self.legacyRoot.Enable = false end
+        return
+    end
     if _MafiaGameLogic == nil or not self.uiResolved then return end
     local phase = _MafiaGameLogic.CurrentPhase
     if force or phase ~= self.cachedPhase then

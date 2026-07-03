@@ -1,0 +1,14 @@
+@Logic
+script QACycleEnum extends Logic
+
+	-- Namespaced adaptation of MSWPackages quest-achievement-package CycleEnum.
+	property integer None = 0
+	property integer Day = 1
+	property integer Week = 2
+	property integer Month = 3
+
+	method table GetEnums()
+		return { self.Day, self.Week, self.Month }
+	end
+
+end

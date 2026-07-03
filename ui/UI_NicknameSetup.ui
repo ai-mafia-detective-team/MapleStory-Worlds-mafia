@@ -21,10 +21,10 @@
           "name": "UI_NicknameSetup",
           "path": "/ui/UI_NicknameSetup",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 8,
           "pathConstraints": "//",
           "revision": 0,
           "origin": {
@@ -97,7 +97,7 @@
             {
               "@type": "MOD.Core.UIGroupComponent",
               "DefaultShow": false,
-              "GroupOrder": 6,
+              "GroupOrder": 8,
               "GroupType": 2,
               "Enable": true
             },

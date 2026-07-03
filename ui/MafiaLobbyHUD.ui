@@ -21,7 +21,7 @@
           "name": "MafiaLobbyHUD",
           "path": "/ui/MafiaLobbyHUD",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 0,
@@ -96,7 +96,7 @@
             },
             {
               "@type": "MOD.Core.UIGroupComponent",
-              "DefaultShow": true,
+              "DefaultShow": false,
               "GroupOrder": 0,
               "GroupType": 1,
               "Enable": true

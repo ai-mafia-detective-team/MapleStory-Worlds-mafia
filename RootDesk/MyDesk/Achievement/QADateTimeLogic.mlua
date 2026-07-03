@@ -1,0 +1,82 @@
+-- Adapted from https://github.com/MSW-Git/MSWPackages/tree/main/quest-achievement-package
+-- MIT License
+-- Copyright (c) 2025 MSW-Git
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+
+@Logic
+script QADateTimeLogic extends Logic
+
+	-- Official package-compatible cycle calculation, configured for UTC midnight
+	-- and Monday weekly resets for this project.
+	property integer BaseHour = 0
+	property integer BaseDayOfWeek = 1
+
+	method integer GetTimeElapsed()
+		return DateTime.UtcNow.Elapsed
+	end
+
+	method integer DayOfWeekToInteger(any dayOfWeek)
+		if dayOfWeek == DayOfWeekType.Sunday then return 0 end
+		if dayOfWeek == DayOfWeekType.Monday then return 1 end
+		if dayOfWeek == DayOfWeekType.Tuesday then return 2 end
+		if dayOfWeek == DayOfWeekType.Wednesday then return 3 end
+		if dayOfWeek == DayOfWeekType.Thursday then return 4 end
+		if dayOfWeek == DayOfWeekType.Friday then return 5 end
+		return 6
+	end
+
+	method integer GetBaseTime(integer year, integer month, integer day)
+		return DateTime(year, month, day, self.BaseHour, 0, 0).Elapsed
+	end
+
+	method integer GetNextCycleBaseTime(integer cycleEnum, integer elapsed)
+		if elapsed == nil or elapsed < 0 then return DateTime.MaxValue.Elapsed end
+		local dateTime = DateTime(elapsed)
+
+		if cycleEnum == _QACycleEnum.Day then
+			local baseTime = self:GetBaseTime(dateTime.Year, dateTime.Month, dateTime.Day)
+			if elapsed < baseTime then return baseTime end
+			return baseTime + 86400000
+		end
+
+		if cycleEnum == _QACycleEnum.Week then
+			local currentDay = self:DayOfWeekToInteger(dateTime.DayOfWeek)
+			local dayOffset = self.BaseDayOfWeek - currentDay
+			local target = DateTime(elapsed + dayOffset * 86400000)
+			local baseTime = self:GetBaseTime(target.Year, target.Month, target.Day)
+			if elapsed < baseTime then return baseTime end
+			return baseTime + 604800000
+		end
+
+		if cycleEnum == _QACycleEnum.Month then
+			local year = dateTime.Year
+			local month = dateTime.Month
+			local baseTime = self:GetBaseTime(year, month, 1)
+			if elapsed < baseTime then return baseTime end
+			if month == 12 then
+				year += 1
+				month = 1
+			else
+				month += 1
+			end
+			return self:GetBaseTime(year, month, 1)
+		end
+
+		return DateTime.MaxValue.Elapsed
+	end
+
+end

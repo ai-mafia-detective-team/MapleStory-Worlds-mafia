@@ -23,6 +23,7 @@ script LobbyController extends Component
 
 	property any btnFindHandler = nil
 
+
 	property any btnShopHandler = nil
 
 	property any btnAlertHandler = nil
@@ -38,6 +39,22 @@ script LobbyController extends Component
 	property any btnSettingsMuteHandler = nil
 
 	property any friendPopupCloseHandler = nil
+
+	property any friendAddHandler = nil
+
+	property any friendTabFriendsHandler = nil
+
+	property any friendTabRequestsHandler = nil
+
+	property TextInputComponent friendNicknameInput = nil
+
+	property table friendRows = nil
+
+	property table friendFriends = nil
+
+	property table friendRequests = nil
+
+	property integer friendSelectedTab = 1
 
 	property any shopPopupCloseHandler = nil
 
@@ -331,6 +348,7 @@ script LobbyController extends Component
 		-- ShowLobby(nickname) is called immediately after.
 		log("[LobbyController] OnBeginPlay")
 		log("[LobbyController] self.Entity.Path=" .. tostring(self.Entity.Path))
+		self:SetInvestigationRoomSearchVisible(false)
 		self:WireKeyboardInput()
 	end
 
@@ -463,6 +481,12 @@ script LobbyController extends Component
 		self:ResetAvatarPosition()
 		self:ApplyNickname(nickname)
 		self:WireButtonEvents()
+		if _MoneyManager ~= nil then
+			_MoneyManager:LoadMoney()
+		end
+		if _QAAchievementManager ~= nil then
+			_QAAchievementManager:ReportLobbyAction("LOBBY_ENTER", "")
+		end
 	end
 
 	method void ConfigureProfilePortrait()
@@ -827,9 +851,13 @@ script LobbyController extends Component
 	end
 
 	method void OpenExternalPopup(string popupName)
+		-- Opens one lobby popup and refreshes feature data when required.
 		self:HideSettingsPopup()
 		self:HideExternalPopups()
 		self:SetExternalPopupVisible(popupName, true)
+		if popupName == "FriendPopup" then
+			self:RefreshFriendPopup()
+		end
 		log("[LobbyController] External popup opened=" .. popupName)
 	end
 
@@ -1193,9 +1221,7 @@ script LobbyController extends Component
 		self.joinedRoomId = room.roomId or ""
 		log("[Room] Room created successfully id=" .. self.joinedRoomId)
 		self:CloseCreateRoomModal()
-		self:OpenFindRoomModal()
-		self:ShowCommonPopup("complete", "선택이 완료되었습니다.")
-		self:SetFindRoomDetailMessage("입장 완료 / " .. tostring(room.roomName) .. " / 대기 중")
+		self:EnterInvestigationRoomLobby("create")
 		_UIToast:ShowMessage("수사방이 생성되었습니다. 대기 중입니다.")
 	end
 
@@ -1321,6 +1347,32 @@ script LobbyController extends Component
 			end
 		end
 
+		if self.friendAddHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/AddBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.friendAddHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendAddClicked)
+			end
+		end
+
+		if self.friendTabFriendsHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabFriends")
+			if ent ~= nil and isvalid(ent) then
+				self.friendTabFriendsHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendTabFriendsClicked)
+			end
+		end
+
+		if self.friendTabRequestsHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabRequests")
+			if ent ~= nil and isvalid(ent) then
+				self.friendTabRequestsHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendTabRequestsClicked)
+			end
+		end
+
+		local friendInputEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/NickInput")
+		if friendInputEntity ~= nil and isvalid(friendInputEntity) then
+			self.friendNicknameInput = friendInputEntity.TextInputComponent
+		end
+
 		if self.shopPopupCloseHandler == nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then
@@ -1353,6 +1405,25 @@ script LobbyController extends Component
 			self.friendPopupCloseHandler = nil
 		end
 
+		if self.friendAddHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/AddBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendAddHandler) end
+			self.friendAddHandler = nil
+		end
+
+		if self.friendTabFriendsHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabFriends")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendTabFriendsHandler) end
+			self.friendTabFriendsHandler = nil
+		end
+
+		if self.friendTabRequestsHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabRequests")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendTabRequestsHandler) end
+			self.friendTabRequestsHandler = nil
+		end
+		self:ClearFriendRows()
+
 		if self.shopPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCloseHandler) end
@@ -1370,6 +1441,178 @@ script LobbyController extends Component
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.alertPopupCloseHandler) end
 			self.alertPopupCloseHandler = nil
 		end
+	end
+
+	method void RefreshFriendPopup()
+		-- Requests the latest server-owned friend data for the open popup.
+		if self.friendFriends == nil then self.friendFriends = {} end
+		if self.friendRequests == nil then self.friendRequests = {} end
+		if self.friendRows == nil then self.friendRows = {} end
+		self:RenderFriendRows()
+		if _FriendManager ~= nil then
+			_FriendManager:RequestFriendData(self.currentProfileNickname)
+			log("[FriendUI] refresh requested nickname=" .. self.currentProfileNickname)
+		else
+			log_warning("[FriendUI] FriendManager unavailable")
+		end
+	end
+
+	method void OnFriendAddClicked(ButtonClickEvent event)
+		-- Sends a request using the nickname entered in the friend popup.
+		local nickname = ""
+		if self.friendNicknameInput ~= nil then
+			nickname = string.match(self.friendNicknameInput.Text or "", "^%s*(.-)%s*$") or ""
+		end
+		if nickname == "" then
+			_UIToast:ShowMessage("친구 닉네임을 입력해 주세요.")
+			return
+		end
+		if _FriendManager ~= nil then
+			_FriendManager:RequestSendFriendRequest(nickname)
+			log("[FriendUI] add requested nickname=" .. nickname)
+		end
+	end
+
+	method void OnFriendTabFriendsClicked(ButtonClickEvent event)
+		-- Switches the popup to the accepted-friends list.
+		self.friendSelectedTab = 1
+		self:RenderFriendRows()
+		log("[FriendUI] friends tab selected")
+	end
+
+	method void OnFriendTabRequestsClicked(ButtonClickEvent event)
+		-- Switches the popup to the incoming-request list.
+		self.friendSelectedTab = 2
+		self:RenderFriendRows()
+		log("[FriendUI] requests tab selected")
+	end
+
+	method void ApplyFriendData(string friendsJson, string requestsJson, string message, boolean isError)
+		-- Applies a server response and redraws the currently selected tab.
+		self.friendFriends = _HttpService:JSONDecode(friendsJson or "[]")
+		self.friendRequests = _HttpService:JSONDecode(requestsJson or "[]")
+		if self.friendFriends == nil then self.friendFriends = {} end
+		if self.friendRequests == nil then self.friendRequests = {} end
+		self:RenderFriendRows()
+		if self.friendNicknameInput ~= nil and isError == false then
+			self.friendNicknameInput.Text = ""
+		end
+		if message ~= nil and message ~= "" then
+			_UIToast:ShowMessage(message)
+		end
+		if isError then
+			log_warning("[FriendUI] response error message=" .. tostring(message))
+		else
+			log("[FriendUI] data applied friends=" .. tostring(#self.friendFriends) .. " requests=" .. tostring(#self.friendRequests))
+		end
+	end
+
+	method void ClearFriendRows()
+		-- Disconnects dynamic row events and destroys cloned row entities.
+		if self.friendRows == nil then
+			self.friendRows = {}
+			return
+		end
+		for _, row in ipairs(self.friendRows) do
+			for _, link in ipairs(row.eventHandlers or {}) do
+				if link.buttonEntity ~= nil and isvalid(link.buttonEntity) and link.eventHandler ~= nil then
+					link.buttonEntity:DisconnectEvent(ButtonClickEvent, link.eventHandler)
+				end
+			end
+			if row.root ~= nil and isvalid(row.root) then row.root:Destroy() end
+		end
+		self.friendRows = {}
+	end
+
+	method void ConfigureFriendRow(Entity row, table item, boolean requestRow)
+		-- Populates one cloned row and wires its action buttons.
+		local nameEntity = row:GetChildByName("Name", false)
+		if nameEntity ~= nil and nameEntity.TextComponent ~= nil then
+			nameEntity.TextComponent.Text = tostring(item.nickname or "수사관")
+		end
+		local eventHandlers = {}
+		local userId = tostring(item.userId or "")
+		if requestRow then
+			local acceptEntity = row:GetChildByName("Accept", false)
+			local rejectEntity = row:GetChildByName("Reject", false)
+			if acceptEntity ~= nil and isvalid(acceptEntity) then
+				local acceptHandler = acceptEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestAcceptFriend(userId) end
+					log("[FriendUI] accept requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = acceptEntity, eventHandler = acceptHandler })
+			end
+			if rejectEntity ~= nil and isvalid(rejectEntity) then
+				local rejectHandler = rejectEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestRejectFriend(userId) end
+					log("[FriendUI] reject requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = rejectEntity, eventHandler = rejectHandler })
+			end
+		else
+			local statusEntity = row:GetChildByName("Status", false)
+			if statusEntity ~= nil and statusEntity.TextComponent ~= nil then
+				statusEntity.TextComponent.Text = item.online == true and "온라인" or "오프라인"
+			end
+			local removeEntity = row:GetChildByName("Remove", false)
+			if removeEntity ~= nil and isvalid(removeEntity) then
+				local removeHandler = removeEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestDeleteFriend(userId) end
+					log("[FriendUI] delete requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = removeEntity, eventHandler = removeHandler })
+			end
+		end
+		table.insert(self.friendRows, { root = row, eventHandlers = eventHandlers })
+	end
+
+	method void CreateEmptyFriendRow(Entity template, boolean requestRow)
+		-- Creates a non-interactive row when the selected list is empty.
+		local row = template:Clone(requestRow and "EmptyRequestRow" or "EmptyFriendRow")
+		row:SetEnable(true)
+		local nameEntity = row:GetChildByName("Name", false)
+		if nameEntity ~= nil and nameEntity.TextComponent ~= nil then
+			nameEntity.TextComponent.Text = requestRow and "받은 친구 요청이 없습니다." or "등록된 친구가 없습니다."
+		end
+		local buttons = { "Remove", "Status", "Accept", "Reject" }
+		for _, childName in ipairs(buttons) do
+			local child = row:GetChildByName(childName, false)
+			if child ~= nil then child:SetEnable(false) end
+		end
+		table.insert(self.friendRows, { root = row, eventHandlers = {} })
+	end
+
+	method void RenderFriendRows()
+		-- Rebuilds the scroll list from the active tab's cached data.
+		self:ClearFriendRows()
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/FriendList"
+		local friendTemplate = _EntityService:GetEntityByPath(base .. "/Item")
+		local requestTemplate = _EntityService:GetEntityByPath(base .. "/ReqItem")
+		if friendTemplate == nil or requestTemplate == nil then
+			log_warning("[FriendUI] row templates missing")
+			return
+		end
+		friendTemplate:SetEnable(false)
+		requestTemplate:SetEnable(false)
+		local requestRow = self.friendSelectedTab == 2
+		local source = requestRow and self.friendRequests or self.friendFriends
+		if source == nil then source = {} end
+		local template = requestRow and requestTemplate or friendTemplate
+		if #source == 0 then
+			self:CreateEmptyFriendRow(template, requestRow)
+		else
+			for index, item in ipairs(source) do
+				local rowName = requestRow and ("RequestRow_" .. tostring(index)) or ("FriendRow_" .. tostring(index))
+				local row = template:Clone(rowName)
+				row:SetEnable(true)
+				self:ConfigureFriendRow(row, item, requestRow)
+			end
+		end
+		local listEntity = _EntityService:GetEntityByPath(base)
+		if listEntity ~= nil and listEntity.ScrollLayoutGroupComponent ~= nil then
+			listEntity.ScrollLayoutGroupComponent:ResetScrollPosition(UITransformAxis.Vertical)
+		end
+		log("[FriendUI] rows rendered tab=" .. tostring(self.friendSelectedTab) .. " count=" .. tostring(#source))
 	end
 
 	method void WireButtonEvents()
@@ -1474,7 +1717,7 @@ script LobbyController extends Component
 		self:ConnectInvestigationSearchButton("PagePrev", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PagePrevButton")
 		self:ConnectInvestigationSearchButton("PageNext", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageNextButton")
 		self:ConnectInvestigationSearchButton("QuickJoin", "/ui/UI_InvestigationRoomSearch/SearchRoot/CreateRoomButton")
-		self:ConnectInvestigationSearchButton("EnterRoomCode", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
+		self:ConnectInvestigationSearchButton("Cancel", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
 
 		for i = 1, 8 do
 			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
@@ -1496,11 +1739,17 @@ script LobbyController extends Component
 	end
 
 	method void SetInvestigationRoomSearchVisible(boolean visible)
+		-- Toggles the hidden-on-start search UI group only through the lobby flow.
+		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
 		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
-		if searchRoot ~= nil and isvalid(searchRoot) then
-			searchRoot:SetEnable(visible)
-			searchRoot.Visible = visible
+		if visible then
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
+			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
+		else
+			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
+		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
 	end
 
 	method void SetFindRoomModalVisible(boolean visible)
@@ -1525,7 +1774,7 @@ script LobbyController extends Component
 	end
 
 	method void OnInvestigationSearchClicked(string logName)
-		if logName == "Close" then
+		if logName == "Close" or logName == "Cancel" then
 			self:CloseFindRoomModal()
 			return
 		end
@@ -1535,10 +1784,6 @@ script LobbyController extends Component
 		end
 		if logName == "QuickJoin" then
 			self:QuickJoinRoom()
-			return
-		end
-		if logName == "EnterRoomCode" then
-			self:JoinSelectedRoom()
 			return
 		end
 		if logName == "ModeFilter" then
@@ -1674,15 +1919,11 @@ script LobbyController extends Component
 	end
 
 	method void SetFindRoomRowJoinButton(string rowPath, boolean hasRoom)
-		-- Switches the status cell between the join-button image and the empty-room image.
+		-- Shows the join button only in the status column when the row has a room.
 		local statusButton = _EntityService:GetEntityByPath(rowPath .. "/RoomStatusText")
 		if statusButton == nil or not isvalid(statusButton) then return end
 		if statusButton.SpriteGUIRendererComponent ~= nil then
-			if hasRoom then
-				statusButton.SpriteGUIRendererComponent.ImageRUID = DataRef(self.RUID_ROOM_ROW_JOIN_BUTTON)
-			else
-				statusButton.SpriteGUIRendererComponent.ImageRUID = DataRef(self.RUID_ROOM_ROW_EMPTY_BUTTON)
-			end
+			statusButton.SpriteGUIRendererComponent.ImageRUID = DataRef(self.RUID_ROOM_ROW_JOIN_BUTTON)
 			statusButton.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
 			statusButton.SpriteGUIRendererComponent.RaycastTarget = true
 		end
@@ -1693,8 +1934,16 @@ script LobbyController extends Component
 		if statusButton.ButtonComponent ~= nil then
 			statusButton.ButtonComponent.Enable = hasRoom
 		end
-		statusButton:SetEnable(true)
-		statusButton.Visible = true
+		statusButton:SetEnable(hasRoom)
+		statusButton.Visible = hasRoom
+	end
+
+	method void SetFindRoomEmptyStateVisible(boolean visible)
+		-- Shows one centered empty-state image instead of repeating it in every status cell.
+		local emptyState = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/EmptyStateImage")
+		if emptyState == nil or not isvalid(emptyState) then return end
+		emptyState:SetEnable(visible)
+		emptyState.Visible = visible
 	end
 
 	method void LegacyRefreshRoomList()
@@ -1839,6 +2088,7 @@ script LobbyController extends Component
 	end
 
 	method void OnRoomListReceived(boolean success, string roomListJson, string message)
+		-- Applies a room-list response and treats an empty successful payload as an empty list.
 		if success == false then
 			log_warning("[Room] Room list refresh failed: " .. message)
 			self.findRoomAllRooms = {}
@@ -1847,7 +2097,12 @@ script LobbyController extends Component
 			self:ShowCommonPopup("error", message ~= "" and message or "방 목록을 불러올 수 없습니다.")
 			return
 		end
-		local rooms = _HttpService:JSONDecode(roomListJson)
+		local rooms = {}
+		if roomListJson ~= nil and roomListJson ~= "" then
+			rooms = _HttpService:JSONDecode(roomListJson)
+		else
+			log_warning("[Room] Empty room list payload treated as []")
+		end
 		if rooms == nil then rooms = {} end
 		self.findRoomAllRooms = rooms
 		self.findRoomCurrentPage = 1
@@ -1883,6 +2138,7 @@ script LobbyController extends Component
 	end
 
 	method void RenderFindRoomList()
+		-- Renders the current page and keeps room columns and empty-state visibility consistent.
 		local base = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
 		local rooms = self.findRoomVisibleRooms
 		if rooms == nil then rooms = {} end
@@ -1900,8 +2156,11 @@ script LobbyController extends Component
 					self:SetFindRoomRowText(rowPath, "RoomHostText", room.hostNickname)
 					local pwIcon = _EntityService:GetEntityByPath(rowPath .. "/RoomPasswordIcon")
 					if pwIcon ~= nil and isvalid(pwIcon) then
-						pwIcon:SetEnable(room.hasPassword == true)
-						pwIcon.Visible = room.hasPassword == true
+						if pwIcon.TextComponent ~= nil then
+							pwIcon.TextComponent.Text = room.hasPassword == true and "비공개" or "공개"
+						end
+						pwIcon:SetEnable(true)
+						pwIcon.Visible = true
 					end
 					row:SetEnable(true)
 					row.Visible = true
@@ -1925,7 +2184,9 @@ script LobbyController extends Component
 				end
 			end
 		end
+		self:SetFindRoomEmptyStateVisible(#rooms == 0)
 		self:UpdateFindRoomPageText()
+		log("[FindRoomModal] render rooms=" .. tostring(#rooms) .. " page=" .. tostring(self.findRoomCurrentPage) .. " empty=" .. tostring(#rooms == 0))
 	end
 
 	method void SelectRoom(integer index)
@@ -2023,6 +2284,15 @@ script LobbyController extends Component
 			if reason == "FULL" then log_warning("[Room] Room full") end
 			if reason == "PLAYING" then log_warning("[Room] Room already playing") end
 			log_warning("[Room] Join room failed reason=" .. reason .. " message=" .. message)
+			self:CloseMatchmakingModal()
+			if reason == "NO_ROOM" then
+				local nickname = self.currentProfileNickname or "수사관"
+				if nickname == "" then nickname = "수사관" end
+				local roomName = nickname .. "의 방"
+				log("[Room] No room available, auto-creating name=" .. roomName)
+				_InvestigationRoomManager:CreateRoom(roomName, "기본 수사", self.selectedMaxPlayers, false, "", nickname)
+				return
+			end
 			self:ShowJoinFailurePopup(reason, message)
 			_UIToast:ShowMessage(message)
 			return
@@ -2030,10 +2300,27 @@ script LobbyController extends Component
 		local room = _HttpService:JSONDecode(roomJson)
 		self.joinedRoomId = room.roomId or ""
 		log("[Room] Join room success id=" .. self.joinedRoomId)
-		self:ShowCommonPopup("complete", "선택이 완료되었습니다.")
-		self:SetFindRoomDetailMessage("입장 완료 / " .. tostring(room.roomName) .. " / 대기 중")
+		self:EnterInvestigationRoomLobby("join")
 		_UIToast:ShowMessage("수사방에 입장했습니다. 대기 중입니다.")
-		self:RefreshRoomList()
+	end
+
+	method void EnterInvestigationRoomLobby(string source)
+		self:CloseMatchmakingModal()
+		self:CloseFindRoomModal()
+		self:CloseCreateRoomModal()
+		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
+		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
+			lobbyRoot.Enable = false
+		end
+		if _MafiaUIFlow ~= nil then
+			_MafiaUIFlow:EnterRoomLobby()
+			log("[LobbyController] Entered MafiaLobbyHUD source=" .. source)
+		else
+			log_warning("[LobbyController] MafiaUIFlow unavailable source=" .. source)
+		end
+		if source ~= "test" and _QAAchievementManager ~= nil then
+			_QAAchievementManager:ReportLobbyAction("ROOM_ENTER", source)
+		end
 	end
 
 	method void OnRoomLeaveResult(boolean success, string message)
@@ -2291,6 +2578,9 @@ script LobbyController extends Component
 		if self.profileModalOpen then
 			self:RefreshProfileModalFields()
 		end
+		if _FriendManager ~= nil then
+			_FriendManager:RegisterNickname(self.currentProfileNickname)
+		end
 		log("[LobbyController] ApplyAllProfile complete nickname=" .. self.currentProfileNickname .. " title=" .. self.currentProfileTitle .. " ruid=" .. self.selectedProfileRuid)
 	end
 
@@ -2522,23 +2812,36 @@ script LobbyController extends Component
 	end
 
 	method void OnCodexClicked(ButtonClickEvent event)
-		-- Placeholder: codex (도감) not implemented.
-		log("[LobbyController] CodexButton clicked")
+		log_warning("[LobbyController] CodexButton clicked; feature not implemented")
+		self:ShowCommonPopup("warning", "도감 기능은 준비 중입니다.")
 	end
 
 	method void OnBagClicked(ButtonClickEvent event)
-		-- Placeholder: bag (가방) not implemented.
-		log("[LobbyController] BagButton clicked")
+		log_warning("[LobbyController] BagButton clicked; feature not implemented")
+		self:ShowCommonPopup("warning", "가방 기능은 준비 중입니다.")
 	end
 
 	method void OnAchievementClicked(ButtonClickEvent event)
-		-- Placeholder: achievements not implemented.
 		log("[LobbyController] AchievementButton clicked")
+		local controllerEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/Controller")
+		if controllerEntity == nil or isvalid(controllerEntity) == false then
+			log_warning("[LobbyController] Achievement popup controller not found")
+			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
+			return
+		end
+		local achievementUI = controllerEntity:GetComponent("script.QAAchievementUI")
+		if achievementUI == nil then
+			log_warning("[LobbyController] QAAchievementUI component not found")
+			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
+			return
+		end
+		achievementUI:Open()
 	end
 
 	method void OnStartClicked(ButtonClickEvent event)
 		log("[LobbyController] StartButton clicked")
 		self:OpenMatchmakingModal()
+		self:QuickJoinRoom()
 	end
 
 	method void OnCreateRoomClicked(ButtonClickEvent event)
