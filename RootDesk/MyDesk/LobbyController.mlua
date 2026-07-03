@@ -1,6 +1,8 @@
 @Component
 script LobbyController extends Component
 
+	property boolean DEBUG_AVATAR_UPDATE_LOG = false
+
 	property any keyDownHandler = nil
 
 	property any btnProfileHandler = nil
@@ -21,6 +23,7 @@ script LobbyController extends Component
 
 	property any btnFindHandler = nil
 
+
 	property any btnShopHandler = nil
 
 	property any btnAlertHandler = nil
@@ -36,6 +39,22 @@ script LobbyController extends Component
 	property any btnSettingsMuteHandler = nil
 
 	property any friendPopupCloseHandler = nil
+
+	property any friendAddHandler = nil
+
+	property any friendTabFriendsHandler = nil
+
+	property any friendTabRequestsHandler = nil
+
+	property TextInputComponent friendNicknameInput = nil
+
+	property table friendRows = nil
+
+	property table friendFriends = nil
+
+	property table friendRequests = nil
+
+	property integer friendSelectedTab = 1
 
 	property any shopPopupCloseHandler = nil
 
@@ -149,6 +168,8 @@ script LobbyController extends Component
 	property string RUID_PROFILE_4           = "f54ce587be5a462d846f64b2de315e3d"
 	property string RUID_TOGGLE_ON           = "fa19757f61774010aa40c38df7127bde"
 	property string RUID_TOGGLE_OFF          = "10c17c89f4604376abd28854f5628c3a"
+	property string RUID_PRIVATE_TOGGLE_ON   = "695b16b6c24d46a3bb4b1eb85169b7b2"
+	property string RUID_PRIVATE_TOGGLE_OFF  = "b045be0151a34dfaab745edb8dd83946"
 	property string RUID_PASSWORD_BOX_ACTIVE = "ab06ee62fa5446a187655d369e7f9ef3"
 	property string RUID_PASSWORD_BOX_OFF    = "c79b19bcc42246f89c1343278e7c9a99"
 
@@ -270,11 +291,64 @@ script LobbyController extends Component
 
 	property boolean findRoomModalOpen = false
 
+	property any findRoomAllRooms = nil
+
+	property any findRoomVisibleRooms = nil
+
+	property integer findRoomCurrentPage = 1
+
+	property integer findRoomPageSize = 8
+
+	property integer findRoomTotalPages = 1
+
+	property string findRoomSelectedRoomId = ""
+
+	property string findRoomModeFilter = "ALL"
+
+	property string findRoomStatusFilter = "ALL"
+
+	property boolean findRoomHidePrivate = false
+
+	property string findRoomSearchKeyword = ""
+
+	property string joinedRoomId = ""
+
+	property string RUID_ROOM_ROW_JOIN_BUTTON = "ce9b2a49b6b24a2da60b1cc9631d0073"
+
+	property string RUID_ROOM_ROW_EMPTY_BUTTON = "0a45fe74c281462e8866282fc600558d"
+
+	property any findRoomSearchInputHandler = nil
+
+	property any commonPopupConfirmHandler = nil
+
+	property any commonPopupCloseHandler = nil
+
+	property Entity commonPopupLayer = "c1f78705-e07d-4362-b1d6-f0025782fe1c"
+
+	property SpriteGUIRendererComponent commonPopupImage = "f643273b-18c4-4ef6-8ac6-c6c186040fa6"
+
+	property TextComponent commonPopupMessageText = "0539d75b-4a08-4556-b96e-10ab21f7b02f"
+
+	property ButtonComponent commonPopupConfirmButton = "9bd56e7c-d180-46b9-8323-778bc9e13000"
+
+	property ButtonComponent commonPopupCloseButton = "9fef4770-39f6-4a2b-b23e-b6cf171a7ec4"
+
+	property string RUID_COMMON_POPUP_COMPLETE = "d31da21f1c134b199aa336ddce69095f"
+
+	property string RUID_COMMON_POPUP_ERROR = "d965ccb079504df0983ef6f0425e78b2"
+
+	property string RUID_COMMON_POPUP_WARNING = "e169a6491a0e400ebd579c0e53270ea1"
+
+	property string RUID_COMMON_POPUP_CONFIRM_BUTTON = "40e76bf69ce64ff38804425f07c38b58"
+
+	property string RUID_COMMON_POPUP_CLOSE_BUTTON = "7401410fdf374de2bc21b4b815efe408"
+
 	method void OnBeginPlay()
 		-- Fires when UI_Lobby is enabled by IntroFlowController (SetEnable → OnBeginPlay).
 		-- ShowLobby(nickname) is called immediately after.
 		log("[LobbyController] OnBeginPlay")
 		log("[LobbyController] self.Entity.Path=" .. tostring(self.Entity.Path))
+		self:SetInvestigationRoomSearchVisible(false)
 		self:WireKeyboardInput()
 	end
 
@@ -291,7 +365,7 @@ script LobbyController extends Component
 		log("[LobbyController] Jump visual fallback enabled=" .. tostring(self.JUMP_VISUAL_FALLBACK_ENABLED))
 		log("[LobbyController] Move range adjusted MIN_X=" .. tostring(self.MIN_X) .. " MAX_X=" .. tostring(self.MAX_X))
 		log("[LobbyController] AvatarNameText offset adjusted to " .. tostring(self.NAME_OFFSET_Y))
-		
+
 		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
 		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
 			lobbyRoot:SetEnable(true)
@@ -300,10 +374,10 @@ script LobbyController extends Component
 		else
 			log_warning("[LobbyController] LobbyRoot not found")
 		end
-		
+
 		self:ApplyLobbyBackgroundVisuals()
 		self:DisableBlackOverlayBlockers()
-		
+
 		-- Hide world LocalPlayer character: IntroFlowController.ShowLobby() makes it visible,
 		-- so we override here. Lobby uses UI Avatar only.
 		local worldPlayer = _UserService.LocalPlayer
@@ -322,43 +396,45 @@ script LobbyController extends Component
 		else
 			log_warning("[LobbyController] LocalPlayer not found — cannot hide world character")
 		end
-		
+
 		self:HideBottomChatPanel()
 		self:HideLegacyLobbyButtons()
 		self:HideMatchmakingPopup()
 		self:HideSettingsPopup()
 		self:HideExternalPopups()
 		self:SetCreateRoomModalVisible(false)
-		
+		self:CloseCommonPopup()
+		self:WireCommonPopupEvents()
+
 		-- Cache fallback entity (disabled by default)
 		local fallbackEnt = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback")
 		if fallbackEnt ~= nil and isvalid(fallbackEnt) then
 			self.fallbackCache = fallbackEnt
 			self:HideAvatarFallback()
 		end
-		
+
 		-- Diagnose and configure LobbyAvatar
 		local avatarPath = "/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar"
 		log("[LobbyController] Avatar renderer target path=" .. avatarPath)
 		local avatarEntity = _EntityService:GetEntityByPath(avatarPath)
 		local avatarFound = avatarEntity ~= nil and isvalid(avatarEntity)
 		log("[LobbyController] LobbyAvatar found=" .. tostring(avatarFound))
-		
+
 		if avatarFound then
 			log("[LobbyController] LobbyAvatar visible=" .. tostring(avatarEntity.Visible) .. " enable=" .. tostring(avatarEntity.Enable))
 			log("[LobbyController] LobbyAvatar displayOrder=80")
 			self.avatarCache = avatarEntity
-		
+
 			local avatarComp = avatarEntity.AvatarGUIRendererComponent
 			log("[LobbyController] AvatarGUIRendererComponent found=" .. tostring(avatarComp ~= nil))
 			self.avatarAnimationApiFound = avatarComp ~= nil
 			log("[LobbyController] Avatar animation API found=" .. tostring(self.avatarAnimationApiFound))
-		
+
 			-- LocalPlayer identity needed by CostumeManagerComponent
 			local player = _UserService.LocalPlayer
 			local playerFound = player ~= nil and isvalid(player)
 			log("[LobbyController] LocalPlayer found=" .. tostring(playerFound))
-		
+
 			if playerFound then
 				-- Set DefaultEquipUserId so CostumeManagerComponent mirrors LocalPlayer's avatar
 				local playerComp = player.PlayerComponent
@@ -373,7 +449,7 @@ script LobbyController extends Component
 					log("[LobbyController] Avatar renderer configured (PlayerComponent nil, using empty userId)")
 				end
 			end
-		
+
 			self.currentAvatarState = ""
 			self.currentAvatarDirection = "left"
 			self.walkBobTime = 0
@@ -390,9 +466,9 @@ script LobbyController extends Component
 			self.avatarAnimationApiFound = false
 			log("[LobbyController] Avatar animation API found=false")
 		end
-		
+
 		self:ConfigureProfilePortrait()
-		
+
 		-- Cache AvatarNameText
 		local nameText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarNameText")
 		if nameText ~= nil and isvalid(nameText) then
@@ -401,10 +477,16 @@ script LobbyController extends Component
 		else
 			log_warning("[LobbyController] AvatarNameText not found")
 		end
-		
+
 		self:ResetAvatarPosition()
 		self:ApplyNickname(nickname)
 		self:WireButtonEvents()
+		if _MoneyManager ~= nil then
+			_MoneyManager:LoadMoney()
+		end
+		if _QAAchievementManager ~= nil then
+			_QAAchievementManager:ReportLobbyAction("LOBBY_ENTER", "")
+		end
 	end
 
 	method void ConfigureProfilePortrait()
@@ -421,10 +503,10 @@ script LobbyController extends Component
 			log_warning("[LobbyController] LobbyBackground not found")
 			return
 		end
-		
+
 		bg:SetEnable(true)
 		bg.Visible = true
-		
+
 		local transform = bg.UITransformComponent
 		if transform ~= nil then
 			transform.AlignmentOption = AlignmentType.StretchAll
@@ -435,7 +517,7 @@ script LobbyController extends Component
 			transform.RectSize = Vector2(1920, 1080)
 			transform.anchoredPosition = Vector2(0, 0)
 		end
-		
+
 		-- ImageRUID는 UI_Lobby.ui에서만 관리합니다 (mlua에서 덮어쓰지 않음).
 		local bgComp = bg.SpriteGUIRendererComponent
 		if bgComp ~= nil then
@@ -472,7 +554,7 @@ script LobbyController extends Component
 			"/ui/UI_Lobby/LobbyRoot/RightActionButtons",
 			"/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback"
 		}
-		
+
 		for _, path in ipairs(paths) do
 			local ent = _EntityService:GetEntityByPath(path)
 			if ent ~= nil and isvalid(ent) then
@@ -491,7 +573,7 @@ script LobbyController extends Component
 				end
 			end
 		end
-		
+
 		log("[LobbyController] black overlay blocker found=" .. tostring(found))
 		log("[LobbyController] black overlay blocker disabled=" .. tostring(disabled))
 	end
@@ -649,16 +731,16 @@ script LobbyController extends Component
 	method void UpdateMatchmakingModal(number delta)
 		-- Advances timer text and loading dots while matchmaking is open.
 		if self.isMatchmaking == false then return end
-		
+
 		self.matchmakingElapsed += delta
 		self.dotAnimTime += delta
-		
+
 		local elapsedSeconds = math.floor(self.matchmakingElapsed)
 		if elapsedSeconds ~= self.lastMatchmakingElapsedSecond then
 			self.lastMatchmakingElapsedSecond = elapsedSeconds
 			self:SetMatchmakingElapsedText(self:FormatMatchmakingTime(elapsedSeconds))
 		end
-		
+
 		local phase = math.floor(self.dotAnimTime / 0.3) % 3
 		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Matchmaking/Box/"
 		self:SetMatchmakingDotAlpha(base .. "Dot1", phase == 0 and 1 or 0.35)
@@ -694,21 +776,21 @@ script LobbyController extends Component
 		local info = _EntityService:GetEntityByPath(base .. "/ContentInfo")
 		local sound = _EntityService:GetEntityByPath(base .. "/ContentSound")
 		local showSound = (tabName == "sound")
-		
+
 		if info ~= nil and isvalid(info) then
 			info:SetEnable(showSound == false)
 			info.Visible = (showSound == false)
 		else
 			log_warning("[LobbyController] Settings ContentInfo not found")
 		end
-		
+
 		if sound ~= nil and isvalid(sound) then
 			sound:SetEnable(showSound)
 			sound.Visible = showSound
 		else
 			log_warning("[LobbyController] Settings ContentSound not found")
 		end
-		
+
 		log("[LobbyController] Settings tab selected=" .. tabName)
 	end
 
@@ -732,12 +814,12 @@ script LobbyController extends Component
 				sprite = ent.SpriteGUIRendererComponent
 			end
 		end
-		
+
 		if sprite == nil then
 			log_warning("[LobbyController] Settings sound toggle sprite not found")
 			return
 		end
-		
+
 		if self.isSettingsSoundOn then
 			sprite.ImageRUID = DataRef(self.RUID_TOGGLE_ON)
 		else
@@ -769,9 +851,13 @@ script LobbyController extends Component
 	end
 
 	method void OpenExternalPopup(string popupName)
+		-- Opens one lobby popup and refreshes feature data when required.
 		self:HideSettingsPopup()
 		self:HideExternalPopups()
 		self:SetExternalPopupVisible(popupName, true)
+		if popupName == "FriendPopup" then
+			self:RefreshFriendPopup()
+		end
 		log("[LobbyController] External popup opened=" .. popupName)
 	end
 
@@ -814,7 +900,136 @@ script LobbyController extends Component
 		self:UpdateCreateRoomFormView()
 		self:WireCreateRoomModalEvents()
 		self:SetCreateRoomModalVisible(true)
-		log("[LobbyController] create room modal opened")
+		log("[Room] RoomCreateModal opened")
+	end
+
+	method void WireCommonPopupEvents()
+		-- Connects common popup buttons once; DimOverlay intentionally does not close the popup.
+		if self.commonPopupConfirmHandler == nil and self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
+			self.commonPopupConfirmHandler = self.commonPopupConfirmButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseCommonPopup()
+			end)
+		end
+		if self.commonPopupCloseHandler == nil and self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
+			self.commonPopupCloseHandler = self.commonPopupCloseButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
+				self:CloseCommonPopup()
+			end)
+		end
+		log("[CommonPopup] events wired")
+	end
+
+	method void DisconnectCommonPopupEvents()
+		-- Disconnects common popup button handlers.
+		if self.commonPopupConfirmHandler ~= nil and self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
+			self.commonPopupConfirmButton.Entity:DisconnectEvent(ButtonClickEvent, self.commonPopupConfirmHandler)
+			self.commonPopupConfirmHandler = nil
+		end
+		if self.commonPopupCloseHandler ~= nil and self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
+			self.commonPopupCloseButton.Entity:DisconnectEvent(ButtonClickEvent, self.commonPopupCloseHandler)
+			self.commonPopupCloseHandler = nil
+		end
+	end
+
+	method void CloseCommonPopup()
+		-- Hides the common popup layer.
+		if self.commonPopupLayer ~= nil and isvalid(self.commonPopupLayer) then
+			self.commonPopupLayer:SetEnable(false)
+			self.commonPopupLayer.Visible = false
+		end
+		log("[CommonPopup] closed")
+	end
+
+	method void ApplyCommonPopupLayout()
+		-- Keeps complete, warning, and error popups aligned to the confirmed common modal layout.
+		if self.commonPopupImage ~= nil and isvalid(self.commonPopupImage) then
+			local popupTransform = self.commonPopupImage.Entity.UITransformComponent
+			if popupTransform ~= nil then
+				popupTransform.anchoredPosition = Vector2(0, 40)
+				popupTransform.RectSize = Vector2(760, 420)
+			end
+		end
+
+		if self.commonPopupMessageText ~= nil and isvalid(self.commonPopupMessageText) then
+			local messageTransform = self.commonPopupMessageText.Entity.UITransformComponent
+			if messageTransform ~= nil then
+				messageTransform.anchoredPosition = Vector2(0, 20)
+				messageTransform.RectSize = Vector2(560, 120)
+			end
+		end
+
+		if self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
+			local confirmEntity = self.commonPopupConfirmButton.Entity
+			local confirmTransform = confirmEntity.UITransformComponent
+			if confirmTransform ~= nil then
+				confirmTransform.anchoredPosition = Vector2(0, -132)
+				confirmTransform.RectSize = Vector2(220, 82)
+			end
+			local confirmSprite = confirmEntity.SpriteGUIRendererComponent
+			if confirmSprite ~= nil then
+				confirmSprite.ImageRUID = DataRef(self.RUID_COMMON_POPUP_CONFIRM_BUTTON)
+			end
+		end
+
+		if self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
+			local closeEntity = self.commonPopupCloseButton.Entity
+			local closeTransform = closeEntity.UITransformComponent
+			if closeTransform ~= nil then
+				closeTransform.anchoredPosition = Vector2(336, 222)
+				closeTransform.RectSize = Vector2(88, 88)
+			end
+			local closeSprite = closeEntity.SpriteGUIRendererComponent
+			if closeSprite ~= nil then
+				closeSprite.ImageRUID = DataRef(self.RUID_COMMON_POPUP_CLOSE_BUTTON)
+			end
+		end
+	end
+
+	method void ShowCommonPopup(string popupType, string message)
+		-- Shows a common modal popup and swaps the popup image by type.
+		self:ApplyCommonPopupLayout()
+		local targetRuid = self.RUID_COMMON_POPUP_WARNING
+		if popupType == "complete" then
+			targetRuid = self.RUID_COMMON_POPUP_COMPLETE
+		elseif popupType == "error" then
+			targetRuid = self.RUID_COMMON_POPUP_ERROR
+		elseif popupType == "warning" then
+			targetRuid = self.RUID_COMMON_POPUP_WARNING
+		end
+
+		if self.commonPopupImage ~= nil and isvalid(self.commonPopupImage) then
+			self.commonPopupImage.ImageRUID = DataRef(targetRuid)
+		end
+		if self.commonPopupMessageText ~= nil and isvalid(self.commonPopupMessageText) then
+			self.commonPopupMessageText.Text = message or ""
+		end
+		if self.commonPopupLayer ~= nil and isvalid(self.commonPopupLayer) then
+			self.commonPopupLayer:SetEnable(true)
+			self.commonPopupLayer.Visible = true
+			local uiTransform = self.commonPopupLayer.UITransformComponent
+			if uiTransform ~= nil then
+				_UILogic:SetSiblingIndex(uiTransform, 1000000)
+			end
+		else
+			log_warning("[CommonPopup] CommonPopupLayer missing")
+		end
+		log("[CommonPopup] opened type=" .. tostring(popupType) .. " message=" .. tostring(message))
+	end
+
+	method void ShowJoinFailurePopup(string reason, string fallbackMessage)
+		-- Maps room-join failure reasons to common popup messages.
+		local message = "방에 입장할 수 없습니다."
+		if reason == "PASSWORD_REQUIRED" then
+			message = "비밀번호를 입력해 주세요."
+		elseif reason == "PASSWORD_INVALID" then
+			message = "비밀번호가 올바르지 않습니다."
+		elseif reason == "FULL" then
+			message = "현재 방 인원이 가득 찼습니다."
+		elseif reason == "PLAYING" then
+			message = "이미 게임이 시작된 방입니다."
+		elseif fallbackMessage ~= nil and fallbackMessage ~= "" then
+			message = fallbackMessage
+		end
+		self:ShowCommonPopup("error", message)
 	end
 
 	method void CloseCreateRoomModal()
@@ -827,7 +1042,7 @@ script LobbyController extends Component
 		self:SetCreateRoomModalVisible(false)
 		self.isCreateRoomModalOpen = false
 		self:DisconnectCreateRoomModalEvents()
-		log("[LobbyController] create room modal closed")
+		log("[Room] RoomCreateModal closed")
 	end
 
 	method void ResetCreateRoomForm()
@@ -849,10 +1064,10 @@ script LobbyController extends Component
 		if self.createRoomPlayerCountText ~= nil then
 			self.createRoomPlayerCountText.Text = tostring(self.selectedMaxPlayers)
 		end
-		
+
 		if self.isPrivateRoom then
 			if self.createRoomPrivateToggleSprite ~= nil then
-				self.createRoomPrivateToggleSprite.ImageRUID = DataRef(self.RUID_TOGGLE_ON)
+				self.createRoomPrivateToggleSprite.ImageRUID = DataRef(self.RUID_PRIVATE_TOGGLE_ON)
 			end
 			if self.createRoomPasswordInputBoxSprite ~= nil then
 				self.createRoomPasswordInputBoxSprite.ImageRUID = DataRef(self.RUID_PASSWORD_BOX_ACTIVE)
@@ -862,7 +1077,7 @@ script LobbyController extends Component
 			end
 		else
 			if self.createRoomPrivateToggleSprite ~= nil then
-				self.createRoomPrivateToggleSprite.ImageRUID = DataRef(self.RUID_TOGGLE_OFF)
+				self.createRoomPrivateToggleSprite.ImageRUID = DataRef(self.RUID_PRIVATE_TOGGLE_OFF)
 			end
 			if self.createRoomPasswordInputBoxSprite ~= nil then
 				self.createRoomPasswordInputBoxSprite.ImageRUID = DataRef(self.RUID_PASSWORD_BOX_OFF)
@@ -887,14 +1102,16 @@ script LobbyController extends Component
 			self.selectedMaxPlayers += 1
 		end
 		self:UpdateCreateRoomFormView()
+		log("[LobbyController] create room max players=" .. tostring(self.selectedMaxPlayers))
 	end
 
 	method void DecreaseMaxPlayers()
-		-- Lowers max players down to 4.
-		if self.selectedMaxPlayers > 4 then
+		-- Lowers max players down to 6.
+		if self.selectedMaxPlayers > 6 then
 			self.selectedMaxPlayers -= 1
 		end
 		self:UpdateCreateRoomFormView()
+		log("[LobbyController] create room max players=" .. tostring(self.selectedMaxPlayers))
 	end
 
 	method string TrimCreateRoomText(string value)
@@ -942,7 +1159,7 @@ script LobbyController extends Component
 			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
 			self.createRoomNameInput.Text = roomName
 		end
-		
+
 		if roomName == "" then
 			self:SetCreateRoomError("수사방 이름을 입력하세요.")
 			return false
@@ -951,7 +1168,11 @@ script LobbyController extends Component
 			self:SetCreateRoomError("수사방 이름은 12자 이하로 입력하세요.")
 			return false
 		end
-		
+		if self.selectedMaxPlayers < 6 or self.selectedMaxPlayers > 8 then
+			self:SetCreateRoomError("최대 인원은 6~8명으로 선택하세요.")
+			return false
+		end
+
 		if self.isPrivateRoom then
 			local password = ""
 			if self.createRoomPasswordInput ~= nil then
@@ -967,33 +1188,41 @@ script LobbyController extends Component
 				return false
 			end
 		end
-		
+
 		self:SetCreateRoomError("")
 		return true
 	end
 
 	method void SubmitCreateRoomForm()
-		-- Validates the form, saves room settings, and enters the Mafia lobby HUD flow.
+		-- Validates the form, then requests authoritative server-side room creation.
 		if self:ValidateCreateRoomForm() == false then return end
 		local roomName = ""
+		local password = ""
 		if self.createRoomNameInput ~= nil then
 			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
 		end
-		local password = ""
 		if self.isPrivateRoom and self.createRoomPasswordInput ~= nil then
 			password = self:TrimCreateRoomText(self.createRoomPasswordInput.Text)
 		end
-		local mafiaCount = 2
-		if self.selectedMaxPlayers <= 6 then
-			mafiaCount = 1
+		log("[Room] Room creation requested name=" .. roomName .. " maxPlayers=" .. tostring(self.selectedMaxPlayers) .. " private=" .. tostring(self.isPrivateRoom))
+		self:SetCreateRoomError("방을 생성하는 중입니다...")
+		_InvestigationRoomManager:CreateRoom(roomName, "기본 수사", self.selectedMaxPlayers, self.isPrivateRoom, password, self.currentProfileNickname)
+	end
+
+	method void OnRoomCreateResult(boolean success, string message, string roomJson)
+		-- Receives the server result and moves the user into the waiting-state view.
+		if success == false then
+			log_warning("[Room] Room creation failed: " .. message)
+			self:SetCreateRoomError(message)
+			self:ShowCommonPopup("error", message ~= "" and message or "방을 생성할 수 없습니다.")
+			return
 		end
-		log("[LobbyController] create room requested name=" .. roomName .. " maxPlayers=" .. tostring(self.selectedMaxPlayers) .. " private=" .. tostring(self.isPrivateRoom) .. " mafia=" .. tostring(mafiaCount))
+		local room = _HttpService:JSONDecode(roomJson)
+		self.joinedRoomId = room.roomId or ""
+		log("[Room] Room created successfully id=" .. self.joinedRoomId)
 		self:CloseCreateRoomModal()
-		if _MafiaUIFlow ~= nil then
-			_MafiaUIFlow:OpenLobbyAfterRoomCreated(roomName, self.isPrivateRoom, password, self.selectedMaxPlayers, mafiaCount)
-		else
-			log_warning("[LobbyController] MafiaUIFlow not found; cannot enter MafiaLobbyHUD")
-		end
+		self:EnterInvestigationRoomLobby("create")
+		_UIToast:ShowMessage("수사방이 생성되었습니다. 대기 중입니다.")
 	end
 
 	method void WireCreateRoomModalEvents()
@@ -1110,28 +1339,54 @@ script LobbyController extends Component
 	method void WireExternalPopupEvents()
 		-- Wires close buttons for the lobby popup entities inside UI_Lobby.
 		local ent
-		
+
 		if self.friendPopupCloseHandler == nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then
 				self.friendPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
 			end
 		end
-		
+
+		if self.friendAddHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/AddBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.friendAddHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendAddClicked)
+			end
+		end
+
+		if self.friendTabFriendsHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabFriends")
+			if ent ~= nil and isvalid(ent) then
+				self.friendTabFriendsHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendTabFriendsClicked)
+			end
+		end
+
+		if self.friendTabRequestsHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabRequests")
+			if ent ~= nil and isvalid(ent) then
+				self.friendTabRequestsHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendTabRequestsClicked)
+			end
+		end
+
+		local friendInputEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/NickInput")
+		if friendInputEntity ~= nil and isvalid(friendInputEntity) then
+			self.friendNicknameInput = friendInputEntity.TextInputComponent
+		end
+
 		if self.shopPopupCloseHandler == nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then
 				self.shopPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
 			end
 		end
-		
+
 		if self.shopPopupCancelHandler == nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
 			if ent ~= nil and isvalid(ent) then
 				self.shopPopupCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
 			end
 		end
-		
+
 		if self.alertPopupCloseHandler == nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/AlertPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then
@@ -1143,25 +1398,44 @@ script LobbyController extends Component
 	method void DisconnectExternalPopupEvents()
 		-- Disconnects close-button handlers attached by WireExternalPopupEvents.
 		local ent
-		
+
 		if self.friendPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendPopupCloseHandler) end
 			self.friendPopupCloseHandler = nil
 		end
-		
+
+		if self.friendAddHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/AddRow/AddBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendAddHandler) end
+			self.friendAddHandler = nil
+		end
+
+		if self.friendTabFriendsHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabFriends")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendTabFriendsHandler) end
+			self.friendTabFriendsHandler = nil
+		end
+
+		if self.friendTabRequestsHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/TabRequests")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.friendTabRequestsHandler) end
+			self.friendTabRequestsHandler = nil
+		end
+		self:ClearFriendRows()
+
 		if self.shopPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCloseHandler) end
 			self.shopPopupCloseHandler = nil
 		end
-		
+
 		if self.shopPopupCancelHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCancelHandler) end
 			self.shopPopupCancelHandler = nil
 		end
-		
+
 		if self.alertPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/AlertPopup/Panel/Header/CloseBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.alertPopupCloseHandler) end
@@ -1169,12 +1443,184 @@ script LobbyController extends Component
 		end
 	end
 
+	method void RefreshFriendPopup()
+		-- Requests the latest server-owned friend data for the open popup.
+		if self.friendFriends == nil then self.friendFriends = {} end
+		if self.friendRequests == nil then self.friendRequests = {} end
+		if self.friendRows == nil then self.friendRows = {} end
+		self:RenderFriendRows()
+		if _FriendManager ~= nil then
+			_FriendManager:RequestFriendData(self.currentProfileNickname)
+			log("[FriendUI] refresh requested nickname=" .. self.currentProfileNickname)
+		else
+			log_warning("[FriendUI] FriendManager unavailable")
+		end
+	end
+
+	method void OnFriendAddClicked(ButtonClickEvent event)
+		-- Sends a request using the nickname entered in the friend popup.
+		local nickname = ""
+		if self.friendNicknameInput ~= nil then
+			nickname = string.match(self.friendNicknameInput.Text or "", "^%s*(.-)%s*$") or ""
+		end
+		if nickname == "" then
+			_UIToast:ShowMessage("친구 닉네임을 입력해 주세요.")
+			return
+		end
+		if _FriendManager ~= nil then
+			_FriendManager:RequestSendFriendRequest(nickname)
+			log("[FriendUI] add requested nickname=" .. nickname)
+		end
+	end
+
+	method void OnFriendTabFriendsClicked(ButtonClickEvent event)
+		-- Switches the popup to the accepted-friends list.
+		self.friendSelectedTab = 1
+		self:RenderFriendRows()
+		log("[FriendUI] friends tab selected")
+	end
+
+	method void OnFriendTabRequestsClicked(ButtonClickEvent event)
+		-- Switches the popup to the incoming-request list.
+		self.friendSelectedTab = 2
+		self:RenderFriendRows()
+		log("[FriendUI] requests tab selected")
+	end
+
+	method void ApplyFriendData(string friendsJson, string requestsJson, string message, boolean isError)
+		-- Applies a server response and redraws the currently selected tab.
+		self.friendFriends = _HttpService:JSONDecode(friendsJson or "[]")
+		self.friendRequests = _HttpService:JSONDecode(requestsJson or "[]")
+		if self.friendFriends == nil then self.friendFriends = {} end
+		if self.friendRequests == nil then self.friendRequests = {} end
+		self:RenderFriendRows()
+		if self.friendNicknameInput ~= nil and isError == false then
+			self.friendNicknameInput.Text = ""
+		end
+		if message ~= nil and message ~= "" then
+			_UIToast:ShowMessage(message)
+		end
+		if isError then
+			log_warning("[FriendUI] response error message=" .. tostring(message))
+		else
+			log("[FriendUI] data applied friends=" .. tostring(#self.friendFriends) .. " requests=" .. tostring(#self.friendRequests))
+		end
+	end
+
+	method void ClearFriendRows()
+		-- Disconnects dynamic row events and destroys cloned row entities.
+		if self.friendRows == nil then
+			self.friendRows = {}
+			return
+		end
+		for _, row in ipairs(self.friendRows) do
+			for _, link in ipairs(row.eventHandlers or {}) do
+				if link.buttonEntity ~= nil and isvalid(link.buttonEntity) and link.eventHandler ~= nil then
+					link.buttonEntity:DisconnectEvent(ButtonClickEvent, link.eventHandler)
+				end
+			end
+			if row.root ~= nil and isvalid(row.root) then row.root:Destroy() end
+		end
+		self.friendRows = {}
+	end
+
+	method void ConfigureFriendRow(Entity row, table item, boolean requestRow)
+		-- Populates one cloned row and wires its action buttons.
+		local nameEntity = row:GetChildByName("Name", false)
+		if nameEntity ~= nil and nameEntity.TextComponent ~= nil then
+			nameEntity.TextComponent.Text = tostring(item.nickname or "수사관")
+		end
+		local eventHandlers = {}
+		local userId = tostring(item.userId or "")
+		if requestRow then
+			local acceptEntity = row:GetChildByName("Accept", false)
+			local rejectEntity = row:GetChildByName("Reject", false)
+			if acceptEntity ~= nil and isvalid(acceptEntity) then
+				local acceptHandler = acceptEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestAcceptFriend(userId) end
+					log("[FriendUI] accept requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = acceptEntity, eventHandler = acceptHandler })
+			end
+			if rejectEntity ~= nil and isvalid(rejectEntity) then
+				local rejectHandler = rejectEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestRejectFriend(userId) end
+					log("[FriendUI] reject requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = rejectEntity, eventHandler = rejectHandler })
+			end
+		else
+			local statusEntity = row:GetChildByName("Status", false)
+			if statusEntity ~= nil and statusEntity.TextComponent ~= nil then
+				statusEntity.TextComponent.Text = item.online == true and "온라인" or "오프라인"
+			end
+			local removeEntity = row:GetChildByName("Remove", false)
+			if removeEntity ~= nil and isvalid(removeEntity) then
+				local removeHandler = removeEntity:ConnectEvent(ButtonClickEvent, function(evt)
+					if _FriendManager ~= nil then _FriendManager:RequestDeleteFriend(userId) end
+					log("[FriendUI] delete requested userId=" .. userId)
+				end)
+				table.insert(eventHandlers, { buttonEntity = removeEntity, eventHandler = removeHandler })
+			end
+		end
+		table.insert(self.friendRows, { root = row, eventHandlers = eventHandlers })
+	end
+
+	method void CreateEmptyFriendRow(Entity template, boolean requestRow)
+		-- Creates a non-interactive row when the selected list is empty.
+		local row = template:Clone(requestRow and "EmptyRequestRow" or "EmptyFriendRow")
+		row:SetEnable(true)
+		local nameEntity = row:GetChildByName("Name", false)
+		if nameEntity ~= nil and nameEntity.TextComponent ~= nil then
+			nameEntity.TextComponent.Text = requestRow and "받은 친구 요청이 없습니다." or "등록된 친구가 없습니다."
+		end
+		local buttons = { "Remove", "Status", "Accept", "Reject" }
+		for _, childName in ipairs(buttons) do
+			local child = row:GetChildByName(childName, false)
+			if child ~= nil then child:SetEnable(false) end
+		end
+		table.insert(self.friendRows, { root = row, eventHandlers = {} })
+	end
+
+	method void RenderFriendRows()
+		-- Rebuilds the scroll list from the active tab's cached data.
+		self:ClearFriendRows()
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/FriendPopup/Panel/FriendList"
+		local friendTemplate = _EntityService:GetEntityByPath(base .. "/Item")
+		local requestTemplate = _EntityService:GetEntityByPath(base .. "/ReqItem")
+		if friendTemplate == nil or requestTemplate == nil then
+			log_warning("[FriendUI] row templates missing")
+			return
+		end
+		friendTemplate:SetEnable(false)
+		requestTemplate:SetEnable(false)
+		local requestRow = self.friendSelectedTab == 2
+		local source = requestRow and self.friendRequests or self.friendFriends
+		if source == nil then source = {} end
+		local template = requestRow and requestTemplate or friendTemplate
+		if #source == 0 then
+			self:CreateEmptyFriendRow(template, requestRow)
+		else
+			for index, item in ipairs(source) do
+				local rowName = requestRow and ("RequestRow_" .. tostring(index)) or ("FriendRow_" .. tostring(index))
+				local row = template:Clone(rowName)
+				row:SetEnable(true)
+				self:ConfigureFriendRow(row, item, requestRow)
+			end
+		end
+		local listEntity = _EntityService:GetEntityByPath(base)
+		if listEntity ~= nil and listEntity.ScrollLayoutGroupComponent ~= nil then
+			listEntity.ScrollLayoutGroupComponent:ResetScrollPosition(UITransformAxis.Vertical)
+		end
+		log("[FriendUI] rows rendered tab=" .. tostring(self.friendSelectedTab) .. " count=" .. tostring(#source))
+	end
+
 	method void WireButtonEvents()
 		-- Wires the active lobby UI: profile elements live under LobbyRoot, buttons live under ButtonGroup.
 		local base = "/ui/UI_Lobby/LobbyRoot"
 		local buttonBase = base .. "/ButtonGroup"
 		local ent
-		
+
 		ent = self.profileButtonEntity
 		if ent == nil or isvalid(ent) == false then
 			ent = _EntityService:GetEntityByPath(base .. "/ProfileRoot/ProfileButton")
@@ -1182,7 +1628,7 @@ script LobbyController extends Component
 		if ent ~= nil and isvalid(ent) then
 			self.btnProfileHandler = ent:ConnectEvent(ButtonClickEvent, self.OnProfileClicked)
 		end
-		
+
 		ent = _EntityService:GetEntityByPath(buttonBase .. "/친구")
 		if ent ~= nil and isvalid(ent) then
 			self.btnFriendHandler = ent:ConnectEvent(ButtonClickEvent, self.OnFriendClicked)
@@ -1244,7 +1690,7 @@ script LobbyController extends Component
 		if ent ~= nil and isvalid(ent) then
 			self.btnMatchCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnMatchmakingCancelClicked)
 		end
-		
+
 		if self.btnFindHandler == nil then
 			ent = self.findRoomButtonEntity
 			if ent ~= nil and isvalid(ent) then
@@ -1252,17 +1698,17 @@ script LobbyController extends Component
 				log("[LobbyController] FindRoomButton wired by uuid")
 			end
 		end
-		
+
 		log("[LobbyController] ButtonGroup events wired")
 	end
 
 	method void WireInvestigationRoomSearchEvents()
 		-- Use the existing room-search UI group only. Do not create an extra lobby modal.
 		if self.searchButtonHandlers ~= nil then return end
-		
+
 		self.searchButtonHandlers = {}
 		self:SetInvestigationRoomSearchVisible(false)
-		
+
 		self:ConnectInvestigationSearchButton("Close", "/ui/UI_InvestigationRoomSearch/SearchRoot/CloseButton")
 		self:ConnectInvestigationSearchButton("ModeFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton")
 		self:ConnectInvestigationSearchButton("StatusFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton")
@@ -1271,10 +1717,19 @@ script LobbyController extends Component
 		self:ConnectInvestigationSearchButton("PagePrev", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PagePrevButton")
 		self:ConnectInvestigationSearchButton("PageNext", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageNextButton")
 		self:ConnectInvestigationSearchButton("QuickJoin", "/ui/UI_InvestigationRoomSearch/SearchRoot/CreateRoomButton")
-		self:ConnectInvestigationSearchButton("EnterRoomCode", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
-		
+		self:ConnectInvestigationSearchButton("Cancel", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
+
 		for i = 1, 8 do
 			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
+			self:ConnectInvestigationSearchButton("JoinRoom" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i) .. "/RoomStatusText")
+		end
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/SearchInput")
+		if searchInput ~= nil and isvalid(searchInput) and searchInput.TextInputComponent ~= nil then
+			self.findRoomSearchInputHandler = searchInput:ConnectEvent(TextInputValueChangeEvent, function(evt)
+				self.findRoomSearchKeyword = searchInput.TextInputComponent.Text or ""
+				self.findRoomCurrentPage = 1
+				self:ApplyRoomFilters()
+			end)
 		end
 		log("[InvestigationRoomSearch] Button events wired")
 	end
@@ -1284,11 +1739,17 @@ script LobbyController extends Component
 	end
 
 	method void SetInvestigationRoomSearchVisible(boolean visible)
+		-- Toggles the hidden-on-start search UI group only through the lobby flow.
+		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
 		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
-		if searchRoot ~= nil and isvalid(searchRoot) then
-			searchRoot:SetEnable(visible)
-			searchRoot.Visible = visible
+		if visible then
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
+			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
+		else
+			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
+		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
 	end
 
 	method void SetFindRoomModalVisible(boolean visible)
@@ -1301,7 +1762,7 @@ script LobbyController extends Component
 			log_warning("[InvestigationRoomSearch] Missing button: " .. logName)
 			return
 		end
-		
+
 		local eventHandler = ent:ConnectEvent(ButtonClickEvent, function(evt)
 			self:OnInvestigationSearchClicked(logName)
 		end)
@@ -1313,7 +1774,7 @@ script LobbyController extends Component
 	end
 
 	method void OnInvestigationSearchClicked(string logName)
-		if logName == "Close" then
+		if logName == "Close" or logName == "Cancel" then
 			self:CloseFindRoomModal()
 			return
 		end
@@ -1325,15 +1786,46 @@ script LobbyController extends Component
 			self:QuickJoinRoom()
 			return
 		end
-		if logName == "EnterRoomCode" then
-			self:JoinSelectedRoom()
+		if logName == "ModeFilter" then
+			self:CycleFindRoomModeFilter()
 			return
 		end
-		if logName == "PagePrev" or logName == "PageNext" then
-			log("[FindRoomModal] " .. logName .. " clicked")
+		if logName == "StatusFilter" then
+			self:CycleFindRoomStatusFilter()
 			return
 		end
-		
+		if logName == "HidePasswordRoom" then
+			self.findRoomHidePrivate = not self.findRoomHidePrivate
+			self:UpdateFindRoomFilterLabels()
+			self:ApplyRoomFilters()
+			return
+		end
+		if logName == "PagePrev" then
+			if self.findRoomCurrentPage > 1 then
+				self.findRoomCurrentPage -= 1
+				self:RenderFindRoomList()
+			end
+			return
+		end
+		if logName == "PageNext" then
+			if self.findRoomCurrentPage < self.findRoomTotalPages then
+				self.findRoomCurrentPage += 1
+				self:RenderFindRoomList()
+			end
+			return
+		end
+
+		local joinPrefix = "JoinRoom"
+		local joinPrefixLen = string.len(joinPrefix)
+		if string.len(logName) > joinPrefixLen and string.sub(logName, 1, joinPrefixLen) == joinPrefix then
+			local index = tonumber(string.sub(logName, joinPrefixLen + 1))
+			if index ~= nil then
+				self:SelectRoom(index)
+				self:JoinSelectedRoom()
+				return
+			end
+		end
+
 		local rowPrefix = "RoomRow"
 		local prefixLen = string.len(rowPrefix)
 		if string.len(logName) > prefixLen and string.sub(logName, 1, prefixLen) == rowPrefix then
@@ -1351,21 +1843,26 @@ script LobbyController extends Component
 	end
 
 	method void DisconnectInvestigationRoomSearchEvents()
-		if self.searchButtonHandlers == nil then return end
-		
-		for _, record in ipairs(self.searchButtonHandlers) do
-			if record.Target ~= nil and isvalid(record.Target) and record.EventHandler ~= nil then
-				record.Target:DisconnectEvent(ButtonClickEvent, record.EventHandler)
+		if self.searchButtonHandlers ~= nil then
+			for _, record in ipairs(self.searchButtonHandlers) do
+				if record.Target ~= nil and isvalid(record.Target) and record.EventHandler ~= nil then
+					record.Target:DisconnectEvent(ButtonClickEvent, record.EventHandler)
+				end
 			end
+			self.searchButtonHandlers = nil
 		end
-		self.searchButtonHandlers = nil
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/SearchInput")
+		if self.findRoomSearchInputHandler ~= nil and searchInput ~= nil and isvalid(searchInput) then
+			searchInput:DisconnectEvent(TextInputValueChangeEvent, self.findRoomSearchInputHandler)
+		end
+		self.findRoomSearchInputHandler = nil
 	end
 
 	method void DisconnectFindRoomModalEvents()
 		self:DisconnectInvestigationRoomSearchEvents()
 	end
 
-	method void OpenFindRoomModal()
+	method void LegacyOpenFindRoomModal()
 		if self.findRoomModalOpen then return end
 		self.findRoomModalOpen = true
 		self.findRoomSelectedIndex = 0
@@ -1381,7 +1878,7 @@ script LobbyController extends Component
 		log("[FindRoomModal] open")
 	end
 
-	method void CloseFindRoomModal()
+	method void LegacyCloseFindRoomModal()
 		local wasOpen = self.findRoomModalOpen
 		self.findRoomModalOpen = false
 		self.findRoomSelectedIndex = 0
@@ -1409,7 +1906,47 @@ script LobbyController extends Component
 		end
 	end
 
-	method void RefreshRoomList()
+	method void SetFindRoomRowButtonEnabled(string rowPath, boolean enabled)
+		-- Enables row selection only when the row has an actual room.
+		local row = _EntityService:GetEntityByPath(rowPath)
+		if row ~= nil and isvalid(row) and row.ButtonComponent ~= nil then
+			row.ButtonComponent.Enable = enabled
+		end
+		local statusButton = _EntityService:GetEntityByPath(rowPath .. "/RoomStatusText")
+		if statusButton ~= nil and isvalid(statusButton) and statusButton.ButtonComponent ~= nil then
+			statusButton.ButtonComponent.Enable = enabled
+		end
+	end
+
+	method void SetFindRoomRowJoinButton(string rowPath, boolean hasRoom)
+		-- Shows the join button only in the status column when the row has a room.
+		local statusButton = _EntityService:GetEntityByPath(rowPath .. "/RoomStatusText")
+		if statusButton == nil or not isvalid(statusButton) then return end
+		if statusButton.SpriteGUIRendererComponent ~= nil then
+			statusButton.SpriteGUIRendererComponent.ImageRUID = DataRef(self.RUID_ROOM_ROW_JOIN_BUTTON)
+			statusButton.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
+			statusButton.SpriteGUIRendererComponent.RaycastTarget = true
+		end
+		if statusButton.TextComponent ~= nil then
+			statusButton.TextComponent.Text = ""
+			statusButton.TextComponent.FontColor = Color(1, 1, 1, 0)
+		end
+		if statusButton.ButtonComponent ~= nil then
+			statusButton.ButtonComponent.Enable = hasRoom
+		end
+		statusButton:SetEnable(hasRoom)
+		statusButton.Visible = hasRoom
+	end
+
+	method void SetFindRoomEmptyStateVisible(boolean visible)
+		-- Shows one centered empty-state image instead of repeating it in every status cell.
+		local emptyState = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/EmptyStateImage")
+		if emptyState == nil or not isvalid(emptyState) then return end
+		emptyState:SetEnable(visible)
+		emptyState.Visible = visible
+	end
+
+	method void LegacyRefreshRoomList()
 		local base = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
 		local rooms = self:GetFindRoomMockData()
 		for i = 1, 8 do
@@ -1455,7 +1992,7 @@ script LobbyController extends Component
 		end
 	end
 
-	method void SelectRoom(integer index)
+	method void LegacySelectRoom(integer index)
 		local prev = self.findRoomSelectedIndex
 		if prev > 0 and prev ~= index then
 			self:SetFindRoomRowHighlight(prev, false)
@@ -1472,22 +2009,22 @@ script LobbyController extends Component
 		end
 	end
 
-	method void UpdateFindRoomDetailPanel(integer index)
+	method void LegacyUpdateFindRoomDetailPanel(integer index)
 		-- Existing UI_InvestigationRoomSearch is row-list based.
 	end
 
-	method void ClearFindRoomDetailPanel()
+	method void LegacyClearFindRoomDetailPanel()
 		-- Existing UI_InvestigationRoomSearch is row-list based.
 	end
 
-	method void UpdateFindRoomPageText()
+	method void LegacyUpdateFindRoomPageText()
 		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border")
 		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
 			pageText.TextComponent.Text = "1 / 3"
 		end
 	end
 
-	method void JoinSelectedRoom()
+	method void LegacyJoinSelectedRoom()
 		if self.findRoomSelectedIndex <= 0 then
 			log("[FindRoomModal] join clicked room=none")
 			return
@@ -1503,8 +2040,328 @@ script LobbyController extends Component
 		end
 	end
 
-	method void QuickJoinRoom()
+	method void LegacyQuickJoinRoom()
 		log("[FindRoomModal] quick join clicked")
+	end
+
+	method void OpenFindRoomModal()
+		if self.findRoomModalOpen then return end
+		self.findRoomModalOpen = true
+		self.findRoomSelectedIndex = 0
+		self.findRoomSelectedRoomId = ""
+		self.findRoomCurrentPage = 1
+		self:WireInvestigationRoomSearchEvents()
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		if searchRoot == nil or not isvalid(searchRoot) then
+			self.findRoomModalOpen = false
+			log_warning("[Room] RoomFindModal SearchRoot missing")
+			self:ShowCommonPopup("error", "방 찾기 화면을 열 수 없습니다.")
+			return
+		end
+		self:SetInvestigationRoomSearchVisible(true)
+		self:UpdateFindRoomFilterLabels()
+		self:SetFindRoomDetailMessage("선택된 수사방이 없습니다")
+		self:RefreshRoomList()
+		log("[Room] RoomFindModal opened")
+	end
+
+	method void CloseFindRoomModal()
+		local wasOpen = self.findRoomModalOpen
+		self.findRoomModalOpen = false
+		self.findRoomSelectedIndex = 0
+		self.findRoomSelectedRoomId = ""
+		self:SetFindRoomPasswordInputVisible(false)
+		self:SetInvestigationRoomSearchVisible(false)
+		if wasOpen then log("[Room] RoomFindModal closed") end
+	end
+
+	method string GetFindRoomStatusText(string status)
+		if status == "WAITING" then return "대기중" end
+		if status == "PLAYING" then return "진행중" end
+		if status == "FULL" then return "가득참" end
+		return status
+	end
+
+	method void RefreshRoomList()
+		log("[Room] Room list refresh requested")
+		_InvestigationRoomManager:RefreshRooms()
+	end
+
+	method void OnRoomListReceived(boolean success, string roomListJson, string message)
+		-- Applies a room-list response and treats an empty successful payload as an empty list.
+		if success == false then
+			log_warning("[Room] Room list refresh failed: " .. message)
+			self.findRoomAllRooms = {}
+			self:ApplyRoomFilters()
+			self:SetFindRoomDetailMessage(message)
+			self:ShowCommonPopup("error", message ~= "" and message or "방 목록을 불러올 수 없습니다.")
+			return
+		end
+		local rooms = {}
+		if roomListJson ~= nil and roomListJson ~= "" then
+			rooms = _HttpService:JSONDecode(roomListJson)
+		else
+			log_warning("[Room] Empty room list payload treated as []")
+		end
+		if rooms == nil then rooms = {} end
+		self.findRoomAllRooms = rooms
+		self.findRoomCurrentPage = 1
+		self:ApplyRoomFilters()
+		log("[Room] Room list refreshed count=" .. tostring(#rooms))
+	end
+
+	method void ApplyRoomFilters()
+		local rooms = self.findRoomAllRooms
+		if rooms == nil then rooms = {} end
+		local filtered = {}
+		local keyword = string.lower(self:TrimCreateRoomText(self.findRoomSearchKeyword or ""))
+		for _, room in ipairs(rooms) do
+			local roomName = string.lower(room.roomName or "")
+			local keywordOk = keyword == "" or string.find(roomName, keyword, 1, true) ~= nil
+			local modeOk = self.findRoomModeFilter == "ALL" or room.mode == self.findRoomModeFilter
+			local statusOk = self.findRoomStatusFilter == "ALL" or room.status == self.findRoomStatusFilter
+			local privateOk = self.findRoomHidePrivate == false or room.hasPassword ~= true
+			if keywordOk and modeOk and statusOk and privateOk then table.insert(filtered, room) end
+		end
+		self.findRoomVisibleRooms = filtered
+		self.findRoomTotalPages = math.max(1, math.ceil(#filtered / self.findRoomPageSize))
+		if self.findRoomCurrentPage > self.findRoomTotalPages then self.findRoomCurrentPage = self.findRoomTotalPages end
+		self.findRoomSelectedIndex = 0
+		self.findRoomSelectedRoomId = ""
+		self:SetFindRoomPasswordInputVisible(false)
+		self:RenderFindRoomList()
+		if #filtered == 0 then
+			self:SetFindRoomDetailMessage("생성된 수사방이 없습니다")
+		else
+			self:SetFindRoomDetailMessage("방을 선택하면 상세 정보가 표시됩니다")
+		end
+	end
+
+	method void RenderFindRoomList()
+		-- Renders the current page and keeps room columns and empty-state visibility consistent.
+		local base = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
+		local rooms = self.findRoomVisibleRooms
+		if rooms == nil then rooms = {} end
+		local firstIndex = (self.findRoomCurrentPage - 1) * self.findRoomPageSize
+		for i = 1, 8 do
+			local rowPath = base .. "RoomRow_" .. tostring(i)
+			local row = _EntityService:GetEntityByPath(rowPath)
+			if row ~= nil and isvalid(row) then
+				local room = rooms[firstIndex + i]
+				if room ~= nil then
+					self:SetFindRoomRowText(rowPath, "RoomNameText", room.roomName)
+					self:SetFindRoomRowText(rowPath, "RoomModeText", room.mode)
+					self:SetFindRoomRowText(rowPath, "RoomPlayerCountText", tostring(room.currentPlayers) .. "/" .. tostring(room.maxPlayers))
+					self:SetFindRoomRowJoinButton(rowPath, true)
+					self:SetFindRoomRowText(rowPath, "RoomHostText", room.hostNickname)
+					local pwIcon = _EntityService:GetEntityByPath(rowPath .. "/RoomPasswordIcon")
+					if pwIcon ~= nil and isvalid(pwIcon) then
+						if pwIcon.TextComponent ~= nil then
+							pwIcon.TextComponent.Text = room.hasPassword == true and "비공개" or "공개"
+						end
+						pwIcon:SetEnable(true)
+						pwIcon.Visible = true
+					end
+					row:SetEnable(true)
+					row.Visible = true
+					self:SetFindRoomRowButtonEnabled(rowPath, true)
+					self:SetFindRoomRowHighlight(i, false)
+				else
+					self:SetFindRoomRowText(rowPath, "RoomNameText", "")
+					self:SetFindRoomRowText(rowPath, "RoomModeText", "")
+					self:SetFindRoomRowText(rowPath, "RoomPlayerCountText", "")
+					self:SetFindRoomRowJoinButton(rowPath, false)
+					self:SetFindRoomRowText(rowPath, "RoomHostText", "")
+					local pwIcon = _EntityService:GetEntityByPath(rowPath .. "/RoomPasswordIcon")
+					if pwIcon ~= nil and isvalid(pwIcon) then
+						pwIcon:SetEnable(false)
+						pwIcon.Visible = false
+					end
+					row:SetEnable(true)
+					row.Visible = true
+					self:SetFindRoomRowButtonEnabled(rowPath, false)
+					self:SetFindRoomRowHighlight(i, false)
+				end
+			end
+		end
+		self:SetFindRoomEmptyStateVisible(#rooms == 0)
+		self:UpdateFindRoomPageText()
+		log("[FindRoomModal] render rooms=" .. tostring(#rooms) .. " page=" .. tostring(self.findRoomCurrentPage) .. " empty=" .. tostring(#rooms == 0))
+	end
+
+	method void SelectRoom(integer index)
+		local rooms = self.findRoomVisibleRooms
+		if rooms == nil then return end
+		local absoluteIndex = (self.findRoomCurrentPage - 1) * self.findRoomPageSize + index
+		local room = rooms[absoluteIndex]
+		if room == nil then return end
+		local prev = self.findRoomSelectedIndex
+		if prev > 0 and prev ~= index then self:SetFindRoomRowHighlight(prev, false) end
+		self.findRoomSelectedIndex = index
+		self.findRoomSelectedRoomId = room.roomId
+		self:SetFindRoomRowHighlight(index, true)
+		self:SetFindRoomPasswordInputVisible(room.hasPassword == true)
+		self:SetFindRoomDetailMessage(room.roomName .. " | " .. room.mode .. " | " .. tostring(room.currentPlayers) .. "/" .. tostring(room.maxPlayers) .. " | " .. self:GetFindRoomStatusText(room.status) .. " | 방장 " .. room.hostNickname)
+		log("[Room] Room selected id=" .. tostring(room.roomId))
+	end
+
+	method void UpdateFindRoomDetailPanel(integer index)
+		self:SelectRoom(index)
+	end
+
+	method void ClearFindRoomDetailPanel()
+		self:SetFindRoomDetailMessage("선택된 수사방이 없습니다")
+	end
+
+	method void SetFindRoomDetailMessage(string text)
+		self:SetFindRoomDetailText("/ui/UI_InvestigationRoomSearch/SearchRoot/SelectedRoomDetailText", text)
+	end
+
+	method void SetFindRoomPasswordInputVisible(boolean visible)
+		local input = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
+		if input ~= nil and isvalid(input) then
+			input:SetEnable(visible)
+			input.Visible = visible
+			if visible == false and input.TextInputComponent ~= nil then input.TextInputComponent.Text = "" end
+		end
+	end
+
+	method void UpdateFindRoomPageText()
+		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border")
+		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
+			pageText.TextComponent.Text = tostring(self.findRoomCurrentPage) .. " / " .. tostring(self.findRoomTotalPages)
+		end
+	end
+
+	method any GetSelectedFindRoom()
+		local rooms = self.findRoomVisibleRooms
+		if rooms == nil or self.findRoomSelectedIndex <= 0 then return nil end
+		local absoluteIndex = (self.findRoomCurrentPage - 1) * self.findRoomPageSize + self.findRoomSelectedIndex
+		return rooms[absoluteIndex]
+	end
+
+	method void JoinSelectedRoom()
+		local room = self:GetSelectedFindRoom()
+		if room == nil then
+			self:ShowCommonPopup("warning", "입장할 수사방을 선택해 주세요.")
+			_UIToast:ShowMessage("입장할 수사방을 선택해 주세요.")
+			return
+		end
+		if room.status == "PLAYING" then
+			log_warning("[Room] Room already playing id=" .. room.roomId)
+			self:ShowJoinFailurePopup("PLAYING", "")
+			_UIToast:ShowMessage("이미 진행 중인 수사방입니다.")
+			return
+		end
+		if room.status == "FULL" or room.currentPlayers >= room.maxPlayers then
+			log_warning("[Room] Room full id=" .. room.roomId)
+			self:ShowJoinFailurePopup("FULL", "")
+			_UIToast:ShowMessage("인원이 가득 찬 수사방입니다.")
+			return
+		end
+		local password = ""
+		local input = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
+		if room.hasPassword == true and input ~= nil and isvalid(input) and input.TextInputComponent ~= nil then password = self:TrimCreateRoomText(input.TextInputComponent.Text or "") end
+		if room.hasPassword == true and password == "" then
+			log_warning("[Room] Password required id=" .. room.roomId)
+			self:ShowJoinFailurePopup("PASSWORD_REQUIRED", "")
+			_UIToast:ShowMessage("비밀번호를 입력해 주세요.")
+			return
+		end
+		log("[Room] Join room requested id=" .. room.roomId)
+		_InvestigationRoomManager:JoinRoom(room.roomId, password)
+	end
+
+	method void QuickJoinRoom()
+		log("[Room] Quick join requested")
+		_InvestigationRoomManager:QuickJoin()
+	end
+
+	method void OnRoomJoinResult(boolean success, string reason, string message, string roomJson)
+		if success == false then
+			if reason == "PASSWORD_REQUIRED" then log_warning("[Room] Password required") end
+			if reason == "PASSWORD_INVALID" then log_warning("[Room] Password invalid") end
+			if reason == "FULL" then log_warning("[Room] Room full") end
+			if reason == "PLAYING" then log_warning("[Room] Room already playing") end
+			log_warning("[Room] Join room failed reason=" .. reason .. " message=" .. message)
+			self:CloseMatchmakingModal()
+			if reason == "NO_ROOM" then
+				local nickname = self.currentProfileNickname or "수사관"
+				if nickname == "" then nickname = "수사관" end
+				local roomName = nickname .. "의 방"
+				log("[Room] No room available, auto-creating name=" .. roomName)
+				_InvestigationRoomManager:CreateRoom(roomName, "기본 수사", self.selectedMaxPlayers, false, "", nickname)
+				return
+			end
+			self:ShowJoinFailurePopup(reason, message)
+			_UIToast:ShowMessage(message)
+			return
+		end
+		local room = _HttpService:JSONDecode(roomJson)
+		self.joinedRoomId = room.roomId or ""
+		log("[Room] Join room success id=" .. self.joinedRoomId)
+		self:EnterInvestigationRoomLobby("join")
+		_UIToast:ShowMessage("수사방에 입장했습니다. 대기 중입니다.")
+	end
+
+	method void EnterInvestigationRoomLobby(string source)
+		self:CloseMatchmakingModal()
+		self:CloseFindRoomModal()
+		self:CloseCreateRoomModal()
+		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
+		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
+			lobbyRoot.Enable = false
+		end
+		if _MafiaUIFlow ~= nil then
+			_MafiaUIFlow:EnterRoomLobby()
+			log("[LobbyController] Entered MafiaLobbyHUD source=" .. source)
+		else
+			log_warning("[LobbyController] MafiaUIFlow unavailable source=" .. source)
+		end
+		if source ~= "test" and _QAAchievementManager ~= nil then
+			_QAAchievementManager:ReportLobbyAction("ROOM_ENTER", source)
+		end
+	end
+
+	method void OnRoomLeaveResult(boolean success, string message)
+		if success then self.joinedRoomId = "" end
+		_UIToast:ShowMessage(message)
+	end
+
+	method void CycleFindRoomModeFilter()
+		if self.findRoomModeFilter == "ALL" then self.findRoomModeFilter = "기본 수사" else self.findRoomModeFilter = "ALL" end
+		self.findRoomCurrentPage = 1
+		self:UpdateFindRoomFilterLabels()
+		self:ApplyRoomFilters()
+	end
+
+	method void CycleFindRoomStatusFilter()
+		if self.findRoomStatusFilter == "ALL" then
+			self.findRoomStatusFilter = "WAITING"
+		elseif self.findRoomStatusFilter == "WAITING" then
+			self.findRoomStatusFilter = "PLAYING"
+		elseif self.findRoomStatusFilter == "PLAYING" then
+			self.findRoomStatusFilter = "FULL"
+		else
+			self.findRoomStatusFilter = "ALL"
+		end
+		self.findRoomCurrentPage = 1
+		self:UpdateFindRoomFilterLabels()
+		self:ApplyRoomFilters()
+	end
+
+	method void SetFindRoomFilterButtonText(string path, string text)
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent ~= nil and isvalid(ent) and ent.TextComponent ~= nil then ent.TextComponent.Text = text end
+	end
+
+	method void UpdateFindRoomFilterLabels()
+		local modeText = self.findRoomModeFilter == "ALL" and "모드: 전체" or "모드: " .. self.findRoomModeFilter
+		local statusText = self.findRoomStatusFilter == "ALL" and "상태: 전체" or "상태: " .. self:GetFindRoomStatusText(self.findRoomStatusFilter)
+		local privateText = self.findRoomHidePrivate and "비밀번호 방 숨김: ON" or "비밀번호 방 숨김: OFF"
+		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton", modeText)
+		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton", statusText)
+		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox", privateText)
 	end
 
 	method void OnKeyDown(KeyDownEvent event)
@@ -1518,10 +2375,10 @@ script LobbyController extends Component
 	method void OnUpdate(number delta)
 		-- Simulates avatar movement/gravity; keeps AvatarNameText above avatar each frame.
 		self:UpdateMatchmakingModal(delta)
-		
+
 		local avatarEntity = self.avatarCache
 		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
-		
+
 		-- Horizontal input: A / LeftArrow = left,  D / RightArrow = right
 		local moveDir = 0
 		if _InputService:IsKeyPressed(KeyboardKey.A) or _InputService:IsKeyPressed(KeyboardKey.LeftArrow) then
@@ -1530,20 +2387,20 @@ script LobbyController extends Component
 		if _InputService:IsKeyPressed(KeyboardKey.D) or _InputService:IsKeyPressed(KeyboardKey.RightArrow) then
 			moveDir += 1
 		end
-		
+
 		local spacePressed = _InputService:IsKeyPressed(KeyboardKey.Space)
 		if spacePressed and self.jumpPressedLastFrame == false then
 			log("[LobbyController] Space input detected")
 			self:TryAvatarJump()
 		end
 		self.jumpPressedLastFrame = spacePressed
-		
+
 		self.avatarPosX += moveDir * self.MOVE_SPEED * delta
 		if self.avatarPosX < self.MIN_X then self.avatarPosX = self.MIN_X end
 		if self.avatarPosX > self.MAX_X then self.avatarPosX = self.MAX_X end
-		
+
 		self:ApplyAvatarDirection(moveDir)
-		
+
 		-- Gravity while airborne
 		local landedThisFrame = false
 		if self.isOnGround == false then
@@ -1559,7 +2416,7 @@ script LobbyController extends Component
 				self.jumpReturnTime = 0
 			end
 		end
-		
+
 		local nextState = "idle"
 		if self.isOnGround == false then
 			nextState = "jump"
@@ -1570,7 +2427,7 @@ script LobbyController extends Component
 			log("[LobbyController] Avatar state after landing=" .. nextState)
 		end
 		self:ApplyAvatarState(nextState)
-		
+
 		-- Periodic action re-apply: ensures animation state sticks when it resets mid-motion.
 		-- Walk and jump states are re-sent every actionReapplyInterval seconds.
 		self.actionReapplyTimer -= delta
@@ -1583,7 +2440,7 @@ script LobbyController extends Component
 				self.actionReapplyTimer = 0
 			end
 		end
-		
+
 		local visualY = self.avatarPosY
 		if self.WALK_VISUAL_FALLBACK_ENABLED and nextState == "walk" then
 			if self.walkBobEnabledLogged == false then
@@ -1602,7 +2459,7 @@ script LobbyController extends Component
 			self.walkBobTime = 0
 			self.walkBobLogTimer = 0
 		end
-		
+
 		-- Apply avatar position via UITransform
 		local transform = avatarEntity.UITransformComponent
 		if transform ~= nil then
@@ -1633,7 +2490,7 @@ script LobbyController extends Component
 				log("[LobbyController] Avatar base scale restored x=1 y=1")
 			end
 		end
-		
+
 		-- Move fallback placeholder alongside avatar (position matches avatar)
 		local fallback = self.fallbackCache
 		if fallback ~= nil and isvalid(fallback) and fallback.Enable then
@@ -1642,7 +2499,7 @@ script LobbyController extends Component
 				fb.anchoredPosition = Vector2(self.avatarPosX, self.avatarPosY)
 			end
 		end
-		
+
 		-- AvatarNameText tracks avatar: stays NAME_OFFSET_Y units from avatar center.
 		local nameText = self.nameTextCache
 		if nameText ~= nil and isvalid(nameText) then
@@ -1651,13 +2508,15 @@ script LobbyController extends Component
 				nameTransform.anchoredPosition = Vector2(self.avatarPosX, self.avatarPosY + self.NAME_OFFSET_Y)
 			end
 		end
-		
-		self.updateLogTimer -= delta
-		if self.updateLogTimer <= 0 then
-			log("[LobbyController] OnUpdate active")
-			log("[LobbyController] Avatar position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.avatarPosY))
-			log("[LobbyController] Avatar ground position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.GROUND_Y))
-			self.updateLogTimer = 0.5
+
+		if self.DEBUG_AVATAR_UPDATE_LOG then
+			self.updateLogTimer -= delta
+			if self.updateLogTimer <= 0 then
+				log("[LobbyController] OnUpdate active")
+				log("[LobbyController] Avatar position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.avatarPosY))
+				log("[LobbyController] Avatar ground position x=" .. tostring(self.avatarPosX) .. " y=" .. tostring(self.GROUND_Y))
+				self.updateLogTimer = 0.5
+			end
 		end
 	end
 
@@ -1679,7 +2538,7 @@ script LobbyController extends Component
 		-- Sets the ProfileRoot nickname plate and AvatarNameText text.
 		local displayName = self:NormalizeProfileNickname(nickname)
 		self.currentProfileNickname = displayName
-		
+
 		local plate = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileRoot/NicknamePlate/NicknameText")
 		if plate ~= nil and isvalid(plate) and plate.TextComponent ~= nil then
 			plate.TextComponent.Text = displayName
@@ -1719,6 +2578,9 @@ script LobbyController extends Component
 		if self.profileModalOpen then
 			self:RefreshProfileModalFields()
 		end
+		if _FriendManager ~= nil then
+			_FriendManager:RegisterNickname(self.currentProfileNickname)
+		end
 		log("[LobbyController] ApplyAllProfile complete nickname=" .. self.currentProfileNickname .. " title=" .. self.currentProfileTitle .. " ruid=" .. self.selectedProfileRuid)
 	end
 
@@ -1729,7 +2591,7 @@ script LobbyController extends Component
 		if self.currentProfileTitle == nil or self.currentProfileTitle == "" then
 			self.currentProfileTitle = "신입 수사관"
 		end
-		
+
 		if self.modalNicknameInput ~= nil then
 			self.modalNicknameInput.Text = displayName
 			if displayName ~= "" then
@@ -1783,11 +2645,11 @@ script LobbyController extends Component
 		local nextDirection = "right"
 		if moveDir < 0 then nextDirection = "left" end
 		if nextDirection == self.currentAvatarDirection then return end
-		
+
 		self.currentAvatarDirection = nextDirection
 		local avatarEntity = self.avatarCache
 		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
-		
+
 		local avatarComp = avatarEntity.AvatarGUIRendererComponent
 		if avatarComp ~= nil then
 			-- MSW avatar default facing is LEFT (FlipX=false=left).
@@ -1805,10 +2667,10 @@ script LobbyController extends Component
 		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
 		local avatarComp = avatarEntity.AvatarGUIRendererComponent
 		if avatarComp == nil then return end
-		
+
 		local avatarPath = "/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar"
 		log("[LobbyController] AvatarGUIRendererComponent entity path=" .. avatarPath)
-		
+
 		-- Avatar root entity
 		local rootEntity = avatarComp:GetAvatarRootEntity()
 		local rootValid = rootEntity ~= nil and isvalid(rootEntity)
@@ -1822,7 +2684,7 @@ script LobbyController extends Component
 			log("[LobbyController] Avatar root entity path=nil")
 			log("[LobbyController] Avatar root components=nil")
 		end
-		
+
 		-- Body entity (target of BodyActionStateChangeEvent)
 		local bodyEntity = avatarComp:GetBodyEntity()
 		local bodyValid = bodyEntity ~= nil and isvalid(bodyEntity)
@@ -1837,7 +2699,7 @@ script LobbyController extends Component
 			log("[LobbyController] AvatarBodyActionSelectorComponent found=" .. tostring(bodyABAS))
 			log("[LobbyController] StateStringToAvatarActionComponent found=" .. tostring(bodySSTA))
 			log("[LobbyController] StateComponent found=" .. tostring(bodySC))
-		
+
 			-- ActionState readback via AvatarBodyActionSelectorComponent
 			local selector = bodyEntity.AvatarBodyActionSelectorComponent
 			if selector ~= nil then
@@ -1845,7 +2707,7 @@ script LobbyController extends Component
 			else
 				log("[LobbyController] Avatar action readback=current action readback unsupported")
 			end
-		
+
 			local animSupported = bodyASA or bodyABAS
 			log("[LobbyController] Avatar GUI body animation supported=" .. tostring(animSupported))
 			if not animSupported then
@@ -1869,19 +2731,19 @@ script LobbyController extends Component
 		-- Ref: MSW docs "Playing Animation" sample; coreActionName drives torso+parts animation directly.
 		local avatarEntity = self.avatarCache
 		if avatarEntity == nil or isvalid(avatarEntity) == false then return end
-		
+
 		local avatarComp = avatarEntity.AvatarGUIRendererComponent
 		if avatarComp == nil then
 			self.avatarAnimationApiFound = false
 			return
 		end
 		self.avatarAnimationApiFound = true
-		
+
 		if self.avatarStructureDiagnosed == false then
 			self.avatarStructureDiagnosed = true
 			self:DiagnoseAvatarBodyStructure()
 		end
-		
+
 		local bodyEntity = avatarComp:GetBodyEntity()
 		local bodyValid = bodyEntity ~= nil and isvalid(bodyEntity)
 		log("[LobbyController] Avatar body entity found=" .. tostring(bodyValid))
@@ -1889,13 +2751,13 @@ script LobbyController extends Component
 			log_warning("[LobbyController] Avatar body entity nil — cannot send action")
 			return
 		end
-		
+
 		log("[LobbyController] Avatar action apply method=ActionStateChangedEvent")
-		
+
 		local coreAction = "stand1"
 		local partsAction = "stand1"
 		local playRate = 1.0
-		
+
 		if state == "walk" then
 			coreAction = "walk1"
 			partsAction = "walk1"
@@ -1909,7 +2771,7 @@ script LobbyController extends Component
 		else
 			log("[LobbyController] Avatar direct action core=stand1 parts=stand1 playRate=1")
 		end
-		
+
 		local event = ActionStateChangedEvent(coreAction, partsAction, playRate, SpriteAnimClipPlayType.Loop, 0, 2147483647)
 		bodyEntity:SendEvent(event)
 		log("[LobbyController] ActionStateChangedEvent sent=true")
@@ -1922,10 +2784,10 @@ script LobbyController extends Component
 		if prevState == "" then prevState = "none" end
 		self.currentAvatarState = nextState
 		self.actionReapplyTimer = 0
-		
+
 		log("[LobbyController] Avatar state changed " .. prevState .. " -> " .. nextState)
 		log("[LobbyController] Avatar state=" .. nextState)
-		
+
 		self:ForceApplyAvatarAction(nextState)
 		if nextState == "walk" then
 			log("[LobbyController] Walk visual fallback enabled=" .. tostring(self.WALK_VISUAL_FALLBACK_ENABLED))
@@ -1950,23 +2812,36 @@ script LobbyController extends Component
 	end
 
 	method void OnCodexClicked(ButtonClickEvent event)
-		-- Placeholder: codex (도감) not implemented.
-		log("[LobbyController] CodexButton clicked")
+		log_warning("[LobbyController] CodexButton clicked; feature not implemented")
+		self:ShowCommonPopup("warning", "도감 기능은 준비 중입니다.")
 	end
 
 	method void OnBagClicked(ButtonClickEvent event)
-		-- Placeholder: bag (가방) not implemented.
-		log("[LobbyController] BagButton clicked")
+		log_warning("[LobbyController] BagButton clicked; feature not implemented")
+		self:ShowCommonPopup("warning", "가방 기능은 준비 중입니다.")
 	end
 
 	method void OnAchievementClicked(ButtonClickEvent event)
-		-- Placeholder: achievements not implemented.
 		log("[LobbyController] AchievementButton clicked")
+		local controllerEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/Controller")
+		if controllerEntity == nil or isvalid(controllerEntity) == false then
+			log_warning("[LobbyController] Achievement popup controller not found")
+			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
+			return
+		end
+		local achievementUI = controllerEntity:GetComponent("script.QAAchievementUI")
+		if achievementUI == nil then
+			log_warning("[LobbyController] QAAchievementUI component not found")
+			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
+			return
+		end
+		achievementUI:Open()
 	end
 
 	method void OnStartClicked(ButtonClickEvent event)
 		log("[LobbyController] StartButton clicked")
 		self:OpenMatchmakingModal()
+		self:QuickJoinRoom()
 	end
 
 	method void OnCreateRoomClicked(ButtonClickEvent event)
@@ -2185,19 +3060,19 @@ script LobbyController extends Component
 			area:SetEnable(visible)
 			area.Visible = visible
 		end
-		
+
 		local avatar = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar")
 		if avatar ~= nil and isvalid(avatar) then
 			avatar:SetEnable(visible)
 			avatar.Visible = visible
 		end
-		
+
 		local nameText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarNameText")
 		if nameText ~= nil and isvalid(nameText) then
 			nameText:SetEnable(visible)
 			nameText.Visible = visible
 		end
-		
+
 		if visible then
 			self:HideAvatarFallback()
 		else
@@ -2220,7 +3095,7 @@ script LobbyController extends Component
 		if self.currentProfileTitle == nil or self.currentProfileTitle == "" then
 			self.currentProfileTitle = "신입 수사관"
 		end
-		
+
 		self:ApplyNickname(saveNickname)
 		self:RefreshProfileModalFields()
 		_ProfileStorageLogic:RequestSaveAllProfile(saveNickname, self.currentProfileTitle, self.selectedProfileRuid)
@@ -2265,23 +3140,25 @@ script LobbyController extends Component
 			self.Entity:DisconnectEvent(KeyDownEvent, self.keyDownHandler)
 			self.keyDownHandler = nil
 		end
-		
+
 		if self.avatarCheckTimerId ~= 0 then
 			_TimerService:ClearTimer(self.avatarCheckTimerId)
 			self.avatarCheckTimerId = 0
 		end
-		
+
 		-- Disconnect profile modal handlers.
 		self:CloseProfileModal()
 		self:CloseCreateRoomModal()
 		self:CloseFindRoomModal()
+		self:CloseCommonPopup()
+		self:DisconnectCommonPopupEvents()
 		self:DisconnectInvestigationRoomSearchEvents()
 		self:DisconnectExternalPopupEvents()
-		
+
 		local base = "/ui/UI_Lobby/LobbyRoot"
 		local buttonBase = base .. "/ButtonGroup"
 		local ent
-		
+
 		if self.btnProfileHandler ~= nil then
 			ent = _EntityService:GetEntityByPath(base .. "/ProfileFrame")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnProfileHandler) end
@@ -2362,7 +3239,7 @@ script LobbyController extends Component
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.btnMatchCancelHandler) end
 			self.btnMatchCancelHandler = nil
 		end
-		
+
 		self.avatarCache = nil
 		self.nameTextCache = nil
 		self.fallbackCache = nil

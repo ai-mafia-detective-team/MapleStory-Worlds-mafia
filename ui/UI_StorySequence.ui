@@ -21,10 +21,10 @@
           "name": "UI_StorySequence",
           "path": "/ui/UI_StorySequence",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 7,
+          "displayOrder": 6,
           "pathConstraints": "//",
           "revision": 0,
           "origin": {
@@ -96,9 +96,9 @@
             },
             {
               "@type": "MOD.Core.UIGroupComponent",
-              "DefaultShow": true,
-              "GroupOrder": 7,
-              "GroupType": 1,
+              "DefaultShow": false,
+              "GroupOrder": 6,
+              "GroupType": 2,
               "Enable": true
             },
             {

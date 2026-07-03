@@ -1,0 +1,171 @@
+@Component
+script QAAchievementUI extends Component
+
+	property Entity popupRoot = "4f2a8452-973b-44fe-b5e6-ffbb167cc431"
+	property ButtonComponent closeButton = "1b09d9a8-ea1f-4987-9613-dbae21c2bef5"
+	property ButtonComponent dailyTabButton = "70acef63-dc7c-41e0-a514-eac11106b80a"
+	property ButtonComponent weeklyTabButton = "200407f8-0a08-424b-9f37-4e8cde75a81c"
+	property ButtonComponent monthlyTabButton = "e74f4875-e90f-4a28-b89c-b3d837a405c4"
+	property ButtonComponent claimAllButton = "50e219ca-9c6f-46a3-93a9-708782c33aa7"
+	property TextComponent balanceText = "2d0fe567-9ea6-4e4e-81f7-5fdf5ecfa19e"
+	property TextComponent statusText = "dd4f9d03-29a6-4687-9507-725d29f60912"
+	property table serverItems = {}
+	property table rowAchievementIds = {}
+	property string currentPeriod = "DAILY"
+	property any closeHandler = nil
+	property any dailyHandler = nil
+	property any weeklyHandler = nil
+	property any monthlyHandler = nil
+	property any claimAllHandler = nil
+	property table rowHandlers = {}
+
+	method void OnBeginPlay()
+		log("[QAAchievementUI] OnBeginPlay")
+		local titleEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/TitleText")
+		if titleEntity ~= nil and titleEntity.TextComponent ~= nil then titleEntity.TextComponent.Text = "업적 수첩" end
+		self.closeButton.Entity.TextComponent.Text = "닫기"
+		self.claimAllButton.Entity.TextComponent.Text = "모두 받기"
+		self:WireEvents()
+		if self.popupRoot ~= nil and isvalid(self.popupRoot) then
+			self.popupRoot:SetEnable(false)
+		end
+	end
+
+	method void WireEvents()
+		if self.closeHandler ~= nil then return end
+		self.closeHandler = self.closeButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
+			self:Close()
+		end)
+		self.dailyHandler = self.dailyTabButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
+			self:SetPeriod("DAILY")
+		end)
+		self.weeklyHandler = self.weeklyTabButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
+			self:SetPeriod("WEEKLY")
+		end)
+		self.monthlyHandler = self.monthlyTabButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
+			self:SetPeriod("MONTHLY")
+		end)
+		self.claimAllHandler = self.claimAllButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
+			_QAAchievementManager:ClaimAll(self.currentPeriod)
+		end)
+
+		for i = 1, 4 do
+			local index = i
+			local buttonEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(index) .. "/ClaimButton")
+			if buttonEntity ~= nil and isvalid(buttonEntity) then
+				self.rowHandlers[index] = buttonEntity:ConnectEvent(ButtonClickEvent, function(event)
+					local achievementId = self.rowAchievementIds[index]
+					if achievementId ~= nil and achievementId ~= "" then
+						_QAAchievementManager:ClaimReward(achievementId)
+					end
+				end)
+			end
+		end
+	end
+
+	method void Open()
+		if self.popupRoot == nil or isvalid(self.popupRoot) == false then return end
+		self.popupRoot:SetEnable(true)
+		self.currentPeriod = "DAILY"
+		self.statusText.Text = "업적 정보를 불러오는 중입니다..."
+		_QAAchievementManager:RequestData()
+		log("[QAAchievementUI] Open")
+	end
+
+	method void Close()
+		if self.popupRoot ~= nil and isvalid(self.popupRoot) then
+			self.popupRoot:SetEnable(false)
+		end
+		log("[QAAchievementUI] Close")
+	end
+
+	method void SetPeriod(string period)
+		self.currentPeriod = period
+		self:Render()
+		log("[QAAchievementUI] Tab=" .. period)
+	end
+
+	method void ApplyServerState(string payloadJson, string message)
+		local payload = _HttpService:JSONDecode(payloadJson)
+		if payload == nil then
+			self.statusText.Text = "업적 정보를 읽을 수 없습니다."
+			return
+		end
+		self.serverItems = payload.items or {}
+		self.balanceText.Text = "보유 코인  " .. tostring(payload.rewardBalance or 0)
+		self.statusText.Text = message or ""
+		self:Render()
+		if message ~= nil and message ~= "" and _UIToast ~= nil then
+			_UIToast:ShowMessage(message)
+		end
+	end
+
+	method void Render()
+		local filtered = {}
+		for _, item in ipairs(self.serverItems) do
+			if item.period == self.currentPeriod then filtered[#filtered + 1] = item end
+		end
+
+		for i = 1, 4 do
+			local row = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(i))
+			local item = filtered[i]
+			if row == nil or isvalid(row) == false then continue end
+			if item == nil then
+				row:SetEnable(false)
+				self.rowAchievementIds[i] = ""
+				continue
+			end
+			row:SetEnable(true)
+			self.rowAchievementIds[i] = item.id
+			self:SetRowText(i, "Title", item.title)
+			self:SetRowText(i, "Description", item.description)
+			self:SetRowText(i, "ProgressText", tostring(item.progress) .. " / " .. tostring(item.target))
+			self:SetRowText(i, "RewardText", "코인 " .. tostring(item.reward))
+
+			local fill = _EntityService:GetEntityByPath(row.Path .. "/ProgressBar/Fill")
+			if fill ~= nil and isvalid(fill) and fill.UITransformComponent ~= nil then
+				local ratio = math.min(1, (item.progress or 0) / math.max(1, item.target or 1))
+				fill.UITransformComponent.RectSize = Vector2(390 * ratio, 14)
+			end
+
+			local claimEntity = _EntityService:GetEntityByPath(row.Path .. "/ClaimButton")
+			if claimEntity ~= nil and isvalid(claimEntity) then
+				local completed = (item.progress or 0) >= (item.target or 1)
+				claimEntity.ButtonComponent.Enable = completed and item.claimed ~= true
+				if item.claimed == true then
+					claimEntity.TextComponent.Text = "수령 완료"
+				elseif completed then
+					claimEntity.TextComponent.Text = "보상 수령"
+				else
+					claimEntity.TextComponent.Text = "진행 중"
+				end
+			end
+		end
+		self:UpdateTabLabels()
+	end
+
+	method void SetRowText(integer rowIndex, string childName, string value)
+		local entity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(rowIndex) .. "/" .. childName)
+		if entity ~= nil and isvalid(entity) and entity.TextComponent ~= nil then
+			entity.TextComponent.Text = value
+		end
+	end
+
+	method void UpdateTabLabels()
+		self.dailyTabButton.Entity.TextComponent.Text = self.currentPeriod == "DAILY" and "● 일일" or "일일"
+		self.weeklyTabButton.Entity.TextComponent.Text = self.currentPeriod == "WEEKLY" and "● 주간" or "주간"
+		self.monthlyTabButton.Entity.TextComponent.Text = self.currentPeriod == "MONTHLY" and "● 월간" or "월간"
+	end
+
+	method void OnEndPlay()
+		if self.closeHandler ~= nil then self.closeHandler:Disconnect() end
+		if self.dailyHandler ~= nil then self.dailyHandler:Disconnect() end
+		if self.weeklyHandler ~= nil then self.weeklyHandler:Disconnect() end
+		if self.monthlyHandler ~= nil then self.monthlyHandler:Disconnect() end
+		if self.claimAllHandler ~= nil then self.claimAllHandler:Disconnect() end
+		for _, connection in pairs(self.rowHandlers) do
+			if connection ~= nil then connection:Disconnect() end
+		end
+	end
+
+end

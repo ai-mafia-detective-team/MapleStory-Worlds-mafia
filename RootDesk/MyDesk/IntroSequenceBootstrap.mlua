@@ -10,7 +10,6 @@ script IntroSequenceBootstrap extends Component
 	method void OnBeginPlay()
 		-- Polls briefly because UI entities can appear after logic initialization.
 		log("[IntroSequenceBootstrap] OnBeginPlay")
-		self:HideMafiaHuds()
 		self.elapsed = 0
 		self.attached = false
 		self:TryAttach()
@@ -36,7 +35,6 @@ script IntroSequenceBootstrap extends Component
 
 	method void TryAttach()
 		-- Adds IntroSequenceController to /ui/UI_IntroSequence when it exists.
-		self:HideMafiaHuds()
 		local intro = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
 		if intro == nil or isvalid(intro) == false then
 			return
@@ -53,22 +51,6 @@ script IntroSequenceBootstrap extends Component
 		end
 		
 		self.attached = true
-	end
-
-	method void HideMafiaHuds()
-		-- Keeps Mafia gameplay HUDs hidden before intro, nickname, and room creation are complete.
-		local paths = {
-			"/ui/MafiaLobbyHUD",
-			"/ui/MafiaDayHUD",
-			"/ui/MafiaNightHUD"
-		}
-		for _, path in ipairs(paths) do
-			local hud = _EntityService:GetEntityByPath(path)
-			if hud ~= nil and isvalid(hud) then
-				hud:SetEnable(false)
-				hud.Visible = false
-			end
-		end
 	end
 
 	method void OnEndPlay()

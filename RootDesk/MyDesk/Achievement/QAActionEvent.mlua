@@ -1,0 +1,10 @@
+@Event
+script QAActionEvent extends EventType
+
+	-- Namespaced ActionEvent used by the official package-style progress pipeline.
+	property string UserId = ""
+	property string ActionType = ""
+	property integer Amount = 1
+	property string ExtraData = ""
+
+end

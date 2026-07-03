@@ -16,15 +16,15 @@
       {
         "id": "537ff95c-583e-4297-b882-f41396d71ca1",
         "path": "/ui/UI_NicknameSetup",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.UIGroupComponent,MOD.Core.CanvasGroupComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.UIGroupComponent,MOD.Core.CanvasGroupComponent,script.NicknameSetupController",
         "jsonString": {
           "name": "UI_NicknameSetup",
           "path": "/ui/UI_NicknameSetup",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 9,
+          "displayOrder": 8,
           "pathConstraints": "//",
           "revision": 0,
           "origin": {
@@ -97,7 +97,7 @@
             {
               "@type": "MOD.Core.UIGroupComponent",
               "DefaultShow": false,
-              "GroupOrder": 9,
+              "GroupOrder": 8,
               "GroupType": 2,
               "Enable": true
             },
@@ -107,6 +107,11 @@
               "GroupAlpha": 1.0,
               "Interactable": true,
               "Enable": true
+            },
+            {
+              "@type": "script.NicknameSetupController",
+              "Enable": true,
+              "DEBUG_SHOW_NICKNAME_SETUP": false
             }
           ],
           "@version": 1

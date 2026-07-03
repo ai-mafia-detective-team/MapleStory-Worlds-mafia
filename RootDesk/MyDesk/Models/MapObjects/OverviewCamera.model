@@ -41,7 +41,7 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 14,
+            "x": 14.0,
             "y": 11.34
           }
         },
@@ -54,7 +54,7 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 14,
+            "x": 14.0,
             "y": 11.34
           }
         },
@@ -65,7 +65,7 @@
             "$type": "MODNativeType",
             "type": "System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 100
+          "Value": 100.0
         },
         {
           "TargetType": "MOD.Core.CameraComponent",
@@ -85,9 +85,9 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector3, MOD.Core",
-            "x": 14,
+            "x": 14.0,
             "y": 11.34,
-            "z": 0
+            "z": 0.0
           }
         }
       ],

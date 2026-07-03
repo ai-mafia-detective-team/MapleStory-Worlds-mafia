@@ -3,82 +3,50 @@ script MafiaMapSetup extends Logic
 
 	property table roomMinX = {}
 	property table roomMaxX = {}
-	property table roomFloorY = {}
-	property table roomSpawnX = {}
-	property table roomSpawnY = {}
 
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
-		log("[MafiaMapSetup] Lobby room bounds setup begin")
+		log("[MafiaMapSetup] 방 경계 초기화 시작")
 
-		-- MafiaLobbyHUD RoomBadge1~8 기준 발판/벽/스폰 좌표 (2026-07-03)
-		self.roomMinX[1] = -5.986  self.roomMaxX[1] = -2.677  self.roomFloorY[1] = 1.900  self.roomSpawnX[1] = -4.329  self.roomSpawnY[1] = 1.980
-		self.roomMinX[2] = -6.018  self.roomMaxX[2] = -2.709  self.roomFloorY[2] = 0.180  self.roomSpawnX[2] = -4.361  self.roomSpawnY[2] = 0.260
-		self.roomMinX[3] = -6.029  self.roomMaxX[3] = -2.720  self.roomFloorY[3] = -1.222 self.roomSpawnX[3] = -4.372  self.roomSpawnY[3] = -1.142
-		self.roomMinX[4] = -5.998  self.roomMaxX[4] = -2.689  self.roomFloorY[4] = -2.358 self.roomSpawnX[4] = -4.341  self.roomSpawnY[4] = -2.278
-		self.roomMinX[5] = 1.878   self.roomMaxX[5] = 5.187   self.roomFloorY[5] = 1.909  self.roomSpawnX[5] = 3.535   self.roomSpawnY[5] = 1.989
-		self.roomMinX[6] = 1.834   self.roomMaxX[6] = 5.143   self.roomFloorY[6] = 0.175  self.roomSpawnX[6] = 3.492   self.roomSpawnY[6] = 0.255
-		self.roomMinX[7] = 1.894   self.roomMaxX[7] = 5.203   self.roomFloorY[7] = -1.132 self.roomSpawnX[7] = 3.551   self.roomSpawnY[7] = -1.052
-		self.roomMinX[8] = 1.898   self.roomMaxX[8] = 5.207   self.roomFloorY[8] = -2.431 self.roomSpawnX[8] = 3.555   self.roomSpawnY[8] = -2.351
+		-- 2026-06-29 기준: 각 방 투명 발판의 양끝 X 좌표
+		self.roomMinX[1] = -5.400  self.roomMaxX[1] = -2.427
+		self.roomMinX[2] = 2.497   self.roomMaxX[2] = 5.406
+		self.roomMinX[3] = -5.314  self.roomMaxX[3] = -2.513
+		self.roomMinX[4] = 2.411   self.roomMaxX[4] = 5.288
+		self.roomMinX[5] = -5.433  self.roomMaxX[5] = -2.405
+		self.roomMinX[6] = 2.454   self.roomMaxX[6] = 5.439
+		self.roomMinX[7] = -5.368  self.roomMaxX[7] = -2.437
+		self.roomMinX[8] = 2.422   self.roomMaxX[8] = 5.406
 
-		log("[MafiaMapSetup] Lobby room bounds initialized from MafiaLobbyHUD RoomBadge markers")
+		log("[MafiaMapSetup] 방 경계 초기화 완료 (8개 방, 2026-06-29 좌표)")
 	end
 
 	@ExecSpace("ServerOnly")
 	method void OnUpdate(number delta)
 		if _MafiaGameLogic == nil then return end
-		if _MafiaGameLogic.CurrentPhase ~= _MafiaGameLogic.PHASE_LOBBY then return end
 
 		local userKeys = _UserService.Users.Keys
 		for _, userId in ipairs(userKeys) do
-			local ent = _UserService:GetUserEntityByUserId(tostring(userId))
-			if ent ~= nil then
-				local roomId = _MafiaGameLogic:GetLobbyRoom(userId)
-				if roomId >= 1 and roomId <= 8 then
-					self:ClampUserToLobbyRoom(ent, roomId)
-				end
-			end
-		end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void ClampUserToLobbyRoom(Entity ent, integer roomId)
-		local minX = self.roomMinX[roomId]
-		local maxX = self.roomMaxX[roomId]
-		local floorY = self.roomFloorY[roomId]
-		local spawnX = self.roomSpawnX[roomId]
-		local spawnY = self.roomSpawnY[roomId]
-		if minX == nil or maxX == nil or floorY == nil or spawnX == nil or spawnY == nil then return end
-		if ent.TransformComponent == nil then return end
-
-		local pos = ent.TransformComponent.Position
-		local rb = ent.RigidbodyComponent
-
-		-- DownJump, 낙하, 물리 오차 등으로 발판 아래로 빠지면 즉시 방 안 스폰 위치로 복귀.
-		if pos.y < floorY - 0.35 then
-			if rb ~= nil then
-				rb:SetWorldPosition(Vector2(spawnX, spawnY))
-				rb.MoveVelocity = Vector2(0, 0)
-			else
-				ent.TransformComponent.Position = Vector3(spawnX, spawnY, pos.z)
-			end
-			return
-		end
-
-		if pos.x < minX then
-			if rb ~= nil then
-				rb:SetWorldPosition(Vector2(minX, pos.y))
-				rb.MoveVelocity = Vector2(0, rb.MoveVelocity.y)
-			else
-				ent.TransformComponent.Position = Vector3(minX, pos.y, pos.z)
-			end
-		elseif pos.x > maxX then
-			if rb ~= nil then
-				rb:SetWorldPosition(Vector2(maxX, pos.y))
-				rb.MoveVelocity = Vector2(0, rb.MoveVelocity.y)
-			else
-				ent.TransformComponent.Position = Vector3(maxX, pos.y, pos.z)
-			end
+		    local ent = _UserService:GetUserEntityByUserId(tostring(userId))
+		    if ent ~= nil then
+		        local roomId = _MafiaGameLogic:GetLobbyRoom(userId)
+		        if roomId >= 1 and roomId <= 8 then
+		            local minX = self.roomMinX[roomId]
+		            local maxX = self.roomMaxX[roomId]
+		            if minX ~= nil and maxX ~= nil then
+		                local pos = ent.TransformComponent.Position
+		                if pos.x < minX then
+		                    ent.TransformComponent.Position = Vector3(minX, pos.y, pos.z)
+		                    local rb = ent.RigidbodyComponent
+		                    if rb ~= nil then rb.MoveVelocity = Vector2(0, rb.MoveVelocity.y) end
+		                elseif pos.x > maxX then
+		                    ent.TransformComponent.Position = Vector3(maxX, pos.y, pos.z)
+		                    local rb = ent.RigidbodyComponent
+		                    if rb ~= nil then rb.MoveVelocity = Vector2(0, rb.MoveVelocity.y) end
+		                end
+		            end
+		        end
+		    end
 		end
 	end
 
