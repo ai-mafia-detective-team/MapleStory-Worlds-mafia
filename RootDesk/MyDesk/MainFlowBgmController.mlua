@@ -17,11 +17,15 @@ script MainFlowBgmController extends Logic
 
 	@ExecSpace("ClientOnly")
 	method void OnBeginPlay()
-		-- Initializes the client-side flow state. BGM never starts on the logo screen.
+		-- Initializes the client-side flow state and kills any map-owned BGM before UI flow starts.
 		self:SetCurrentFlowScreen("logo")
 		self.bgmEnabled = true
 		self.settingsLoaded = false
-		self.isMainFlowBgmPlaying = _SoundService:IsPlayBGM()
+		if _SoundService:IsPlayBGM() then
+			_SoundService:StopBGM(true)
+		end
+		self.isMainFlowBgmPlaying = false
+		log("[MainFlowBGM] startup map BGM stopped")
 	end
 
 	@ExecSpace("Server")
