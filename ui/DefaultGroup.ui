@@ -16,7 +16,7 @@
       {
         "id": "d965397a-6988-4fcc-a87c-d5e50701e0cb",
         "path": "/ui/DefaultGroup",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.UIGroupComponent,MOD.Core.CanvasGroupComponent,script.IntroSequenceBootstrap",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.UIGroupComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "DefaultGroup",
           "path": "/ui/DefaultGroup",
@@ -24,7 +24,7 @@
           "enable": true,
           "visible": false,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//",
           "revision": 0,
           "origin": {
@@ -96,7 +96,7 @@
             {
               "@type": "MOD.Core.UIGroupComponent",
               "DefaultShow": true,
-              "GroupOrder": 1,
+              "GroupOrder": 0,
               "GroupType": 1,
               "Enable": true
             },
@@ -105,10 +105,6 @@
               "BlocksRaycasts": true,
               "GroupAlpha": 1.0,
               "Interactable": true,
-              "Enable": true
-            },
-            {
-              "@type": "script.IntroSequenceBootstrap",
               "Enable": true
             }
           ],

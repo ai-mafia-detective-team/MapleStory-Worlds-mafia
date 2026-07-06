@@ -15,6 +15,8 @@ script MafiaUIFlow extends Logic
 
 	property any lobbyPlayerCountText = nil
 
+	property any lobbyRoomInfoText = nil
+
 	property any lobbyReadyStatusText = nil
 
 	property any lobbyReadyHintText = nil
@@ -489,6 +491,12 @@ script MafiaUIFlow extends Logic
 
 	property any mafiaRoleListText = nil
 
+	property table citizenWinAvatarEntities = nil
+
+	property table mafiaWinAvatarEntities = nil
+
+	property string lastWinAvatarSignature = ""
+
 	property Entity citizenReturnBtn = nil
 
 	property Entity mafiaReturnBtn = nil
@@ -595,6 +603,10 @@ script MafiaUIFlow extends Logic
 
 	property table loadingAvatarEntities = nil
 
+	property integer startupLoadingTimerId = 0
+
+	property boolean startupIntroRequested = false
+
 	method void OnBeginPlay()
 		    self.lobbyAvatarEntities = {}
 		    self.lobbyRoomTexts = {}
@@ -637,10 +649,16 @@ script MafiaUIFlow extends Logic
 		    self.nightDoctorCirclesOff = {}
 		    self.nightDoctorHandlers = {}
 		    self.nightDoctorPlayerIds = {}
+		    self.citizenWinAvatarEntities = {}
+		    self.mafiaWinAvatarEntities = {}
+		    self.lastWinAvatarSignature = ""
 		    self.settingResolutionOptions = {"1280 × 720", "1600 × 900", "1920 × 1080"}
 		    self:ResolveUI()
 		    self:HideAllMafiaHUDs()
-		    self.mafiaHudUnlocked = true
+		    -- Keep the Mafia in-room HUD hidden until the main flow finishes room creation.
+		    -- Desired flow: Intro -> Nickname -> Create Room -> MafiaLobbyHUD.
+		    self.mafiaHudUnlocked = false
+		    self:BeginStartupLoadingFlow()
 		    log("[MafiaUIFlow] initialized")
 	end
 
@@ -680,6 +698,10 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void OnEndPlay()
+		    if self.startupLoadingTimerId > 0 then
+		        _TimerService:ClearTimer(self.startupLoadingTimerId)
+		        self.startupLoadingTimerId = 0
+		    end
 		    if self.lobbyReadyButton ~= nil and self.readyClickHandler ~= nil then
 		        self.lobbyReadyButton.Entity:DisconnectEvent(ButtonClickEvent, self.readyClickHandler)
 		    end
@@ -891,6 +913,8 @@ script MafiaUIFlow extends Logic
 		    if entity ~= nil then self.lobbyInviteButton = entity.ButtonComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/InviteIcon")
 		    if entity ~= nil then self.lobbyInviteIcon = entity end
+		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/RoomInfoText")
+		    if entity ~= nil then self.lobbyRoomInfoText = entity.TextComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/PlayerCountText")
 		    if entity ~= nil then self.lobbyPlayerCountText = entity.TextComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/VoteStatusText")
@@ -1330,8 +1354,12 @@ script MafiaUIFlow extends Logic
 		            if rbEnt ~= nil then
 		                self.citizenReturnBtn = rbEnt
 		                if self.citizenReturnClickHandler == nil then
-		                    self.citizenReturnClickHandler = rbEnt:ConnectEvent(ButtonClickEvent, self.HandleReturnToLobby)
+		                    self.citizenReturnClickHandler = rbEnt:ConnectEvent(ButtonClickEvent, self.HandleLobbyExit)
 		                end
+		            end
+		            for i = 1, 8 do
+		                local avEnt = _EntityService:GetEntityByPath("/ui/MafiaCitizenWinHUD/WinnerAvatar" .. tostring(i))
+		                self.citizenWinAvatarEntities[i] = avEnt
 		            end
 		        end
 		    end
@@ -1345,8 +1373,12 @@ script MafiaUIFlow extends Logic
 		            if rbEnt ~= nil then
 		                self.mafiaReturnBtn = rbEnt
 		                if self.mafiaReturnClickHandler == nil then
-		                    self.mafiaReturnClickHandler = rbEnt:ConnectEvent(ButtonClickEvent, self.HandleReturnToLobby)
+		                    self.mafiaReturnClickHandler = rbEnt:ConnectEvent(ButtonClickEvent, self.HandleLobbyExit)
 		                end
+		            end
+		            for i = 1, 8 do
+		                local avEnt = _EntityService:GetEntityByPath("/ui/MafiaMafiaWinHUD/WinnerAvatar" .. tostring(i))
+		                self.mafiaWinAvatarEntities[i] = avEnt
 		            end
 		        end
 		    end
@@ -1490,7 +1522,8 @@ script MafiaUIFlow extends Logic
 		        self.cachedPhase = phase
 		        local inLobby = (phase == _MafiaGameLogic.PHASE_LOBBY)
 		        local inNight = (phase == _MafiaGameLogic.PHASE_NIGHT)
-		        local inDay = (not inLobby) and (not inNight)
+		        local inGameOver = (phase == _MafiaGameLogic.PHASE_GAME_OVER)
+		        local inDay = (not inLobby) and (not inNight) and (not inGameOver)
 		        self:SetHudActive(self.lobbyRoot, inLobby)
 		        if prevPhase == _MafiaGameLogic.PHASE_LOBBY and phase == _MafiaGameLogic.PHASE_FREE_ROAM and not self.loadingActive then
 		            self:SetHudActive(self.dayRoot, false)
@@ -1500,11 +1533,15 @@ script MafiaUIFlow extends Logic
 		        end
 		        self:SetHudActive(self.nightRoot, inNight)
 		        self:SetHudActive(self.legacyRoot, false)
+		        self:SetHudActive(self.mafiaWinRoot, inGameOver and _MafiaGameLogic.WinnerRole == _MafiaGameLogic.ROLE_MAFIA)
+		        self:SetHudActive(self.citizenWinRoot, inGameOver and _MafiaGameLogic.WinnerRole == _MafiaGameLogic.ROLE_CITIZEN)
 		        if not inNight and self.nightUIShown then self:HideNightPanel() end
 		        if inLobby then
 		            log("[MafiaUIFlow] showing lobby UI")
 		        elseif inNight then
 		            log("[MafiaUIFlow] showing night UI")
+		        elseif inGameOver then
+		            log("[MafiaUIFlow] showing win UI; winner=" .. tostring(_MafiaGameLogic.WinnerRole))
 		        else
 		            log("[MafiaUIFlow] showing day UI; phase=" .. tostring(phase))
 		        end
@@ -1513,6 +1550,8 @@ script MafiaUIFlow extends Logic
 		        self:RefreshLobby()
 		    elseif phase == _MafiaGameLogic.PHASE_NIGHT then
 		        self:RefreshNight()
+		    elseif phase == _MafiaGameLogic.PHASE_GAME_OVER then
+		        self:RefreshWinAvatars(_MafiaGameLogic.WinnerRole)
 		    else
 		        self:RefreshDay(phase)
 		    end
@@ -1533,6 +1572,66 @@ script MafiaUIFlow extends Logic
 		    if root == nil or isvalid(root) == false then return end
 		    root:SetEnable(active)
 		    root.Visible = active
+	end
+
+	method void BeginStartupLoadingFlow()
+		    -- Skip loading cover; go directly to the intro sequence.
+		    if self.startupIntroRequested then return end
+		    self.startupIntroRequested = true
+		    self:ShowStartupLoadingCover()
+		    self:StartIntroAfterStartupLoading()
+		    log("[MafiaUIFlow] startup loading flow started")
+	end
+
+	method void ShowStartupLoadingCover()
+		    -- Covers the raw map immediately on Play.
+		    self:HideUiRootByPath("/ui/UI_Lobby")
+		    self:HideUiRootByPath("/ui/UI_NicknameSetup")
+		    self:HideUiRootByPath("/ui/UI_StorySequence")
+		    self:HideUiRootByPath("/ui/UI_IntroSequence")
+		    self:HideAllMafiaHUDs()
+		    local mapsRoot = _EntityService:GetEntityByPath("/maps")
+		    if mapsRoot ~= nil and isvalid(mapsRoot) then
+		        mapsRoot:SetEnable(false)
+		    end
+		    log("[MafiaUIFlow] maps hidden for intro flow")
+	end
+
+	method void StartIntroAfterStartupLoading()
+		    -- Hands control from the startup cover to the intro logo flow.
+		    local intro = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		    if intro == nil or isvalid(intro) == false then
+		        log_warning("[MafiaUIFlow] /ui/UI_IntroSequence not found after startup loading")
+		        return
+		    end
+		    intro:SetEnable(true)
+		    intro.Visible = true
+		    local ctrl = intro:GetComponent("script.IntroSequenceController")
+		    if ctrl == nil then
+		        intro:AddComponent("script.IntroSequenceController")
+		        log("[MafiaUIFlow] IntroSequenceController attached after startup loading")
+		    else
+		        ctrl:ApplyInitialState()
+		        ctrl:StartTimeline()
+		        log("[MafiaUIFlow] IntroSequenceController restarted after startup loading")
+		    end
+	end
+
+	method void HideUiRootByPath(string path)
+		    -- Hides a UI root if it exists.
+		    local root = _EntityService:GetEntityByPath(path)
+		    if root == nil or isvalid(root) == false then return end
+		    root:SetEnable(false)
+		    root.Visible = false
+	end
+
+	method void SetLoadingText(string path, string text)
+		    -- Updates loading HUD text when the entity exists.
+		    local entity = _EntityService:GetEntityByPath(path)
+		    if entity == nil or isvalid(entity) == false then return end
+		    if entity.TextComponent ~= nil then
+		        entity.TextComponent.Text = text
+		    end
 	end
 
 	method void RestoreLocalWorldPlayerForLobby()
@@ -1652,10 +1751,38 @@ script MafiaUIFlow extends Logic
 		    log("[MafiaUIFlow] mafia lobby unlocked after room creation title=" .. tostring(roomTitle) .. " max=" .. tostring(maxPlayers) .. " mafia=" .. tostring(mafiaCount))
 	end
 
+	method void EnterRoomLobby()
+		    -- Called by LobbyController after room creation or join. Unlocks the Mafia HUD flow.
+		    self.mafiaHudUnlocked = true
+		    self.cachedPhase = -1
+		    local introUI = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		    if introUI ~= nil and isvalid(introUI) then introUI:SetEnable(false) end
+		    local storyUI = _EntityService:GetEntityByPath("/ui/UI_StorySequence")
+		    if storyUI ~= nil and isvalid(storyUI) then storyUI:SetEnable(false) end
+		    local nicknameUI = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup")
+		    if nicknameUI ~= nil and isvalid(nicknameUI) then nicknameUI:SetEnable(false) end
+		    local mainLobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		    if mainLobby ~= nil and isvalid(mainLobby) then
+		        mainLobby:SetEnable(false)
+		        mainLobby.Visible = false
+		    end
+		    self:RestoreLocalWorldPlayerForLobby()
+		    self:RequestLobbyRoomPlacementOnce()
+		    self:ResolveUI()
+		    self:RefreshUI(true)
+		    log("[MafiaUIFlow] EnterRoomLobby: mafia HUD unlocked")
+	end
+
 	method void RefreshLobby()
 		    self:RestoreLocalWorldPlayerForLobby()
 		    self:RequestLobbyRoomPlacementOnce()
 		    self:ResolvePhaseChatContext("MafiaLobbyHUD")
+		    if self.lobbyRoomInfoText ~= nil and _MafiaGameLogic ~= nil then
+		        local title = _MafiaGameLogic.RoomTitle
+		        if title ~= nil and title ~= "" then
+		            self.lobbyRoomInfoText.Text = title
+		        end
+		    end
 		    local playerCount = _MafiaGameLogic.LobbyPlayerCount
 		    if playerCount <= 0 then playerCount = #(_UserService.Users.Keys) end
 		    local readyCount = _MafiaGameLogic.ReadyCount
@@ -3030,21 +3157,29 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void ShowVoteUI()
-		    -- Populates card slots with alive players and shows the Vote panel.
+		    -- Populates card slots with all players (dead ones disabled) and shows the Vote panel.
 		    if self.votePanel == nil then self:ResolveVoteUI() end
 		    if self.votePanel == nil then return end
-		
-		    local aliveStr = _MafiaGameLogic.AlivePlayersList
-		    local players = {}
-		    if aliveStr ~= nil and aliveStr ~= "" then
-		        players = self:SplitString(aliveStr, ",")
+
+		    -- Build the full player list from RoleData so layout stays fixed across rounds.
+		    local allPlayers = {}
+		    local roleData = _MafiaGameLogic.RoleData
+		    if roleData ~= nil and roleData ~= "" then
+		        local parts = self:SplitString(roleData, ",")
+		        for i = 1, #parts, 2 do allPlayers[#allPlayers + 1] = parts[i] end
 		    end
-		    local count = #players
-		    if count > 8 then count = 8 end
-		
+		    local totalCount = math.min(#allPlayers, 8)
+
+		    -- Build alive set for button-enable check.
+		    local aliveSet = {}
+		    local aliveStr = _MafiaGameLogic.AlivePlayersList
+		    if aliveStr ~= nil and aliveStr ~= "" then
+		        for _, uid in ipairs(self:SplitString(aliveStr, ",")) do aliveSet[uid] = true end
+		    end
+
 		    for i = 1, 8 do self.votePlayerUserIds[i] = nil end
-		    for i = 1, count do self.votePlayerUserIds[i] = players[i] end
-		
+		    for i = 1, totalCount do self.votePlayerUserIds[i] = allPlayers[i] end
+
 		    self:ShowYellowCircle(0)
 		    for i = 1, 8 do
 		        local userId  = self.votePlayerUserIds[i]
@@ -3052,7 +3187,8 @@ script MafiaUIFlow extends Logic
 		        local avEnt   = self.voteAvatarEntities[i]
 		        local nameTc  = self.voteNameTexts[i]
 		        local circOff = self.voteCircleOffEntities[i]
-		
+		        local isAlive = (userId ~= nil) and (aliveSet[userId] == true)
+
 		        if avEnt ~= nil then
 		            if userId ~= nil then
 		                local costume  = avEnt.CostumeManagerComponent
@@ -3072,12 +3208,13 @@ script MafiaUIFlow extends Logic
 		            nameTc.Text = (userId ~= nil) and self:GetUserDisplayName(userId) or ""
 		        end
 		        if circOff ~= nil then circOff.Enable = (userId ~= nil) end
+		        -- Dead players keep their card visible but button is disabled.
 		        if cardEnt ~= nil and cardEnt.ButtonComponent ~= nil then
-		            cardEnt.ButtonComponent.Enable = (userId ~= nil)
+		            cardEnt.ButtonComponent.Enable = isAlive
 		        end
 		    end
-		
-		    self:LayoutVoteGrid(count)
+
+		    self:LayoutVoteGrid(totalCount)
 		
 		    self.voteSelectedSlot   = 0
 		    self.voteAbstainSelected = false
@@ -3130,7 +3267,7 @@ script MafiaUIFlow extends Logic
 		        slot7.UITransformComponent.anchoredPosition = Vector2(COL_W * 2, ROW2_Y)
 		    end
 		
-		    -- Show/hide slots
+		    -- Show all slots; dead-player button disabling is handled in ShowVoteUI.
 		    for i = 1, 8 do
 		        local e = self.voteCardEntities[i]
 		        if e ~= nil then e.Enable = (i <= count) end
@@ -3356,6 +3493,139 @@ script MafiaUIFlow extends Logic
 		    return -1
 	end
 
+	method table GetWinnerUserIds(integer winnerRole)
+		    -- Builds the ordered userId list for the winning side from MafiaGameLogic.RoleData.
+		    local result = {}
+		    if _MafiaGameLogic == nil then return result end
+		    local roleData = _MafiaGameLogic.RoleData
+		    if roleData == nil or roleData == "" then
+		        for _, uid in ipairs(_UserService.Users.Keys) do
+		            if #result < 8 then result[#result + 1] = tostring(uid) end
+		        end
+		        return result
+		    end
+		    local parts = self:SplitString(roleData, ",")
+		    local i = 1
+		    while i + 1 <= #parts do
+		        local uid = parts[i]
+		        local role = tonumber(parts[i + 1])
+		        local include = false
+		        if winnerRole == _MafiaGameLogic.ROLE_MAFIA then
+		            include = (role == _MafiaGameLogic.ROLE_MAFIA)
+		        else
+		            include = (role ~= _MafiaGameLogic.ROLE_MAFIA)
+		        end
+		        if include and uid ~= nil and uid ~= "" and #result < 8 then
+		            result[#result + 1] = tostring(uid)
+		        end
+		        i += 2
+		    end
+		    return result
+	end
+
+	method void HideCitizenWinAvatarSlots()
+		    -- Hides every winner-avatar slot in the citizen victory HUD.
+		    if self.citizenWinAvatarEntities == nil then return end
+		    for i = 1, 8 do
+		        local avEnt = self.citizenWinAvatarEntities[i]
+		        if avEnt ~= nil and isvalid(avEnt) then
+		            avEnt.Enable = false
+		            avEnt.Visible = false
+		            if avEnt.AvatarGUIRendererComponent ~= nil then avEnt.AvatarGUIRendererComponent.Enable = false end
+		            if avEnt.CostumeManagerComponent ~= nil then avEnt.CostumeManagerComponent.Enable = false end
+		        end
+		    end
+	end
+
+	method void HideMafiaWinAvatarSlots()
+		    -- Hides every winner-avatar slot in the mafia victory HUD.
+		    if self.mafiaWinAvatarEntities == nil then return end
+		    for i = 1, 8 do
+		        local avEnt = self.mafiaWinAvatarEntities[i]
+		        if avEnt ~= nil and isvalid(avEnt) then
+		            avEnt.Enable = false
+		            avEnt.Visible = false
+		            if avEnt.AvatarGUIRendererComponent ~= nil then avEnt.AvatarGUIRendererComponent.Enable = false end
+		            if avEnt.CostumeManagerComponent ~= nil then avEnt.CostumeManagerComponent.Enable = false end
+		        end
+		    end
+	end
+
+	method void RefreshWinAvatars(integer winnerRole)
+		    -- Renders winning players' avatars at the bottom of the active victory HUD.
+		    if _MafiaGameLogic == nil then return end
+		    local avatarEntities = self.citizenWinAvatarEntities
+		    if winnerRole == _MafiaGameLogic.ROLE_MAFIA then
+		        avatarEntities = self.mafiaWinAvatarEntities
+		        self:HideCitizenWinAvatarSlots()
+		    elseif winnerRole == _MafiaGameLogic.ROLE_CITIZEN then
+		        self:HideMafiaWinAvatarSlots()
+		    else
+		        self:HideCitizenWinAvatarSlots()
+		        self:HideMafiaWinAvatarSlots()
+		        self.lastWinAvatarSignature = ""
+		        return
+		    end
+		    if avatarEntities == nil then return end
+		
+		    local winnerIds = self:GetWinnerUserIds(winnerRole)
+		    local count = #winnerIds
+		    if count > 8 then count = 8 end
+		    local signature = tostring(winnerRole) .. ":" .. table.concat(winnerIds, ",")
+		    if signature == self.lastWinAvatarSignature then return end
+		    self.lastWinAvatarSignature = signature
+		
+		    local leftCount = math.ceil(count / 2)
+		    local halfGap = 36
+		    local halfAvatar = 48
+		    local step = 118
+		    local y = -260
+		
+		    for i = 1, 8 do
+		        local avEnt = avatarEntities[i]
+		        if avEnt ~= nil and isvalid(avEnt) then
+		            if i <= count then
+		                local userId = winnerIds[i]
+		                local isLeft = (i <= leftCount)
+		                local x = 0
+		                local flipX = false
+		                if isLeft then
+		                    local dist = leftCount - i
+		                    x = -(halfGap + halfAvatar) - dist * step
+		                    flipX = false
+		                else
+		                    local rightIndex = i - leftCount
+		                    x = (halfGap + halfAvatar) + (rightIndex - 1) * step
+		                    flipX = true
+		                end
+		                local tf = avEnt.UITransformComponent
+		                if tf ~= nil then
+		                    tf.anchoredPosition = Vector2(x, y)
+		                    tf.RectSize = Vector2(125, 190)
+		                end
+		                local costume = avEnt.CostumeManagerComponent
+		                local renderer = avEnt.AvatarGUIRendererComponent
+		                if costume ~= nil then
+		                    costume.UseCustomEquipOnly = false
+		                    costume.DefaultEquipUserId = userId
+		                    costume.Enable = true
+		                end
+		                if renderer ~= nil then
+		                    renderer.Enable = true
+		                    renderer.FlipX = flipX
+		                end
+		                avEnt.Enable = true
+		                avEnt.Visible = true
+		            else
+		                avEnt.Enable = false
+		                if avEnt.AvatarGUIRendererComponent ~= nil then avEnt.AvatarGUIRendererComponent.Enable = false end
+		                if avEnt.CostumeManagerComponent ~= nil then avEnt.CostumeManagerComponent.Enable = false end
+		            end
+		        end
+		    end
+		    log("[MafiaUIFlow] win avatars refreshed; winner=" .. tostring(winnerRole) .. " count=" .. tostring(count))
+	end
+
 	method void TriggerLoadingScreen()
 		    -- Intercepts LOBBY→FREE_ROAM transition: shows loading screen for 7s then reveals day HUD.
 		    self.loadingActive = true
@@ -3511,7 +3781,7 @@ script MafiaUIFlow extends Logic
 		    self.loadingRoot:SetEnable(true)
 		    self.loadingRoot.Visible = true
 		    log("[MafiaUIFlow] loading screen shown role=" .. tostring(role))
-		    wait(6.0)
+		    wait(3.0)
 		    -- fade out: FadeOverlay alpha 0 → 1
 		    self:AnimateLoadingFade(0, 1, 0.5)
 		    self.loadingRoot:SetEnable(false)
@@ -3606,24 +3876,32 @@ script MafiaUIFlow extends Logic
 		        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_9",
 		        "/ui/MafiaNightHUD/Mafia/Mafia_5/Mafia_10",
 		    }
+		    local mafiaCircleOffNames = { "UISprite", "UISprite_1", "UISprite_2", "UISprite_3", "UISprite_4", "UISprite_5" }
+		    local mafiaCircleNames    = { "UISprite_1", "UISprite_2", "UISprite_3", "UISprite_4", "UISprite_5", "UISprite_6" }
 		    local policeSlotPaths = {
 		        "/ui/MafiaNightHUD/Police/Police_4",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_1",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_2",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_3",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_4",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_5",
-		        "/ui/MafiaNightHUD/Police/Police_4/UISprite_7",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_5",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_6",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_7",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_8",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_9",
+		        "/ui/MafiaNightHUD/Police/Police_4/Police_10",
 		    }
+		    local policeCircleOffNames = { "UISprite_6", "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12" }
+		    local policeCircleNames    = { "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_13" }
 		    local doctorSlotPaths = {
 		        "/ui/MafiaNightHUD/Doctor/Doctor_4",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_1",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_2",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_3",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_4",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_5",
-		        "/ui/MafiaNightHUD/Doctor/Doctor_4/UISprite_6",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_5",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_6",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_7",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_8",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_9",
+		        "/ui/MafiaNightHUD/Doctor/Doctor_4/Doctor_10",
 		    }
+		    -- Doctor 슬롯 circle/circleOff: 각 슬롯의 UISprite 이름이 NightCircle/NightCircleOff가 아닌 UISprite_N 형태
+		    -- 작은 번호 = 회색(Off), 큰 번호 = 노란색(On)
+		    local doctorCircleOffNames = { "UISprite", "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12" }
+		    local doctorCircleNames    = { "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_13" }
 		
 		    local function resolveSlots(paths, cards, avatars, names, circles, circlesOff, handlers, role)
 		        for i, sp in ipairs(paths) do
@@ -3650,9 +3928,24 @@ script MafiaUIFlow extends Logic
 		    end
 
 		    resolveSlots(mafiaSlotPaths,  self.nightMafiaCards,  self.nightMafiaAvatars,  self.nightMafiaNames,  self.nightMafiaCircles,  self.nightMafiaCirclesOff,  self.nightMafiaHandlers,  _MafiaGameLogic.ROLE_MAFIA)
+		    -- Mafia circle/circleOff는 NightCircle/NightCircleOff 대신 UISprite_N 이름으로 별도 해결
+		    for i, sp in ipairs(mafiaSlotPaths) do
+		        self.nightMafiaCirclesOff[i] = _EntityService:GetEntityByPath(sp .. "/" .. mafiaCircleOffNames[i])
+		        self.nightMafiaCircles[i]    = _EntityService:GetEntityByPath(sp .. "/" .. mafiaCircleNames[i])
+		    end
 		    resolveSlots(policeSlotPaths, self.nightPoliceCards, self.nightPoliceAvatars, self.nightPoliceNames, self.nightPoliceCircles, self.nightPoliceCirclesOff, self.nightPoliceHandlers, _MafiaGameLogic.ROLE_POLICE)
+		    -- Police circle/circleOff는 NightCircle/NightCircleOff 대신 UISprite_N 이름으로 별도 해결
+		    for i, sp in ipairs(policeSlotPaths) do
+		        self.nightPoliceCirclesOff[i] = _EntityService:GetEntityByPath(sp .. "/" .. policeCircleOffNames[i])
+		        self.nightPoliceCircles[i]    = _EntityService:GetEntityByPath(sp .. "/" .. policeCircleNames[i])
+		    end
 		    resolveSlots(doctorSlotPaths, self.nightDoctorCards, self.nightDoctorAvatars, self.nightDoctorNames, self.nightDoctorCircles, self.nightDoctorCirclesOff, self.nightDoctorHandlers, _MafiaGameLogic.ROLE_DOCTOR)
-		
+		    -- Doctor circle/circleOff는 NightCircle/NightCircleOff 대신 UISprite_N 이름으로 별도 해결
+		    for i, sp in ipairs(doctorSlotPaths) do
+		        self.nightDoctorCirclesOff[i] = _EntityService:GetEntityByPath(sp .. "/" .. doctorCircleOffNames[i])
+		        self.nightDoctorCircles[i]    = _EntityService:GetEntityByPath(sp .. "/" .. doctorCircleNames[i])
+		    end
+
 		    -- Confirm button events
 		    if self.nightMafiaConfirmEnt ~= nil and self.nightMafiaConfirmEnt.ButtonComponent ~= nil and self.nightConfirmMafiaHandler == nil then
 		        self.nightConfirmMafiaHandler = self.nightMafiaConfirmEnt:ConnectEvent(ButtonClickEvent, function()
@@ -3679,36 +3972,37 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void ShowNightPanel()
-		    -- Shows the panel for the current NightSubPhase (0=마피아 1=경찰 2=의사).
-		    -- Active role player can click cards; others observe only.
-		    local subPhase = _MafiaGameLogic.NightSubPhase
+		    -- Shows the night panel for the local player's role.
+		    -- NightSubPhase is not used; panel is determined solely by local player's role.
 		    local localRole = self:GetLocalPlayerRole()
-		
-		    -- 서브페이즈에 따라 표시할 패널 역할 결정
+
+		    -- 로컬 역할에 따라 표시할 패널 결정
 		    local panelRole = -1
-		    if subPhase == 0 then
+		    if localRole == _MafiaGameLogic.ROLE_MAFIA then
 		        panelRole = _MafiaGameLogic.ROLE_MAFIA
-		    elseif subPhase == 1 then
+		    elseif localRole == _MafiaGameLogic.ROLE_POLICE then
 		        panelRole = _MafiaGameLogic.ROLE_POLICE
-		    elseif subPhase == 2 then
+		    elseif localRole == _MafiaGameLogic.ROLE_DOCTOR then
 		        panelRole = _MafiaGameLogic.ROLE_DOCTOR
-		    else
-		        return
 		    end
-		
+
 		    -- 이전 패널 모두 숨기기
 		    if self.nightMafiaPanel ~= nil then self.nightMafiaPanel.Enable = false end
 		    if self.nightPolicePanel ~= nil then self.nightPolicePanel.Enable = false end
 		    if self.nightDoctorPanel ~= nil then self.nightDoctorPanel.Enable = false end
-		
+
 		    self.nightManuallyHidden = false
 		    self.nightActiveRole = panelRole
 		    self.nightSelectedSlot = 0
 		    self.nightSubmitted = false
-		
-		    -- 로컬 플레이어가 이번 서브페이즈의 행동 주체인지
-		    local isActivePlayer = (localRole == panelRole)
-		
+
+		    -- 시민 또는 역할 미확인: 패널 없이 대기
+		    if panelRole == -1 then
+		        self.nightUIShown = true
+		        log("[MafiaUIFlow] night: citizen waiting; localRole=" .. tostring(localRole))
+		        return
+		    end
+
 		    local maxSlots = 0
 		    local cards      = nil
 		    local avatars    = nil
@@ -3755,11 +4049,26 @@ script MafiaUIFlow extends Logic
 		        return
 		    end
 		
+		    -- Clickable targets for this role.
 		    local targets = self:GetNightTargets(panelRole)
+		    local targetSet = {}
+		    for _, uid in ipairs(targets) do targetSet[uid] = true end
+
+		    -- All players except self (keep layout fixed even when someone dies).
+		    local localId = self:GetLocalUserId()
+		    local allDisplay = {}
+		    local roleData = _MafiaGameLogic.RoleData
+		    if roleData ~= nil and roleData ~= "" then
+		        local parts = self:SplitString(roleData, ",")
+		        for i = 1, #parts, 2 do
+		            local uid = parts[i]
+		            if uid ~= localId then allDisplay[#allDisplay + 1] = uid end
+		        end
+		    end
 		    for i = 1, maxSlots do playerIds[i] = nil end
-		    local count = math.min(#targets, maxSlots)
-		    for i = 1, count do playerIds[i] = targets[i] end
-		
+		    local count = math.min(#allDisplay, maxSlots)
+		    for i = 1, count do playerIds[i] = allDisplay[i] end
+
 		    -- 슬롯 채우기
 		    for i = 1, maxSlots do
 		        local uid       = playerIds[i]
@@ -3771,9 +4080,10 @@ script MafiaUIFlow extends Logic
 
 		        if card ~= nil then
 		            local hasUser = (uid ~= nil)
+		            local isTarget = hasUser and (targetSet[uid] == true)
 		            if card.ButtonComponent ~= nil then
-		                -- 행동 주체만 클릭 가능; 관찰자는 버튼 비활성
-		                card.ButtonComponent.Enable = hasUser and isActivePlayer
+		                -- Enable only if this player is a valid target; dead players stay visible but unclickable.
+		                card.ButtonComponent.Enable = isTarget
 		            end
 		            if av ~= nil then
 		                if hasUser then
@@ -3808,18 +4118,17 @@ script MafiaUIFlow extends Logic
 		    self:UpdateNightTimer(timer)
 		
 		    self.nightUIShown = true
-		    self.lastNightSubPhase = subPhase
-		    log("[MafiaUIFlow] night panel shown; subPhase=" .. tostring(subPhase) .. " panelRole=" .. tostring(panelRole) .. " isActive=" .. tostring(isActivePlayer))
+		    log("[MafiaUIFlow] night panel shown; panelRole=" .. tostring(panelRole))
 	end
 
 	method void UpdateNightTimer(string timerStr)
 		    -- Updates the title text to show role name + remaining timer.
-		    local subPhase = _MafiaGameLogic.NightSubPhase
-		    if subPhase == 0 and self.nightMafiaTitleComp ~= nil then
+		    local localRole = self:GetLocalPlayerRole()
+		    if localRole == _MafiaGameLogic.ROLE_MAFIA and self.nightMafiaTitleComp ~= nil then
 		        self.nightMafiaTitleComp.Text = "마피아  " .. timerStr
-		    elseif subPhase == 1 and self.nightPoliceTitleComp ~= nil then
+		    elseif localRole == _MafiaGameLogic.ROLE_POLICE and self.nightPoliceTitleComp ~= nil then
 		        self.nightPoliceTitleComp.Text = "경찰  " .. timerStr
-		    elseif subPhase == 2 and self.nightDoctorTitleComp ~= nil then
+		    elseif localRole == _MafiaGameLogic.ROLE_DOCTOR and self.nightDoctorTitleComp ~= nil then
 		        self.nightDoctorTitleComp.Text = "의사  " .. timerStr
 		    end
 	end
@@ -3834,13 +4143,7 @@ script MafiaUIFlow extends Logic
 		        self:HideLobbyRawChatLog()
 		        self:ApplyLobbyChatBubbles(nightChatLog)
 		    end
-		    local subPhase = _MafiaGameLogic.NightSubPhase
-		    local subPhaseChanged = (subPhase ~= self.lastNightSubPhase)
-		    if (not self.nightUIShown or subPhaseChanged) and not self.nightManuallyHidden then
-		        if self.nightMafiaPanel == nil then self:ResolveNightUI() end
-		        self:ShowNightPanel()
-		    elseif subPhaseChanged then
-		        -- 서브페이즈가 바뀌면 manually hidden 상태도 해제하고 새 패널 표시
+		    if not self.nightUIShown and not self.nightManuallyHidden then
 		        if self.nightMafiaPanel == nil then self:ResolveNightUI() end
 		        self:ShowNightPanel()
 		    else

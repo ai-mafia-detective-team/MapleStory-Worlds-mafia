@@ -105,7 +105,16 @@ script MafiaGameLogic extends Logic
 	@Sync
 	property string ReadyStatusList = ""
 
+	@Sync
+	property string DaySkipStatusList = ""
+
+	property table skipPlayers = nil
+
 	property boolean GameStarted = false
+
+	property boolean gameStartPending = false
+
+	property number gameStartCountdown = 0.0
 
 	property number InternalTimer = 0.0
 
@@ -142,8 +151,12 @@ script MafiaGameLogic extends Logic
 		    self.MafiaTarget   = ""
 		    self.DoctorTarget  = ""
 		    self.PoliceTarget  = ""
-		    self.GameStarted   = false
-		    self.InternalTimer = 0.0
+		    self.GameStarted        = false
+		    self.gameStartPending   = false
+		    self.gameStartCountdown = 0.0
+		    self.InternalTimer      = 0.0
+		    self.skipPlayers       = {}
+		    self.DaySkipStatusList = ""
 		    self.CurrentPhase  = self.PHASE_LOBBY
 		    self.WinnerRole    = -1
 		    self.DayCount      = 0
@@ -179,7 +192,24 @@ script MafiaGameLogic extends Logic
 		    self:CheckNewLobbyPlayers()
 		    self:UpdateReadyStatusList()
 		    if self:AllLobbyPlayersReady() then
-		        self:StartGame()
+		        if self.gameStartPending == false then
+		            self.gameStartPending   = true
+		            self.gameStartCountdown = 3.0
+		            log("[Lobby] all players ready; game starting in 3 seconds")
+		        end
+		    else
+		        if self.gameStartPending then
+		            self.gameStartPending   = false
+		            self.gameStartCountdown = 0.0
+		            log("[Lobby] not all players ready; game start cancelled")
+		        end
+		    end
+		    if self.gameStartPending then
+		        self.gameStartCountdown = self.gameStartCountdown - delta
+		        if self.gameStartCountdown <= 0.0 then
+		            self.gameStartPending = false
+		            self:StartGame()
+		        end
 		    end
 	end
 
@@ -196,8 +226,14 @@ script MafiaGameLogic extends Logic
 		    log("[Lobby] ready: " .. userId .. " -> " .. tostring(ready) ..
 		        " (" .. tostring(self.ReadyCount) .. "/" .. tostring(self.LobbyPlayerCount) .. ")")
 		    if self:AllLobbyPlayersReady() then
-		        log("[Lobby] all players ready; starting day phase")
-		        self:StartGame()
+		        if self.gameStartPending == false then
+		            self.gameStartPending   = true
+		            self.gameStartCountdown = 3.0
+		            log("[Lobby] all players ready; game starting in 3 seconds")
+		        end
+		    else
+		        self.gameStartPending   = false
+		        self.gameStartCountdown = 0.0
 		    end
 	end
 
@@ -287,11 +323,11 @@ script MafiaGameLogic extends Logic
 	@ExecSpace("ServerOnly")
 	method void OnPhaseEnd()
 		    if self.CurrentPhase == self.PHASE_FREE_ROAM then
-		        self:BeginNight()
+		        self:BeginMeeting()
 		    elseif self.CurrentPhase == self.PHASE_NIGHT then
 		        self:BeginMorning()
 		    elseif self.CurrentPhase == self.PHASE_MORNING then
-		        self:BeginMeeting()
+		        self:BeginFreeRoam()
 		    elseif self.CurrentPhase == self.PHASE_MEETING then
 		        self:BeginMeetingResult()
 		    elseif self.CurrentPhase == self.PHASE_MEETING_RESULT then
@@ -325,6 +361,8 @@ script MafiaGameLogic extends Logic
 		    end
 		    self.RoleData = table.concat(roleParts, ",")
 		    self:UpdateAlivePlayersList()
+		    self.skipPlayers       = {}
+		    self.DaySkipStatusList = ""
 		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME)
 		    log("[Mafia] 寃뚯엫 ?쒖옉!")
 	end
@@ -405,6 +443,17 @@ script MafiaGameLogic extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void BeginFreeRoam()
+		    -- Resets skip state and starts the daytime discussion phase (called after morning).
+		    if self.skipPlayers == nil then self.skipPlayers = {} end
+		    for k in pairs(self.skipPlayers) do self.skipPlayers[k] = nil end
+		    self.DaySkipStatusList = ""
+		    self.DayCount = self.DayCount + 1
+		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME)
+		    log("[Mafia] free roam started DayCount=" .. tostring(self.DayCount))
+	end
+
+	@ExecSpace("ServerOnly")
 	method void BeginMeeting()
 		    self.voteCount     = {}
 		    self.voteSubmitted = {}
@@ -416,15 +465,29 @@ script MafiaGameLogic extends Logic
 		            self.voteCount[uid] = 0
 		        end
 		    end
-		    self.DayCount = self.DayCount + 1
 		    self:SetPhase(self.PHASE_MEETING, self.MEETING_TIME)
 	end
 
 	@ExecSpace("Server")
 	method void RequestSkipToMeeting(string requesterId)
 		    if self.CurrentPhase ~= self.PHASE_FREE_ROAM then return end
-		    log("[Mafia] skip requested by " .. tostring(requesterId))
-		    self:BeginMeeting()
+		    if self.skipPlayers == nil then self.skipPlayers = {} end
+		    self.skipPlayers[requesterId] = true
+		    -- Rebuild DaySkipStatusList from the skip map.
+		    local parts = {}
+		    for uid, _ in pairs(self.skipPlayers) do parts[#parts + 1] = uid end
+		    self.DaySkipStatusList = table.concat(parts, ",")
+		    log("[Mafia] skip: " .. tostring(requesterId) .. " skipCount=" .. tostring(#parts))
+		    -- Transition only when every alive player has skipped.
+		    local aliveCount = 0
+		    local allSkipped = true
+		    for uid in string.gmatch(self.AlivePlayersList ~= "" and self.AlivePlayersList or "x", "[^,]+") do
+		        aliveCount = aliveCount + 1
+		        if self.skipPlayers[uid] == nil then allSkipped = false end
+		    end
+		    if allSkipped and aliveCount > 0 then
+		        self:BeginMeeting()
+		    end
 	end
 
 	@ExecSpace("Server")

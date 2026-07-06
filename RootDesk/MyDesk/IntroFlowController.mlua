@@ -17,8 +17,69 @@ script IntroFlowController extends Logic
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
 		-- Initializes DataStorage handle for per-user intro progress tracking.
+		-- Startup loading + IntroSequence is initiated client-side by MafiaUIFlow.BeginStartupLoadingFlow().
+		-- IntroFlowController handles the downstream flow: story → nickname → lobby.
 		self.storage = _DataStorageService:GetGlobalDataStorage(self.KEY_STORAGE_INTRO)
 		log("[IntroFlowController] OnBeginPlay server ready")
+	end
+
+	@ExecSpace("Client")
+	method void ShowStartupLoadingClient()
+		-- First screen after Play: hide all HUDs, then start the intro logo directly.
+		if _SoundService:IsPlayBGM() then
+			_SoundService:StopBGM(true)
+		end
+		_MainFlowBgmController:SetCurrentFlowScreen("logo")
+		self:HideUiRootClient("/ui/UI_Lobby")
+		self:HideUiRootClient("/ui/UI_NicknameSetup")
+		self:HideUiRootClient("/ui/UI_StorySequence")
+		self:HideUiRootClient("/ui/UI_IntroSequence")
+		self:HideUiRootClient("/ui/MafiaLobbyHUD")
+		self:HideUiRootClient("/ui/MafiaDayHUD")
+		self:HideUiRootClient("/ui/MafiaNightHUD")
+		self:HideUiRootClient("/ui/MafiaCitizenWinHUD")
+		self:HideUiRootClient("/ui/MafiaMafiaWinHUD")
+		self:HideUiRootClient("/ui/MafiaLoadingHUD")
+		log("[IntroFlowController] startup: all HUDs hidden, starting intro logo")
+		self:StartIntroLogoClient()
+	end
+
+	@ExecSpace("Client")
+	method void StartIntroLogoClient()
+		-- Starts the existing logo intro sequence after the startup loading cover.
+		local introUI = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
+		if introUI == nil or isvalid(introUI) == false then
+			log_warning("[IntroFlowController] /ui/UI_IntroSequence not found for startup intro")
+			return
+		end
+		introUI:SetEnable(true)
+		introUI.Visible = true
+		local ctrl = introUI:GetComponent("script.IntroSequenceController")
+		if ctrl == nil then
+			introUI:AddComponent("script.IntroSequenceController")
+			log("[IntroFlowController] IntroSequenceController attached by startup flow")
+		else
+			ctrl:ApplyInitialState()
+			ctrl:StartTimeline()
+			log("[IntroFlowController] IntroSequenceController restarted by startup flow")
+		end
+	end
+
+	@ExecSpace("Client")
+	method void HideUiRootClient(string path)
+		local root = _EntityService:GetEntityByPath(path)
+		if root == nil or isvalid(root) == false then return end
+		root:SetEnable(false)
+		root.Visible = false
+	end
+
+	@ExecSpace("Client")
+	method void SetTextClient(string path, string text)
+		local entity = _EntityService:GetEntityByPath(path)
+		if entity == nil or isvalid(entity) == false then return end
+		if entity.TextComponent ~= nil then
+			entity.TextComponent.Text = text
+		end
 	end
 
 	@ExecSpace("Server")
@@ -53,6 +114,7 @@ script IntroFlowController extends Logic
 			return
 		end
 		storyUI:SetEnable(true)
+		storyUI.Visible = true
 		local ctrl = storyUI:GetComponent("script.StorySequenceController")
 		if ctrl == nil then
 			storyUI:AddComponent("script.StorySequenceController")
@@ -129,7 +191,8 @@ script IntroFlowController extends Logic
 			return
 		end
 		nicknameUI:SetEnable(true)
-		
+		nicknameUI.Visible = true
+
 		local nicknameRoot = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup/NicknameRoot")
 		log("[IntroFlowController] NicknameRoot found=" .. tostring(nicknameRoot ~= nil and isvalid(nicknameRoot)))
 		if nicknameRoot == nil or isvalid(nicknameRoot) == false then
@@ -144,6 +207,11 @@ script IntroFlowController extends Logic
 		
 		local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
 		log("[IntroFlowController] NicknameSetupController found=" .. tostring(ctrl ~= nil))
+		if ctrl == nil then
+			nicknameUI:AddComponent("script.NicknameSetupController")
+			ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
+			log("[IntroFlowController] NicknameSetupController added dynamically found=" .. tostring(ctrl ~= nil))
+		end
 		if ctrl ~= nil then
 			---@type NicknameSetupController
 			local typedCtrl = ctrl
@@ -221,16 +289,28 @@ script IntroFlowController extends Logic
 			-- LobbyController.OnBeginPlay fires synchronously on SetEnable(true) above.
 			-- Now call ShowLobby(nickname) to enable LobbyRoot and apply the nickname.
 			local lobbyCtrl = lobby:GetComponent("script.LobbyController")
+			log("[IntroFlowController] LobbyController found=" .. tostring(lobbyCtrl ~= nil))
+			if lobbyCtrl == nil then
+				lobby:AddComponent("script.LobbyController")
+				lobbyCtrl = lobby:GetComponent("script.LobbyController")
+				log("[IntroFlowController] LobbyController added dynamically found=" .. tostring(lobbyCtrl ~= nil))
+			end
 			if lobbyCtrl ~= nil then
 				---@type LobbyController
 				local typedLobbyCtrl = lobbyCtrl
 				typedLobbyCtrl:ShowLobby(nickname)
-				log("[IntroFlowController] LobbyController.ShowLobby called")
+				log("[IntroFlowController] LobbyController.ShowLobby called with nickname=" .. tostring(nickname))
 			else
-				log_warning("[IntroFlowController] LobbyController not found on /ui/UI_Lobby")
+				log_warning("[IntroFlowController] LobbyController not found on /ui/UI_Lobby even after AddComponent")
 			end
 		end
 		
+		local mapsRoot = _EntityService:GetEntityByPath("/maps")
+		if mapsRoot ~= nil and isvalid(mapsRoot) then
+			mapsRoot:SetEnable(true)
+			mapsRoot.Visible = true
+		end
+
 		local defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
 		if defaultGroup ~= nil and isvalid(defaultGroup) then
 			if defaultGroup.Enable == false then
@@ -238,7 +318,7 @@ script IntroFlowController extends Logic
 			end
 			defaultGroup.Visible = true
 		end
-		
+
 		local player = _UserService.LocalPlayer
 		if player == nil then
 			player = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
@@ -247,7 +327,7 @@ script IntroFlowController extends Logic
 			player:SetEnable(true)
 			player.Visible = true
 		end
-		
+
 		log("[IntroFlowController] Lobby shown")
 	end
 

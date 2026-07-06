@@ -1220,8 +1220,31 @@ script LobbyController extends Component
 		local room = _HttpService:JSONDecode(roomJson)
 		self.joinedRoomId = room.roomId or ""
 		log("[Room] Room created successfully id=" .. self.joinedRoomId)
+		-- Read room settings before closing the modal so form values are not lost.
+		local roomName = ""
+		if self.createRoomNameInput ~= nil then
+			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
+		end
+		local password = ""
+		if self.isPrivateRoom and self.createRoomPasswordInput ~= nil then
+			password = self:TrimCreateRoomText(self.createRoomPasswordInput.Text)
+		end
+		self:CloseMatchmakingModal()
+		self:CloseFindRoomModal()
 		self:CloseCreateRoomModal()
-		self:EnterInvestigationRoomLobby("create")
+		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
+		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
+			lobbyRoot.Enable = false
+		end
+		if _MafiaUIFlow ~= nil then
+			_MafiaUIFlow:OpenLobbyAfterRoomCreated(roomName, self.isPrivateRoom, password, self.selectedMaxPlayers, 2)
+			log("[LobbyController] Entered MafiaLobbyHUD source=create title=" .. roomName)
+		else
+			log_warning("[LobbyController] MafiaUIFlow unavailable source=create")
+		end
+		if _QAAchievementManager ~= nil then
+			_QAAchievementManager:ReportLobbyAction("ROOM_ENTER", "create")
+		end
 		_UIToast:ShowMessage("수사방이 생성되었습니다. 대기 중입니다.")
 	end
 

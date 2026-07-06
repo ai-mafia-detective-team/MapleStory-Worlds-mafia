@@ -7,29 +7,96 @@ script IntroSequenceBootstrap extends Component
 
 	property boolean attached = false
 
+	property number startupLoadingSeconds = 0.8
+
+	property Entity startupLoadingRoot = nil
+
 	method void OnBeginPlay()
-		-- Polls briefly because UI entities can appear after logic initialization.
+		-- Shows the loading HUD first, then starts the intro sequence when UI entities are ready.
 		log("[IntroSequenceBootstrap] OnBeginPlay")
 		self.elapsed = 0
 		self.attached = false
-		self:TryAttach()
-		
-		if self.attached == false then
-			self.timerId = _TimerService:SetTimerRepeat(function()
-				self.elapsed = self.elapsed + 0.1
-				self:TryAttach()
-		
-				if self.attached == true or self.elapsed >= 5 then
-					if self.timerId > 0 then
-						_TimerService:ClearTimer(self.timerId)
-						self.timerId = 0
-					end
-		
-					if self.attached == false then
-						log_warning("[IntroSequenceBootstrap] /ui/UI_IntroSequence was not found")
-					end
+		self:ShowStartupLoading()
+
+		if self.timerId > 0 then
+			_TimerService:ClearTimer(self.timerId)
+			self.timerId = 0
+		end
+
+		self.timerId = _TimerService:SetTimerRepeat(function()
+			self.elapsed = self.elapsed + 0.1
+
+			if self.elapsed < self.startupLoadingSeconds then
+				self:ShowStartupLoading()
+				return
+			end
+
+			self:HideStartupLoading()
+			self:TryAttach()
+
+			if self.attached == true or self.elapsed >= 5 then
+				if self.timerId > 0 then
+					_TimerService:ClearTimer(self.timerId)
+					self.timerId = 0
 				end
-			end, 0.1)
+
+				if self.attached == false then
+					log_warning("[IntroSequenceBootstrap] /ui/UI_IntroSequence was not found")
+				end
+			end
+		end, 0.1)
+	end
+
+	method void ShowStartupLoading()
+		-- Covers the map immediately so Play starts from a loading screen, not raw map view.
+		self:HideEntityByPath("/ui/UI_Lobby")
+		self:HideEntityByPath("/ui/UI_NicknameSetup")
+		self:HideEntityByPath("/ui/MafiaLobbyHUD")
+		self:HideEntityByPath("/ui/MafiaDayHUD")
+		self:HideEntityByPath("/ui/MafiaNightHUD")
+		self:HideEntityByPath("/ui/MafiaCitizenWinHUD")
+		self:HideEntityByPath("/ui/MafiaMafiaWinHUD")
+
+		if self.startupLoadingRoot == nil or isvalid(self.startupLoadingRoot) == false then
+			self.startupLoadingRoot = _EntityService:GetEntityByPath("/ui/MafiaLoadingHUD")
+		end
+		if self.startupLoadingRoot ~= nil and isvalid(self.startupLoadingRoot) then
+			self.startupLoadingRoot:SetEnable(true)
+			self.startupLoadingRoot.Visible = true
+		end
+
+		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleLabelText", "LOADING")
+		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleNameText", "커닝시티 마피아")
+		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleDescText", "게임 화면을 불러오는 중입니다.")
+		self:SetTextByPath("/ui/MafiaLoadingHUD/StoryText", "")
+		self:SetTextByPath("/ui/MafiaLoadingHUD/TipText", "잠시 후 인트로가 시작됩니다.")
+	end
+
+	method void HideStartupLoading()
+		-- Hides the startup loading HUD right before the intro logo sequence takes over.
+		if self.startupLoadingRoot == nil or isvalid(self.startupLoadingRoot) == false then
+			self.startupLoadingRoot = _EntityService:GetEntityByPath("/ui/MafiaLoadingHUD")
+		end
+		if self.startupLoadingRoot ~= nil and isvalid(self.startupLoadingRoot) then
+			self.startupLoadingRoot:SetEnable(false)
+			self.startupLoadingRoot.Visible = false
+		end
+	end
+
+	method void HideEntityByPath(string path)
+		-- Hides unrelated UI roots during the startup loading cover.
+		local entity = _EntityService:GetEntityByPath(path)
+		if entity == nil or isvalid(entity) == false then return end
+		entity:SetEnable(false)
+		entity.Visible = false
+	end
+
+	method void SetTextByPath(string path, string text)
+		-- Applies startup loading labels when the target text entity exists.
+		local entity = _EntityService:GetEntityByPath(path)
+		if entity == nil or isvalid(entity) == false then return end
+		if entity.TextComponent ~= nil then
+			entity.TextComponent.Text = text
 		end
 	end
 

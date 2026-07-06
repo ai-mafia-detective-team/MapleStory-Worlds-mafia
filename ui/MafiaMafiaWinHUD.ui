@@ -24,7 +24,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 13,
+          "displayOrder": 12,
           "pathConstraints": "//",
           "revision": 0,
           "origin": {
@@ -97,7 +97,7 @@
             {
               "@type": "MOD.Core.UIGroupComponent",
               "DefaultShow": false,
-              "GroupOrder": 13,
+              "GroupOrder": 12,
               "GroupType": 1,
               "Enable": true
             },
@@ -807,640 +807,6 @@
         }
       },
       {
-        "id": "077f06d2-4953-46bf-aa5f-36606b6c2dd7",
-        "path": "/ui/MafiaMafiaWinHUD/RolePanel",
-        "componentNames": "MOD.Core.UITransformComponent",
-        "jsonString": {
-          "name": "RolePanel",
-          "path": "/ui/MafiaMafiaWinHUD/RolePanel",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 4,
-          "pathConstraints": "///",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UIEmpty",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uiempty",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 0,
-              "AnchorsMax": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "AnchorsMin": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 310.0,
-                "y": 135.0
-              },
-              "OffsetMin": {
-                "x": -310.0,
-                "y": -175.0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "RectSize": {
-                "x": 620.0,
-                "y": 310.0
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0.0,
-                "y": -20.0
-              },
-              "Position": {
-                "x": 0.0,
-                "y": -20.0,
-                "z": 0.0
-              },
-              "QuaternionRotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "Scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
-        "id": "7b49717f-7b75-4ab9-9f0c-6bf3bee06a13",
-        "path": "/ui/MafiaMafiaWinHUD/RolePanel/Bg",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
-        "jsonString": {
-          "name": "Bg",
-          "path": "/ui/MafiaMafiaWinHUD/RolePanel/Bg",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 0,
-          "pathConstraints": "////",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UISprite",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uisprite",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 15,
-              "AnchorsMax": {
-                "x": 1.0,
-                "y": 1.0
-              },
-              "AnchorsMin": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "OffsetMin": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "RectSize": {
-                "x": 620.0,
-                "y": 310.0
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "Position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "QuaternionRotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "Scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "AnimClipPlayType": 0,
-              "EndFrameIndex": 2147483647,
-              "IgnoreMapLayerCheck": false,
-              "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
-              },
-              "LocalPosition": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "LocalScale": {
-                "x": 1.0,
-                "y": 1.0
-              },
-              "MaterialId": "",
-              "OrderInLayer": 0,
-              "OverrideSorting": false,
-              "PlayRate": 1.0,
-              "PreserveSprite": 0,
-              "SortingLayer": "UI",
-              "StartFrameIndex": 0,
-              "Color": {
-                "r": 0.12,
-                "g": 0.0,
-                "b": 0.02,
-                "a": 0.8
-              },
-              "DropShadow": false,
-              "DropShadowAngle": 120.0,
-              "DropShadowColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3.0,
-              "FillAmount": 1.0,
-              "FillCenter": true,
-              "FillClockWise": true,
-              "FillMethod": 0,
-              "FillOrigin": 0,
-              "FlipX": false,
-              "FlipY": false,
-              "FrameColumn": 1,
-              "FrameRate": 0,
-              "FrameRow": 1,
-              "Outline": false,
-              "OutlineColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 1.0
-              },
-              "OutlineWidth": 3.0,
-              "RaycastTarget": false,
-              "Type": 0,
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
-        "id": "5d8993eb-2f3f-406c-966b-2c451370f659",
-        "path": "/ui/MafiaMafiaWinHUD/RolePanel/Title",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
-        "jsonString": {
-          "name": "Title",
-          "path": "/ui/MafiaMafiaWinHUD/RolePanel/Title",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 1,
-          "pathConstraints": "////",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UIText",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uitext",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 3,
-              "AnchorsMax": {
-                "x": 0.5,
-                "y": 1.0
-              },
-              "AnchorsMin": {
-                "x": 0.5,
-                "y": 1.0
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 280.0,
-                "y": -18.0
-              },
-              "OffsetMin": {
-                "x": -280.0,
-                "y": -58.0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 1.0
-              },
-              "RectSize": {
-                "x": 560.0,
-                "y": 40.0
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0.0,
-                "y": -18.0
-              },
-              "Position": {
-                "x": 0.0,
-                "y": 137.0,
-                "z": 0.0
-              },
-              "QuaternionRotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "Scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "AnimClipPlayType": 0,
-              "EndFrameIndex": 2147483647,
-              "IgnoreMapLayerCheck": false,
-              "ImageRUID": {
-                "DataId": ""
-              },
-              "LocalPosition": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "LocalScale": {
-                "x": 1.0,
-                "y": 1.0
-              },
-              "MaterialId": "",
-              "OrderInLayer": 0,
-              "OverrideSorting": false,
-              "PlayRate": 1.0,
-              "PreserveSprite": 0,
-              "SortingLayer": "UI",
-              "StartFrameIndex": 0,
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 0.0
-              },
-              "DropShadow": false,
-              "DropShadowAngle": 120.0,
-              "DropShadowColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3.0,
-              "FillAmount": 1.0,
-              "FillCenter": true,
-              "FillClockWise": true,
-              "FillMethod": 0,
-              "FillOrigin": 0,
-              "FlipX": false,
-              "FlipY": false,
-              "FrameColumn": 1,
-              "FrameRate": 0,
-              "FrameRow": 1,
-              "Outline": false,
-              "OutlineColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 1.0
-              },
-              "OutlineWidth": 3.0,
-              "RaycastTarget": false,
-              "Type": 0,
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.TextComponent",
-              "Alignment": 4,
-              "AllowAutomaticTranslation": true,
-              "BestFit": false,
-              "Bold": true,
-              "ConstraintX": 100.0,
-              "ConstraintY": 100.0,
-              "DropShadow": false,
-              "DropShadowAngle": 120.0,
-              "DropShadowColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3.0,
-              "Font": 1,
-              "FontColor": {
-                "r": 1.0,
-                "g": 0.35,
-                "b": 0.35,
-                "a": 1.0
-              },
-              "FontSize": 20,
-              "IgnoreMapLayerCheck": false,
-              "IsLocalizationKey": false,
-              "MaxSize": 40,
-              "MinSize": 10,
-              "OrderInLayer": 0,
-              "OutlineColor": {
-                "r": 0.698039234,
-                "g": 0.698039234,
-                "b": 0.698039234,
-                "a": 1.0
-              },
-              "OutlineDistance": {
-                "x": 1.0,
-                "y": -1.0
-              },
-              "OutlineWidth": 1.0,
-              "Overflow": 0,
-              "OverrideSorting": false,
-              "Padding": {
-                "left": 0,
-                "right": 0,
-                "top": 0,
-                "bottom": 0
-              },
-              "SizeFit": false,
-              "SortingLayer": "UI",
-              "Text": "— 역할 공개 —",
-              "UseConstraintX": false,
-              "UseConstraintY": false,
-              "UseOutLine": false,
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
-        "id": "14b7201d-a353-40ff-97b0-edd6997ac5bb",
-        "path": "/ui/MafiaMafiaWinHUD/RolePanel/RoleList",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
-        "jsonString": {
-          "name": "RoleList",
-          "path": "/ui/MafiaMafiaWinHUD/RolePanel/RoleList",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 2,
-          "pathConstraints": "////",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UIText",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uitext",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 0,
-              "AnchorsMax": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "AnchorsMin": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 280.0,
-                "y": 95.0
-              },
-              "OffsetMin": {
-                "x": -280.0,
-                "y": -125.0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "RectSize": {
-                "x": 560.0,
-                "y": 220.0
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0.0,
-                "y": -15.0
-              },
-              "Position": {
-                "x": 0.0,
-                "y": -15.0,
-                "z": 0.0
-              },
-              "QuaternionRotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "w": 1.0
-              },
-              "Scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "AnimClipPlayType": 0,
-              "EndFrameIndex": 2147483647,
-              "IgnoreMapLayerCheck": false,
-              "ImageRUID": {
-                "DataId": ""
-              },
-              "LocalPosition": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "LocalScale": {
-                "x": 1.0,
-                "y": 1.0
-              },
-              "MaterialId": "",
-              "OrderInLayer": 0,
-              "OverrideSorting": false,
-              "PlayRate": 1.0,
-              "PreserveSprite": 0,
-              "SortingLayer": "UI",
-              "StartFrameIndex": 0,
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 0.0
-              },
-              "DropShadow": false,
-              "DropShadowAngle": 120.0,
-              "DropShadowColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3.0,
-              "FillAmount": 1.0,
-              "FillCenter": true,
-              "FillClockWise": true,
-              "FillMethod": 0,
-              "FillOrigin": 0,
-              "FlipX": false,
-              "FlipY": false,
-              "FrameColumn": 1,
-              "FrameRate": 0,
-              "FrameRow": 1,
-              "Outline": false,
-              "OutlineColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 1.0
-              },
-              "OutlineWidth": 3.0,
-              "RaycastTarget": false,
-              "Type": 0,
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.TextComponent",
-              "Alignment": 4,
-              "AllowAutomaticTranslation": true,
-              "BestFit": false,
-              "Bold": false,
-              "ConstraintX": 100.0,
-              "ConstraintY": 100.0,
-              "DropShadow": false,
-              "DropShadowAngle": 120.0,
-              "DropShadowColor": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3.0,
-              "Font": 0,
-              "FontColor": {
-                "r": 0.95,
-                "g": 0.9,
-                "b": 0.85,
-                "a": 1.0
-              },
-              "FontSize": 20,
-              "IgnoreMapLayerCheck": false,
-              "IsLocalizationKey": false,
-              "MaxSize": 40,
-              "MinSize": 10,
-              "OrderInLayer": 0,
-              "OutlineColor": {
-                "r": 0.698039234,
-                "g": 0.698039234,
-                "b": 0.698039234,
-                "a": 1.0
-              },
-              "OutlineDistance": {
-                "x": 1.0,
-                "y": -1.0
-              },
-              "OutlineWidth": 1.0,
-              "Overflow": 0,
-              "OverrideSorting": false,
-              "Padding": {
-                "left": 0,
-                "right": 0,
-                "top": 0,
-                "bottom": 0
-              },
-              "SizeFit": false,
-              "SortingLayer": "UI",
-              "Text": "",
-              "UseConstraintX": false,
-              "UseConstraintY": false,
-              "UseOutLine": false,
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
         "id": "5ce2e58b-046b-4cfa-9c7e-47369f6196df",
         "path": "/ui/MafiaMafiaWinHUD/ReturnButton",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
@@ -1451,7 +817,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 4,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1478,11 +844,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 170.0,
-                "y": -240.0
+                "y": 57.0
               },
               "OffsetMin": {
                 "x": -170.0,
-                "y": -330.0
+                "y": -33.0
               },
               "Pivot": {
                 "x": 0.5,
@@ -1501,11 +867,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0.0,
-                "y": -285.0
+                "y": 12.0
               },
               "Position": {
                 "x": 0.0,
-                "y": -285.0,
+                "y": 12.0,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -1548,7 +914,7 @@
                 "r": 0.28,
                 "g": 0.04,
                 "b": 0.06,
-                "a": 0.92
+                "a": 0.15
               },
               "DropShadow": false,
               "DropShadowAngle": 120.0,
@@ -1687,6 +1053,998 @@
               "UseConstraintY": false,
               "UseOutLine": false,
               "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "bd212901-2dc1-4fb6-bd46-225f6293b091",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar1",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar1",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "5043af87-88ab-42d1-b043-64d5787769f0",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar2",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar2",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar2",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 6,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "e2228a82-bd57-4916-99ba-1c77c924b52a",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar3",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar3",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar3",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "81778ef5-5226-4b00-b120-2d6e674ba48f",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar4",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar4",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar4",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "2d0253b6-38d5-4cc2-aecf-1ccda559ad61",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar5",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar5",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar5",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 9,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "ddfa217d-ae5d-4f80-adaa-55c1ec855334",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar6",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar6",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar6",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 10,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "45527de9-c239-4910-b3ad-e535aeb2e9b7",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar7",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar7",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar7",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 11,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "b40ea86f-d4c7-4e69-aeb1-470a4f46611f",
+        "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar8",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "WinnerAvatar8",
+          "path": "/ui/MafiaMafiaWinHUD/WinnerAvatar8",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 12,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 62.5,
+                "y": -165.0
+              },
+              "OffsetMin": {
+                "x": -62.5,
+                "y": -355.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 125.0,
+                "y": 190.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -260.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": -260.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
             }
           ],
           "@version": 1
