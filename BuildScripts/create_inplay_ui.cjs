@@ -1,4 +1,4 @@
-const { UIBuilder } = require('./.claude/skills/msw-ui-system/scripts/msw_ui_builder.cjs');
+const { UIBuilder } = require('../.claude/skills/msw-ui-system/scripts/msw_ui_builder.cjs');
 
 async function main() {
   const b = new UIBuilder();
