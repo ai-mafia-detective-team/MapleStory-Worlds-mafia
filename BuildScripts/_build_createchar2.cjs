@@ -2,7 +2,7 @@
 /**
  * CreateDialog 완전 재설계 — 기존 요소 전부 제거 후 새 레이아웃으로 재구성
  */
-const { UIBuilder } = require('./.claude/skills/msw-ui-system/scripts/msw_ui_builder.cjs');
+const { UIBuilder } = require('../.claude/skills/msw-ui-system/scripts/msw_ui_builder.cjs');
 
 const b = UIBuilder.load('ui/SelectGroup.ui');
 const D = 'SelectGroup/CreateDialog';
