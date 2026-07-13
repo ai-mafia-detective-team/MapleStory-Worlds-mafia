@@ -34329,11 +34329,11 @@
       },
       {
         "id": "aa94687d-320b-4fd0-af7a-44973d1ab38b",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
-          "name": "CodexPopup",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup",
+          "name": "CollectionPopup",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup",
           "nameEditable": true,
           "enable": false,
           "visible": false,
@@ -34414,11 +34414,11 @@
       },
       {
         "id": "7813c47c-e850-40eb-9551-047b9efd2ac9",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Dimmer",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Dimmer",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Dimmer",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Dimmer",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Dimmer",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -34560,11 +34560,11 @@
       },
       {
         "id": "052005ce-b25c-4ab7-b94f-5eace883301d",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Panel",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -34645,11 +34645,11 @@
       },
       {
         "id": "4f81ad20-59cb-4925-a7dc-5e506ad1b323",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -34791,11 +34791,11 @@
       },
       {
         "id": "ee0be24d-1352-4068-89dc-b4b11b213349",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Header",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -34876,11 +34876,11 @@
       },
       {
         "id": "49a563a0-4eeb-4cf9-ab6a-51ff5c7a9421",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35022,11 +35022,11 @@
       },
       {
         "id": "442622a0-07c8-4722-a34b-0e89f13662ba",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/TitleText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/TitleText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "TitleText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/TitleText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/TitleText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35225,11 +35225,11 @@
       },
       {
         "id": "ec01bd9f-6e11-4461-9639-579b8c88deb6",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/CloseBtn",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/CloseBtn",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "CloseBtn",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/Header/CloseBtn",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/CloseBtn",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35478,11 +35478,11 @@
       },
       {
         "id": "c1250ed8-aa3b-4d96-9cc9-09878e1c7502",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "TabBar",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35563,11 +35563,11 @@
       },
       {
         "id": "4f3fdb6c-a668-4534-b780-cc9903aeae46",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35709,11 +35709,11 @@
       },
       {
         "id": "c310cee8-0227-4724-a5f4-129ebca74c42",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab1",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab1",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "Tab1",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab1",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -35962,11 +35962,11 @@
       },
       {
         "id": "fa2ceded-f182-4564-a029-d9f7ea18038c",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab2",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab2",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "Tab2",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab2",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab2",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -36215,11 +36215,11 @@
       },
       {
         "id": "8ce1dcaf-96fd-4015-a4ce-589ce135d1c8",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab3",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab3",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "Tab3",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab3",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab3",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -36468,11 +36468,11 @@
       },
       {
         "id": "61e6b217-e8dc-4073-9bbf-0620ef55d6d2",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab4",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab4",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "Tab4",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/TabBar/Tab4",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/TabBar/Tab4",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -36721,11 +36721,11 @@
       },
       {
         "id": "d4e1c686-557c-4aea-8cbe-299f60f93c99",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "CardGrid",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -36806,11 +36806,11 @@
       },
       {
         "id": "a7499a83-8068-4b82-9815-408148959866",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -36952,11 +36952,11 @@
       },
       {
         "id": "d2394fbe-23bc-48cc-bedb-9e5cd53c85e7",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_1",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37037,11 +37037,11 @@
       },
       {
         "id": "4d30517e-ab34-42f5-a506-43c26e2b5a5a",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37183,11 +37183,11 @@
       },
       {
         "id": "f58a9f94-69bd-4221-8ddf-e42f77fdbfe0",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37329,11 +37329,11 @@
       },
       {
         "id": "315f972f-3664-4cc0-99ed-85687d899467",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37532,11 +37532,11 @@
       },
       {
         "id": "bacba48d-b470-44b9-a8b5-a9fe22339f7c",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_1/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_1/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37735,11 +37735,11 @@
       },
       {
         "id": "0cf04a50-8c80-4612-9fa0-12b43857737c",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_2",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37820,11 +37820,11 @@
       },
       {
         "id": "2ef90e75-27fa-47dd-ae9d-678a7b0f8a10",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -37966,11 +37966,11 @@
       },
       {
         "id": "2d14fb17-6c4f-4c1f-9203-1964aaae224a",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38112,11 +38112,11 @@
       },
       {
         "id": "941ac99c-9286-49be-9fad-4ada38613de4",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38315,11 +38315,11 @@
       },
       {
         "id": "9f165bf9-d375-48e6-a464-31b262f13236",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_2/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_2/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38518,11 +38518,11 @@
       },
       {
         "id": "a9fc659b-7653-4227-a7b0-47da457d5d72",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_3",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38603,11 +38603,11 @@
       },
       {
         "id": "e33becd4-0af3-4b59-9227-3b8b7a1cb533",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38749,11 +38749,11 @@
       },
       {
         "id": "7e95532c-c4eb-4b44-a878-a6e2a55b6b8e",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -38895,11 +38895,11 @@
       },
       {
         "id": "77f14f57-e86f-4abb-8a4c-fb1be9da7a57",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39098,11 +39098,11 @@
       },
       {
         "id": "4128cd31-1307-4c59-a3d6-bb0525407f16",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_3/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_3/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39301,11 +39301,11 @@
       },
       {
         "id": "5d6ded81-90f9-49d6-954d-22351058d411",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_4",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39386,11 +39386,11 @@
       },
       {
         "id": "be94243b-20c2-4740-bf0f-dff30a34f3a7",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39532,11 +39532,11 @@
       },
       {
         "id": "15bc495b-d55b-47ee-a483-5716a8c43ccf",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39678,11 +39678,11 @@
       },
       {
         "id": "95f15265-e759-46b4-9716-f7734ecf4a76",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -39881,11 +39881,11 @@
       },
       {
         "id": "4cb05865-3537-416b-afcd-1016e7d962b0",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_4/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_4/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40084,11 +40084,11 @@
       },
       {
         "id": "072d2b91-cc55-4467-97eb-af42af156fc2",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_5",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40169,11 +40169,11 @@
       },
       {
         "id": "1229c9dd-f4dc-45ed-bc94-910b2448c7f7",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40315,11 +40315,11 @@
       },
       {
         "id": "4af60761-eb69-497c-b175-be53526fa7ae",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40461,11 +40461,11 @@
       },
       {
         "id": "43eca32f-0f88-4dd2-b5bd-8dbc53481e14",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40664,11 +40664,11 @@
       },
       {
         "id": "5b0e9b6e-9184-42ec-814d-67a7fe09f882",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_5/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_5/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40867,11 +40867,11 @@
       },
       {
         "id": "402874b6-ae31-4912-b9a9-a726824d7676",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6",
         "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Card_6",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -40952,11 +40952,11 @@
       },
       {
         "id": "a7424bc8-89b3-430b-b9ac-9e3441aea191",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/Bg",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/Bg",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Bg",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/Bg",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/Bg",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -41098,11 +41098,11 @@
       },
       {
         "id": "7e2ba893-179b-4c38-b89d-d57d235f42cd",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/Icon",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/Icon",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
         "jsonString": {
           "name": "Icon",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/Icon",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/Icon",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -41244,11 +41244,11 @@
       },
       {
         "id": "6df073a1-93a5-420d-a813-470b9219ee05",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/NameText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/NameText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "NameText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/NameText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/NameText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -41447,11 +41447,11 @@
       },
       {
         "id": "06493275-10cd-4bcb-b5d7-dc86a220fcdf",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/DescText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/DescText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "DescText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/CardGrid/Card_6/DescText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/CardGrid/Card_6/DescText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -41650,11 +41650,11 @@
       },
       {
         "id": "a9add7b6-ac2a-4542-b67b-a410869128d5",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/EmptyStateText",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/EmptyStateText",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
         "jsonString": {
           "name": "EmptyStateText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CodexPopup/Panel/EmptyStateText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/EmptyStateText",
           "nameEditable": true,
           "enable": true,
           "visible": true,
