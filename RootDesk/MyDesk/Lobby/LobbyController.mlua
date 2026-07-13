@@ -62,6 +62,10 @@ script LobbyController extends Component
 
 	property any alertPopupCloseHandler = nil
 
+	property any collectionPopupCloseHandler = nil
+
+	property any collectionPopupBottomCloseHandler = nil
+
 	property any btnMatchCancelHandler = nil
 
 	property any searchButtonHandlers = nil
@@ -402,6 +406,7 @@ script LobbyController extends Component
 		self:HideMatchmakingPopup()
 		self:HideSettingsPopup()
 		self:HideExternalPopups()
+		self:CloseCollectionPopup()
 		self:SetCreateRoomModalVisible(false)
 		self:CloseCommonPopup()
 		self:WireCommonPopupEvents()
@@ -850,6 +855,41 @@ script LobbyController extends Component
 		self:SetExternalPopupVisible("AlertPopup", false)
 	end
 
+	method void SetCollectionPopup(boolean active)
+		-- Shows or hides CollectionPopup and keeps CanvasGroup interaction aligned.
+		local popup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup")
+		if popup == nil or isvalid(popup) == false then
+			log_warning("[CollectionPopup] target not found")
+			return
+		end
+
+		popup:SetEnable(active)
+		popup.Visible = active
+
+		local canvasGroup = popup.CanvasGroupComponent
+		if canvasGroup ~= nil then
+			if active == true then
+				canvasGroup.GroupAlpha = 1
+			else
+				canvasGroup.GroupAlpha = 0
+			end
+			canvasGroup.Interactable = active
+			canvasGroup.BlocksRaycasts = active
+		end
+
+		log("[CollectionPopup] active=" .. tostring(active))
+	end
+
+	method void OpenCollectionPopup()
+		-- Opens CollectionPopup without changing internal tab or card state.
+		self:SetCollectionPopup(true)
+	end
+
+	method void CloseCollectionPopup()
+		-- Closes CollectionPopup without resetting internal page state.
+		self:SetCollectionPopup(false)
+	end
+
 	method void OpenExternalPopup(string popupName)
 		-- Opens one lobby popup and refreshes feature data when required.
 		self:HideSettingsPopup()
@@ -864,6 +904,12 @@ script LobbyController extends Component
 	method void OnExternalPopupCloseClicked(ButtonClickEvent event)
 		self:HideExternalPopups()
 		log("[LobbyController] External popup close clicked")
+	end
+
+	method void OnCollectionPopupCloseClicked(ButtonClickEvent event)
+		-- Closes CollectionPopup from either close button.
+		log("[CollectionPopup] close clicked")
+		self:CloseCollectionPopup()
 	end
 
 	method void SetCreateRoomModalVisible(boolean active)
@@ -1418,6 +1464,46 @@ script LobbyController extends Component
 		end
 	end
 
+	method void WireCollectionPopupEvents()
+		-- Wires CollectionPopup close buttons once.
+		local ent
+
+		if self.collectionPopupCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.collectionPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCollectionPopupCloseClicked)
+			else
+				log_warning("[CollectionPopup] Header CloseBtn not found")
+			end
+		end
+
+		if self.collectionPopupBottomCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/BottomBar/BottomCloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.collectionPopupBottomCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCollectionPopupCloseClicked)
+			else
+				log_warning("[CollectionPopup] BottomCloseBtn not found")
+			end
+		end
+	end
+
+	method void DisconnectCollectionPopupEvents()
+		-- Disconnects CollectionPopup close-button handlers.
+		local ent
+
+		if self.collectionPopupCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.collectionPopupCloseHandler) end
+			self.collectionPopupCloseHandler = nil
+		end
+
+		if self.collectionPopupBottomCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/BottomBar/BottomCloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.collectionPopupBottomCloseHandler) end
+			self.collectionPopupBottomCloseHandler = nil
+		end
+	end
+
 	method void DisconnectExternalPopupEvents()
 		-- Disconnects close-button handlers attached by WireExternalPopupEvents.
 		local ent
@@ -1709,6 +1795,7 @@ script LobbyController extends Component
 			self.btnSettingsMuteHandler = ent:ConnectEvent(ButtonClickEvent, self.OnSettingsMuteClicked)
 		end
 		self:WireExternalPopupEvents()
+		self:WireCollectionPopupEvents()
 		ent = _EntityService:GetEntityByPath(buttonBase .. "/Matchmaking/Box/CancelBtn")
 		if ent ~= nil and isvalid(ent) then
 			self.btnMatchCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnMatchmakingCancelClicked)
@@ -2835,8 +2922,9 @@ script LobbyController extends Component
 	end
 
 	method void OnCodexClicked(ButtonClickEvent event)
-		log_warning("[LobbyController] CodexButton clicked; feature not implemented")
-		self:ShowCommonPopup("warning", "도감 기능은 준비 중입니다.")
+		-- Opens the CollectionPopup skeleton; internal collection features remain unimplemented.
+		log("[LobbyController] CodexButton clicked")
+		self:OpenCollectionPopup()
 	end
 
 	method void OnBagClicked(ButtonClickEvent event)
@@ -3177,6 +3265,7 @@ script LobbyController extends Component
 		self:DisconnectCommonPopupEvents()
 		self:DisconnectInvestigationRoomSearchEvents()
 		self:DisconnectExternalPopupEvents()
+		self:DisconnectCollectionPopupEvents()
 
 		local base = "/ui/UI_Lobby/LobbyRoot"
 		local buttonBase = base .. "/ButtonGroup"
