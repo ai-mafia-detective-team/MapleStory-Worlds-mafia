@@ -845,10 +845,17 @@ script LobbyController extends Component
 		if popup ~= nil and isvalid(popup) then
 			popup:SetEnable(active)
 			popup.Visible = active
+			local canvas = popup.CanvasGroupComponent
+			if canvas ~= nil then
+				canvas.GroupAlpha = active and 1 or 0
+				canvas.Interactable = active
+				canvas.BlocksRaycasts = active
+			end
 			local uiTransform = popup.UITransformComponent
 			if active == true and uiTransform ~= nil then
 				_UILogic:SetSiblingIndex(uiTransform, 1000000)
 			end
+			log("[ExternalPopup] name=" .. popupName .. " active=" .. tostring(active))
 		else
 			log_warning("[LobbyController] External popup not found: " .. popupPath)
 		end
