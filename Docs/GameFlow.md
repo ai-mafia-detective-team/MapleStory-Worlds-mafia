@@ -27,8 +27,8 @@
 |---|---|---|---|
 | 프로필 설정 | `/ui/UI_Lobby/LobbyRoot/ProfileRoot/ProfileButton` | `OnProfileClicked` → `OpenProfileModal()` | `ui/UI_Lobby.ui` 내부 모달 (`modalGroup`, 별도 파일 아님) |
 | 친구 | `ButtonGroup/친구` | `OnFriendClicked` → `OpenExternalPopup("FriendPopup")` | `ui/UI_Lobby.ui` 내부 팝업 (별도 파일 아님) |
-| 도감 | `ButtonGroup/도감` | `OnCodexClicked` | **미구현** — "도감 기능은 준비 중입니다" 경고 팝업만 뜸 |
-| 가방 | `ButtonGroup/가방` | `OnBagClicked` | **미구현** — "가방 기능은 준비 중입니다" 경고 팝업만 뜸 |
+| 도감 | `ButtonGroup/도감` | `OnCodexClicked` | `ui/UI_Lobby.ui` 내부 팝업 골격 (`ButtonGroup/CodexPopup`) — 기능/오픈 연결은 아직 미구현 |
+| 가방 | `ButtonGroup/가방` | `OnBagClicked` | `ui/UI_Lobby.ui` 내부 팝업 골격 (`ButtonGroup/BagPopup`) — 기능/오픈 연결은 아직 미구현 |
 | 업적 | `ButtonGroup/업적` | `OnAchievementClicked` | `ui/UI_AchievementPopup.ui` (`QAAchievementUI` 컴포넌트) |
 | 상점 | `ButtonGroup/상점` | `OnShopClicked` → `OpenExternalPopup("ShopPopup")` | `ui/UI_Lobby.ui` 내부 팝업 (별도 파일 아님) |
 | 알림 | `ButtonGroup/알림` | `OnAlertClicked` → `OpenExternalPopup("AlertPopup")` | `ui/UI_Lobby.ui` 내부 팝업 (별도 파일 아님) |
