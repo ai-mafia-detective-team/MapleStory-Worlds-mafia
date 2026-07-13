@@ -66,6 +66,10 @@ script LobbyController extends Component
 
 	property any collectionPopupBottomCloseHandler = nil
 
+	property any bagPopupCloseHandler = nil
+
+	property any bagPopupBottomCloseHandler = nil
+
 	property any btnMatchCancelHandler = nil
 
 	property any searchButtonHandlers = nil
@@ -407,6 +411,7 @@ script LobbyController extends Component
 		self:HideSettingsPopup()
 		self:HideExternalPopups()
 		self:CloseCollectionPopup()
+		self:CloseBagPopup()
 		self:SetCreateRoomModalVisible(false)
 		self:CloseCommonPopup()
 		self:WireCommonPopupEvents()
@@ -890,6 +895,42 @@ script LobbyController extends Component
 		self:SetCollectionPopup(false)
 	end
 
+	method void SetBagPopup(boolean active)
+		-- Shows or hides BagPopup and keeps CanvasGroup interaction aligned.
+		local popup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup")
+		if popup == nil or isvalid(popup) == false then
+			log_warning("[BagPopup] entity not found")
+			return
+		end
+
+		popup:SetEnable(active)
+		popup.Visible = active
+
+		local canvasGroup = popup.CanvasGroupComponent
+		if canvasGroup ~= nil then
+			if active == true then
+				canvasGroup.GroupAlpha = 1
+			else
+				canvasGroup.GroupAlpha = 0
+			end
+			canvasGroup.Interactable = active
+			canvasGroup.BlocksRaycasts = active
+		end
+
+		log("[BagPopup] active=" .. tostring(active))
+	end
+
+	method void OpenBagPopup()
+		-- Opens BagPopup without changing internal category or item state.
+		self:WireBagPopupEvents()
+		self:SetBagPopup(true)
+	end
+
+	method void CloseBagPopup()
+		-- Closes BagPopup without resetting internal UI state.
+		self:SetBagPopup(false)
+	end
+
 	method void OpenExternalPopup(string popupName)
 		-- Opens one lobby popup and refreshes feature data when required.
 		self:HideSettingsPopup()
@@ -910,6 +951,12 @@ script LobbyController extends Component
 		-- Closes CollectionPopup from either close button.
 		log("[CollectionPopup] close clicked")
 		self:CloseCollectionPopup()
+	end
+
+	method void OnBagPopupCloseClicked(ButtonClickEvent event)
+		-- Closes BagPopup from either close button.
+		log("[BagPopup] close clicked")
+		self:CloseBagPopup()
 	end
 
 	method void SetCreateRoomModalVisible(boolean active)
@@ -1504,6 +1551,48 @@ script LobbyController extends Component
 		end
 	end
 
+	method void WireBagPopupEvents()
+		-- Wires BagPopup close buttons once.
+		local ent
+
+		if self.bagPopupCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagPopupCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagPopupCloseClicked)
+				log("[BagPopup] Header CloseBtn wired")
+			else
+				log_warning("[BagPopup] Header CloseBtn not found")
+			end
+		end
+
+		if self.bagPopupBottomCloseHandler == nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/ActionBar/BottomCloseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagPopupBottomCloseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagPopupCloseClicked)
+				log("[BagPopup] BottomCloseBtn wired")
+			else
+				log_warning("[BagPopup] BottomCloseBtn not found")
+			end
+		end
+	end
+
+	method void DisconnectBagPopupEvents()
+		-- Disconnects BagPopup close-button handlers.
+		local ent
+
+		if self.bagPopupCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/Header/CloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.bagPopupCloseHandler) end
+			self.bagPopupCloseHandler = nil
+		end
+
+		if self.bagPopupBottomCloseHandler ~= nil then
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/ActionBar/BottomCloseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.bagPopupBottomCloseHandler) end
+			self.bagPopupBottomCloseHandler = nil
+		end
+	end
+
 	method void DisconnectExternalPopupEvents()
 		-- Disconnects close-button handlers attached by WireExternalPopupEvents.
 		local ent
@@ -1796,6 +1885,7 @@ script LobbyController extends Component
 		end
 		self:WireExternalPopupEvents()
 		self:WireCollectionPopupEvents()
+		self:WireBagPopupEvents()
 		ent = _EntityService:GetEntityByPath(buttonBase .. "/Matchmaking/Box/CancelBtn")
 		if ent ~= nil and isvalid(ent) then
 			self.btnMatchCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnMatchmakingCancelClicked)
@@ -2928,8 +3018,9 @@ script LobbyController extends Component
 	end
 
 	method void OnBagClicked(ButtonClickEvent event)
-		log_warning("[LobbyController] BagButton clicked; feature not implemented")
-		self:ShowCommonPopup("warning", "가방 기능은 준비 중입니다.")
+		-- Opens BagPopup; internal bag features remain unimplemented.
+		log("[LobbyController] BagButton clicked")
+		self:OpenBagPopup()
 	end
 
 	method void OnAchievementClicked(ButtonClickEvent event)
@@ -3266,6 +3357,7 @@ script LobbyController extends Component
 		self:DisconnectInvestigationRoomSearchEvents()
 		self:DisconnectExternalPopupEvents()
 		self:DisconnectCollectionPopupEvents()
+		self:DisconnectBagPopupEvents()
 
 		local base = "/ui/UI_Lobby/LobbyRoot"
 		local buttonBase = base .. "/ButtonGroup"
