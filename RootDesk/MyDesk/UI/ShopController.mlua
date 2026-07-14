@@ -2,29 +2,45 @@
 @ExecSpace("ClientOnly")
 script ShopController extends Logic
 
+	-- Retargeted onto the current ShopPopup layout. The previous version drove
+	-- Panel/GridPanel/ItemCard_* + Panel/UseBar/*, which no longer exist in the .ui
+	-- (they survive only as disabled 10x10 stubs), so every GetEntityByPath returned
+	-- nil and the shop never showed real data. The live layout is:
+	--   Panel/Body/ProductPanel/ProductGrid/ProductCard_01..08
+	--   Panel/Body/ProductPanel/Pagination/{PrevBtn,PageText,NextBtn}
+	--   Panel/Body/ProductDetailPanel/*
+	--   Panel/CategoryBar/Category_*  ·  Panel/PurchaseBar/*  ·  Panel/Header/CurrencyPanel/*
 	property string PANEL_PATH = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel"
 
+	-- The grid has 8 slots, so a page holds 8 items.
+	property integer PAGE_SIZE = 8
+
 	-- ── Handler storage ──────────────────────────────────────────────────────
-	property any categoryHandlers  = nil
-	property any cardBuyHandlers   = nil
-	property any defaultBtnHandler = nil
-	property any previewBtnHandler = nil
-	property any useBarBuyHandler  = nil
-	property any useBarUseHandler  = nil
+	property any categoryHandlers = nil
+	property any cardHandlers     = nil
+	property any purchaseHandler  = nil
+	property any prevPageHandler  = nil
+	property any nextPageHandler  = nil
 
 	-- ── Selection state ───────────────────────────────────────────────────────
 	property string selectedCategory = "전체"
 	property integer selectedItemId  = -1
+	property integer currentPage     = 1
 
 	-- ── Costume catalog (dummy data; replace once real data is available) ─────
-	-- structure: { id, name, category, price, grade, desc }
 	property any costumeData = nil
 	property string pendingOwnedJson = ""
 
 	method void OnBeginPlay()
-		-- Build dummy catalog then wire all shop buttons.
+		-- The shop is a pure view: the Logic also spins up server-side, where none of the
+		-- UI entities exist, so bail out there instead of warning about every missing node.
+		if self:IsServer() then return end
+
 		self:InitCostumeData()
 		self:WireButtons()
+		self:HighlightCategory(self.selectedCategory)
+		self:ClearDetailPanel()
+		self:RefreshCardGrid()
 		log("[ShopController] initialized")
 	end
 
@@ -33,16 +49,32 @@ script ShopController extends Logic
 	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void InitCostumeData()
-		-- Populate static dummy entries; real data will replace this table.
+		-- 10 entries so every CategoryBar button has content and the grid spans 2 pages.
 		self.costumeData = {
-			{ id=1, name="수사관 정장", category="상의", priceType="free", price=1200, grade="일반", desc="단정한 기본 수사 의상입니다.", owned=false, equipped=false, imageRuid="" },
-			{ id=2, name="엘리트 코트", category="상의", priceType="paid", price=280, grade="고급", desc="베테랑 수사관의 롱코트입니다.", owned=false, equipped=false, imageRuid="" },
-			{ id=3, name="수사관 더비", category="신발", priceType="free", price=600, grade="일반", desc="기본 지급 가죽 구두입니다.", owned=false, equipped=false, imageRuid="" },
-			{ id=4, name="택티컬 부츠", category="신발", priceType="paid", price=180, grade="희귀", desc="험지 대응형 전술화입니다.", owned=false, equipped=false, imageRuid="" },
-			{ id=5, name="클래식 모자", category="장식", priceType="free", price=800, grade="일반", desc="클래식한 수사관용 모자입니다.", owned=false, equipped=false, imageRuid="" },
-			{ id=6, name="탐정 장식", category="장식", priceType="paid", price=90, grade="고급", desc="탐정의 상징적인 장식입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=1,  name="수사관 정장",     category="상의", priceType="free", price=1200, grade="일반", desc="단정한 기본 수사 의상입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=2,  name="엘리트 코트",     category="상의", priceType="paid", price=280,  grade="고급", desc="베테랑 수사관의 롱코트입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=3,  name="수사관 더비",     category="신발", priceType="free", price=600,  grade="일반", desc="기본 지급 가죽 구두입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=4,  name="택티컬 부츠",     category="신발", priceType="paid", price=180,  grade="희귀", desc="험지 대응형 전술화입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=5,  name="클래식 모자",     category="장식", priceType="free", price=800,  grade="일반", desc="클래식한 수사관용 모자입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=6,  name="탐정 장식",       category="장식", priceType="paid", price=90,   grade="고급", desc="탐정의 상징적인 장식입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=7,  name="수사관 슬랙스",   category="하의", priceType="free", price=900,  grade="일반", desc="활동성을 살린 기본 정장 바지입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=8,  name="잠복용 카고팬츠", category="하의", priceType="paid", price=150,  grade="고급", desc="장비를 넣을 주머니가 많은 잠복용 바지입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=9,  name="정예 수사관 세트", category="세트", priceType="paid", price=450,  grade="희귀", desc="정예 수사관 복장 한 벌입니다.", owned=false, equipped=false, imageRuid="" },
+			{ id=10, name="야간 잠복 세트",   category="세트", priceType="free", price=2000, grade="고급", desc="야간 잠복 전용 복장 한 벌입니다.", owned=false, equipped=false, imageRuid="" },
 		}
 		if self.pendingOwnedJson ~= "" then self:ApplyOwnedState(self.pendingOwnedJson) end
+	end
+
+	method table GetCategoryButtons()
+		-- CategoryBar node name -> catalog category value.
+		return {
+			{ node = "Category_All",       category = "전체" },
+			{ node = "Category_Top",       category = "상의" },
+			{ node = "Category_Bottom",    category = "하의" },
+			{ node = "Category_Shoes",     category = "신발" },
+			{ node = "Category_Accessory", category = "장식" },
+			{ node = "Category_Set",       category = "세트" },
+		}
 	end
 
 	method any GetFilteredCostumes()
@@ -51,7 +83,7 @@ script ShopController extends Logic
 		if self.selectedCategory == "전체" then return self.costumeData end
 		local result = {}
 		for _, item in ipairs(self.costumeData) do
-			if (self.selectedCategory == "보유중" and item.owned == true) or item.category == self.selectedCategory then
+			if item.category == self.selectedCategory then
 				result[#result + 1] = item
 			end
 		end
@@ -72,6 +104,7 @@ script ShopController extends Logic
 	end
 
 	method void ApplyOwnedState(string ownedJson)
+		-- Server-owned purchase state arrives here via MoneyManager.
 		self.pendingOwnedJson = ownedJson or ""
 		if self.costumeData == nil or ownedJson == nil or ownedJson == "" then return end
 		local owned = _HttpService:JSONDecode(ownedJson)
@@ -87,231 +120,273 @@ script ShopController extends Logic
 		log("[ShopController] owned state applied")
 	end
 
+	method void ApplyMoney(integer paidMoney, integer freeMoney)
+		-- Mirrors the balances into the shop header's own currency boxes.
+		local header = self.PANEL_PATH .. "/Header/CurrencyPanel"
+		self:SetText(header .. "/PaidMoneyBox/ValueText", tostring(paidMoney))
+		self:SetText(header .. "/FreeMoneyBox/ValueText", tostring(freeMoney))
+	end
+
+	-- ─────────────────────────────────────────────────────────────────────────
+	-- Small helpers
+	-- ─────────────────────────────────────────────────────────────────────────
+
+	method void SetText(string path, string value)
+		-- Guarded text write so one missing node cannot abort a whole repaint.
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent ~= nil and isvalid(ent) and ent.TextComponent ~= nil then
+			ent.TextComponent.Text = value
+		end
+	end
+
+	method void SetEnabled(string path, boolean enabled)
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent ~= nil and isvalid(ent) then ent:SetEnable(enabled) end
+	end
+
+	method integer GetPageCount(integer totalItems)
+		if totalItems <= 0 then return 1 end
+		return math.ceil(totalItems / self.PAGE_SIZE)
+	end
+
 	-- ─────────────────────────────────────────────────────────────────────────
 	-- Wiring
 	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void WireButtons()
-		-- Wire category buttons, card BuyBtns, preview buttons, and UseBar buttons.
+		-- Category bar, product cards, pagination arrows, purchase button.
 		local panel = self.PANEL_PATH
 
-		-- Category buttons
-		local cats = { "전체", "상의", "하의", "신발", "장식", "세트", "보유중" }
-		self.categoryHandlers = {}
-		for _, cat in ipairs(cats) do
-			local ent = _EntityService:GetEntityByPath(panel .. "/CategoryPanel/Cat_" .. cat)
+		if self.categoryHandlers == nil then
+			self.categoryHandlers = {}
+			for _, entry in ipairs(self:GetCategoryButtons()) do
+				local ent = _EntityService:GetEntityByPath(panel .. "/CategoryBar/" .. entry.node)
+				if ent ~= nil and isvalid(ent) then
+					local capturedCategory = entry.category
+					local h = ent:ConnectEvent(ButtonClickEvent, function() self:SelectCategory(capturedCategory) end)
+					self.categoryHandlers[#self.categoryHandlers + 1] = { entity = ent, eventHandler = h }
+				else
+					log_warning("[ShopController] category button missing: " .. entry.node)
+				end
+			end
+		end
+
+		if self.cardHandlers == nil then
+			self.cardHandlers = {}
+			for slot = 1, self.PAGE_SIZE do
+				local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/ProductGrid/ProductCard_0" .. tostring(slot))
+				if ent ~= nil and isvalid(ent) then
+					local capturedSlot = slot
+					local h = ent:ConnectEvent(ButtonClickEvent, function() self:OnCardClicked(capturedSlot) end)
+					self.cardHandlers[#self.cardHandlers + 1] = { entity = ent, eventHandler = h }
+				end
+			end
+		end
+
+		if self.prevPageHandler == nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/PrevBtn")
 			if ent ~= nil and isvalid(ent) then
-				self.categoryHandlers[cat] = ent:ConnectEvent(ButtonClickEvent, self.OnCategoryClicked)
+				self.prevPageHandler = ent:ConnectEvent(ButtonClickEvent, self.OnPrevPage)
+			end
+		end
+		if self.nextPageHandler == nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.nextPageHandler = ent:ConnectEvent(ButtonClickEvent, self.OnNextPage)
 			end
 		end
 
-		-- ItemCard BuyBtns (selecting an item for detail review)
-		self.cardBuyHandlers = {}
-		for i = 1, 6 do
-			local buyEnt = _EntityService:GetEntityByPath(panel .. "/GridPanel/ItemCard_" .. tostring(i) .. "/BuyBtn")
-			if buyEnt ~= nil and isvalid(buyEnt) then
-				self.cardBuyHandlers[i] = buyEnt:ConnectEvent(ButtonClickEvent, self.OnCardBuyClicked)
+		if self.purchaseHandler == nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/PurchaseBar/PurchaseBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.purchaseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnPurchaseClicked)
 			end
 		end
 
-		-- Preview panel buttons
-		local defaultEnt = _EntityService:GetEntityByPath(panel .. "/PreviewPanel/DefaultBtn")
-		if defaultEnt ~= nil and isvalid(defaultEnt) then
-			self.defaultBtnHandler = defaultEnt:ConnectEvent(ButtonClickEvent, self.OnDefaultBtnClicked)
-		end
-		local previewEnt = _EntityService:GetEntityByPath(panel .. "/PreviewPanel/PreviewBtn")
-		if previewEnt ~= nil and isvalid(previewEnt) then
-			self.previewBtnHandler = previewEnt:ConnectEvent(ButtonClickEvent, self.OnPreviewBtnClicked)
-		end
-
-		-- UseBar action buttons
-		local buyBarEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/BuyBtn")
-		if buyBarEnt ~= nil and isvalid(buyBarEnt) then
-			self.useBarBuyHandler = buyBarEnt:ConnectEvent(ButtonClickEvent, self.OnUseBarBuyClicked)
-		end
-		local useEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/UseBtn")
-		if useEnt ~= nil and isvalid(useEnt) then
-			self.useBarUseHandler = useEnt:ConnectEvent(ButtonClickEvent, self.OnUseBarUseClicked)
-		end
-
-		-- Initial grid render
-		self:RefreshCardGrid()
-		log("[ShopController] buttons wired")
+		log("[ShopController] buttons wired categories=" .. tostring(#self.categoryHandlers) .. " cards=" .. tostring(#self.cardHandlers))
 	end
 
 	-- ─────────────────────────────────────────────────────────────────────────
 	-- Category
 	-- ─────────────────────────────────────────────────────────────────────────
 
-	method void OnCategoryClicked(any event)
-		-- Switch active category; re-render grid and reset selection.
-		if event == nil or event.Entity == nil then return end
-		local entName = event.Entity.Name
-		-- Button names are "Cat_전체", "Cat_상의", … → skip the "Cat_" prefix
-		if #entName <= 4 then return end
-		local cat = string.sub(entName, 5)
-		self.selectedCategory = cat
-		self.selectedItemId   = -1
-		self:UpdateCategoryVisuals()
-		self:RefreshCardGrid()
+	method void SelectCategory(string category)
+		-- Switch active category; reset to page 1 and drop the selection.
+		self.selectedCategory = category
+		self.currentPage = 1
+		self.selectedItemId = -1
+		self:HighlightCategory(category)
 		self:ClearDetailPanel()
-		log("[ShopController] category=" .. cat)
+		self:RefreshCardGrid()
+		log("[ShopController] category=" .. category)
 	end
 
-	method void UpdateCategoryVisuals()
-		-- Applies gold highlight to the active category button, dims others.
+	method void HighlightCategory(string category)
+		-- Gold for the active category, dim for the rest.
 		local panel = self.PANEL_PATH
-		local cats = { "전체", "상의", "하의", "신발", "장식", "세트", "보유중" }
-		for _, cat in ipairs(cats) do
-			local ent = _EntityService:GetEntityByPath(panel .. "/CategoryPanel/Cat_" .. cat)
-			if ent ~= nil and isvalid(ent) then
-				local active = (cat == self.selectedCategory)
-				local spriteComp = ent.SpriteGUIRendererComponent
-				if spriteComp ~= nil then
-					if active then
-						spriteComp.Color = Color(0.92, 0.82, 0.42, 1.0)
-					else
-						spriteComp.Color = Color(0.12, 0.12, 0.22, 0.88)
-					end
-				end
-				local textComp = ent.TextComponent
-				if textComp ~= nil then
-					if active then
-						textComp.FontColor = Color(0.05, 0.05, 0.12, 1.0)
-					else
-						textComp.FontColor = Color(0.78, 0.78, 0.78, 1.0)
-					end
+		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
+		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+		for _, entry in ipairs(self:GetCategoryButtons()) do
+			local ent = _EntityService:GetEntityByPath(panel .. "/CategoryBar/" .. entry.node)
+			if ent ~= nil and isvalid(ent) and ent.SpriteGUIRendererComponent ~= nil then
+				if entry.category == category then
+					ent.SpriteGUIRendererComponent.Color = activeColor
+				else
+					ent.SpriteGUIRendererComponent.Color = idleColor
 				end
 			end
 		end
 	end
 
 	-- ─────────────────────────────────────────────────────────────────────────
-	-- Card grid
+	-- Card grid + pagination
 	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void RefreshCardGrid()
-		-- Fills visible card slots with the current category's costumes.
-		local panel    = self.PANEL_PATH
+		-- Fills the 8 product slots with the current category's page of costumes.
+		local grid = self.PANEL_PATH .. "/Body/ProductPanel/ProductGrid"
 		local filtered = self:GetFilteredCostumes()
-		for i = 1, 6 do
-			local cardPath = panel .. "/GridPanel/ItemCard_" .. tostring(i)
-			local cardEnt  = _EntityService:GetEntityByPath(cardPath)
+		local totalPages = self:GetPageCount(#filtered)
+		if self.currentPage > totalPages then self.currentPage = totalPages end
+		if self.currentPage < 1 then self.currentPage = 1 end
+
+		local offset = (self.currentPage - 1) * self.PAGE_SIZE
+		for slot = 1, self.PAGE_SIZE do
+			local cardPath = grid .. "/ProductCard_0" .. tostring(slot)
+			local cardEnt = _EntityService:GetEntityByPath(cardPath)
 			if cardEnt ~= nil and isvalid(cardEnt) then
-				local costume = filtered[i]
-				if costume ~= nil then
-					cardEnt.Enable = true
-					local nameEnt = _EntityService:GetEntityByPath(cardPath .. "/ItemName")
-					if nameEnt ~= nil and isvalid(nameEnt) then
-						local tc = nameEnt.TextComponent
-						if tc ~= nil then tc.Text = costume.name end
-					end
-					local priceEnt = _EntityService:GetEntityByPath(cardPath .. "/ItemPrice")
-					if priceEnt ~= nil and isvalid(priceEnt) then
-						local tc = priceEnt.TextComponent
-						if tc ~= nil then tc.Text = costume.owned and "보유 중" or self:FormatPrice(costume) end
-					end
-					local buyEnt = _EntityService:GetEntityByPath(cardPath .. "/BuyBtn")
-					if buyEnt ~= nil and isvalid(buyEnt) and buyEnt.TextComponent ~= nil then
-						buyEnt.TextComponent.Text = costume.owned and "보유중" or "선택"
-					end
-					local badgeEnt = _EntityService:GetEntityByPath(cardPath .. "/ItemBadge")
-					if badgeEnt ~= nil and isvalid(badgeEnt) then
-						local isSpecial = costume.grade ~= "일반"
-						badgeEnt.Enable = isSpecial
-						if isSpecial then
-							local tc = badgeEnt.TextComponent
-							if tc ~= nil then tc.Text = costume.grade end
-						end
-					end
+				local costume = filtered[offset + slot]
+				if costume == nil then
+					cardEnt:SetEnable(false)
 				else
-					cardEnt.Enable = false
+					cardEnt:SetEnable(true)
+					self:SetText(cardPath .. "/ItemNameText", costume.name)
+					if costume.owned == true then
+						self:SetText(cardPath .. "/PriceRow/PriceText", "보유 중")
+					else
+						self:SetText(cardPath .. "/PriceRow/PriceText", self:FormatPrice(costume))
+					end
+
+					-- Grade badge only for anything above 일반.
+					local isSpecial = costume.grade ~= "일반"
+					self:SetEnabled(cardPath .. "/GradeBadge", isSpecial)
+					if isSpecial then
+						self:SetText(cardPath .. "/GradeBadge/GradeText", costume.grade)
+					end
+
+					self:SetEnabled(cardPath .. "/OwnedBadge", costume.owned == true)
+					self:SetEnabled(cardPath .. "/SelectedBorder", costume.id == self.selectedItemId)
 				end
 			end
 		end
+
+		self:UpdatePaginationUI(self.currentPage, totalPages)
+		log("[ShopController] grid refreshed category=" .. self.selectedCategory ..
+			" page=" .. tostring(self.currentPage) .. "/" .. tostring(totalPages) ..
+			" items=" .. tostring(#filtered))
+	end
+
+	method void UpdatePaginationUI(integer page, integer totalPages)
+		-- "n / m" plus greyed-out arrows at the ends of the range.
+		local pagination = self.PANEL_PATH .. "/Body/ProductPanel/Pagination"
+		self:SetText(pagination .. "/PageText", tostring(page) .. " / " .. tostring(totalPages))
+
+		local prev = _EntityService:GetEntityByPath(pagination .. "/PrevBtn")
+		if prev ~= nil and isvalid(prev) and prev.SpriteGUIRendererComponent ~= nil then
+			if page > 1 then
+				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
+			else
+				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
+			end
+		end
+		local next = _EntityService:GetEntityByPath(pagination .. "/NextBtn")
+		if next ~= nil and isvalid(next) and next.SpriteGUIRendererComponent ~= nil then
+			if page < totalPages then
+				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
+			else
+				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
+			end
+		end
+	end
+
+	method void OnPrevPage(ButtonClickEvent event)
+		if self.currentPage <= 1 then return end
+		self.currentPage = self.currentPage - 1
+		self:RefreshCardGrid()
+	end
+
+	method void OnNextPage(ButtonClickEvent event)
+		local totalPages = self:GetPageCount(#(self:GetFilteredCostumes()))
+		if self.currentPage >= totalPages then return end
+		self.currentPage = self.currentPage + 1
+		self:RefreshCardGrid()
 	end
 
 	-- ─────────────────────────────────────────────────────────────────────────
 	-- Card interaction
 	-- ─────────────────────────────────────────────────────────────────────────
 
-	method void OnCardBuyClicked(any event)
-		-- Clicking a card's BuyBtn selects it and populates the UseBar detail panel.
-		if event == nil or event.Entity == nil then return end
-		local panel    = self.PANEL_PATH
+	method void OnCardClicked(integer slot)
+		-- `slot` is the 1..8 grid position; map it onto the filtered+paged list.
 		local filtered = self:GetFilteredCostumes()
-		for i = 1, 6 do
-			local buyEnt = _EntityService:GetEntityByPath(panel .. "/GridPanel/ItemCard_" .. tostring(i) .. "/BuyBtn")
-			if buyEnt ~= nil and isvalid(buyEnt) and buyEnt == event.Entity then
-				local costume = filtered[i]
-				if costume ~= nil then
-					self.selectedItemId = costume.id
-					self:ShowDetailPanel(costume)
-					log("[ShopController] card selected index=" .. tostring(i) .. " id=" .. tostring(costume.id))
-				end
-				break
-			end
-		end
+		local costume = filtered[(self.currentPage - 1) * self.PAGE_SIZE + slot]
+		if costume == nil then return end
+		self.selectedItemId = costume.id
+		self:ShowDetailPanel(costume)
+		self:RefreshCardGrid()
+		log("[ShopController] card selected slot=" .. tostring(slot) .. " id=" .. tostring(costume.id))
 	end
 
 	-- ─────────────────────────────────────────────────────────────────────────
-	-- Detail panel (UseBar)
+	-- Detail panel + purchase bar
 	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void ShowDetailPanel(any costume)
-		-- Fills UseBar fields with the selected costume's data.
+		-- Fills ProductDetailPanel and the bottom PurchaseBar for the selected costume.
 		local panel = self.PANEL_PATH
-		local labelEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelLabel")
-		if labelEnt ~= nil and isvalid(labelEnt) then labelEnt.Enable = false end
+		local detail = panel .. "/Body/ProductDetailPanel"
 
-		local nameEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelItemName")
-		if nameEnt ~= nil and isvalid(nameEnt) then
-			nameEnt.Enable = true
-			local tc = nameEnt.TextComponent
-			if tc ~= nil then tc.Text = costume.name end
+		self:SetEnabled(detail .. "/EmptyState", false)
+		self:SetText(detail .. "/ItemNameText", costume.name)
+		self:SetText(detail .. "/CategoryRow/ValueText", costume.category)
+		self:SetText(detail .. "/GradeRow/ValueText", costume.grade)
+		self:SetText(detail .. "/DescriptionText", costume.desc)
+		if costume.owned == true then
+			self:SetText(detail .. "/OwnershipText", "보유 중")
+		else
+			self:SetText(detail .. "/OwnershipText", "미보유")
 		end
-		local gradeEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelGrade")
-		if gradeEnt ~= nil and isvalid(gradeEnt) then
-			gradeEnt.Enable = true
-			local tc = gradeEnt.TextComponent
-			if tc ~= nil then tc.Text = "[" .. costume.grade .. "]" end
-		end
-		local descEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelDesc")
-		if descEnt ~= nil and isvalid(descEnt) then
-			descEnt.Enable = true
-			local tc = descEnt.TextComponent
-			if tc ~= nil then tc.Text = costume.desc end
-		end
-		local priceEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelPrice")
-		if priceEnt ~= nil and isvalid(priceEnt) then
-			priceEnt.Enable = true
-			local tc = priceEnt.TextComponent
-			if tc ~= nil then tc.Text = costume.owned and "보유 중" or self:FormatPrice(costume) end
-		end
-		local buyButton = _EntityService:GetEntityByPath(panel .. "/UseBar/BuyBtn")
-		if buyButton ~= nil and isvalid(buyButton) and buyButton.TextComponent ~= nil then
-			buyButton.TextComponent.Text = costume.owned and "보유중" or "구매"
+
+		local bar = panel .. "/PurchaseBar"
+		self:SetText(bar .. "/SelectedItemText", costume.name)
+		if costume.owned == true then
+			self:SetText(bar .. "/PriceBox/PriceText", "보유 중")
+			self:SetText(bar .. "/PurchaseBtn/LabelText", "보유중")
+		else
+			self:SetText(bar .. "/PriceBox/PriceText", self:FormatPrice(costume))
+			self:SetText(bar .. "/PurchaseBtn/LabelText", "구매")
 		end
 	end
 
 	method void ClearDetailPanel()
-		-- Resets UseBar to the placeholder state (no item selected).
+		-- Back to the "pick an item" state.
 		local panel = self.PANEL_PATH
-		local labelEnt = _EntityService:GetEntityByPath(panel .. "/UseBar/SelLabel")
-		if labelEnt ~= nil and isvalid(labelEnt) then labelEnt.Enable = true end
+		local detail = panel .. "/Body/ProductDetailPanel"
 
-		local namePaths = { "SelItemName", "SelGrade", "SelDesc", "SelPrice" }
-		for _, rel in ipairs(namePaths) do
-			local ent = _EntityService:GetEntityByPath(panel .. "/UseBar/" .. rel)
-			if ent ~= nil and isvalid(ent) then ent.Enable = false end
-		end
+		self:SetEnabled(detail .. "/EmptyState", true)
+		self:SetText(detail .. "/ItemNameText", "")
+		self:SetText(detail .. "/CategoryRow/ValueText", "")
+		self:SetText(detail .. "/GradeRow/ValueText", "")
+		self:SetText(detail .. "/DescriptionText", "")
+		self:SetText(detail .. "/OwnershipText", "")
+
+		local bar = panel .. "/PurchaseBar"
+		self:SetText(bar .. "/SelectedItemText", "의상을 선택하세요")
+		self:SetText(bar .. "/PriceBox/PriceText", "-")
+		self:SetText(bar .. "/PurchaseBtn/LabelText", "구매")
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- UseBar actions
-	-- ─────────────────────────────────────────────────────────────────────────
-
-	method void OnUseBarBuyClicked(any event)
+	method void OnPurchaseClicked(ButtonClickEvent event)
 		-- Confirms purchase of the currently selected item.
 		if self.selectedItemId < 0 then
 			if _UIToast ~= nil then _UIToast:ShowMessage("구매할 의상을 선택하세요.") end
@@ -328,6 +403,7 @@ script ShopController extends Logic
 	end
 
 	method void HandlePurchaseResult(boolean success, string resultCode, integer itemId)
+		-- Called back by MoneyManager after the server settles the purchase.
 		if success then
 			local item = self:FindCostume(itemId)
 			if item ~= nil then item.owned = true end
@@ -337,6 +413,7 @@ script ShopController extends Logic
 			log("[ShopController] purchase completed itemId=" .. tostring(itemId))
 			return
 		end
+
 		local message = "구매에 실패했습니다."
 		if resultCode == "NOT_ENOUGH_FREE" then message = "코인이 부족합니다." end
 		if resultCode == "NOT_ENOUGH_PAID" then message = "캐시가 부족합니다." end
@@ -346,86 +423,46 @@ script ShopController extends Logic
 		log_warning("[ShopController] purchase failed itemId=" .. tostring(itemId) .. " code=" .. resultCode)
 	end
 
-	method void OnUseBarUseClicked(any event)
-		-- Equips the currently selected item.
-		if self.selectedItemId < 0 then
-			if _UIToast ~= nil then _UIToast:ShowMessage("착용할 의상을 선택하세요.") end
-			return
-		end
-		if _UIToast ~= nil then _UIToast:ShowMessage("착용 기능은 준비 중입니다.") end
-		log("[ShopController] use clicked itemId=" .. tostring(self.selectedItemId))
-	end
-
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Preview panel
-	-- ─────────────────────────────────────────────────────────────────────────
-
-	method void OnDefaultBtnClicked(any event)
-		-- Reverts to the default costume (placeholder until equip system is ready).
-		if _UIToast ~= nil then _UIToast:ShowMessage("기본 복장으로 전환합니다.") end
-		log("[ShopController] default costume clicked")
-	end
-
-	method void OnPreviewBtnClicked(any event)
-		-- Shows a costume preview (placeholder).
-		if _UIToast ~= nil then _UIToast:ShowMessage("미리보기 기능은 준비 중입니다.") end
-		log("[ShopController] preview clicked")
-	end
-
 	-- ─────────────────────────────────────────────────────────────────────────
 	-- Cleanup
 	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void OnEndPlay()
-		-- Disconnects all wired event handlers.
+		-- Disconnects every handler wired in WireButtons.
 		local panel = self.PANEL_PATH
-		local cats = { "전체", "상의", "하의", "신발", "장식", "세트", "보유중" }
 
 		if self.categoryHandlers ~= nil then
-			for _, cat in ipairs(cats) do
-				local h = self.categoryHandlers[cat]
-				if h ~= nil then
-					local ent = _EntityService:GetEntityByPath(panel .. "/CategoryPanel/Cat_" .. cat)
-					if ent ~= nil and isvalid(ent) then
-						ent:DisconnectEvent(ButtonClickEvent, h)
-					end
+			for _, rec in ipairs(self.categoryHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
 				end
 			end
 			self.categoryHandlers = nil
 		end
 
-		if self.cardBuyHandlers ~= nil then
-			for i = 1, 6 do
-				local h = self.cardBuyHandlers[i]
-				if h ~= nil then
-					local ent = _EntityService:GetEntityByPath(panel .. "/GridPanel/ItemCard_" .. tostring(i) .. "/BuyBtn")
-					if ent ~= nil and isvalid(ent) then
-						ent:DisconnectEvent(ButtonClickEvent, h)
-					end
+		if self.cardHandlers ~= nil then
+			for _, rec in ipairs(self.cardHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
 				end
 			end
-			self.cardBuyHandlers = nil
+			self.cardHandlers = nil
 		end
 
-		if self.defaultBtnHandler ~= nil then
-			local ent = _EntityService:GetEntityByPath(panel .. "/PreviewPanel/DefaultBtn")
-			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.defaultBtnHandler) end
-			self.defaultBtnHandler = nil
+		if self.prevPageHandler ~= nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.prevPageHandler) end
+			self.prevPageHandler = nil
 		end
-		if self.previewBtnHandler ~= nil then
-			local ent = _EntityService:GetEntityByPath(panel .. "/PreviewPanel/PreviewBtn")
-			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.previewBtnHandler) end
-			self.previewBtnHandler = nil
+		if self.nextPageHandler ~= nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.nextPageHandler) end
+			self.nextPageHandler = nil
 		end
-		if self.useBarBuyHandler ~= nil then
-			local ent = _EntityService:GetEntityByPath(panel .. "/UseBar/BuyBtn")
-			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.useBarBuyHandler) end
-			self.useBarBuyHandler = nil
-		end
-		if self.useBarUseHandler ~= nil then
-			local ent = _EntityService:GetEntityByPath(panel .. "/UseBar/UseBtn")
-			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.useBarUseHandler) end
-			self.useBarUseHandler = nil
+		if self.purchaseHandler ~= nil then
+			local ent = _EntityService:GetEntityByPath(panel .. "/PurchaseBar/PurchaseBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.purchaseHandler) end
+			self.purchaseHandler = nil
 		end
 
 		self.costumeData = nil
