@@ -1,14 +1,14 @@
 @Component
 script QAAchievementUI extends Component
 
-	property Entity popupRoot = "4f2a8452-973b-44fe-b5e6-ffbb167cc431"
-	property ButtonComponent closeButton = "1b09d9a8-ea1f-4987-9613-dbae21c2bef5"
-	property ButtonComponent dailyTabButton = "70acef63-dc7c-41e0-a514-eac11106b80a"
-	property ButtonComponent weeklyTabButton = "200407f8-0a08-424b-9f37-4e8cde75a81c"
-	property ButtonComponent monthlyTabButton = "e74f4875-e90f-4a28-b89c-b3d837a405c4"
-	property ButtonComponent claimAllButton = "50e219ca-9c6f-46a3-93a9-708782c33aa7"
-	property TextComponent balanceText = "2d0fe567-9ea6-4e4e-81f7-5fdf5ecfa19e"
-	property TextComponent statusText = "dd4f9d03-29a6-4687-9507-725d29f60912"
+	property Entity popupRoot = "01a4c1cd-0b0e-4f3e-ba6f-35c9c5fb9c9d"
+	property ButtonComponent closeButton = "ca172943-cb0a-4398-9105-1f27b0eec0cc"
+	property ButtonComponent dailyTabButton = "afa3f9da-757e-4aa6-8354-9d1fdf75220e"
+	property ButtonComponent weeklyTabButton = "72ccddce-a143-428d-9ada-7747eb29e80e"
+	property ButtonComponent monthlyTabButton = "14e65093-e1d7-4f4e-88ca-4c98ffb33ec4"
+	property ButtonComponent claimAllButton = "38ed5c69-ede5-4d95-ad9b-8f1edb5f15d0"
+	property TextComponent balanceText = "fa2521c5-fa67-47b6-b354-ff613a427d08"
+	property TextComponent statusText = "d3619e56-df87-423a-8106-2c20cf44a9fb"
 	property table serverItems = {}
 	property table rowAchievementIds = {}
 	property string currentPeriod = "DAILY"
@@ -20,8 +20,12 @@ script QAAchievementUI extends Component
 	property table rowHandlers = {}
 
 	method void OnBeginPlay()
+		if self.Entity.Path ~= "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller" then
+			log("[QAAchievementUI] Legacy standalone controller skipped path=" .. self.Entity.Path)
+			return
+		end
 		log("[QAAchievementUI] OnBeginPlay")
-		local titleEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/TitleText")
+		local titleEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/TitleText")
 		if titleEntity ~= nil and titleEntity.TextComponent ~= nil then titleEntity.TextComponent.Text = "업적 수첩" end
 		self.closeButton.Entity.TextComponent.Text = "닫기"
 		self.claimAllButton.Entity.TextComponent.Text = "모두 받기"
@@ -51,7 +55,7 @@ script QAAchievementUI extends Component
 
 		for i = 1, 4 do
 			local index = i
-			local buttonEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(index) .. "/ClaimButton")
+			local buttonEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" .. tostring(index) .. "/ClaimButton")
 			if buttonEntity ~= nil and isvalid(buttonEntity) then
 				self.rowHandlers[index] = buttonEntity:ConnectEvent(ButtonClickEvent, function(event)
 					local achievementId = self.rowAchievementIds[index]
@@ -107,7 +111,7 @@ script QAAchievementUI extends Component
 		end
 
 		for i = 1, 4 do
-			local row = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(i))
+			local row = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" .. tostring(i))
 			local item = filtered[i]
 			if row == nil or isvalid(row) == false then continue end
 			if item == nil then
@@ -133,28 +137,56 @@ script QAAchievementUI extends Component
 				local completed = (item.progress or 0) >= (item.target or 1)
 				claimEntity.ButtonComponent.Enable = completed and item.claimed ~= true
 				if item.claimed == true then
+					self:ApplyClaimButtonLayout(claimEntity, true)
+					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("4fea64a3307cda641809ad8be0d4890b")
 					claimEntity.TextComponent.Text = "수령 완료"
 				elseif completed then
-					claimEntity.TextComponent.Text = "보상 수령"
+					self:ApplyClaimButtonLayout(claimEntity, true)
+					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("8d808a399e75441b8e4e876d8cb3b061")
+					claimEntity.TextComponent.Text = ""
 				else
-					claimEntity.TextComponent.Text = "진행 중"
+					self:ApplyClaimButtonLayout(claimEntity, false)
+					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("fde1486b3a5b46a988b5cb6955d8265c")
+					claimEntity.TextComponent.Text = ""
 				end
 			end
 		end
 		self:UpdateTabLabels()
 	end
 
+	method void ApplyClaimButtonLayout(Entity claimEntity, boolean rewardLayout)
+		if claimEntity == nil or isvalid(claimEntity) == false or claimEntity.UITransformComponent == nil then return end
+		if rewardLayout then
+			claimEntity.UITransformComponent.anchoredPosition = Vector2(-9.522194, -0.552899957)
+			claimEntity.UITransformComponent.RectSize = Vector2(221.946854, 87.02048)
+		else
+			claimEntity.UITransformComponent.anchoredPosition = Vector2(-15.1710815, -5.165)
+			claimEntity.UITransformComponent.RectSize = Vector2(212.733459, 107.922943)
+		end
+	end
+
 	method void SetRowText(integer rowIndex, string childName, string value)
-		local entity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/PopupRoot/Window/List/Row" .. tostring(rowIndex) .. "/" .. childName)
+		local entity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" .. tostring(rowIndex) .. "/" .. childName)
 		if entity ~= nil and isvalid(entity) and entity.TextComponent ~= nil then
 			entity.TextComponent.Text = value
 		end
 	end
 
 	method void UpdateTabLabels()
-		self.dailyTabButton.Entity.TextComponent.Text = self.currentPeriod == "DAILY" and "● 일일" or "일일"
-		self.weeklyTabButton.Entity.TextComponent.Text = self.currentPeriod == "WEEKLY" and "● 주간" or "주간"
-		self.monthlyTabButton.Entity.TextComponent.Text = self.currentPeriod == "MONTHLY" and "● 월간" or "월간"
+		self:ApplyTabVisual(self.dailyTabButton.Entity, "일일", self.currentPeriod == "DAILY")
+		self:ApplyTabVisual(self.weeklyTabButton.Entity, "주간", self.currentPeriod == "WEEKLY")
+		self:ApplyTabVisual(self.monthlyTabButton.Entity, "월간", self.currentPeriod == "MONTHLY")
+	end
+
+	method void ApplyTabVisual(Entity tabEntity, string label, boolean active)
+		if tabEntity == nil or isvalid(tabEntity) == false then return end
+		if tabEntity.TextComponent ~= nil then
+			tabEntity.TextComponent.Text = label
+		end
+		if tabEntity.SpriteGUIRendererComponent ~= nil then
+			local ruid = active and "1bbac083829c4c738b351ea238bef7fd" or "10c10be2edab40e0a5be2c78492f8ab9"
+			tabEntity.SpriteGUIRendererComponent.ImageRUID = DataRef(ruid)
+		end
 	end
 
 	method void OnEndPlay()

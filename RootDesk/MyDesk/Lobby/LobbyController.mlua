@@ -3645,7 +3645,7 @@ script LobbyController extends Component
 
 	method void OnAchievementClicked(ButtonClickEvent event)
 		log("[LobbyController] AchievementButton clicked")
-		local controllerEntity = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/Controller")
+		local controllerEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller")
 		if controllerEntity == nil or isvalid(controllerEntity) == false then
 			log_warning("[LobbyController] Achievement popup controller not found")
 			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
