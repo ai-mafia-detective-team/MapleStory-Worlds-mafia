@@ -299,7 +299,7 @@ script QAAchievementManager extends Logic
 
 	@ExecSpace("Client")
 	method void ReceiveState(string payloadJson, string message)
-		local root = _EntityService:GetEntityByPath("/ui/UI_AchievementPopup/Controller")
+		local root = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller")
 		if root == nil or isvalid(root) == false then return end
 		local ui = root:GetComponent("script.QAAchievementUI")
 		if ui ~= nil then ui:ApplyServerState(payloadJson, message) end

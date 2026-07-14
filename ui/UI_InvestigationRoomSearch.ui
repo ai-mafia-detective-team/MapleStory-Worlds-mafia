@@ -715,7 +715,7 @@
             },
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "EndFrameIndex": 0,
+              "EndFrameIndex": 2147483647,
               "ImageRUID": {
                 "DataId": "ee46bf19f6b24f07bcaa871424e1eca0"
               },
