@@ -21,6 +21,12 @@ script MafiaGameLogic extends Logic
 
 	property integer PHASE_GAME_OVER = 6
 
+	property integer PHASE_NIGHT_MAFIA = 21
+
+	property integer PHASE_NIGHT_POLICE = 22
+
+	property integer PHASE_NIGHT_DOCTOR = 23
+
 	property integer ROLE_CITIZEN = 0
 
 	property integer ROLE_MAFIA = 1
@@ -48,15 +54,23 @@ script MafiaGameLogic extends Logic
 	@Sync
 	property integer MafiaPlayerCount = 2
 
-	property number FREE_ROAM_TIME = 10.0
+	property number FREE_ROAM_TIME = 60.0
+
+	property number LOADING_SCREEN_BUFFER = 3.5
 
 	property number NIGHT_TIME = 10.0
 
-	property number MORNING_TIME = 5.0
+	property number MAFIA_NIGHT_TIME = 30.0
+
+	property number POLICE_NIGHT_TIME = 15.0
+
+	property number DOCTOR_NIGHT_TIME = 15.0
+
+	property number MORNING_TIME = 3.0
 
 	property number MEETING_TIME = 15.0
 
-	property number RESULT_TIME = 5.0
+	property number RESULT_TIME = 3.0
 
 	@Sync
 	property integer CurrentPhase = 0
@@ -82,6 +96,9 @@ script MafiaGameLogic extends Logic
 	@Sync
 	property string MorningKilled = ""
 
+	@Sync
+	property boolean DoctorSaved = false
+
 	property integer LocalPlayerRole = -1
 
 	@Sync
@@ -91,10 +108,19 @@ script MafiaGameLogic extends Logic
 	property string AlivePlayersList = ""
 
 	@Sync
+	property integer NightSubPhase = 0
+
+	@Sync
+	property string MafiaDeciderId = ""
+
+	@Sync
 	property string VoteStatusList = ""
 
 	@Sync
 	property string ChatLog = ""
+
+	@Sync
+	property string MafiaChatLog = ""
 
 	@Sync
 	property integer LobbyPlayerCount = 0
@@ -266,6 +292,25 @@ script MafiaGameLogic extends Logic
 	end
 
 	@ExecSpace("Server")
+	method void RequestLeaveRoom()
+		    -- Clears the requesting user's Mafia lobby/game state after leaving the room UI.
+		    local userId = tostring(senderUserId)
+		    if userId == nil or userId == "" then return end
+		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
+		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
+		    if self.playerRoles ~= nil then self.playerRoles[userId] = nil end
+		    if self.playerAlive ~= nil then self.playerAlive[userId] = nil end
+		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
+		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
+		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
+		        self.gameStartPending = false
+		        self.gameStartCountdown = 0.0
+		    end
+		    self:UpdateReadyStatusList()
+		    log("[Mafia] leave room requested userId=" .. userId)
+	end
+
+	@ExecSpace("Server")
 	method void SetRoomSettings(string roomTitle, boolean isPrivate, string password, integer maxPlayers, integer mafiaCount)
 		    if self.CurrentPhase ~= self.PHASE_LOBBY or self.GameStarted then return end
 		    if roomTitle == nil or roomTitle == "" then roomTitle = "커닝시티 마피아" end
@@ -325,7 +370,14 @@ script MafiaGameLogic extends Logic
 		    if self.CurrentPhase == self.PHASE_FREE_ROAM then
 		        self:BeginMeeting()
 		    elseif self.CurrentPhase == self.PHASE_NIGHT then
-		        self:BeginMorning()
+		        if self.NightSubPhase == self.PHASE_NIGHT_MAFIA then
+		            self:BeginNightPolice()
+		        elseif self.NightSubPhase == self.PHASE_NIGHT_POLICE then
+		            self:BeginNightDoctor()
+		        else
+		            self.NightSubPhase = 0
+		            self:BeginMorning()
+		        end
 		    elseif self.CurrentPhase == self.PHASE_MORNING then
 		        self:BeginFreeRoam()
 		    elseif self.CurrentPhase == self.PHASE_MEETING then
@@ -367,7 +419,7 @@ script MafiaGameLogic extends Logic
 		    self:UpdateAlivePlayersList()
 		    self.skipPlayers       = {}
 		    self.DaySkipStatusList = ""
-		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME)
+		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME + self.LOADING_SCREEN_BUFFER)
 		    log("[Mafia] 게임 시작!")
 	end
 
@@ -418,9 +470,53 @@ script MafiaGameLogic extends Logic
 		    self.MafiaTarget  = ""
 		    self.DoctorTarget = ""
 		    self.PoliceTarget = ""
+		    self.MafiaChatLog = ""
 		    self.PoliceResult = false
+		    self.DoctorSaved = false
 		    self:TeleportPlayersToRooms()
-		    self:SetPhase(self.PHASE_NIGHT, self.NIGHT_TIME)
+		    self:BeginNightMafia()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void BeginNightMafia()
+		    -- 살아있는 마피아 중 랜덤으로 결정권자 선정
+		    local mafiaList = {}
+		    if self.playerRoles ~= nil and self.playerAlive ~= nil then
+		        for uid, role in pairs(self.playerRoles) do
+		            if role == self.ROLE_MAFIA and self.playerAlive[uid] == true then
+		                table.insert(mafiaList, uid)
+		            end
+		        end
+		    end
+		    if #mafiaList > 0 then
+		        self.MafiaDeciderId = mafiaList[math.random(1, #mafiaList)]
+		    else
+		        self.MafiaDeciderId = ""
+		    end
+		    self.NightSubPhase = self.PHASE_NIGHT_MAFIA
+		    self:SetPhase(self.PHASE_NIGHT, self.MAFIA_NIGHT_TIME)
+		    log("[Mafia] 밤-마피아단계 시작. 결정권자=" .. self.MafiaDeciderId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void BeginNightPolice()
+		    self.NightSubPhase = self.PHASE_NIGHT_POLICE
+		    self:SetPhase(self.PHASE_NIGHT, self.POLICE_NIGHT_TIME)
+		    log("[Mafia] 밤-경찰단계 시작")
+	end
+
+	@ExecSpace("ServerOnly")
+	method void BeginNightDoctor()
+		    if self.PoliceTarget == "" then
+		        local policeId = self:GetPlayerByRole(self.ROLE_POLICE)
+		        if policeId ~= "" then
+		            self.PoliceTarget = self:GetRandomAliveExcept(policeId)
+		            log("[Mafia] 경찰 랜덤 선택: " .. self.PoliceTarget)
+		        end
+		    end
+		    self.NightSubPhase = self.PHASE_NIGHT_DOCTOR
+		    self:SetPhase(self.PHASE_NIGHT, self.DOCTOR_NIGHT_TIME)
+		    log("[Mafia] 밤-의사단계 시작")
 	end
 
 	@ExecSpace("ServerOnly")
@@ -433,6 +529,13 @@ script MafiaGameLogic extends Logic
 		            mafiaTarget = self:GetRandomAliveExcept(mafiaId)
 		        end
 		    end
+		    if self.DoctorTarget == "" then
+		        local doctorId = self:GetPlayerByRole(self.ROLE_DOCTOR)
+		        if doctorId ~= "" then
+		            self.DoctorTarget = self:GetRandomAliveExcept("")
+		            log("[Mafia] 의사 랜덤 선택: " .. self.DoctorTarget)
+		        end
+		    end
 		    if mafiaTarget ~= "" then
 		        if self.DoctorTarget == mafiaTarget then
 		            log("[Mafia] 의사 보호: " .. mafiaTarget)
@@ -442,6 +545,7 @@ script MafiaGameLogic extends Logic
 		        end
 		    end
 		    self.MorningKilled = killed
+		    self.DoctorSaved = (mafiaTarget ~= "" and self.DoctorTarget == mafiaTarget)
 		    self:SetPhase(self.PHASE_MORNING, self.MORNING_TIME)
 		    log("[Mafia] 아침. 사망=" .. killed)
 	end
@@ -449,6 +553,33 @@ script MafiaGameLogic extends Logic
 	@ExecSpace("ServerOnly")
 	method void BeginFreeRoam()
 		    -- Resets skip state and starts the daytime discussion phase (called after morning).
+		    -- Check win after night kill before starting free roam.
+		    do
+		        local mafiaAlive   = 0
+		        local citizenAlive = 0
+		        local users = self:GetAllUserIds()
+		        for _, uid in ipairs(users) do
+		            if self.playerAlive[uid] then
+		                local role = self.playerRoles[uid]
+		                if role == self.ROLE_MAFIA then
+		                    mafiaAlive = mafiaAlive + 1
+		                else
+		                    citizenAlive = citizenAlive + 1
+		                end
+		            end
+		        end
+		        if mafiaAlive == 0 then
+		            self.WinnerRole = self.ROLE_CITIZEN
+		            self:SetPhase(self.PHASE_GAME_OVER, 0.0)
+		            log("[Mafia] citizen win after night")
+		            return
+		        elseif mafiaAlive >= citizenAlive then
+		            self.WinnerRole = self.ROLE_MAFIA
+		            self:SetPhase(self.PHASE_GAME_OVER, 0.0)
+		            log("[Mafia] mafia win after night")
+		            return
+		        end
+		    end
 		    if self.skipPlayers == nil then self.skipPlayers = {} end
 		    for k in pairs(self.skipPlayers) do self.skipPlayers[k] = nil end
 		    self.DaySkipStatusList = ""
@@ -482,14 +613,18 @@ script MafiaGameLogic extends Logic
 		    for uid, _ in pairs(self.skipPlayers) do parts[#parts + 1] = uid end
 		    self.DaySkipStatusList = table.concat(parts, ",")
 		    log("[Mafia] skip: " .. tostring(requesterId) .. " skipCount=" .. tostring(#parts))
-		    -- Transition only when every alive player has skipped.
+		    -- Transition only when every alive real player (non-bot) has skipped.
 		    local aliveCount = 0
 		    local allSkipped = true
 		    for uid in string.gmatch(self.AlivePlayersList ~= "" and self.AlivePlayersList or "x", "[^,]+") do
-		        aliveCount = aliveCount + 1
-		        if self.skipPlayers[uid] == nil then allSkipped = false end
+		        if string.sub(uid, 1, 4) ~= "Bot_" then
+		            aliveCount = aliveCount + 1
+		            if self.skipPlayers[uid] == nil then allSkipped = false end
+		        end
 		    end
+		    log("[Mafia] skip check: aliveCount=" .. tostring(aliveCount) .. " allSkipped=" .. tostring(allSkipped))
 		    if allSkipped and aliveCount > 0 then
+		        wait(2.0)
 		        self:BeginMeeting()
 		    end
 	end
@@ -512,6 +647,7 @@ script MafiaGameLogic extends Logic
 		    end
 		    if self:AllVoted() then
 		        self.InternalTimer = 0.0
+		        wait(1.5)
 		        self:BeginMeetingResult()
 		    end
 	end
@@ -529,7 +665,7 @@ script MafiaGameLogic extends Logic
 	method boolean AllVoted()
 		    local users = self:GetAllUserIds()
 		    for _, uid in ipairs(users) do
-		        if self.playerAlive[uid] and self.voteSubmitted[uid] == nil then
+		        if string.sub(tostring(uid), 1, 4) ~= "Bot_" and self.playerAlive[uid] and self.voteSubmitted[uid] == nil then
 		            return false
 		        end
 		    end
@@ -609,25 +745,32 @@ script MafiaGameLogic extends Logic
 	@ExecSpace("Server")
 	method void MafiaChooseTarget(string mafiaId, string targetId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
+		    if self.NightSubPhase ~= self.PHASE_NIGHT_MAFIA then return end
 		    if self.playerRoles[mafiaId] ~= self.ROLE_MAFIA then return end
+		    if mafiaId ~= self.MafiaDeciderId then return end
 		    self.MafiaTarget = targetId
+			self.InternalTimer = 0.001
 		    log("[Mafia] 마피아 지목: " .. targetId)
 	end
 
 	@ExecSpace("Server")
 	method void PoliceInvestigate(string policeId, string targetId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
+		    if self.NightSubPhase ~= self.PHASE_NIGHT_POLICE then return end
 		    if self.playerRoles[policeId] ~= self.ROLE_POLICE then return end
 		    self.PoliceTarget = targetId
 		    self.PoliceResult = (self.playerRoles[targetId] == self.ROLE_MAFIA)
-		    log("[Mafia] 경찰 조사: " .. targetId .. " 마피아=" .. tostring(self.PoliceResult))
+		    self.InternalTimer = 0.001
+			log("[Mafia] 경찰 조사: " .. targetId .. " 마피아=" .. tostring(self.PoliceResult))
 	end
 
 	@ExecSpace("Server")
 	method void DoctorProtect(string doctorId, string targetId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
+		    if self.NightSubPhase ~= self.PHASE_NIGHT_DOCTOR then return end
 		    if self.playerRoles[doctorId] ~= self.ROLE_DOCTOR then return end
 		    self.DoctorTarget = targetId
+			self.InternalTimer = 0.001
 		    log("[Mafia] 의사 보호: " .. targetId)
 	end
 
@@ -653,6 +796,7 @@ script MafiaGameLogic extends Logic
 		    self.RoleData        = ""
 		    self.VoteStatusList  = ""
 		    self.ChatLog         = ""
+		    self.MafiaChatLog     = ""
 		    self.LobbyPlayerCount = 0
 		    self.ReadyCount = 0
 		    self.ReadyStatusList = ""
@@ -862,6 +1006,29 @@ script MafiaGameLogic extends Logic
 		        self.ChatLog = table.concat(lines, "\n")
 		    end
 		    log("[Chat] " .. userId .. ": " .. message)
+	end
+
+	method void SendMafiaChat(string userId, string message)
+		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
+		    if message == nil or message == "" then return end
+		    if string.len(message) > 100 then
+		        message = string.sub(message, 1, 100)
+		    end
+		    local entry = userId .. "\t" .. message
+		    if self.MafiaChatLog == "" then
+		        self.MafiaChatLog = entry
+		    else
+		        local lines = {}
+		        for line in string.gmatch(self.MafiaChatLog, "[^\n]+") do
+		            lines[#lines + 1] = line
+		        end
+		        lines[#lines + 1] = entry
+		        if #lines > 20 then
+		            table.remove(lines, 1)
+		        end
+		        self.MafiaChatLog = table.concat(lines, "\n")
+		    end
+		    log("[MafiaChat] " .. userId .. ": " .. message)
 	end
 
 	@ExecSpace("Client")

@@ -193,6 +193,8 @@ script InvestigationRoomManager extends Logic
 				return
 			end
 
+			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, "")
+
 			for _, room in ipairs(snapshot.Rooms) do
 				if string.lower(room.roomName or "") == string.lower(roomName) then
 					log_warning("[InvestigationRoomManager] Room creation failed duplicateName=" .. roomName)
@@ -216,7 +218,6 @@ script InvestigationRoomManager extends Logic
 				createdAt = _UtilLogic.ServerElapsedSeconds,
 				memberUserIds = { userId },
 			}
-			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, room.roomId)
 			table.insert(snapshot.Rooms, room)
 			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
 			if writeCode == SharedMemoryResultCode.OK then
@@ -303,6 +304,28 @@ script InvestigationRoomManager extends Logic
 				end
 			end
 		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer RemoveUserFromAllRooms(table rooms, string userId)
+		-- Removes every room membership owned by the user and deletes host-owned rooms.
+		local removedCount = 0
+		for roomIndex = #rooms, 1, -1 do
+			local room = rooms[roomIndex]
+			if room.hostUserId == userId then
+				table.remove(rooms, roomIndex)
+				removedCount += 1
+			elseif self:ContainsUser(room, userId) then
+				for memberIndex = #room.memberUserIds, 1, -1 do
+					if tostring(room.memberUserIds[memberIndex]) == userId then
+						table.remove(room.memberUserIds, memberIndex)
+						removedCount += 1
+					end
+				end
+				self:RecalculateRoomStatus(room)
+			end
+		end
+		return removedCount
 	end
 
 	@ExecSpace("ServerOnly")
@@ -402,33 +425,24 @@ script InvestigationRoomManager extends Logic
 
 	@ExecSpace("Server")
 	method void LeaveRoom(string roomId)
-		-- Removes the requesting user from a room and deletes host-owned rooms.
+		-- Removes the requesting user from every investigation room and deletes host-owned rooms.
 		local userId = tostring(senderUserId)
+		roomId = roomId or ""
 		for attempt = 1, self.MAX_WRITE_RETRIES do
 			local snapshot = self:ReadRegistrySnapshot()
 			if snapshot.Ok == false then
 				self:DeliverLeaveResult(false, "수사방 나가기에 실패했습니다.", userId)
 				return
 			end
-			local roomIndex = self:FindRoomIndex(snapshot.Rooms, roomId)
-			if roomIndex <= 0 then
+			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
+			if removedCount <= 0 then
+				log("[InvestigationRoomManager] Leave room requested but no membership found roomId=" .. tostring(roomId) .. " userId=" .. userId)
 				self:DeliverLeaveResult(true, "이미 종료된 수사방입니다.", userId)
 				return
 			end
-			local room = snapshot.Rooms[roomIndex]
-			if room.hostUserId == userId then
-				table.remove(snapshot.Rooms, roomIndex)
-			else
-				for memberIndex = #room.memberUserIds, 1, -1 do
-					if tostring(room.memberUserIds[memberIndex]) == userId then
-						table.remove(room.memberUserIds, memberIndex)
-					end
-				end
-				self:RecalculateRoomStatus(room)
-			end
 			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
 			if writeCode == SharedMemoryResultCode.OK then
-				log("[InvestigationRoomManager] Leave room success roomId=" .. roomId)
+				log("[InvestigationRoomManager] Leave room success roomId=" .. tostring(roomId) .. " removedCount=" .. tostring(removedCount))
 				self:DeliverLeaveResult(true, "수사방에서 나왔습니다.", userId)
 				return
 			end
@@ -497,7 +511,11 @@ script InvestigationRoomManager extends Logic
 
 	@ExecSpace("Client")
 	method void DeliverLeaveResult(boolean success, string message)
-		-- Forwards a room-leave result to the existing lobby UI controller.
+		-- Forwards a room-leave result to the active Mafia UI flow first.
+		if _MafiaUIFlow ~= nil then
+			_MafiaUIFlow:OnInvestigationRoomLeaveResult(success, message)
+			return
+		end
 		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
 		if lobby == nil or isvalid(lobby) == false then return end
 		---@type LobbyController
