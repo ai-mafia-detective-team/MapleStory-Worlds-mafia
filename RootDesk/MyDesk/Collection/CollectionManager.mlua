@@ -1,0 +1,117 @@
+@Logic
+script CollectionManager extends Logic
+
+	-- Permanent role-collection (도감) state, kept separate from QAAchievementManager.
+	-- QAAchievement's state.roles is wiped by its MONTHLY ClearPeriod; the 도감 must never reset,
+	-- so it owns its own storage key and never shares that table.
+	property string KEY_ROLE_COLLECTION = "collection_roles_v1"
+	property table UserStates = {}
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- Server-side cache holder; storage handles are fetched per user on demand.
+		self.UserStates = {}
+		log("[Collection] OnBeginPlay server ready")
+	end
+
+	@ExecSpace("ServerOnly")
+	method table CreateState()
+		-- __schema keeps the roles map a JSON object even while it is still empty.
+		return { roles = { __schema = true } }
+	end
+
+	@ExecSpace("ServerOnly")
+	method table LoadUser(string userId)
+		-- Loads the user's permanent unlock set once, then serves from the in-memory cache.
+		local cached = self.UserStates[userId]
+		if cached ~= nil then return cached end
+
+		local state = self:CreateState()
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode, raw = storage:GetAndWait(self.KEY_ROLE_COLLECTION)
+		if errorCode == 0 and raw ~= nil and raw ~= "" then
+			local loaded = _HttpService:JSONDecode(raw)
+			if loaded ~= nil and loaded.roles ~= nil then
+				state = loaded
+			end
+		elseif errorCode ~= 0 and errorCode ~= 1000002 then
+			-- 1000002 NotFound is the normal first-visit signal, not an error.
+			log_warning("[Collection] Load failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+		end
+
+		state.roles = state.roles or {}
+		state.roles.__schema = true
+		self.UserStates[userId] = state
+		log("[Collection] Loaded userId=" .. userId)
+		return state
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean SaveUser(string userId, table state)
+		-- Writes the unlock set back. Called only when a genuinely new role was unlocked.
+		local storage = _DataStorageService:GetUserDataStorage(userId)
+		local errorCode = storage:SetAndWait(self.KEY_ROLE_COLLECTION, _HttpService:JSONEncode(state))
+		if errorCode ~= 0 then
+			log_error("[Collection] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+			return false
+		end
+		log("[Collection] Saved userId=" .. userId)
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method void UnlockRole(string userId, string roleKey)
+		-- Marks one role as permanently collected. Called by MafiaGameLogic on role assignment.
+		if userId == nil or userId == "" then return end
+		if roleKey == nil or roleKey == "" then return end
+
+		local state = self:LoadUser(userId)
+		if state.roles[roleKey] == true then
+			-- Already collected: skip the write entirely so repeat plays cost no Credit.
+			return
+		end
+
+		state.roles[roleKey] = true
+		if self:SaveUser(userId, state) == false then
+			-- Roll the cache back so a later attempt retries the write instead of assuming success.
+			state.roles[roleKey] = nil
+			return
+		end
+
+		log("[Collection] Role unlocked userId=" .. userId .. " role=" .. roleKey)
+		self:DeliverRoleCollection(userId, state)
+	end
+
+	@ExecSpace("Server")
+	method void RequestRoleCollection()
+		-- Client asks for its own unlock set when the 도감 popup opens.
+		local state = self:LoadUser(tostring(senderUserId))
+		self:DeliverRoleCollection(tostring(senderUserId), state)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void DeliverRoleCollection(string userId, table state)
+		-- Sends the unlock set to that one client.
+		local unlocked = {}
+		for roleKey, isUnlocked in pairs(state.roles) do
+			if roleKey ~= "__schema" and isUnlocked == true then
+				unlocked[#unlocked + 1] = roleKey
+			end
+		end
+		local payload = { unlocked = unlocked }
+		self:ReceiveRoleCollection(_HttpService:JSONEncode(payload), userId)
+	end
+
+	@ExecSpace("Client")
+	method void ReceiveRoleCollection(string payloadJson)
+		-- Forwards server-owned collection data to the lobby UI controller.
+		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		if lobby == nil or not isvalid(lobby) then return end
+		---@type LobbyController
+		local controller = lobby:GetComponent("script.LobbyController")
+		if controller ~= nil then
+			controller:ApplyRoleCollection(payloadJson)
+		end
+	end
+
+end

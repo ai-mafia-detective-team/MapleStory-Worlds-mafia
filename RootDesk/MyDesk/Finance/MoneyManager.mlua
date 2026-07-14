@@ -237,6 +237,9 @@ script MoneyManager extends Logic
 		local freeText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/FreeMoneyBar/FreeMoneyText")
 		if paidText ~= nil and paidText.TextComponent ~= nil then paidText.TextComponent.Text = "캐시  " .. self:FormatMoney(paidMoney) end
 		if freeText ~= nil and freeText.TextComponent ~= nil then freeText.TextComponent.Text = "코인  " .. self:FormatMoney(freeMoney) end
+		if _ShopController ~= nil then
+			_ShopController:ApplyMoney(paidMoney, freeMoney)
+		end
 		if ownedJson ~= nil and ownedJson ~= "" and _ShopController ~= nil then
 			_ShopController:ApplyOwnedState(ownedJson)
 		end

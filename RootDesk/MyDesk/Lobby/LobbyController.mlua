@@ -66,6 +66,36 @@ script LobbyController extends Component
 
 	property any collectionPopupBottomCloseHandler = nil
 
+	property table roleCardHandlers = nil
+
+	property table roleUnlockedSet = nil
+
+	property integer selectedRoleIndex = 0
+
+	property table costumeCardHandlers = nil
+
+	property integer selectedCostumeIndex = 0
+
+	property any collectionTabRoleHandler = nil
+
+	property any collectionTabCostumeHandler = nil
+
+	property string collectionTab = "role"
+
+	property integer COLLECTION_PAGE_SIZE = 8
+
+	property integer rolePage = 1
+
+	property integer costumePage = 1
+
+	property any rolePrevHandler = nil
+
+	property any roleNextHandler = nil
+
+	property any costumePrevHandler = nil
+
+	property any costumeNextHandler = nil
+
 	property any bagPopupCloseHandler = nil
 
 	property any bagPopupBottomCloseHandler = nil
@@ -893,13 +923,467 @@ script LobbyController extends Component
 	end
 
 	method void OpenCollectionPopup()
-		-- Opens CollectionPopup without changing internal tab or card state.
+		-- Opens CollectionPopup on the role tab; SetCollectionTab pulls that tab's data.
 		self:SetCollectionPopup(true)
+		self.rolePage = 1
+		self.costumePage = 1
+		self:SetCollectionTab("role")
 	end
 
 	method void CloseCollectionPopup()
 		-- Closes CollectionPopup without resetting internal page state.
 		self:SetCollectionPopup(false)
+	end
+
+	method table GetRoleCollectionDefs()
+		-- The 8 role-card slots. `key` matches MafiaGameLogic's integer role as a string;
+		-- an empty key marks a "준비 중" placeholder slot that can never unlock.
+		return {
+			{ key = "0", name = "시민",   team = "시민팀",   skill = "능력 없음",       description = "평범한 수사관. 토론과 투표로 마피아를 찾아낸다.", unlock = "시민 역할로 게임을 1회 플레이" },
+			{ key = "1", name = "마피아", team = "마피아팀", skill = "밤에 지목 살해",  description = "밤마다 한 명을 지목해 제거한다. 정체를 숨겨야 한다.", unlock = "마피아 역할로 게임을 1회 플레이" },
+			{ key = "2", name = "경찰",   team = "시민팀",   skill = "밤에 정체 조사",  description = "밤마다 한 명을 조사해 마피아인지 확인한다.",       unlock = "경찰 역할로 게임을 1회 플레이" },
+			{ key = "3", name = "의사",   team = "시민팀",   skill = "밤에 대상 보호",  description = "밤마다 한 명을 보호해 마피아의 살해를 막는다.",     unlock = "의사 역할로 게임을 1회 플레이" },
+			{ key = "",  name = "???",    team = "-",        skill = "-",               description = "아직 공개되지 않은 역할이다.",                      unlock = "준비 중" },
+			{ key = "",  name = "???",    team = "-",        skill = "-",               description = "아직 공개되지 않은 역할이다.",                      unlock = "준비 중" },
+			{ key = "",  name = "???",    team = "-",        skill = "-",               description = "아직 공개되지 않은 역할이다.",                      unlock = "준비 중" },
+			{ key = "",  name = "???",    team = "-",        skill = "-",               description = "아직 공개되지 않은 역할이다.",                      unlock = "준비 중" },
+		}
+	end
+
+	method void ApplyRoleCollection(string payloadJson)
+		-- Receives the server's unlock set (CollectionManager) and repaints the role page.
+		local unlockedSet = {}
+		if payloadJson ~= nil and payloadJson ~= "" then
+			local payload = _HttpService:JSONDecode(payloadJson)
+			if payload ~= nil and payload.unlocked ~= nil then
+				for _, roleKey in ipairs(payload.unlocked) do
+					unlockedSet[tostring(roleKey)] = true
+				end
+			end
+		end
+		self.roleUnlockedSet = unlockedSet
+		self:RenderRoleCards(unlockedSet)
+
+		-- Repaint the open detail so its lock state follows a fresh unlock.
+		if self.selectedRoleIndex > 0 then
+			self:ShowRoleDetail(self.selectedRoleIndex)
+		end
+	end
+
+	method void OnRoleCardClicked(integer slot)
+		-- `slot` is the 1..8 grid position; convert it to an index into the full list.
+		local index = (self.rolePage - 1) * self.COLLECTION_PAGE_SIZE + slot
+		log("[CollectionPopup] role card clicked: slot=" .. tostring(slot) .. " index=" .. tostring(index))
+		self:ShowRoleDetail(index)
+	end
+
+	method void ShowRoleDetail(integer index)
+		-- Fills the right-hand DetailPanel from the clicked card's definition.
+		local defs = self:GetRoleCollectionDefs()
+		local def = defs[index]
+		if def == nil then return end
+
+		self.selectedRoleIndex = index
+
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage"
+		local detail = base .. "/DetailPanel"
+		local unlockedSet = self.roleUnlockedSet or {}
+		local isReal = def.key ~= ""
+		local isUnlocked = isReal and unlockedSet[def.key] == true
+
+		self:SetDetailText(detail .. "/RoleNameText", def.name)
+		self:SetDetailText(detail .. "/TeamRow/TeamText", def.team)
+		self:SetDetailText(detail .. "/SkillDescriptionText", def.skill)
+		self:SetDetailText(detail .. "/DescriptionText", def.description)
+		if isUnlocked then
+			self:SetDetailText(detail .. "/UnlockConditionText", "수집 완료")
+		else
+			self:SetDetailText(detail .. "/UnlockConditionText", def.unlock)
+		end
+
+		-- The empty-state hint only makes sense before anything is picked.
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(false) end
+
+		-- Highlight only the selected card on the visible page.
+		local grid = base .. "/ListPanel/CardGrid"
+		local selectedSlot = index - (self.rolePage - 1) * self.COLLECTION_PAGE_SIZE
+		for slot = 1, self.COLLECTION_PAGE_SIZE do
+			local border = _EntityService:GetEntityByPath(grid .. "/RoleCard_0" .. tostring(slot) .. "/SelectedBorder")
+			if border ~= nil and isvalid(border) then border:SetEnable(slot == selectedSlot) end
+		end
+	end
+
+	method void SetDetailText(string path, string value)
+		-- Small guard so a missing DetailPanel node cannot break the whole repaint.
+		local ent = _EntityService:GetEntityByPath(path)
+		if ent ~= nil and isvalid(ent) and ent.TextComponent ~= nil then
+			ent.TextComponent.Text = value
+		end
+	end
+
+	method integer GetPageCount(integer totalItems)
+		-- Always at least one page, even when the collection is empty.
+		local pageSize = self.COLLECTION_PAGE_SIZE
+		if totalItems <= 0 then return 1 end
+		return math.ceil(totalItems / pageSize)
+	end
+
+	method void UpdatePaginationUI(string pageBase, integer page, integer totalPages)
+		-- Writes "n/m" and greys the arrows out at the ends of the range.
+		local pagination = pageBase .. "/ListPanel/Pagination"
+
+		self:SetDetailText(pagination .. "/PageText", tostring(page) .. " / " .. tostring(totalPages))
+
+		local prev = _EntityService:GetEntityByPath(pagination .. "/PrevBtn")
+		if prev ~= nil and isvalid(prev) and prev.SpriteGUIRendererComponent ~= nil then
+			if page > 1 then
+				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
+			else
+				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
+			end
+		end
+
+		local next = _EntityService:GetEntityByPath(pagination .. "/NextBtn")
+		if next ~= nil and isvalid(next) and next.SpriteGUIRendererComponent ~= nil then
+			if page < totalPages then
+				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
+			else
+				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
+			end
+		end
+	end
+
+	method void OnRolePagePrev(ButtonClickEvent event)
+		-- Previous page of role cards.
+		if self.rolePage <= 1 then return end
+		self.rolePage = self.rolePage - 1
+		self:ClearRoleDetail()
+		self:RenderRoleCards(self.roleUnlockedSet or {})
+		log("[CollectionPopup] role page=" .. tostring(self.rolePage))
+	end
+
+	method void OnRolePageNext(ButtonClickEvent event)
+		-- Next page of role cards.
+		local totalPages = self:GetPageCount(#(self:GetRoleCollectionDefs()))
+		if self.rolePage >= totalPages then return end
+		self.rolePage = self.rolePage + 1
+		self:ClearRoleDetail()
+		self:RenderRoleCards(self.roleUnlockedSet or {})
+		log("[CollectionPopup] role page=" .. tostring(self.rolePage))
+	end
+
+	method void OnCostumePagePrev(ButtonClickEvent event)
+		-- Previous page of costume cards.
+		if self.costumePage <= 1 then return end
+		self.costumePage = self.costumePage - 1
+		self:ClearCostumeDetail()
+		self:RenderCostumeCards()
+		log("[CollectionPopup] costume page=" .. tostring(self.costumePage))
+	end
+
+	method void OnCostumePageNext(ButtonClickEvent event)
+		-- Next page of costume cards.
+		local totalPages = self:GetPageCount(#(self:GetCostumeCollectionItems()))
+		if self.costumePage >= totalPages then return end
+		self.costumePage = self.costumePage + 1
+		self:ClearCostumeDetail()
+		self:RenderCostumeCards()
+		log("[CollectionPopup] costume page=" .. tostring(self.costumePage))
+	end
+
+	method void WireCollectionPaginationEvents()
+		-- Connects the ◀ / ▶ arrows under both card grids.
+		local content = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot"
+		local ent
+
+		if self.rolePrevHandler == nil then
+			ent = _EntityService:GetEntityByPath(content .. "/RolePage/ListPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.rolePrevHandler = ent:ConnectEvent(ButtonClickEvent, self.OnRolePagePrev)
+			end
+		end
+		if self.roleNextHandler == nil then
+			ent = _EntityService:GetEntityByPath(content .. "/RolePage/ListPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.roleNextHandler = ent:ConnectEvent(ButtonClickEvent, self.OnRolePageNext)
+			end
+		end
+		if self.costumePrevHandler == nil then
+			ent = _EntityService:GetEntityByPath(content .. "/CostumePage/ListPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.costumePrevHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCostumePagePrev)
+			end
+		end
+		if self.costumeNextHandler == nil then
+			ent = _EntityService:GetEntityByPath(content .. "/CostumePage/ListPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.costumeNextHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCostumePageNext)
+			end
+		end
+		log("[CollectionPopup] pagination wired")
+	end
+
+	method void SetCollectionTab(string tab)
+		-- Switches the 도감 between the role page and the costume page.
+		local content = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot"
+		self.collectionTab = tab
+
+		local rolePage = _EntityService:GetEntityByPath(content .. "/RolePage")
+		if rolePage ~= nil and isvalid(rolePage) then rolePage:SetEnable(tab == "role") end
+
+		local costumePage = _EntityService:GetEntityByPath(content .. "/CostumePage")
+		if costumePage ~= nil and isvalid(costumePage) then costumePage:SetEnable(tab == "costume") end
+
+		self:HighlightCollectionTab(tab)
+
+		if tab == "costume" then
+			self:ClearCostumeDetail()
+			self:RenderCostumeCards()
+		else
+			self:ClearRoleDetail()
+			if _CollectionManager ~= nil then
+				_CollectionManager:RequestRoleCollection()
+			end
+		end
+		log("[CollectionPopup] tab=" .. tab)
+	end
+
+	method void HighlightCollectionTab(string tab)
+		-- Gold for the active tab, dim for the inactive one.
+		local nav = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/NavigationPanel"
+		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
+		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+
+		local roleBtn = _EntityService:GetEntityByPath(nav .. "/Tab_Role")
+		if roleBtn ~= nil and isvalid(roleBtn) and roleBtn.SpriteGUIRendererComponent ~= nil then
+			if tab == "role" then
+				roleBtn.SpriteGUIRendererComponent.Color = activeColor
+			else
+				roleBtn.SpriteGUIRendererComponent.Color = idleColor
+			end
+		end
+
+		local costumeBtn = _EntityService:GetEntityByPath(nav .. "/Tab_Costume")
+		if costumeBtn ~= nil and isvalid(costumeBtn) and costumeBtn.SpriteGUIRendererComponent ~= nil then
+			if tab == "costume" then
+				costumeBtn.SpriteGUIRendererComponent.Color = activeColor
+			else
+				costumeBtn.SpriteGUIRendererComponent.Color = idleColor
+			end
+		end
+	end
+
+	method table GetCostumeCollectionItems()
+		-- The costume dex reuses ShopController's catalog; MoneyManager keeps item.owned current.
+		if _ShopController == nil or _ShopController.costumeData == nil then return {} end
+		return _ShopController.costumeData
+	end
+
+	method void RenderCostumeCards()
+		-- Paints the costume cards: owned ones are lit, unowned stay covered by the lock overlay.
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage"
+		local grid = base .. "/ListPanel/CardGrid"
+		local items = self:GetCostumeCollectionItems()
+		local pageSize = self.COLLECTION_PAGE_SIZE
+		local totalPages = self:GetPageCount(#items)
+		if self.costumePage > totalPages then self.costumePage = totalPages end
+		if self.costumePage < 1 then self.costumePage = 1 end
+
+		-- Progress counts the whole catalog, not just the visible page.
+		local ownedCount = 0
+		for _, item in ipairs(items) do
+			if item.owned == true then ownedCount = ownedCount + 1 end
+		end
+
+		local offset = (self.costumePage - 1) * pageSize
+		for slot = 1, pageSize do
+			local cardPath = grid .. "/CostumeCard_0" .. tostring(slot)
+			local card = _EntityService:GetEntityByPath(cardPath)
+			if card ~= nil and isvalid(card) then
+				local item = items[offset + slot]
+				if item == nil then
+					-- Last page may not be full: hide the leftover slots.
+					card:SetEnable(false)
+				else
+					card:SetEnable(true)
+					local isOwned = item.owned == true
+
+					self:SetDetailText(cardPath .. "/CostumeNamePanel/CostumeNameText", item.name)
+
+					local lockOverlay = _EntityService:GetEntityByPath(cardPath .. "/LockOverlay")
+					if lockOverlay ~= nil and isvalid(lockOverlay) then lockOverlay:SetEnable(not isOwned) end
+
+					local lockIcon = _EntityService:GetEntityByPath(cardPath .. "/LockIcon")
+					if lockIcon ~= nil and isvalid(lockIcon) then lockIcon:SetEnable(not isOwned) end
+
+					local ownedBadge = _EntityService:GetEntityByPath(cardPath .. "/OwnedBadge")
+					if ownedBadge ~= nil and isvalid(ownedBadge) then ownedBadge:SetEnable(isOwned) end
+				end
+			end
+		end
+
+		self:UpdatePaginationUI(base, self.costumePage, totalPages)
+
+		local progress = _EntityService:GetEntityByPath(base .. "/CollectionHeader/ProgressText")
+		if progress ~= nil and isvalid(progress) and progress.TextComponent ~= nil then
+			progress.TextComponent.Text = tostring(ownedCount) .. "/" .. tostring(#items)
+		end
+
+		log("[CollectionPopup] costume cards rendered owned=" .. tostring(ownedCount) .. "/" .. tostring(#items))
+	end
+
+	method void OnCostumeCardClicked(integer slot)
+		-- `slot` is the 1..8 grid position; convert it to an index into the full catalog.
+		local index = (self.costumePage - 1) * self.COLLECTION_PAGE_SIZE + slot
+		log("[CollectionPopup] costume card clicked: slot=" .. tostring(slot) .. " index=" .. tostring(index))
+		self:ShowCostumeDetail(index)
+	end
+
+	method void ShowCostumeDetail(integer index)
+		-- Fills the costume DetailPanel from the clicked card's catalog entry.
+		local items = self:GetCostumeCollectionItems()
+		local item = items[index]
+		if item == nil then return end
+
+		self.selectedCostumeIndex = index
+
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage"
+		local detail = base .. "/DetailPanel"
+		local isOwned = item.owned == true
+
+		self:SetDetailText(detail .. "/CostumeNameText", item.name)
+		self:SetDetailText(detail .. "/CategoryRow/CategoryText", item.category)
+		self:SetDetailText(detail .. "/GradeRow/GradeText", item.grade)
+		self:SetDetailText(detail .. "/DescriptionText", item.desc)
+		if isOwned then
+			self:SetDetailText(detail .. "/AcquisitionText", "보유 중")
+		elseif _ShopController ~= nil then
+			self:SetDetailText(detail .. "/AcquisitionText", "상점에서 구매 (" .. _ShopController:FormatPrice(item) .. ")")
+		else
+			self:SetDetailText(detail .. "/AcquisitionText", "상점에서 구매")
+		end
+
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(false) end
+
+		local grid = base .. "/ListPanel/CardGrid"
+		local selectedSlot = index - (self.costumePage - 1) * self.COLLECTION_PAGE_SIZE
+		for slot = 1, self.COLLECTION_PAGE_SIZE do
+			local border = _EntityService:GetEntityByPath(grid .. "/CostumeCard_0" .. tostring(slot) .. "/SelectedBorder")
+			if border ~= nil and isvalid(border) then border:SetEnable(slot == selectedSlot) end
+		end
+	end
+
+	method void ClearCostumeDetail()
+		-- Returns the costume DetailPanel to its "pick a card" state.
+		self.selectedCostumeIndex = 0
+
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage"
+		local detail = base .. "/DetailPanel"
+
+		self:SetDetailText(detail .. "/CostumeNameText", "")
+		self:SetDetailText(detail .. "/CategoryRow/CategoryText", "")
+		self:SetDetailText(detail .. "/GradeRow/GradeText", "")
+		self:SetDetailText(detail .. "/DescriptionText", "")
+		self:SetDetailText(detail .. "/AcquisitionText", "")
+
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(true) end
+
+		local grid = base .. "/ListPanel/CardGrid"
+		for i = 1, 8 do
+			local border = _EntityService:GetEntityByPath(grid .. "/CostumeCard_0" .. tostring(i) .. "/SelectedBorder")
+			if border ~= nil and isvalid(border) then border:SetEnable(false) end
+		end
+	end
+
+	method void ClearRoleDetail()
+		-- Returns the DetailPanel to its "pick a card" state.
+		self.selectedRoleIndex = 0
+
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage"
+		local detail = base .. "/DetailPanel"
+
+		self:SetDetailText(detail .. "/RoleNameText", "")
+		self:SetDetailText(detail .. "/TeamRow/TeamText", "")
+		self:SetDetailText(detail .. "/SkillDescriptionText", "")
+		self:SetDetailText(detail .. "/DescriptionText", "")
+		self:SetDetailText(detail .. "/UnlockConditionText", "")
+
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(true) end
+
+		local grid = base .. "/ListPanel/CardGrid"
+		for i = 1, 8 do
+			local border = _EntityService:GetEntityByPath(grid .. "/RoleCard_0" .. tostring(i) .. "/SelectedBorder")
+			if border ~= nil and isvalid(border) then border:SetEnable(false) end
+		end
+	end
+
+	method void RenderRoleCards(table unlockedSet)
+		-- Paints all 8 role cards. The 4 real roles always show their name — they are public
+		-- knowledge in mafia, so hiding them behind "???" only withholds information. The lock
+		-- overlay marks "not experienced yet". Slots 5-8 are unannounced placeholders.
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage"
+		local defs = self:GetRoleCollectionDefs()
+		local pageSize = self.COLLECTION_PAGE_SIZE
+		local totalPages = self:GetPageCount(#defs)
+		if self.rolePage > totalPages then self.rolePage = totalPages end
+		if self.rolePage < 1 then self.rolePage = 1 end
+
+		-- Progress counts the whole collection, not just the visible page.
+		local unlockedCount = 0
+		local totalReal = 0
+		for _, def in ipairs(defs) do
+			if def.key ~= "" then
+				totalReal = totalReal + 1
+				if unlockedSet[def.key] == true then unlockedCount = unlockedCount + 1 end
+			end
+		end
+
+		local offset = (self.rolePage - 1) * pageSize
+		for slot = 1, pageSize do
+			local cardPath = base .. "/ListPanel/CardGrid/RoleCard_0" .. tostring(slot)
+			local card = _EntityService:GetEntityByPath(cardPath)
+			if card ~= nil and isvalid(card) then
+				local def = defs[offset + slot]
+				if def == nil then
+					-- Last page may not be full: hide the leftover slots.
+					card:SetEnable(false)
+				else
+					card:SetEnable(true)
+					local isReal = def.key ~= ""
+					local isUnlocked = isReal and unlockedSet[def.key] == true
+
+					local nameEnt = _EntityService:GetEntityByPath(cardPath .. "/RoleNamePanel/RoleNameText")
+					if nameEnt ~= nil and isvalid(nameEnt) and nameEnt.TextComponent ~= nil then
+						nameEnt.TextComponent.Text = def.name
+					end
+
+					-- Real roles: dim only while un-experienced. Placeholders: always locked.
+					local lockOverlay = _EntityService:GetEntityByPath(cardPath .. "/LockOverlay")
+					if lockOverlay ~= nil and isvalid(lockOverlay) then lockOverlay:SetEnable(not isUnlocked) end
+
+					local lockIcon = _EntityService:GetEntityByPath(cardPath .. "/LockIcon")
+					if lockIcon ~= nil and isvalid(lockIcon) then lockIcon:SetEnable(not isUnlocked) end
+
+					-- Mirrors the costume tab's OwnedBadge: lights up once the role is collected.
+					self:SetDetailText(cardPath .. "/CollectedBadge/CollectedText", "수집")
+					local badge = _EntityService:GetEntityByPath(cardPath .. "/CollectedBadge")
+					if badge ~= nil and isvalid(badge) then badge:SetEnable(isUnlocked) end
+				end
+			end
+		end
+
+		self:UpdatePaginationUI(base, self.rolePage, totalPages)
+
+		local progress = _EntityService:GetEntityByPath(base .. "/CollectionHeader/ProgressText")
+		if progress ~= nil and isvalid(progress) and progress.TextComponent ~= nil then
+			progress.TextComponent.Text = tostring(unlockedCount) .. "/" .. tostring(totalReal)
+		end
+
+		log("[CollectionPopup] role cards rendered unlocked=" .. tostring(unlockedCount) .. "/" .. tostring(totalReal))
 	end
 
 	method void SetBagPopup(boolean active)
@@ -1539,11 +2023,140 @@ script LobbyController extends Component
 				log_warning("[CollectionPopup] BottomCloseBtn not found")
 			end
 		end
+
+		self:WireRoleCardEvents()
+	end
+
+	method void WireRoleCardEvents()
+		-- Connects each role card so clicking it drives the right-hand DetailPanel.
+		if self.roleCardHandlers ~= nil then return end
+		self.roleCardHandlers = {}
+
+		local grid = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid"
+		for i = 1, 8 do
+			local card = _EntityService:GetEntityByPath(grid .. "/RoleCard_0" .. tostring(i))
+			if card ~= nil and isvalid(card) then
+				local capturedIndex = i
+				local h = card:ConnectEvent(ButtonClickEvent, function() self:OnRoleCardClicked(capturedIndex) end)
+				self.roleCardHandlers[#self.roleCardHandlers + 1] = { entity = card, eventHandler = h }
+			else
+				log_warning("[CollectionPopup] RoleCard_0" .. tostring(i) .. " not found")
+			end
+		end
+		log("[CollectionPopup] role card clicks wired: " .. tostring(#self.roleCardHandlers))
+
+		self:WireCostumeCardEvents()
+		self:WireCollectionTabEvents()
+		self:WireCollectionPaginationEvents()
+	end
+
+	method void WireCostumeCardEvents()
+		-- Connects each costume card so clicking it drives the costume DetailPanel.
+		if self.costumeCardHandlers ~= nil then return end
+		self.costumeCardHandlers = {}
+
+		local grid = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage/ListPanel/CardGrid"
+		for i = 1, 8 do
+			local card = _EntityService:GetEntityByPath(grid .. "/CostumeCard_0" .. tostring(i))
+			if card ~= nil and isvalid(card) then
+				local capturedIndex = i
+				local h = card:ConnectEvent(ButtonClickEvent, function() self:OnCostumeCardClicked(capturedIndex) end)
+				self.costumeCardHandlers[#self.costumeCardHandlers + 1] = { entity = card, eventHandler = h }
+			end
+		end
+		log("[CollectionPopup] costume card clicks wired: " .. tostring(#self.costumeCardHandlers))
+	end
+
+	method void WireCollectionTabEvents()
+		-- Connects the 역할/의상 tabs on the left NavigationPanel.
+		local nav = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/NavigationPanel"
+
+		if self.collectionTabRoleHandler == nil then
+			local ent = _EntityService:GetEntityByPath(nav .. "/Tab_Role")
+			if ent ~= nil and isvalid(ent) then
+				self.collectionTabRoleHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCollectionRoleTabClicked)
+			else
+				log_warning("[CollectionPopup] Tab_Role not found")
+			end
+		end
+
+		if self.collectionTabCostumeHandler == nil then
+			local ent = _EntityService:GetEntityByPath(nav .. "/Tab_Costume")
+			if ent ~= nil and isvalid(ent) then
+				self.collectionTabCostumeHandler = ent:ConnectEvent(ButtonClickEvent, self.OnCollectionCostumeTabClicked)
+			else
+				log_warning("[CollectionPopup] Tab_Costume not found")
+			end
+		end
+		log("[CollectionPopup] tabs wired")
+	end
+
+	method void OnCollectionRoleTabClicked(ButtonClickEvent event)
+		-- 역할 도감 tab.
+		self:SetCollectionTab("role")
+	end
+
+	method void OnCollectionCostumeTabClicked(ButtonClickEvent event)
+		-- 의상 도감 tab.
+		self:SetCollectionTab("costume")
 	end
 
 	method void DisconnectCollectionPopupEvents()
-		-- Disconnects CollectionPopup close-button handlers.
+		-- Disconnects CollectionPopup close-button and role-card handlers.
 		local ent
+
+		if self.roleCardHandlers ~= nil then
+			for _, rec in ipairs(self.roleCardHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.roleCardHandlers = nil
+		end
+
+		if self.costumeCardHandlers ~= nil then
+			for _, rec in ipairs(self.costumeCardHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.costumeCardHandlers = nil
+		end
+
+		local nav = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/NavigationPanel"
+		if self.collectionTabRoleHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(nav .. "/Tab_Role")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.collectionTabRoleHandler) end
+			self.collectionTabRoleHandler = nil
+		end
+
+		if self.collectionTabCostumeHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(nav .. "/Tab_Costume")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.collectionTabCostumeHandler) end
+			self.collectionTabCostumeHandler = nil
+		end
+
+		local content = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot"
+		if self.rolePrevHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(content .. "/RolePage/ListPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.rolePrevHandler) end
+			self.rolePrevHandler = nil
+		end
+		if self.roleNextHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(content .. "/RolePage/ListPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.roleNextHandler) end
+			self.roleNextHandler = nil
+		end
+		if self.costumePrevHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(content .. "/CostumePage/ListPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.costumePrevHandler) end
+			self.costumePrevHandler = nil
+		end
+		if self.costumeNextHandler ~= nil then
+			ent = _EntityService:GetEntityByPath(content .. "/CostumePage/ListPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.costumeNextHandler) end
+			self.costumeNextHandler = nil
+		end
 
 		if self.collectionPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/Header/CloseBtn")
