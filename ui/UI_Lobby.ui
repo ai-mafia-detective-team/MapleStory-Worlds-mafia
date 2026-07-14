@@ -45667,11 +45667,11 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 330,
+                "x": 277,
                 "y": 317
               },
               "OffsetMin": {
-                "x": 110,
+                "x": 57,
                 "y": -389
               },
               "Pivot": {
@@ -45690,7 +45690,7 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 110,
+                "x": 57,
                 "y": -36
               },
               "Position": {
@@ -47801,11 +47801,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 410,
-                "y": -20
+                "y": -60
               },
               "OffsetMin": {
                 "x": -410,
-                "y": -570
+                "y": -556
               },
               "Pivot": {
                 "x": 0.5,
@@ -47813,7 +47813,7 @@
               },
               "RectSize": {
                 "x": 820,
-                "y": 550
+                "y": 496
               },
               "UIMode": 1,
               "UIScale": {
@@ -47824,7 +47824,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -20
+                "y": -60
               },
               "Position": {
                 "x": 0,
@@ -47889,27 +47889,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -116,
-                "y": 138
+                "x": -211,
+                "y": 248
               },
               "OffsetMin": {
-                "x": -306,
-                "y": -108
+                "x": -401,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -47924,7 +47924,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -48081,7 +48081,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -48227,7 +48227,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -48253,20 +48253,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -48277,7 +48277,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -48373,7 +48373,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -48676,7 +48676,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -48702,20 +48702,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -48822,7 +48822,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -48848,20 +48848,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -48968,7 +48968,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -49114,7 +49114,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -49275,27 +49275,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 88,
-                "y": 138
+                "x": -7,
+                "y": 248
               },
               "OffsetMin": {
-                "x": -102,
-                "y": -108
+                "x": -197,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -49310,7 +49310,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -49467,7 +49467,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -49613,7 +49613,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -49639,20 +49639,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -49663,7 +49663,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -49759,7 +49759,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50062,7 +50062,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50088,20 +50088,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -50208,7 +50208,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50234,20 +50234,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -50354,7 +50354,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50500,7 +50500,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50661,27 +50661,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 292,
-                "y": 138
+                "x": 197,
+                "y": 248
               },
               "OffsetMin": {
-                "x": 102,
-                "y": -108
+                "x": 7,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -50696,7 +50696,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -50853,7 +50853,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -50999,7 +50999,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -51025,20 +51025,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -51049,7 +51049,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -51145,7 +51145,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -51448,7 +51448,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -51474,20 +51474,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -51594,7 +51594,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -51620,20 +51620,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -51740,7 +51740,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -51886,7 +51886,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -52047,27 +52047,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 496,
-                "y": 138
+                "x": 401,
+                "y": 248
               },
               "OffsetMin": {
-                "x": 306,
-                "y": -108
+                "x": 211,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -52082,7 +52082,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -52239,7 +52239,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -52385,7 +52385,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -52411,20 +52411,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -52435,7 +52435,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -52531,7 +52531,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -52834,7 +52834,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -52860,20 +52860,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -52980,7 +52980,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -53006,20 +53006,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -53126,7 +53126,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -53272,7 +53272,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -53433,27 +53433,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -116,
-                "y": -126
+                "x": -211,
+                "y": -2
               },
               "OffsetMin": {
-                "x": -306,
-                "y": -372
+                "x": -401,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -53468,7 +53468,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -53625,7 +53625,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -53771,7 +53771,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -53797,20 +53797,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -53821,7 +53821,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -53917,7 +53917,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -54220,7 +54220,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -54246,20 +54246,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -54366,7 +54366,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -54392,20 +54392,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -54512,7 +54512,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -54658,7 +54658,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -54819,27 +54819,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 88,
-                "y": -126
+                "x": -7,
+                "y": -2
               },
               "OffsetMin": {
-                "x": -102,
-                "y": -372
+                "x": -197,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -54854,7 +54854,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -55011,7 +55011,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -55157,7 +55157,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -55183,20 +55183,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -55207,7 +55207,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -55303,7 +55303,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -55606,7 +55606,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -55632,20 +55632,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -55752,7 +55752,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -55778,20 +55778,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -55898,7 +55898,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -56044,7 +56044,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -56205,27 +56205,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 292,
-                "y": -126
+                "x": 197,
+                "y": -2
               },
               "OffsetMin": {
-                "x": 102,
-                "y": -372
+                "x": 7,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -56240,7 +56240,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -56397,7 +56397,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -56543,7 +56543,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -56569,20 +56569,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -56593,7 +56593,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -56689,7 +56689,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -56992,7 +56992,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57018,20 +57018,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -57138,7 +57138,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57164,20 +57164,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -57284,7 +57284,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57430,7 +57430,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57591,27 +57591,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 496,
-                "y": -126
+                "x": 401,
+                "y": -2
               },
               "OffsetMin": {
-                "x": 306,
-                "y": -372
+                "x": 211,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -57626,7 +57626,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -57783,7 +57783,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57929,7 +57929,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -57955,20 +57955,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 66,
-                "y": -78
+                "x": 64,
+                "y": -82
               },
               "OffsetMin": {
-                "x": -66,
-                "y": -196
+                "x": -64,
+                "y": -208
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 132,
-                "y": 118
+                "x": 128,
+                "y": 126
               },
               "UIMode": 1,
               "UIScale": {
@@ -57979,7 +57979,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -78
+                "y": -82
               },
               "Position": {
                 "x": 0,
@@ -58075,7 +58075,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -58378,7 +58378,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -58404,20 +58404,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 62,
+                "x": 72,
                 "y": -20
               },
               "OffsetMin": {
                 "x": 20,
-                "y": -36
+                "y": -38
               },
               "Pivot": {
                 "x": 0,
                 "y": 1
               },
               "RectSize": {
-                "x": 42,
-                "y": 16
+                "x": 52,
+                "y": 18
               },
               "UIMode": 1,
               "UIScale": {
@@ -58524,7 +58524,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -58550,20 +58550,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -58670,7 +58670,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -58816,7 +58816,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -66103,11 +66103,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 410,
-                "y": -20
+                "y": -8
               },
               "OffsetMin": {
                 "x": -410,
-                "y": -520
+                "y": -504
               },
               "Pivot": {
                 "x": 0.5,
@@ -66115,7 +66115,7 @@
               },
               "RectSize": {
                 "x": 820,
-                "y": 500
+                "y": 496
               },
               "UIMode": 1,
               "UIScale": {
@@ -66126,7 +66126,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -20
+                "y": -8
               },
               "Position": {
                 "x": 0,
@@ -66191,27 +66191,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -116,
-                "y": 138
+                "x": -211,
+                "y": 248
               },
               "OffsetMin": {
-                "x": -306,
-                "y": -108
+                "x": -401,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -66226,7 +66226,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -66383,7 +66383,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -66529,7 +66529,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -66675,7 +66675,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -66978,7 +66978,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -67124,7 +67124,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -67427,7 +67427,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -67453,20 +67453,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -67880,27 +67880,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 88,
-                "y": 138
+                "x": -7,
+                "y": 248
               },
               "OffsetMin": {
-                "x": -102,
-                "y": -108
+                "x": -197,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -67915,7 +67915,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -68072,7 +68072,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -68218,7 +68218,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -68364,7 +68364,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -68667,7 +68667,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -68813,7 +68813,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -69116,7 +69116,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -69142,20 +69142,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -69569,27 +69569,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 292,
-                "y": 138
+                "x": 197,
+                "y": 248
               },
               "OffsetMin": {
-                "x": 102,
-                "y": -108
+                "x": 7,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -69604,7 +69604,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -69761,7 +69761,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -69907,7 +69907,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -70053,7 +70053,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -70356,7 +70356,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -70502,7 +70502,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -70805,7 +70805,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -70831,20 +70831,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -71258,27 +71258,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 496,
-                "y": 138
+                "x": 401,
+                "y": 248
               },
               "OffsetMin": {
-                "x": 306,
-                "y": -108
+                "x": 211,
+                "y": 2
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -71293,7 +71293,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": 138
+                "y": 125
               },
               "Position": {
                 "x": 0,
@@ -71450,7 +71450,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -71596,7 +71596,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -71742,7 +71742,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -72045,7 +72045,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -72191,7 +72191,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -72494,7 +72494,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -72520,20 +72520,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -72947,27 +72947,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -116,
-                "y": -126
+                "x": -211,
+                "y": -2
               },
               "OffsetMin": {
-                "x": -306,
-                "y": -372
+                "x": -401,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -72982,7 +72982,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -73139,7 +73139,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -73285,7 +73285,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -73431,7 +73431,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -73734,7 +73734,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -73880,7 +73880,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -74183,7 +74183,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -74209,20 +74209,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -74636,27 +74636,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 88,
-                "y": -126
+                "x": -7,
+                "y": -2
               },
               "OffsetMin": {
-                "x": -102,
-                "y": -372
+                "x": -197,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -74671,7 +74671,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -74828,7 +74828,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -74974,7 +74974,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -75120,7 +75120,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -75423,7 +75423,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -75569,7 +75569,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -75872,7 +75872,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -75898,20 +75898,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -76325,27 +76325,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 292,
-                "y": -126
+                "x": 197,
+                "y": -2
               },
               "OffsetMin": {
-                "x": 102,
-                "y": -372
+                "x": 7,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -76360,7 +76360,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -76517,7 +76517,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -76663,7 +76663,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -76809,7 +76809,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -77112,7 +77112,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -77258,7 +77258,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -77561,7 +77561,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -77587,20 +77587,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -78014,27 +78014,27 @@
             {
               "@type": "MOD.Core.UITransformComponent",
               "ActivePlatform": 255,
-              "AlignmentOption": 4,
+              "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "AnchorsMin": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 496,
-                "y": -126
+                "x": 401,
+                "y": -2
               },
               "OffsetMin": {
-                "x": 306,
-                "y": -372
+                "x": 211,
+                "y": -248
               },
               "Pivot": {
-                "x": 0,
-                "y": 1
+                "x": 0.5,
+                "y": 0.5
               },
               "RectSize": {
                 "x": 190,
@@ -78049,7 +78049,7 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": -126
+                "y": -125
               },
               "Position": {
                 "x": 0,
@@ -78206,7 +78206,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -78352,7 +78352,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -78498,7 +78498,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -78801,7 +78801,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -78947,7 +78947,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -79250,7 +79250,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 0,
           "pathConstraints": "////////////",
           "revision": 0,
           "origin": {
@@ -79276,20 +79276,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0,
-                "y": 0
+                "x": 6,
+                "y": 6
               },
               "OffsetMin": {
-                "x": 0,
-                "y": 0
+                "x": -6,
+                "y": -6
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 190,
-                "y": 246
+                "x": 202,
+                "y": 258
               },
               "UIMode": 1,
               "UIScale": {
@@ -122980,7 +122980,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -123126,7 +123126,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -123272,7 +123272,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -123706,7 +123706,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -123909,7 +123909,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -124343,7 +124343,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -124777,7 +124777,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -124803,20 +124803,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -124875,7 +124875,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -125176,7 +125176,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -125322,7 +125322,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -125468,7 +125468,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -125902,7 +125902,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -126105,7 +126105,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -126539,7 +126539,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -126973,7 +126973,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -126999,20 +126999,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -127071,7 +127071,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -127372,7 +127372,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -127518,7 +127518,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -127664,7 +127664,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -128098,7 +128098,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -128301,7 +128301,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -128735,7 +128735,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -129169,7 +129169,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -129195,20 +129195,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -129267,7 +129267,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -129568,7 +129568,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -129714,7 +129714,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -129860,7 +129860,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -130294,7 +130294,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -130497,7 +130497,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -130931,7 +130931,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -131365,7 +131365,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -131391,20 +131391,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -131463,7 +131463,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -131764,7 +131764,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -131910,7 +131910,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -132056,7 +132056,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -132490,7 +132490,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -132693,7 +132693,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -133127,7 +133127,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -133561,7 +133561,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -133587,20 +133587,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -133659,7 +133659,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -133960,7 +133960,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -134106,7 +134106,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -134252,7 +134252,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -134686,7 +134686,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -134889,7 +134889,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -135323,7 +135323,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -135757,7 +135757,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -135783,20 +135783,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -135855,7 +135855,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -136156,7 +136156,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -136302,7 +136302,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -136448,7 +136448,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -136882,7 +136882,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -137085,7 +137085,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -137519,7 +137519,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -137953,7 +137953,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -137979,20 +137979,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -138051,7 +138051,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -138352,7 +138352,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -138498,7 +138498,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -138644,7 +138644,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -139078,7 +139078,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -139281,7 +139281,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -139715,7 +139715,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -140149,7 +140149,7 @@
           "enable": false,
           "visible": false,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 0,
           "pathConstraints": "///////////",
           "revision": 0,
           "origin": {
@@ -140175,20 +140175,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 117.5,
-                "y": 122.5
+                "x": 123.5,
+                "y": 128.5
               },
               "OffsetMin": {
-                "x": -117.5,
-                "y": -122.5
+                "x": -123.5,
+                "y": -128.5
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 235,
-                "y": 245
+                "x": 247,
+                "y": 257
               },
               "UIMode": 1,
               "UIScale": {
@@ -140247,7 +140247,7 @@
                 "r": 0.3843137254901961,
                 "g": 0.8392156862745098,
                 "b": 1,
-                "a": 0
+                "a": 1
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -146490,6 +146490,2430 @@
               "SizeFit": false,
               "SortingLayer": "UI",
               "Text": "닫기",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "6d531eb7-10f8-4e10-ad15-ca320a94d9b1",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "9bfd2603-6b47-4084-93f8-b12d63669c86",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "e683905c-01f2-40f1-8c3b-64adfaf06b3a",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "0f889796-1c77-4db5-bca3-a9af428d2c52",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "6468ead3-83df-4cf6-87b6-6d336e307362",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "0f35e82f-2310-45dd-9eb6-fb922fe75dbe",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "ee785268-8540-481e-a3cf-8ea2010ac0d0",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "fefe1f6d-f181-4629-a56d-847123778b5b",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "4231efd9-fa1f-467d-b40e-36674af8f691",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "979d2d07-f0c4-4d9b-a97a-2abb4ee8a791",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "36924705-9d37-4482-8b8b-dc53dbaf3c6e",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "6593e4f0-876d-49da-8144-ac9fd492c372",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "cea45391-0cd4-45bb-aecc-f3cce76be153",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "3c7898bc-559e-4794-8502-3a21c51b90d1",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "bda6ae6a-4cd4-4569-a1f5-b16ba8c0608c",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/CollectedBadge",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "CollectedBadge",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/CollectedBadge",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 5,
+          "pathConstraints": "////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 5,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 1,
+                "y": 1
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -35,
+                "y": -22
+              },
+              "OffsetMin": {
+                "x": -93,
+                "y": -46
+              },
+              "Pivot": {
+                "x": 1,
+                "y": 1
+              },
+              "RectSize": {
+                "x": 58,
+                "y": 24
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -35,
+                "y": -22
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "Enable": true,
+              "Type": 0,
+              "RaycastTarget": false,
+              "Color": {
+                "r": 0.30980392156862746,
+                "g": 0.7058823529411765,
+                "b": 0.4666666666666667,
+                "a": 1
+              },
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              }
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "306f5a20-ad0b-4c03-8818-2da3a22ff472",
+        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/CollectedBadge/CollectedText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "CollectedText",
+          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/CollectedBadge/CollectedText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////////////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1,
+                "y": 1
+              },
+              "AnchorsMin": {
+                "x": 0,
+                "y": 0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 0,
+                "y": 0
+              },
+              "OffsetMin": {
+                "x": 0,
+                "y": 0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 56,
+                "y": 22
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "Position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "QuaternionRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "Scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "IgnoreMapLayerCheck": false,
+              "LocalPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "LocalScale": {
+                "x": 1,
+                "y": 1
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1,
+              "PreserveAspect": false,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "FillAmount": 1,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              },
+              "OutlineWidth": 3,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100,
+              "ConstraintY": 100,
+              "DropShadow": false,
+              "DropShadowAngle": 120,
+              "DropShadowColor": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9450980392156862,
+                "g": 0.9529411764705882,
+                "b": 0.9647058823529412,
+                "a": 1
+              },
+              "FontSize": 15,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1
+              },
+              "OutlineDistance": {
+                "x": 1,
+                "y": -1
+              },
+              "OutlineWidth": 1,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "보유",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
