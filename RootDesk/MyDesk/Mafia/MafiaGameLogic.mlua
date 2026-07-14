@@ -169,7 +169,7 @@ script MafiaGameLogic extends Logic
 		    self.MAX_PLAYERS = 8
 		    self.RoomMaxPlayers = 8
 		    self.MafiaPlayerCount = 2
-		    log("[Mafia] 寃뚯엫 濡쒖쭅 珥덇린???꾨즺. DebugMode=" .. tostring(self.DebugMode))
+		    log("[Mafia] 게임 로직 초기화 완료. DebugMode=" .. tostring(self.DebugMode))
 	end
 
 	@ExecSpace("ServerOnly")
@@ -287,7 +287,7 @@ script MafiaGameLogic extends Logic
 		        " mafia=" .. tostring(mafiaCount))
 	end
 
-	-- LOBBY: ?덈줈 ?낆옣???뚮젅?댁뼱瑜?媛먯??댁꽌 ?쒖꽌?濡?諛?諛곗젙 + ?붾젅?ы듃
+	-- LOBBY: 새로 입장한 플레이어를 감지해서 순서대로 방 배정 + 텔레포트
 	@ExecSpace("ServerOnly")
 	method void CheckNewLobbyPlayers()
 		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
@@ -303,7 +303,7 @@ script MafiaGameLogic extends Logic
 		                    local floorEnt = _EntityService:GetEntityByPath("/maps/map01/" .. floors[roomId])
 		                    if floorEnt ~= nil then
 		                        _TeleportService:TeleportToEntity(playerEnt, floorEnt)
-		                        log("[Lobby] ?낆옣 諛곗젙: " .. uid .. " ??諛?" .. roomId)
+		                        log("[Lobby] 입장 배정: " .. uid .. " → 방 " .. roomId)
 		                    end
 		                end
 		            end
@@ -317,7 +317,7 @@ script MafiaGameLogic extends Logic
 		    self.InternalTimer = duration
 		    self.PhaseTimer    = duration
 		    self.MaxPhaseTime  = duration
-		    log("[Mafia] ?섏씠利?" .. phase .. " duration=" .. duration)
+		    log("[Mafia] 페이즈 " .. phase .. " duration=" .. duration)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -354,6 +354,10 @@ script MafiaGameLogic extends Logic
 		                _QAAchievementManager:ReportServerAction(uid, "ROLE_ASSIGNED", tostring(r))
 		            end
 		        end
+		        -- 도감은 업적과 별개다: 업적의 roles는 매달 초기화되지만 도감 해금은 영구다.
+		        if string.sub(tostring(uid), 1, 4) ~= "BOT_" and r ~= nil and _CollectionManager ~= nil then
+		            _CollectionManager:UnlockRole(tostring(uid), tostring(r))
+		        end
 		        if r ~= nil then
 		            roleParts[#roleParts + 1] = uid
 		            roleParts[#roleParts + 1] = tostring(r)
@@ -364,7 +368,7 @@ script MafiaGameLogic extends Logic
 		    self.skipPlayers       = {}
 		    self.DaySkipStatusList = ""
 		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME)
-		    log("[Mafia] 寃뚯엫 ?쒖옉!")
+		    log("[Mafia] 게임 시작!")
 	end
 
 	@ExecSpace("ServerOnly")
@@ -378,7 +382,7 @@ script MafiaGameLogic extends Logic
 		    if nextIndex <= n then roles[nextIndex] = self.ROLE_POLICE; nextIndex = nextIndex + 1 end
 		    if nextIndex <= n then roles[nextIndex] = self.ROLE_DOCTOR; nextIndex = nextIndex + 1 end
 		    for i = nextIndex, n do roles[i] = self.ROLE_CITIZEN end
-		    -- 7??湲곗?: 留덊뵾?? 寃쎌같1 ?섏궗1 ?쒕?3
+		    -- 7인 기준: 마피아2 경찰1 의사1 시민3
 		    for i = n, 2, -1 do
 		        local j = _UtilLogic:RandomIntegerRange(1, i)
 		        local tmp = roles[i]; roles[i] = roles[j]; roles[j] = tmp
@@ -388,7 +392,7 @@ script MafiaGameLogic extends Logic
 		    for i, uid in ipairs(users) do
 		        self.playerRoles[uid] = roles[i]
 		        self.playerAlive[uid] = true
-		        log("[Mafia] ??븷 諛곗젙: " .. uid .. " -> " .. roles[i])
+		        log("[Mafia] 역할 배정: " .. uid .. " -> " .. roles[i])
 		    end
 	end
 
@@ -405,7 +409,7 @@ script MafiaGameLogic extends Logic
 		    self.playerRooms = {}
 		    for i, uid in ipairs(users) do
 		        self.playerRooms[uid] = rooms[i]
-		        log("[Mafia] 諛?諛곗젙: " .. uid .. " -> " .. rooms[i])
+		        log("[Mafia] 방 배정: " .. uid .. " -> " .. rooms[i])
 		    end
 	end
 
@@ -431,7 +435,7 @@ script MafiaGameLogic extends Logic
 		    end
 		    if mafiaTarget ~= "" then
 		        if self.DoctorTarget == mafiaTarget then
-		            log("[Mafia] ?섏궗 蹂댄샇: " .. mafiaTarget)
+		            log("[Mafia] 의사 보호: " .. mafiaTarget)
 		        else
 		            killed = mafiaTarget
 		            self:KillPlayer(killed)
@@ -439,7 +443,7 @@ script MafiaGameLogic extends Logic
 		    end
 		    self.MorningKilled = killed
 		    self:SetPhase(self.PHASE_MORNING, self.MORNING_TIME)
-		    log("[Mafia] ?꾩묠. ?щ쭩=" .. killed)
+		    log("[Mafia] 아침. 사망=" .. killed)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -494,7 +498,7 @@ script MafiaGameLogic extends Logic
 	method void SubmitVote(string voterId, string targetId)
 		    if self.CurrentPhase ~= self.PHASE_MEETING then return end
 		    if self.voteSubmitted[voterId] ~= nil then return end
-		    -- ?ㅽ궢(targetId="")? ?앹〈 ?щ? 泥댄겕 ?놁씠 ?덉슜
+		    -- 스킵(targetId="")은 생존 여부 체크 없이 허용
 		    if targetId ~= "" and not self.playerAlive[targetId] then return end
 		    local recorded = (targetId ~= "") and targetId or "skip"
 		    self.voteSubmitted[voterId] = recorded
@@ -502,7 +506,7 @@ script MafiaGameLogic extends Logic
 		        self.voteCount[targetId] = (self.voteCount[targetId] or 0) + 1
 		    end
 		    self:UpdateVoteStatusList()
-		    log("[Mafia] ?ы몴: " .. voterId .. " -> " .. recorded)
+		    log("[Mafia] 투표: " .. voterId .. " -> " .. recorded)
 		    if string.sub(tostring(voterId), 1, 4) ~= "BOT_" and _QAAchievementManager ~= nil then
 		        _QAAchievementManager:ReportServerAction(voterId, "VOTE_COMPLETE", recorded)
 		    end
@@ -547,10 +551,10 @@ script MafiaGameLogic extends Logic
 		    if not tie and maxUser ~= "" and maxVotes > 0 then
 		        self.ExecuteTarget = maxUser
 		        self:KillPlayer(maxUser)
-		        log("[Mafia] 泥섑삎: " .. maxUser)
+		        log("[Mafia] 처형: " .. maxUser)
 		    else
 		        self.ExecuteTarget = ""
-		        log("[Mafia] 泥섑삎 ?놁쓬 (?숈젏)")
+		        log("[Mafia] 처형 없음 (동점)")
 		    end
 		    self:SetPhase(self.PHASE_MEETING_RESULT, self.RESULT_TIME)
 	end
@@ -573,11 +577,11 @@ script MafiaGameLogic extends Logic
 		    if mafiaAlive == 0 then
 		        self.WinnerRole = self.ROLE_CITIZEN
 		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] ?쒕? ?밸━")
+		        log("[Mafia] 시민 승리")
 		    elseif mafiaAlive >= citizenAlive then
 		        self.WinnerRole = self.ROLE_MAFIA
 		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] 留덊뵾???밸━")
+		        log("[Mafia] 마피아 승리")
 		    else
 		        self:BeginNight()
 		    end
@@ -587,7 +591,7 @@ script MafiaGameLogic extends Logic
 	method void KillPlayer(string userId)
 		    self.playerAlive[userId] = false
 		    self:UpdateAlivePlayersList()
-		    log("[Mafia] ?щ쭩: " .. userId)
+		    log("[Mafia] 사망: " .. userId)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -607,7 +611,7 @@ script MafiaGameLogic extends Logic
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.playerRoles[mafiaId] ~= self.ROLE_MAFIA then return end
 		    self.MafiaTarget = targetId
-		    log("[Mafia] 留덊뵾????? " .. targetId)
+		    log("[Mafia] 마피아 지목: " .. targetId)
 	end
 
 	@ExecSpace("Server")
@@ -616,7 +620,7 @@ script MafiaGameLogic extends Logic
 		    if self.playerRoles[policeId] ~= self.ROLE_POLICE then return end
 		    self.PoliceTarget = targetId
 		    self.PoliceResult = (self.playerRoles[targetId] == self.ROLE_MAFIA)
-		    log("[Mafia] 寃쎌같 議곗궗: " .. targetId .. " 留덊뵾??" .. tostring(self.PoliceResult))
+		    log("[Mafia] 경찰 조사: " .. targetId .. " 마피아=" .. tostring(self.PoliceResult))
 	end
 
 	@ExecSpace("Server")
@@ -624,7 +628,7 @@ script MafiaGameLogic extends Logic
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.playerRoles[doctorId] ~= self.ROLE_DOCTOR then return end
 		    self.DoctorTarget = targetId
-		    log("[Mafia] ?섏궗 蹂댄샇: " .. targetId)
+		    log("[Mafia] 의사 보호: " .. targetId)
 	end
 
 	@ExecSpace("Server")
@@ -681,7 +685,7 @@ script MafiaGameLogic extends Logic
 		                        local floorEntity = _EntityService:GetEntityByPath("/maps/map01/" .. floorName)
 		                        if floorEntity ~= nil then
 		                            _TeleportService:TeleportToEntity(playerEntity, floorEntity)
-		                            log("[Mafia] 諛??붾젅?ы듃: " .. uid .. " -> " .. floorName)
+		                            log("[Mafia] 방 텔레포트: " .. uid .. " -> " .. floorName)
 		                        end
 		                    end
 		                end
@@ -731,19 +735,19 @@ script MafiaGameLogic extends Logic
 		    for i = 1, needed do
 		        local botId = "Bot_" .. i
 		        self.botIds[#self.botIds + 1] = botId
-		        log("[Mafia] 遊?異붽?: " .. botId)
+		        log("[Mafia] 봇 추가: " .. botId)
 		    end
 	end
 
 	@ExecSpace("ServerOnly")
 	method string GetRoleName(integer role)
-		    if role == self.ROLE_MAFIA      then return "mafia"
-		    elseif role == self.ROLE_POLICE then return "寃쎌같"
-		    elseif role == self.ROLE_DOCTOR then return "?섏궗"
-		    else return "?쒕?" end
+		    if role == self.ROLE_MAFIA      then return "마피아"
+		    elseif role == self.ROLE_POLICE then return "경찰"
+		    elseif role == self.ROLE_DOCTOR then return "의사"
+		    else return "시민" end
 	end
 
-	-- 諛?踰덊샇濡?洹?諛⑹뿉 諛곗젙???뚮젅?댁뼱 UID 諛섑솚 (?놁쑝硫?"")
+	-- 방 번호로 그 방에 배정된 플레이어 UID 반환 (없으면 "")
 	@ExecSpace("ServerOnly")
 	method string GetPlayerByRoom(integer roomIndex)
 		    for uid, room in pairs(self.playerRooms) do
@@ -752,19 +756,19 @@ script MafiaGameLogic extends Logic
 		    return ""
 	end
 
-	-- ?대씪?댁뼵?멸? 諛?踰덊샇瑜??좏깮?댁꽌 諛??됰룞 ?쒖텧
-	-- actorId: ?됰룞?섎뒗 ?뚮젅?댁뼱 UID, targetRoom: ?좏깮??諛?踰덊샇 (1~6)
+	-- 클라이언트가 방 번호를 선택해서 밤 행동 제출
+	-- actorId: 행동하는 플레이어 UID, targetRoom: 선택한 방 번호 (1~6)
 	@ExecSpace("Server")
 	method void SubmitNightAction(string actorId, integer targetRoom)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then
-		        log("[Mafia] SubmitNightAction: 諛ㅼ씠 ?꾨떂")
+		        log("[Mafia] SubmitNightAction: 밤이 아님")
 		        return
 		    end
 		    local role = self.playerRoles[actorId]
 		    if role == nil then return end
 		    local targetId = self:GetPlayerByRoom(targetRoom)
 		    if targetId == "" then
-		        log("[Mafia] SubmitNightAction: 諛?" .. targetRoom .. " ???뚮젅?댁뼱 ?놁쓬")
+		        log("[Mafia] SubmitNightAction: 방 " .. targetRoom .. " 에 플레이어 없음")
 		        return
 		    end
 		    if role == self.ROLE_MAFIA then
@@ -774,10 +778,10 @@ script MafiaGameLogic extends Logic
 		    elseif role == self.ROLE_DOCTOR then
 		        self:DoctorProtect(actorId, targetId)
 		    end
-		    log("[Mafia] SubmitNightAction: " .. actorId .. " ??븷=" .. role .. " 諛?" .. targetRoom .. " ???" .. targetId)
+		    log("[Mafia] SubmitNightAction: " .. actorId .. " 역할=" .. role .. " 방 " .. targetRoom .. " 대상=" .. targetId)
 	end
 
-	-- LOBBY: 鍮?諛?踰덊샇 諛섑솚 (?놁쑝硫?-1)
+	-- LOBBY: 빈 방 번호 반환 (없으면 -1)
 	@ExecSpace("ServerOnly")
 	method integer FindEmptyRoom()
 		    local used = {}
@@ -790,20 +794,20 @@ script MafiaGameLogic extends Logic
 		    return -1
 	end
 
-	-- LOBBY: ?뚮젅?댁뼱?먭쾶 鍮?諛?諛곗젙
+	-- LOBBY: 플레이어에게 빈 방 배정
 	@ExecSpace("ServerOnly")
 	method void AssignLobbyRoom(string userId)
 		    if self.playerRooms[userId] ~= nil then return end
 		    local roomId = self:FindEmptyRoom()
 		    if roomId < 1 then
-		        log("[Lobby] 鍮?諛??놁쓬: " .. userId)
+		        log("[Lobby] 빈 방 없음: " .. userId)
 		        return
 		    end
 		    self.playerRooms[userId] = roomId
-		    log("[Lobby] " .. userId .. " ??諛?" .. roomId)
+		    log("[Lobby] " .. userId .. " → 방 " .. roomId)
 	end
 
-	-- LOBBY: 諛곗젙??諛?踰덊샇 諛섑솚 (?놁쑝硫?-1)
+	-- LOBBY: 배정된 방 번호 반환 (없으면 -1)
 	@ExecSpace("ServerOnly")
 	method integer GetLobbyRoom(string userId)
 		    local room = self.playerRooms[userId]
@@ -811,7 +815,7 @@ script MafiaGameLogic extends Logic
 		    return room
 	end
 
-	-- LOBBY: ?꾩옱 ?묒냽 以?紐⑤뱺 ?뚮젅?댁뼱瑜??먯떊??諛⑹쑝濡??붾젅?ы듃
+	-- LOBBY: 현재 접속 중인 모든 플레이어를 자신의 방으로 텔레포트
 	@ExecSpace("ServerOnly")
 	method void TeleportAllToLobbyRooms()
 		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
@@ -825,24 +829,24 @@ script MafiaGameLogic extends Logic
 		            local playerEnt = _UserService:GetUserEntityByUserId(uid)
 		            if floorEnt ~= nil and playerEnt ~= nil then
 		                _TeleportService:TeleportToEntity(playerEnt, floorEnt)
-		                log("[Lobby] ?붾젅?ы듃: " .. uid .. " ??" .. floors[roomId])
+		                log("[Lobby] 텔레포트: " .. uid .. " → " .. floors[roomId])
 		            end
 		        end
 		    end
 	end
 
-	-- ?대씪?댁뼵?멸? 梨꾪똿 硫붿떆吏 ?꾩넚 (FREE_ROAM / MEETING ?섏씠利덉뿉?쒕쭔 ?덉슜)
+	-- 클라이언트가 채팅 메시지 전송 (FREE_ROAM / MEETING 페이즈에서만 허용)
 	@ExecSpace("Server")
 	method void SendChat(string userId, string message)
 		    if self.CurrentPhase ~= self.PHASE_LOBBY and
 		       self.CurrentPhase ~= self.PHASE_FREE_ROAM and
 		       self.CurrentPhase ~= self.PHASE_MEETING then return end
 		    if message == nil or message == "" then return end
-		    -- 硫붿떆吏 湲몄씠 ?쒗븳 (100??
+		    -- 메시지 길이 제한 (100자)
 		    if string.len(message) > 100 then
 		        message = string.sub(message, 1, 100)
 		    end
-		    -- ?뺤떇: "userId\t硫붿떆吏" 以꾨뱾??"\n"?쇰줈 援щ텇, 理쒓렐 20以??좎?
+		    -- 형식: "userId\t메시지" 줄들을 "\n"으로 구분, 최근 20줄 유지
 		    local entry = userId .. "\t" .. message
 		    if self.ChatLog == "" then
 		        self.ChatLog = entry
