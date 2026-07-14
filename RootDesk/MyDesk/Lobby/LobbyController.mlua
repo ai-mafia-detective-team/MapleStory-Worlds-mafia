@@ -72,6 +72,28 @@ script LobbyController extends Component
 
 	property integer selectedRoleIndex = 0
 
+	property integer BAG_SLOT_COUNT = 15
+
+	property table bagSlotHandlers = nil
+
+	property table bagCategoryHandlers = nil
+
+	property any bagPrevHandler = nil
+
+	property any bagNextHandler = nil
+
+	property any bagEquipHandler = nil
+
+	property any bagUnequipHandler = nil
+
+	property any bagResetHandler = nil
+
+	property string bagCategory = "전체"
+
+	property integer bagPage = 1
+
+	property integer selectedBagItemId = -1
+
 	property table costumeCardHandlers = nil
 
 	property integer selectedCostumeIndex = 0
@@ -388,6 +410,9 @@ script LobbyController extends Component
 		log("[LobbyController] self.Entity.Path=" .. tostring(self.Entity.Path))
 		self:SetInvestigationRoomSearchVisible(false)
 		self:WireKeyboardInput()
+		-- Attaching this now lets QAAchievementUI:OnBeginPlay close its popup before the
+		-- lobby is shown; otherwise the achievement window covers the screen from the start.
+		self:EnsureAchievementUI()
 	end
 
 	method void ShowLobby(string nickname)
@@ -1412,9 +1437,16 @@ script LobbyController extends Component
 	end
 
 	method void OpenBagPopup()
-		-- Opens BagPopup without changing internal category or item state.
+		-- Opens BagPopup and repaints it from the player's owned costumes.
 		self:WireBagPopupEvents()
+		self:WireBagContentEvents()
 		self:SetBagPopup(true)
+
+		self.bagPage = 1
+		self.selectedBagItemId = -1
+		self:HighlightBagCategory(self.bagCategory)
+		self:ClearBagDetail()
+		self:RenderBagSlots()
 	end
 
 	method void CloseBagPopup()
@@ -2196,9 +2228,310 @@ script LobbyController extends Component
 		end
 	end
 
+	method table GetBagCategoryButtons()
+		-- CategoryBar node name -> catalog category value.
+		return {
+			{ node = "Category_All",       category = "전체" },
+			{ node = "Category_Top",       category = "상의" },
+			{ node = "Category_Bottom",    category = "하의" },
+			{ node = "Category_Shoes",     category = "신발" },
+			{ node = "Category_Accessory", category = "장식" },
+			{ node = "Category_Set",       category = "세트" },
+		}
+	end
+
+	method table GetBagItems()
+		-- The bag holds what the player actually owns: same catalog as the shop,
+		-- filtered by ownership (MoneyManager keeps item.owned current) and category.
+		local result = {}
+		if _ShopController == nil or _ShopController.costumeData == nil then return result end
+		for _, item in ipairs(_ShopController.costumeData) do
+			if item.owned == true then
+				if self.bagCategory == "전체" or item.category == self.bagCategory then
+					result[#result + 1] = item
+				end
+			end
+		end
+		return result
+	end
+
+	method integer GetOwnedCostumeCount()
+		-- Total owned, ignoring the category filter (used by the header counter).
+		local count = 0
+		if _ShopController == nil or _ShopController.costumeData == nil then return 0 end
+		for _, item in ipairs(_ShopController.costumeData) do
+			if item.owned == true then count = count + 1 end
+		end
+		return count
+	end
+
+	method void WireBagContentEvents()
+		-- Slots, category bar, pagination arrows and the action bar.
+		local bag = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel"
+
+		if self.bagSlotHandlers == nil then
+			self.bagSlotHandlers = {}
+			for slot = 1, self.BAG_SLOT_COUNT do
+				local name = "ItemSlot_0" .. tostring(slot)
+				if slot >= 10 then name = "ItemSlot_" .. tostring(slot) end
+				local ent = _EntityService:GetEntityByPath(bag .. "/Body/InventoryPanel/SlotGrid/" .. name)
+				if ent ~= nil and isvalid(ent) then
+					local capturedSlot = slot
+					local h = ent:ConnectEvent(ButtonClickEvent, function() self:OnBagSlotClicked(capturedSlot) end)
+					self.bagSlotHandlers[#self.bagSlotHandlers + 1] = { entity = ent, eventHandler = h }
+				end
+			end
+		end
+
+		if self.bagCategoryHandlers == nil then
+			self.bagCategoryHandlers = {}
+			for _, entry in ipairs(self:GetBagCategoryButtons()) do
+				local ent = _EntityService:GetEntityByPath(bag .. "/CategoryBar/" .. entry.node)
+				if ent ~= nil and isvalid(ent) then
+					local capturedCategory = entry.category
+					local h = ent:ConnectEvent(ButtonClickEvent, function() self:SelectBagCategory(capturedCategory) end)
+					self.bagCategoryHandlers[#self.bagCategoryHandlers + 1] = { entity = ent, eventHandler = h }
+				end
+			end
+		end
+
+		if self.bagPrevHandler == nil then
+			local ent = _EntityService:GetEntityByPath(bag .. "/Body/InventoryPanel/Pagination/PrevBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagPrevHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagPagePrev)
+			end
+		end
+		if self.bagNextHandler == nil then
+			local ent = _EntityService:GetEntityByPath(bag .. "/Body/InventoryPanel/Pagination/NextBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagNextHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagPageNext)
+			end
+		end
+
+		-- Equip / Unequip / Reset are UI-only for now: the avatar equip pipeline is not built.
+		if self.bagEquipHandler == nil then
+			local ent = _EntityService:GetEntityByPath(bag .. "/ActionBar/EquipBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagEquipHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagEquipClicked)
+			end
+		end
+		if self.bagUnequipHandler == nil then
+			local ent = _EntityService:GetEntityByPath(bag .. "/ActionBar/UnequipBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagUnequipHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagEquipClicked)
+			end
+		end
+		if self.bagResetHandler == nil then
+			local ent = _EntityService:GetEntityByPath(bag .. "/ActionBar/ResetBtn")
+			if ent ~= nil and isvalid(ent) then
+				self.bagResetHandler = ent:ConnectEvent(ButtonClickEvent, self.OnBagEquipClicked)
+			end
+		end
+
+		log("[BagPopup] content wired slots=" .. tostring(#self.bagSlotHandlers) ..
+			" categories=" .. tostring(#self.bagCategoryHandlers))
+	end
+
+	method void SelectBagCategory(string category)
+		-- Switch category; back to page 1 and drop the selection.
+		self.bagCategory = category
+		self.bagPage = 1
+		self.selectedBagItemId = -1
+		self:HighlightBagCategory(category)
+		self:ClearBagDetail()
+		self:RenderBagSlots()
+		log("[BagPopup] category=" .. category)
+	end
+
+	method void HighlightBagCategory(string category)
+		-- Gold for the active category, dim for the rest.
+		local bar = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/CategoryBar"
+		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
+		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+		for _, entry in ipairs(self:GetBagCategoryButtons()) do
+			local ent = _EntityService:GetEntityByPath(bar .. "/" .. entry.node)
+			if ent ~= nil and isvalid(ent) and ent.SpriteGUIRendererComponent ~= nil then
+				if entry.category == category then
+					ent.SpriteGUIRendererComponent.Color = activeColor
+				else
+					ent.SpriteGUIRendererComponent.Color = idleColor
+				end
+			end
+		end
+	end
+
+	method string GetBagSlotPath(integer slot)
+		-- Slot nodes are ItemSlot_01..09 then ItemSlot_10..15.
+		local grid = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/Body/InventoryPanel/SlotGrid"
+		if slot < 10 then return grid .. "/ItemSlot_0" .. tostring(slot) end
+		return grid .. "/ItemSlot_" .. tostring(slot)
+	end
+
+	method void RenderBagSlots()
+		-- Fills the 15 slots with the current category's page of owned costumes.
+		local bag = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel"
+		local items = self:GetBagItems()
+		local pageSize = self.BAG_SLOT_COUNT
+		local totalPages = 1
+		if #items > 0 then totalPages = math.ceil(#items / pageSize) end
+		if self.bagPage > totalPages then self.bagPage = totalPages end
+		if self.bagPage < 1 then self.bagPage = 1 end
+
+		local offset = (self.bagPage - 1) * pageSize
+		for slot = 1, pageSize do
+			local slotPath = self:GetBagSlotPath(slot)
+			local slotEnt = _EntityService:GetEntityByPath(slotPath)
+			if slotEnt ~= nil and isvalid(slotEnt) then
+				local item = items[offset + slot]
+				local filled = item ~= nil
+
+				-- Empty slots keep their frame but show the empty overlay and no content.
+				local empty = _EntityService:GetEntityByPath(slotPath .. "/EmptyOverlay")
+				if empty ~= nil and isvalid(empty) then empty:SetEnable(not filled) end
+
+				local image = _EntityService:GetEntityByPath(slotPath .. "/ItemImage")
+				if image ~= nil and isvalid(image) then image:SetEnable(filled) end
+
+				local grade = _EntityService:GetEntityByPath(slotPath .. "/GradeMarker")
+				if grade ~= nil and isvalid(grade) then grade:SetEnable(filled) end
+
+				local badge = _EntityService:GetEntityByPath(slotPath .. "/EquippedBadge")
+				if badge ~= nil and isvalid(badge) then
+					badge:SetEnable(filled and item.equipped == true)
+				end
+
+				local border = _EntityService:GetEntityByPath(slotPath .. "/SelectedBorder")
+				if border ~= nil and isvalid(border) then
+					border:SetEnable(filled and item.id == self.selectedBagItemId)
+				end
+			end
+		end
+
+		self:SetDetailText(bag .. "/Body/InventoryPanel/InventoryHeader/OwnedCountText",
+			tostring(self:GetOwnedCostumeCount()) .. "개 보유")
+		self:SetDetailText(bag .. "/Body/InventoryPanel/Pagination/PageText",
+			tostring(self.bagPage) .. " / " .. tostring(totalPages))
+
+		log("[BagPopup] slots rendered category=" .. self.bagCategory ..
+			" page=" .. tostring(self.bagPage) .. "/" .. tostring(totalPages) ..
+			" items=" .. tostring(#items))
+	end
+
+	method void OnBagSlotClicked(integer slot)
+		-- `slot` is the 1..15 grid position; map it onto the filtered+paged list.
+		local items = self:GetBagItems()
+		local item = items[(self.bagPage - 1) * self.BAG_SLOT_COUNT + slot]
+		if item == nil then return end
+		self.selectedBagItemId = item.id
+		self:ShowBagDetail(item)
+		self:RenderBagSlots()
+		log("[BagPopup] slot clicked slot=" .. tostring(slot) .. " id=" .. tostring(item.id))
+	end
+
+	method void ShowBagDetail(any item)
+		-- Fills the right-hand DetailPanel and the action bar's selected-item label.
+		local bag = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel"
+		local detail = bag .. "/Body/DetailPanel"
+
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(false) end
+
+		self:SetDetailText(detail .. "/ItemNameText", item.name)
+		self:SetDetailText(detail .. "/CategoryRow/CategoryText", item.category)
+		self:SetDetailText(detail .. "/GradeRow/GradeText", item.grade)
+		self:SetDetailText(detail .. "/DescriptionText", item.desc)
+		if item.equipped == true then
+			self:SetDetailText(detail .. "/EquippedStateText", "장착 중")
+		else
+			self:SetDetailText(detail .. "/EquippedStateText", "미장착")
+		end
+
+		self:SetDetailText(bag .. "/ActionBar/SelectedItemNameText", item.name)
+	end
+
+	method void ClearBagDetail()
+		-- Back to the "pick an item" state.
+		local bag = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel"
+		local detail = bag .. "/Body/DetailPanel"
+
+		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
+		if empty ~= nil and isvalid(empty) then empty:SetEnable(true) end
+
+		self:SetDetailText(detail .. "/ItemNameText", "")
+		self:SetDetailText(detail .. "/CategoryRow/CategoryText", "")
+		self:SetDetailText(detail .. "/GradeRow/GradeText", "")
+		self:SetDetailText(detail .. "/DescriptionText", "")
+		self:SetDetailText(detail .. "/EquippedStateText", "")
+		self:SetDetailText(bag .. "/ActionBar/SelectedItemNameText", "의상을 선택하세요")
+	end
+
+	method void OnBagPagePrev(ButtonClickEvent event)
+		if self.bagPage <= 1 then return end
+		self.bagPage = self.bagPage - 1
+		self:ClearBagDetail()
+		self.selectedBagItemId = -1
+		self:RenderBagSlots()
+	end
+
+	method void OnBagPageNext(ButtonClickEvent event)
+		local items = self:GetBagItems()
+		local totalPages = 1
+		if #items > 0 then totalPages = math.ceil(#items / self.BAG_SLOT_COUNT) end
+		if self.bagPage >= totalPages then return end
+		self.bagPage = self.bagPage + 1
+		self:ClearBagDetail()
+		self.selectedBagItemId = -1
+		self:RenderBagSlots()
+	end
+
+	method void OnBagEquipClicked(ButtonClickEvent event)
+		-- The avatar equip pipeline (CostumeManagerComponent + item RUIDs) is not built yet.
+		if _UIToast ~= nil then _UIToast:ShowMessage("착용 기능은 준비 중입니다.") end
+		log("[BagPopup] equip action requested (not implemented)")
+	end
+
 	method void DisconnectBagPopupEvents()
 		-- Disconnects BagPopup close-button handlers.
 		local ent
+
+		if self.bagSlotHandlers ~= nil then
+			for _, rec in ipairs(self.bagSlotHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.bagSlotHandlers = nil
+		end
+
+		if self.bagCategoryHandlers ~= nil then
+			for _, rec in ipairs(self.bagCategoryHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.bagCategoryHandlers = nil
+		end
+
+		-- NOTE: `handler` is a reserved word in mlua and cannot be used as a table key.
+		local bagPanel = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel"
+		local singleHandlers = {
+			{ eventHandler = self.bagPrevHandler,    path = bagPanel .. "/Body/InventoryPanel/Pagination/PrevBtn" },
+			{ eventHandler = self.bagNextHandler,    path = bagPanel .. "/Body/InventoryPanel/Pagination/NextBtn" },
+			{ eventHandler = self.bagEquipHandler,   path = bagPanel .. "/ActionBar/EquipBtn" },
+			{ eventHandler = self.bagUnequipHandler, path = bagPanel .. "/ActionBar/UnequipBtn" },
+			{ eventHandler = self.bagResetHandler,   path = bagPanel .. "/ActionBar/ResetBtn" },
+		}
+		for _, rec in ipairs(singleHandlers) do
+			if rec.eventHandler ~= nil then
+				ent = _EntityService:GetEntityByPath(rec.path)
+				if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, rec.eventHandler) end
+			end
+		end
+		self.bagPrevHandler = nil
+		self.bagNextHandler = nil
+		self.bagEquipHandler = nil
+		self.bagUnequipHandler = nil
+		self.bagResetHandler = nil
 
 		if self.bagPopupCloseHandler ~= nil then
 			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/Header/CloseBtn")
@@ -3643,17 +3976,31 @@ script LobbyController extends Component
 		self:OpenBagPopup()
 	end
 
-	method void OnAchievementClicked(ButtonClickEvent event)
-		log("[LobbyController] AchievementButton clicked")
+	method any EnsureAchievementUI()
+		-- The Controller entity is a model instance (uiempty), and a script component declared
+		-- on a model instance in the .ui is not created at load — GetComponent returns nil, so
+		-- QAAchievementUI:OnBeginPlay never runs and the popup it would have closed stays on
+		-- screen covering the lobby. Attach it here instead (the MSW-sanctioned pattern:
+		-- keep the model native-only, add the script at runtime).
 		local controllerEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller")
 		if controllerEntity == nil or isvalid(controllerEntity) == false then
 			log_warning("[LobbyController] Achievement popup controller not found")
-			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
-			return
+			return nil
 		end
+
 		local achievementUI = controllerEntity:GetComponent("script.QAAchievementUI")
 		if achievementUI == nil then
-			log_warning("[LobbyController] QAAchievementUI component not found")
+			controllerEntity:AddComponent("script.QAAchievementUI")
+			achievementUI = controllerEntity:GetComponent("script.QAAchievementUI")
+			log("[LobbyController] QAAchievementUI attached at runtime = " .. tostring(achievementUI ~= nil))
+		end
+		return achievementUI
+	end
+
+	method void OnAchievementClicked(ButtonClickEvent event)
+		log("[LobbyController] AchievementButton clicked")
+		local achievementUI = self:EnsureAchievementUI()
+		if achievementUI == nil then
 			self:ShowCommonPopup("error", "업적 창을 열 수 없습니다.")
 			return
 		end
