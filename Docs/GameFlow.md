@@ -39,7 +39,13 @@
 
 **핵심 포인트**: "수사방 만들기"와 "바로 게임화면(start)"은 서로 다른 진입 경로(방 생성 vs 빠른 참가)를 거치지만 **최종적으로 같은 화면인 `ui/MafiaLobbyHUD.ui`(수사방 대기실)로 합류**한다. 이후 실제 낮/밤 게임 진행 화면(`MafiaDayHUD.ui`, `MafiaNightHUD.ui` 등)으로의 전환은 `Mafia/MafiaGameLogic.mlua`가 관리하며, 이 부분의 순서/조건(룰)은 별도로 정의해서 아래 3번 섹션에 채울 예정이다.
 
-## 3. 게임 진행 중 페이즈 전환 룰
+## 2.1 수사방 대기실 → 메인 로비 복귀
+
+| 현재 화면 | 버튼 엔티티 경로 | 클릭 핸들러 메서드 | 이동/오픈 대상 |
+|---|---|---|---|
+| `ui/MafiaLobbyHUD.ui` | `/ui/MafiaLobbyHUD/CenterPanel/InviteButton` | `MafiaUIFlow:HandleLobbyExit()` → `MafiaUIFlow:OnInvestigationRoomLeaveResult()` | 클릭 즉시 **`ui/UI_Lobby.ui`** 로 복귀하고, 이후 수사방 나가기 정리 결과 처리 |
+
+## 3. 게임 진행 중 화면 전환
 
 수사방 대기실(`MafiaLobbyHUD`)에 들어온 뒤부터 승패가 갈릴 때까지의 진행 규칙. 모든 판정은 **서버**(`Mafia/MafiaGameLogic.mlua`, `@Logic`)에서 이뤄지고, 클라이언트(`Mafia/MafiaUIFlow.mlua`)는 `@Sync` 프로퍼티인 `CurrentPhase`를 0.1초마다 폴링해 HUD만 갈아끼운다. 클라이언트는 페이즈를 바꾸지 못한다.
 
