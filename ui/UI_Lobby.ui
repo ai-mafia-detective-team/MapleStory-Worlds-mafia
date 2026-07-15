@@ -50191,7 +50191,7 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "938c3b8a8d7b4341954a7ed08d91f9ea"
+                "DataId": "0273d45a1248475bb9f56546204e0202"
               },
               "OverrideSorting": false,
               "Color": {
@@ -50299,7 +50299,7 @@
                 "r": 0.141176477,
                 "g": 0.203921571,
                 "b": 0.266666681,
-                "a": 1
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -50756,12 +50756,12 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 277,
-                "y": 317
+                "x": 330,
+                "y": 363
               },
               "OffsetMin": {
-                "x": 57,
-                "y": -389
+                "x": 110,
+                "y": -343
               },
               "Pivot": {
                 "x": 0,
@@ -50779,8 +50779,8 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 57,
-                "y": -36
+                "x": 110,
+                "y": 10
               },
               "Position": {
                 "x": -713,
@@ -50810,7 +50810,7 @@
                 "r": 0.113725491,
                 "g": 0.164705887,
                 "b": 0.211764708,
-                "a": 1
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -50904,13 +50904,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "9f040e220a5c4c96b10a49b6038657ef"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.847058833,
-                "g": 0.7058824,
-                "b": 0.3529412,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -51022,7 +51022,7 @@
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -51220,11 +51220,11 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "역할도감",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -51314,13 +51314,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "9c0b7ef2dacd487180b2ca4279200dd3"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -51432,7 +51432,7 @@
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -51630,11 +51630,11 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "의상도감",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -51728,10 +51728,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.06666667,
-                "g": 0.09803922,
-                "b": 0.13333334,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -51829,10 +51829,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.1254902,
-                "g": 0.141176477,
-                "b": 0.172549024,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -51880,11 +51880,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 868,
-                "y": -18
+                "y": 0
               },
               "OffsetMin": {
                 "x": 18,
-                "y": -82
+                "y": -64
               },
               "Pivot": {
                 "x": 0,
@@ -51903,11 +51903,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 18,
-                "y": -18
+                "y": 0
               },
               "Position": {
-                "x": -617,
-                "y": 335,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -51930,10 +51930,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.149019614,
-                "g": 0.215686277,
-                "b": 0.274509817,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -52435,10 +52435,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.09019608,
-                "g": 0.137254909,
-                "b": 0.180392161,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -52486,11 +52486,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 410,
-                "y": -60
+                "y": -25
               },
               "OffsetMin": {
                 "x": -410,
-                "y": -556
+                "y": -625
               },
               "Pivot": {
                 "x": 0.5,
@@ -52498,7 +52498,7 @@
               },
               "RectSize": {
                 "x": 820,
-                "y": 496
+                "y": 600
               },
               "UIMode": 1,
               "UIScale": {
@@ -52509,11 +52509,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -60
+                "y": -25
               },
               "Position": {
-                "x": 425,
-                "y": 265,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -52536,10 +52536,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.145098045,
-                "g": 0.168627456,
-                "b": 0.20784314,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -52587,11 +52587,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": -211,
-                "y": 248
+                "y": 300
               },
               "OffsetMin": {
                 "x": -401,
-                "y": 2
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
@@ -52599,7 +52599,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -52610,11 +52610,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": 125
+                "y": 150
               },
               "Position": {
-                "x": -306,
-                "y": -123,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -52633,13 +52633,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "9b45713ea3ea4673a069d4f2ea0aedd4"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -52807,7 +52807,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -52844,7 +52844,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "9b45713ea3ea4673a069d4f2ea0aedd4"
               },
               "LocalPosition": {
                 "x": 0,
@@ -52862,9 +52862,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -52910,8 +52910,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -53055,8 +53055,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -53358,8 +53358,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -53545,7 +53545,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -53600,10 +53600,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -53624,14 +53624,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -53649,7 +53649,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/LockOverlay",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -53794,7 +53794,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/LockIcon",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -53939,7 +53939,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_01/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -54271,11 +54271,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": -7,
-                "y": 248
+                "y": 300
               },
               "OffsetMin": {
                 "x": -197,
-                "y": 2
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
@@ -54283,7 +54283,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -54294,11 +54294,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": 125
+                "y": 150
               },
               "Position": {
-                "x": -102,
-                "y": -123,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -54317,13 +54317,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "4ab50fbe108a483994b6f8d992c8c598"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -54491,7 +54491,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -54528,7 +54528,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "4ab50fbe108a483994b6f8d992c8c598"
               },
               "LocalPosition": {
                 "x": 0,
@@ -54546,9 +54546,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -54594,8 +54594,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -54739,8 +54739,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -55042,8 +55042,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -55229,7 +55229,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -55284,10 +55284,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -55308,14 +55308,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -55333,7 +55333,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/LockOverlay",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -55478,7 +55478,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/LockIcon",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -55623,7 +55623,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_02/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -55955,11 +55955,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 197,
-                "y": 248
+                "y": 300
               },
               "OffsetMin": {
                 "x": 7,
-                "y": 2
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
@@ -55967,7 +55967,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -55978,11 +55978,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": 125
+                "y": 150
               },
               "Position": {
-                "x": 102,
-                "y": -123,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -56001,13 +56001,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "4de7462417ec4147ba94df5e1c9ef4ed"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -56175,7 +56175,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -56212,7 +56212,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "4de7462417ec4147ba94df5e1c9ef4ed"
               },
               "LocalPosition": {
                 "x": 0,
@@ -56230,9 +56230,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -56278,8 +56278,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -56423,8 +56423,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -56726,8 +56726,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -56913,7 +56913,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -56968,10 +56968,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -56992,14 +56992,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -57017,7 +57017,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/LockOverlay",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -57162,7 +57162,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/LockIcon",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -57307,7 +57307,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_03/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -57639,11 +57639,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 401,
-                "y": 248
+                "y": 300
               },
               "OffsetMin": {
                 "x": 211,
-                "y": 2
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
@@ -57651,7 +57651,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -57662,11 +57662,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": 125
+                "y": 150
               },
               "Position": {
-                "x": 306,
-                "y": -123,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -57685,13 +57685,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "a1f56de4e9184a508d7aef9e7d4ab46d"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -57859,7 +57859,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -57896,7 +57896,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "a1f56de4e9184a508d7aef9e7d4ab46d"
               },
               "LocalPosition": {
                 "x": 0,
@@ -57914,9 +57914,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -57962,8 +57962,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -58107,8 +58107,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -58410,8 +58410,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -58597,7 +58597,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -58652,10 +58652,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -58676,14 +58676,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -58701,7 +58701,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/LockOverlay",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -58846,7 +58846,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/LockIcon",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -58991,7 +58991,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_04/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -59323,11 +59323,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": -211,
-                "y": -2
+                "y": 0
               },
               "OffsetMin": {
                 "x": -401,
-                "y": -248
+                "y": -300
               },
               "Pivot": {
                 "x": 0.5,
@@ -59335,7 +59335,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -59346,11 +59346,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -306,
-                "y": -125
+                "y": -150
               },
               "Position": {
-                "x": -306,
-                "y": -373,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -59369,13 +59369,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -59543,7 +59543,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -59580,7 +59580,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -59598,9 +59598,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -59646,8 +59646,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -59791,8 +59791,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -60094,8 +60094,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -60281,7 +60281,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -60336,10 +60336,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -60360,14 +60360,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -60384,8 +60384,8 @@
           "name": "LockOverlay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/LockOverlay",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -60529,8 +60529,8 @@
           "name": "LockIcon",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/LockIcon",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -60675,7 +60675,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_05/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -61007,11 +61007,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": -7,
-                "y": -2
+                "y": 0
               },
               "OffsetMin": {
                 "x": -197,
-                "y": -248
+                "y": -300
               },
               "Pivot": {
                 "x": 0.5,
@@ -61019,7 +61019,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -61030,11 +61030,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": -102,
-                "y": -125
+                "y": -150
               },
               "Position": {
-                "x": -102,
-                "y": -373,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -61053,13 +61053,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -61227,7 +61227,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -61264,7 +61264,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -61282,9 +61282,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -61330,8 +61330,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -61475,8 +61475,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -61778,8 +61778,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -61965,7 +61965,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -62020,10 +62020,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -62044,14 +62044,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -62068,8 +62068,8 @@
           "name": "LockOverlay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/LockOverlay",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -62213,8 +62213,8 @@
           "name": "LockIcon",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/LockIcon",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -62359,7 +62359,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_06/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -62691,11 +62691,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 197,
-                "y": -2
+                "y": 0
               },
               "OffsetMin": {
                 "x": 7,
-                "y": -248
+                "y": -300
               },
               "Pivot": {
                 "x": 0.5,
@@ -62703,7 +62703,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -62714,11 +62714,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 102,
-                "y": -125
+                "y": -150
               },
               "Position": {
-                "x": 102,
-                "y": -373,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -62737,13 +62737,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -62911,7 +62911,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -62948,7 +62948,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -62966,9 +62966,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -63014,8 +63014,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -63159,8 +63159,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -63462,8 +63462,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -63649,7 +63649,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -63704,10 +63704,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -63728,14 +63728,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -63752,8 +63752,8 @@
           "name": "LockOverlay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/LockOverlay",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -63897,8 +63897,8 @@
           "name": "LockIcon",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/LockIcon",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -64043,7 +64043,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_07/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -64375,11 +64375,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 401,
-                "y": -2
+                "y": 0
               },
               "OffsetMin": {
                 "x": 211,
-                "y": -248
+                "y": -300
               },
               "Pivot": {
                 "x": 0.5,
@@ -64387,7 +64387,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -64398,11 +64398,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 306,
-                "y": -125
+                "y": -150
               },
               "Position": {
-                "x": 306,
-                "y": -373,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -64421,13 +64421,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.227450982,
-                "g": 0.254901975,
-                "b": 0.3019608,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -64595,7 +64595,7 @@
               },
               "RectSize": {
                 "x": 190,
-                "y": 246
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -64632,7 +64632,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "876153f80e8a4f92bd349d205b82484e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -64650,9 +64650,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.258823544,
-                "b": 0.3137255,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -64698,8 +64698,8 @@
           "name": "RoleImage",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/RoleImage",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 1,
           "pathConstraints": "////////////",
@@ -64843,8 +64843,8 @@
           "name": "RoleNamePanel",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/RoleNamePanel",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 2,
           "pathConstraints": "////////////",
@@ -65146,8 +65146,8 @@
           "name": "TeamMarker",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/TeamMarker",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 3,
           "pathConstraints": "////////////",
@@ -65333,7 +65333,7 @@
               },
               "RectSize": {
                 "x": 202,
-                "y": 258
+                "y": 312
               },
               "UIMode": 1,
               "UIScale": {
@@ -65388,10 +65388,10 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.9607843,
-                "g": 0.8352941,
-                "b": 0.419607848,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0.01
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -65412,14 +65412,14 @@
               "FrameColumn": 1,
               "FrameRate": 0,
               "FrameRow": 1,
-              "Outline": false,
+              "Outline": true,
               "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
+                "r": 1,
+                "g": 0.78,
+                "b": 0.16,
                 "a": 1
               },
-              "OutlineWidth": 3,
+              "OutlineWidth": 6,
               "RaycastTarget": false,
               "Type": 0,
               "Enable": true
@@ -65436,8 +65436,8 @@
           "name": "LockOverlay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/LockOverlay",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 5,
           "pathConstraints": "////////////",
@@ -65581,8 +65581,8 @@
           "name": "LockIcon",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/LockIcon",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
+          "enable": false,
+          "visible": false,
           "localize": true,
           "displayOrder": 6,
           "pathConstraints": "////////////",
@@ -65727,7 +65727,7 @@
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/CardGrid/RoleCard_08/CollectedBadge",
           "nameEditable": true,
           "enable": false,
-          "visible": true,
+          "visible": false,
           "localize": true,
           "displayOrder": 7,
           "pathConstraints": "////////////",
@@ -66059,11 +66059,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 410,
-                "y": 89
+                "y": 26
               },
               "OffsetMin": {
                 "x": -410,
-                "y": 34
+                "y": -29
               },
               "Pivot": {
                 "x": 0.5,
@@ -66082,11 +66082,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": 34
+                "y": -29
               },
               "Position": {
-                "x": 425,
-                "y": -291,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -66109,10 +66109,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.145098045,
-                "g": 0.168627456,
-                "b": 0.20784314,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -66206,13 +66206,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "b289cd9b43f24070b0cbbe6154881dc4"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.270588249,
-                "b": 0.333333343,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -66321,208 +66321,6 @@
               "SizeFit": false,
               "SortingLayer": "UI",
               "Text": "",
-              "UseConstraintX": false,
-              "UseConstraintY": false,
-              "UseOutLine": false,
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
-        "id": "a8bdc75d-74be-46a7-a1b5-1c0157d5c859",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/Pagination/PrevBtn/LabelText",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
-        "jsonString": {
-          "name": "LabelText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/Pagination/PrevBtn/LabelText",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 0,
-          "pathConstraints": "////////////",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UIText",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uitext",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 15,
-              "AnchorsMax": {
-                "x": 1,
-                "y": 1
-              },
-              "AnchorsMin": {
-                "x": 0,
-                "y": 0
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 0,
-                "y": 0
-              },
-              "OffsetMin": {
-                "x": 0,
-                "y": 0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "RectSize": {
-                "x": 64,
-                "y": 42
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0,
-                "y": 0
-              },
-              "Position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "QuaternionRotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-              },
-              "Scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "AnimClipPlayType": 0,
-              "EndFrameIndex": 2147483647,
-              "IgnoreMapLayerCheck": false,
-              "ImageRUID": {
-                "DataId": ""
-              },
-              "LocalPosition": {
-                "x": 0,
-                "y": 0
-              },
-              "LocalScale": {
-                "x": 1,
-                "y": 1
-              },
-              "MaterialId": "",
-              "OrderInLayer": 0,
-              "OverrideSorting": false,
-              "PlayRate": 1,
-              "PreserveSprite": 0,
-              "SortingLayer": "UI",
-              "StartFrameIndex": 0,
-              "Color": {
-                "r": 1,
-                "g": 1,
-                "b": 1,
-                "a": 0
-              },
-              "DropShadow": false,
-              "DropShadowAngle": 120,
-              "DropShadowColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3,
-              "FillAmount": 1,
-              "FillCenter": true,
-              "FillClockWise": true,
-              "FillMethod": 0,
-              "FillOrigin": 0,
-              "FlipX": false,
-              "FlipY": false,
-              "FrameColumn": 1,
-              "FrameRate": 0,
-              "FrameRow": 1,
-              "Outline": false,
-              "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 1
-              },
-              "OutlineWidth": 3,
-              "RaycastTarget": false,
-              "Type": 0,
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.TextComponent",
-              "Alignment": 4,
-              "AllowAutomaticTranslation": true,
-              "BestFit": false,
-              "Bold": false,
-              "ConstraintX": 100,
-              "ConstraintY": 100,
-              "DropShadow": false,
-              "DropShadowAngle": 120,
-              "DropShadowColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3,
-              "Font": 0,
-              "FontColor": {
-                "r": 0.945098042,
-                "g": 0.9529412,
-                "b": 0.9647059,
-                "a": 1
-              },
-              "FontSize": 20,
-              "IgnoreMapLayerCheck": false,
-              "IsLocalizationKey": false,
-              "MaxSize": 40,
-              "MinSize": 10,
-              "OrderInLayer": 0,
-              "OutlineColor": {
-                "r": 0.698039234,
-                "g": 0.698039234,
-                "b": 0.698039234,
-                "a": 1
-              },
-              "OutlineDistance": {
-                "x": 1,
-                "y": -1
-              },
-              "OutlineWidth": 1,
-              "Overflow": 0,
-              "OverrideSorting": false,
-              "Padding": {
-                "left": 0,
-                "right": 0,
-                "top": 0,
-                "bottom": 0
-              },
-              "SizeFit": false,
-              "SortingLayer": "UI",
-              "Text": "◀",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
@@ -66818,13 +66616,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "8a87528dde134049b18d8994c558c610"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.270588249,
-                "b": 0.333333343,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -66943,208 +66741,6 @@
         }
       },
       {
-        "id": "a2497f13-8be6-4bc8-bfbb-ff9f3c4baf8b",
-        "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/Pagination/NextBtn/LabelText",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
-        "jsonString": {
-          "name": "LabelText",
-          "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/ListPanel/Pagination/NextBtn/LabelText",
-          "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
-          "displayOrder": 0,
-          "pathConstraints": "////////////",
-          "revision": 0,
-          "origin": {
-            "type": "Model",
-            "entry_id": "UIText",
-            "sub_entity_id": null,
-            "root_entity_id": null,
-            "replaced_model_id": null
-          },
-          "modelId": "uitext",
-          "@components": [
-            {
-              "@type": "MOD.Core.UITransformComponent",
-              "ActivePlatform": 255,
-              "AlignmentOption": 15,
-              "AnchorsMax": {
-                "x": 1,
-                "y": 1
-              },
-              "AnchorsMin": {
-                "x": 0,
-                "y": 0
-              },
-              "MobileOnly": false,
-              "OffsetMax": {
-                "x": 0,
-                "y": 0
-              },
-              "OffsetMin": {
-                "x": 0,
-                "y": 0
-              },
-              "Pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "RectSize": {
-                "x": 64,
-                "y": 42
-              },
-              "UIMode": 1,
-              "UIScale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "UIVersion": 2,
-              "anchoredPosition": {
-                "x": 0,
-                "y": 0
-              },
-              "Position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "QuaternionRotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-              },
-              "Scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.SpriteGUIRendererComponent",
-              "AnimClipPlayType": 0,
-              "EndFrameIndex": 2147483647,
-              "IgnoreMapLayerCheck": false,
-              "ImageRUID": {
-                "DataId": ""
-              },
-              "LocalPosition": {
-                "x": 0,
-                "y": 0
-              },
-              "LocalScale": {
-                "x": 1,
-                "y": 1
-              },
-              "MaterialId": "",
-              "OrderInLayer": 0,
-              "OverrideSorting": false,
-              "PlayRate": 1,
-              "PreserveSprite": 0,
-              "SortingLayer": "UI",
-              "StartFrameIndex": 0,
-              "Color": {
-                "r": 1,
-                "g": 1,
-                "b": 1,
-                "a": 0
-              },
-              "DropShadow": false,
-              "DropShadowAngle": 120,
-              "DropShadowColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3,
-              "FillAmount": 1,
-              "FillCenter": true,
-              "FillClockWise": true,
-              "FillMethod": 0,
-              "FillOrigin": 0,
-              "FlipX": false,
-              "FlipY": false,
-              "FrameColumn": 1,
-              "FrameRate": 0,
-              "FrameRow": 1,
-              "Outline": false,
-              "OutlineColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 1
-              },
-              "OutlineWidth": 3,
-              "RaycastTarget": false,
-              "Type": 0,
-              "Enable": true
-            },
-            {
-              "@type": "MOD.Core.TextComponent",
-              "Alignment": 4,
-              "AllowAutomaticTranslation": true,
-              "BestFit": false,
-              "Bold": false,
-              "ConstraintX": 100,
-              "ConstraintY": 100,
-              "DropShadow": false,
-              "DropShadowAngle": 120,
-              "DropShadowColor": {
-                "r": 0,
-                "g": 0,
-                "b": 0,
-                "a": 0.72
-              },
-              "DropShadowDistance": 3,
-              "Font": 0,
-              "FontColor": {
-                "r": 0.945098042,
-                "g": 0.9529412,
-                "b": 0.9647059,
-                "a": 1
-              },
-              "FontSize": 20,
-              "IgnoreMapLayerCheck": false,
-              "IsLocalizationKey": false,
-              "MaxSize": 40,
-              "MinSize": 10,
-              "OrderInLayer": 0,
-              "OutlineColor": {
-                "r": 0.698039234,
-                "g": 0.698039234,
-                "b": 0.698039234,
-                "a": 1
-              },
-              "OutlineDistance": {
-                "x": 1,
-                "y": -1
-              },
-              "OutlineWidth": 1,
-              "Overflow": 0,
-              "OverrideSorting": false,
-              "Padding": {
-                "left": 0,
-                "right": 0,
-                "top": 0,
-                "bottom": 0
-              },
-              "SizeFit": false,
-              "SortingLayer": "UI",
-              "Text": "▶",
-              "UseConstraintX": false,
-              "UseConstraintY": false,
-              "UseOutLine": false,
-              "Enable": true
-            }
-          ],
-          "@version": 1
-        }
-      },
-      {
         "id": "e638012a-a3f5-4837-b160-9db7ad0ff5c1",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/DetailPanel",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
@@ -67181,11 +66777,11 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -18,
+                "x": -50,
                 "y": 313
               },
               "OffsetMin": {
-                "x": -378,
+                "x": -410,
                 "y": -337
               },
               "Pivot": {
@@ -67204,12 +66800,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": -18,
+                "x": -50,
                 "y": -12
               },
               "Position": {
-                "x": 617,
-                "y": -12,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -67758,7 +67354,7 @@
           "name": "PreviewFrame",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/DetailPanel/PreviewFrame",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 2,
@@ -67932,20 +67528,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 77,
-                "y": -205
+                "x": 95,
+                "y": -102
               },
               "OffsetMin": {
-                "x": -77,
-                "y": -339
+                "x": -95,
+                "y": -402
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 1
               },
               "RectSize": {
-                "x": 154,
-                "y": 134
+                "x": 190,
+                "y": 300
               },
               "UIMode": 1,
               "UIScale": {
@@ -67956,11 +67552,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0,
-                "y": -205
+                "y": -102
               },
               "Position": {
-                "x": -180,
-                "y": 120,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -68000,9 +67596,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.07058824,
-                "g": 0.101960786,
-                "b": 0.137254909,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -68048,7 +67644,7 @@
           "name": "RoleNameText",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/DetailPanel/RoleNameText",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 4,
@@ -68250,7 +67846,7 @@
           "name": "TeamRow",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage/DetailPanel/TeamRow",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 5,
@@ -68785,11 +68381,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 166,
-                "y": -420
+                "y": -382
               },
               "OffsetMin": {
                 "x": 26,
-                "y": -450
+                "y": -412
               },
               "Pivot": {
                 "x": 0,
@@ -68808,11 +68404,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 26,
-                "y": -420
+                "y": -382
               },
               "Position": {
-                "x": -334,
-                "y": -95,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -68987,11 +68583,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 332,
-                "y": -454
+                "y": -423
               },
               "OffsetMin": {
                 "x": 26,
-                "y": -508
+                "y": -479
               },
               "Pivot": {
                 "x": 0,
@@ -68999,7 +68595,7 @@
               },
               "RectSize": {
                 "x": 306,
-                "y": 54
+                "y": 56
               },
               "UIMode": 1,
               "UIScale": {
@@ -69010,11 +68606,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 26,
-                "y": -454
+                "y": -423
               },
               "Position": {
-                "x": -334,
-                "y": -129,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -69189,11 +68785,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 166,
-                "y": -516
+                "y": -486
               },
               "OffsetMin": {
                 "x": 26,
-                "y": -546
+                "y": -516
               },
               "Pivot": {
                 "x": 0,
@@ -69212,11 +68808,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 26,
-                "y": -516
+                "y": -486
               },
               "Position": {
-                "x": -334,
-                "y": -191,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -69391,11 +68987,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 332,
-                "y": -550
+                "y": -525
               },
               "OffsetMin": {
                 "x": 26,
-                "y": -594
+                "y": -569
               },
               "Pivot": {
                 "x": 0,
@@ -69414,11 +69010,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 26,
-                "y": -550
+                "y": -525
               },
               "Position": {
-                "x": -334,
-                "y": -225,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -69619,8 +69215,8 @@
                 "y": 66
               },
               "Position": {
-                "x": -334,
-                "y": -259,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -69795,11 +69391,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 332,
-                "y": 64
+                "y": 66
               },
               "OffsetMin": {
                 "x": 26,
-                "y": 30
+                "y": 28
               },
               "Pivot": {
                 "x": 0,
@@ -69807,7 +69403,7 @@
               },
               "RectSize": {
                 "x": 306,
-                "y": 34
+                "y": 38
               },
               "UIMode": 1,
               "UIScale": {
@@ -69818,11 +69414,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 26,
-                "y": 30
+                "y": 28
               },
               "Position": {
-                "x": -334,
-                "y": -295,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -70098,11 +69694,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 868,
-                "y": -18
+                "y": 0
               },
               "OffsetMin": {
                 "x": 18,
-                "y": -82
+                "y": -64
               },
               "Pivot": {
                 "x": 0,
@@ -70121,11 +69717,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 18,
-                "y": -18
+                "y": 0
               },
               "Position": {
-                "x": -617,
-                "y": 335,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -70148,10 +69744,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.149019614,
-                "g": 0.215686277,
-                "b": 0.274509817,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -73214,10 +72810,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.09019608,
-                "g": 0.137254909,
-                "b": 0.180392161,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -73315,10 +72911,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.145098045,
-                "g": 0.168627456,
-                "b": 0.20784314,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -86888,10 +86484,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.145098045,
-                "g": 0.168627456,
-                "b": 0.20784314,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -86985,13 +86581,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "b289cd9b43f24070b0cbbe6154881dc4"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.270588249,
-                "b": 0.333333343,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -87395,13 +86991,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "8a87528dde134049b18d8994c558c610"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.270588249,
-                "b": 0.333333343,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -90523,10 +90119,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.141176477,
-                "g": 0.203921571,
-                "b": 0.266666681,
-                "a": 1
+                "r": 1,
+                "g": 1,
+                "b": 1,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -90573,20 +90169,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 120,
-                "y": 24
+                "x": 125,
+                "y": 30
               },
               "OffsetMin": {
-                "x": -120,
-                "y": -24
+                "x": -125,
+                "y": -30
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 240,
-                "y": 48
+                "x": 250,
+                "y": 60
               },
               "UIMode": 1,
               "UIScale": {
@@ -90601,7 +90197,7 @@
               },
               "Position": {
                 "x": 0,
-                "y": 35,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -90620,13 +90216,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": ""
+                "DataId": "214644776c034efdaf7ba83afa9b212e"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.2901961,
-                "g": 0.3254902,
-                "b": 0.3882353,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -90734,7 +90330,7 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "닫기",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
@@ -91068,7 +90664,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "938c3b8a8d7b4341954a7ed08d91f9ea"
+                "DataId": "0273d45a1248475bb9f56546204e0202"
               },
               "LocalPosition": {
                 "x": 0,
