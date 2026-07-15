@@ -100,7 +100,7 @@ script ShopController extends Logic
 
 	method string FormatPrice(any costume)
 		if costume.priceType == "paid" then return "캐시 " .. tostring(costume.price) end
-		return "코인 " .. tostring(costume.price)
+		return "메소 " .. tostring(costume.price)
 	end
 
 	method void ApplyOwnedState(string ownedJson)
@@ -415,7 +415,7 @@ script ShopController extends Logic
 		end
 
 		local message = "구매에 실패했습니다."
-		if resultCode == "NOT_ENOUGH_FREE" then message = "코인이 부족합니다." end
+		if resultCode == "NOT_ENOUGH_FREE" then message = "메소가 부족합니다." end
 		if resultCode == "NOT_ENOUGH_PAID" then message = "캐시가 부족합니다." end
 		if resultCode == "ALREADY_OWNED" then message = "이미 보유한 의상입니다." end
 		if resultCode == "SAVE_FAILED" then message = "구매 정보를 저장하지 못했습니다." end

@@ -148,7 +148,7 @@ script QAAchievementUI extends Component
 			return
 		end
 		self.serverItems = payload.items or {}
-		self.balanceText.Text = "보유 코인  " .. tostring(payload.rewardBalance or 0)
+		self.balanceText.Text = "보유 메소  " .. tostring(payload.rewardBalance or 0)
 		self:UpdateSummary(payload.rewardBalance or 0)
 		self.statusText.Text = message or ""
 		self:Render()
@@ -177,7 +177,7 @@ script QAAchievementUI extends Component
 			self:SetRowText(i, "Title", item.title)
 			self:SetRowText(i, "Description", item.description)
 			self:SetRowText(i, "ProgressText", tostring(item.progress) .. " / " .. tostring(item.target))
-			self:SetRowText(i, "RewardText", "코인 " .. tostring(item.reward))
+			self:SetRowText(i, "RewardText", "메소 " .. tostring(item.reward))
 
 			local fill = _EntityService:GetEntityByPath(row.Path .. "/ProgressBar/Fill")
 			if fill ~= nil and isvalid(fill) and fill.UITransformComponent ~= nil then
