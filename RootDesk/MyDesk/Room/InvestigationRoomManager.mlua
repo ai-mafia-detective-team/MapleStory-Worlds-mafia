@@ -54,7 +54,7 @@ script InvestigationRoomManager extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
-	method SharedMemoryResultCode WriteRegistrySnapshot(table snapshot, table rooms)
+	method any WriteRegistrySnapshot(table snapshot, table rooms)
 		-- Writes the modified registry using optimistic ETag concurrency control.
 		local encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
 		if snapshot.Exists == false then
@@ -223,6 +223,11 @@ script InvestigationRoomManager extends Logic
 			if writeCode == SharedMemoryResultCode.OK then
 				local publicJson = _HttpService:JSONEncode(self:ToPublicRoom(room))
 				log("[InvestigationRoomManager] Room created successfully roomId=" .. room.roomId)
+				-- 이전 게임이 PHASE_GAME_OVER 상태로 남아있으면 새 게임을 위해 리셋
+				if _MafiaGameLogic ~= nil and _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_GAME_OVER then
+					_MafiaGameLogic:RestartGame()
+					log("[InvestigationRoomManager] Reset MafiaGameLogic from PHASE_GAME_OVER for new room")
+				end
 				self:DeliverCreateResult(true, "수사방을 만들었습니다.", publicJson, userId)
 				return
 			end

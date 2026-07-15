@@ -70,7 +70,7 @@ script MafiaGameLogic extends Logic
 
 	property number MEETING_TIME = 15.0
 
-	property number RESULT_TIME = 3.0
+	property number RESULT_TIME = 5.0
 
 	@Sync
 	property integer CurrentPhase = 0
@@ -121,6 +121,9 @@ script MafiaGameLogic extends Logic
 
 	@Sync
 	property string MafiaChatLog = ""
+
+	@Sync
+	property string DeadChatLog = ""
 
 	@Sync
 	property integer LobbyPlayerCount = 0
@@ -419,6 +422,9 @@ script MafiaGameLogic extends Logic
 		    self:UpdateAlivePlayersList()
 		    self.skipPlayers       = {}
 		    self.DaySkipStatusList = ""
+		    -- 게임 시작 시 채팅 초기화 (로비 채팅과 게임 채팅 분리)
+		    self.ChatLog           = ""
+		    self.DeadChatLog       = ""
 		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME + self.LOADING_SCREEN_BUFFER)
 		    log("[Mafia] 게임 시작!")
 	end
@@ -507,12 +513,18 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("ServerOnly")
 	method void BeginNightDoctor()
+		    -- 시간 초과로 대상 미선택 시 랜덤 선택 + 마피아 여부 즉시 계산
+		    local policeId = self:GetPlayerByRole(self.ROLE_POLICE)
 		    if self.PoliceTarget == "" then
-		        local policeId = self:GetPlayerByRole(self.ROLE_POLICE)
 		        if policeId ~= "" then
 		            self.PoliceTarget = self:GetRandomAliveExcept(policeId)
-		            log("[Mafia] 경찰 랜덤 선택: " .. self.PoliceTarget)
+		            self.PoliceResult = (self.playerRoles ~= nil) and (self.playerRoles[self.PoliceTarget] == self.ROLE_MAFIA) or false
+		            log("[Mafia] 경찰 랜덤 선택: " .. self.PoliceTarget .. " isMafia=" .. tostring(self.PoliceResult))
 		        end
+		    end
+		    -- 경찰 플레이어에게만 조사결과 애니메이션 RPC 전송 (수동 확정·랜덤 공통)
+		    if policeId ~= "" and self.PoliceTarget ~= "" then
+		        _MafiaUIFlow:ShowPoliceResultAnime(self.PoliceTarget, self.PoliceResult, policeId)
 		    end
 		    self.NightSubPhase = self.PHASE_NIGHT_DOCTOR
 		    self:SetPhase(self.PHASE_NIGHT, self.DOCTOR_NIGHT_TIME)
@@ -606,6 +618,14 @@ script MafiaGameLogic extends Logic
 	@ExecSpace("Server")
 	method void RequestSkipToMeeting(string requesterId)
 		    if self.CurrentPhase ~= self.PHASE_FREE_ROAM then return end
+		    -- 사망한 플레이어의 스킵은 무시 (AlivePlayersList 기준)
+		    if self.GameStarted and self.AlivePlayersList ~= "" then
+		        local isAlive = false
+		        for uid in string.gmatch(self.AlivePlayersList, "[^,]+") do
+		            if uid == requesterId then isAlive = true; break end
+		        end
+		        if not isAlive then return end
+		    end
 		    if self.skipPlayers == nil then self.skipPlayers = {} end
 		    self.skipPlayers[requesterId] = true
 		    -- Rebuild DaySkipStatusList from the skip map.
@@ -633,6 +653,8 @@ script MafiaGameLogic extends Logic
 	method void SubmitVote(string voterId, string targetId)
 		    if self.CurrentPhase ~= self.PHASE_MEETING then return end
 		    if self.voteSubmitted[voterId] ~= nil then return end
+		    -- 사망한 플레이어의 투표는 서버에서 차단
+		    if self.GameStarted and self.playerAlive ~= nil and not self.playerAlive[voterId] then return end
 		    -- 스킵(targetId="")은 생존 여부 체크 없이 허용
 		    if targetId ~= "" and not self.playerAlive[targetId] then return end
 		    local recorded = (targetId ~= "") and targetId or "skip"
@@ -797,6 +819,7 @@ script MafiaGameLogic extends Logic
 		    self.VoteStatusList  = ""
 		    self.ChatLog         = ""
 		    self.MafiaChatLog     = ""
+		    self.DeadChatLog      = ""
 		    self.LobbyPlayerCount = 0
 		    self.ReadyCount = 0
 		    self.ReadyStatusList = ""
@@ -990,8 +1013,31 @@ script MafiaGameLogic extends Logic
 		    if string.len(message) > 100 then
 		        message = string.sub(message, 1, 100)
 		    end
+		    -- 죽은 플레이어(게임 진행 중 탈락) 메시지는 DeadChatLog로 분리
+		    local aliveStr = self.AlivePlayersList or ""
+		    local isDead = self.GameStarted and aliveStr ~= ""
+		    if isDead then
+		        local found = false
+		        for uid in string.gmatch(aliveStr, "[^,]+") do
+		            if uid == userId then found = true; break end
+		        end
+		        isDead = not found
+		    end
 		    -- 형식: "userId\t메시지" 줄들을 "\n"으로 구분, 최근 20줄 유지
 		    local entry = userId .. "\t" .. message
+		    if isDead then
+		        if self.DeadChatLog == "" then
+		            self.DeadChatLog = entry
+		        else
+		            local lines = {}
+		            for line in string.gmatch(self.DeadChatLog, "[^\n]+") do lines[#lines+1] = line end
+		            lines[#lines+1] = entry
+		            if #lines > 20 then table.remove(lines, 1) end
+		            self.DeadChatLog = table.concat(lines, "\n")
+		        end
+		        log("[DeadChat] " .. userId .. ": " .. message)
+		        return
+		    end
 		    if self.ChatLog == "" then
 		        self.ChatLog = entry
 		    else

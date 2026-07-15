@@ -121,7 +121,7 @@ LOBBY
 4. 업적 이벤트 `GAME_PLAY`, `ROLE_ASSIGNED` 보고(봇 제외).
 5. `SetPhase(FREE_ROAM, 10초)`.
 
-**로딩 화면**: `LOBBY → FREE_ROAM` 최초 전환만 클라이언트에서 가로채서 `ui/MafiaLoadingHUD.ui`(역할 공개 화면)를 약 3초 띄우고 0.5초 페이드아웃한 뒤 `MafiaDayHUD`를 연다(`TriggerLoadingScreen`). 이후의 페이즈 전환에는 로딩 화면이 끼지 않는다.
+**로딩 화면**: `LOBBY → FREE_ROAM` 최초 전환만 클라이언트에서 가로채서 `ui/MafiaLoadingHUD.ui`(역할 공개 화면)를 약 3초 띄우고 0.5초 페이드아웃한 뒤 `MafiaDayHUD`를 연다(`TriggerLoadingScreen`). 역할이 시민·의사·경찰이면 `BgSprite`, 마피아이면 `BgSprite_1` 배경만 표시한다. 이후의 페이즈 전환에는 로딩 화면이 끼지 않는다.
 
 ### 3.5 낮 토론 (FREE_ROAM)
 
@@ -132,9 +132,12 @@ LOBBY
 ### 3.6 투표 (MEETING → MEETING_RESULT)
 
 - 화면: `MafiaDayHUD` + 투표 패널 — 제목 "투표", 투표 현황(`n/전체`) 표시.
+- 투표 진입 시 `VoteAnime/AnimeText_1`에 투표 시작 안내 문구 8종 중 하나를 매 라운드 무작위로 표시한 뒤 투표 패널을 연다.
+- 처형 결과 `VoteAnime_1/2/3` 재생 중에는 `VoteResultDimBg`가 나머지 낮 HUD를 어둡게 덮고, 선택된 VoteAnime의 네 모서리 비네트(`vgBL/BR/TL/TR`)가 꼭지점 쉐딩을 만든다. UI 원본에서 중앙 100×100으로 계산되는 dim은 재생 직전에 런타임 전체 스트레치로 보정하며, dim과 결과 애니메이션은 함께 페이드인·아웃한다.
 - `SubmitVote(voterId, targetId)`: 1인 1표, 재투표 불가. 대상은 **생존자만** 지정 가능하고, `targetId = ""`는 기권(스킵)으로 기록되되 득표수에는 반영되지 않는다.
 - 생존자가 전원 투표를 마치면 타이머를 기다리지 않고 즉시 결과로 넘어간다.
 - 처형 판정(`BeginMeetingResult`): 최다 득표자 1명을 처형한다. **동점이거나 유효 득표가 0이면 아무도 처형하지 않는다**(전원 기권 포함).
+- 투표 처형 결과의 정체 공개는 **마피아만 마피아로 표시**한다. 시민·경찰·의사는 모두 `VoteAnime_2`에서 시민으로 표시하며, 실제 서버 역할 데이터는 변경하지 않는다.
 
 ### 3.7 승리 판정 (MEETING_RESULT 종료 시점)
 
@@ -153,6 +156,8 @@ LOBBY
 ### 3.8 밤 (NIGHT)
 
 - 화면: `ui/MafiaNightHUD.ui`. 패널은 **로컬 플레이어의 역할에 따라** 하나만 열린다(마피아/경찰/의사). 시민은 지목 패널이 없다.
+- `MafiaAction`·`PoliceAction`·`DoctorAction`과 함께 표시되는 `NightMsgText`는 35pt로 표시한다.
+- 의사 패널의 8개 사망 오버레이는 각 카드 슬롯 내부의 `Dead_1`~`Dead_8`을 참조하며, `AlivePlayersList`에 없는 플레이어의 카드에만 표시한다.
 - 행동 제출: `SubmitNightAction(actorId, targetRoom)` — 방 번호를 고르면 서버가 그 방의 플레이어를 찾아 역할별로 분기한다.
 
 | 역할 | 처리 | 저장 |
@@ -173,6 +178,8 @@ LOBBY
 3. 그렇지 않으면 대상 사망 처리. 사망자 ID가 `MorningKilled`에 실려 클라이언트로 동기화된다.
 
 화면은 `MafiaDayHUD`를 재사용하며, 제목은 "게임 진행 중"으로 표시된다(`MORNING`·`MEETING_RESULT` 전용 문구가 아직 없다).
+
+아침 결과는 `MafiaNightHUD`의 `Result_1`(사망자 발생) 또는 `Result_2`(사망자 없음)를 사용하며, 완전히 나타난 상태를 3.5초 유지한 뒤 페이드아웃한다. 결과가 완전히 사라지면 `MafiaDayHUD`를 알파 0에서 1로 약 0.56초 동안 페이드인해 밤 결과와 낮 화면이 자연스럽게 이어진다. 투표 결과 애니메이션의 유지 시간은 기존 2.5초다.
 
 ### 3.10 종료 (GAME_OVER)
 
