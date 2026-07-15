@@ -1015,6 +1015,18 @@ script LobbyController extends Component
 		local unlockedSet = self.roleUnlockedSet or {}
 		local isReal = def.key ~= ""
 		local isUnlocked = isReal and unlockedSet[def.key] == true
+		local roleCardRuidByKey = {
+			["0"] = "9b45713ea3ea4673a069d4f2ea0aedd4",
+			["1"] = "4ab50fbe108a483994b6f8d992c8c598",
+			["2"] = "4de7462417ec4147ba94df5e1c9ef4ed",
+			["3"] = "a1f56de4e9184a508d7aef9e7d4ab46d",
+		}
+		local previewRuid = roleCardRuidByKey[def.key] or "876153f80e8a4f92bd349d205b82484e"
+		local preview = _EntityService:GetEntityByPath(detail .. "/PreviewImage")
+		if preview ~= nil and isvalid(preview) and preview.SpriteGUIRendererComponent ~= nil then
+			preview.SpriteGUIRendererComponent.ImageRUID = DataRef(previewRuid)
+			preview.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
+		end
 
 		self:SetDetailText(detail .. "/RoleNameText", def.name)
 		self:SetDetailText(detail .. "/TeamRow/TeamText", def.team)
@@ -1055,27 +1067,19 @@ script LobbyController extends Component
 	end
 
 	method void UpdatePaginationUI(string pageBase, integer page, integer totalPages)
-		-- Writes "n/m" and greys the arrows out at the ends of the range.
+		-- Writes "n/m" while keeping the resource-backed arrows fully visible.
 		local pagination = pageBase .. "/ListPanel/Pagination"
 
 		self:SetDetailText(pagination .. "/PageText", tostring(page) .. " / " .. tostring(totalPages))
 
 		local prev = _EntityService:GetEntityByPath(pagination .. "/PrevBtn")
 		if prev ~= nil and isvalid(prev) and prev.SpriteGUIRendererComponent ~= nil then
-			if page > 1 then
-				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
-			else
-				prev.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
-			end
+			prev.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
 		end
 
 		local next = _EntityService:GetEntityByPath(pagination .. "/NextBtn")
 		if next ~= nil and isvalid(next) and next.SpriteGUIRendererComponent ~= nil then
-			if page < totalPages then
-				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 1.0)
-			else
-				next.SpriteGUIRendererComponent.Color = Color(0.85, 0.85, 0.85, 0.35)
-			end
+			next.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
 		end
 	end
 
@@ -1175,26 +1179,29 @@ script LobbyController extends Component
 	end
 
 	method void HighlightCollectionTab(string tab)
-		-- Gold for the active tab, dim for the inactive one.
+		-- Uses dedicated sprites for selected/unselected role and costume tabs.
 		local nav = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/NavigationPanel"
-		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
-		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+		local white = Color(1.0, 1.0, 1.0, 1.0)
 
 		local roleBtn = _EntityService:GetEntityByPath(nav .. "/Tab_Role")
 		if roleBtn ~= nil and isvalid(roleBtn) and roleBtn.SpriteGUIRendererComponent ~= nil then
-			if tab == "role" then
-				roleBtn.SpriteGUIRendererComponent.Color = activeColor
-			else
-				roleBtn.SpriteGUIRendererComponent.Color = idleColor
+			local roleRuid = tab == "role" and "9f040e220a5c4c96b10a49b6038657ef" or "1b18f5c574384e2e9fb422c1b39e88d1"
+			roleBtn.SpriteGUIRendererComponent.ImageRUID = DataRef(roleRuid)
+			roleBtn.SpriteGUIRendererComponent.Color = white
+			if roleBtn.TextComponent ~= nil then
+				roleBtn.TextComponent.Text = ""
+				roleBtn.TextComponent.Enable = false
 			end
 		end
 
 		local costumeBtn = _EntityService:GetEntityByPath(nav .. "/Tab_Costume")
 		if costumeBtn ~= nil and isvalid(costumeBtn) and costumeBtn.SpriteGUIRendererComponent ~= nil then
-			if tab == "costume" then
-				costumeBtn.SpriteGUIRendererComponent.Color = activeColor
-			else
-				costumeBtn.SpriteGUIRendererComponent.Color = idleColor
+			local costumeRuid = tab == "costume" and "cb946ea797b342ff85c6e93e2887cec0" or "9c0b7ef2dacd487180b2ca4279200dd3"
+			costumeBtn.SpriteGUIRendererComponent.ImageRUID = DataRef(costumeRuid)
+			costumeBtn.SpriteGUIRendererComponent.Color = white
+			if costumeBtn.TextComponent ~= nil then
+				costumeBtn.TextComponent.Text = ""
+				costumeBtn.TextComponent.Enable = false
 			end
 		end
 	end
@@ -1335,6 +1342,10 @@ script LobbyController extends Component
 		self:SetDetailText(detail .. "/SkillDescriptionText", "")
 		self:SetDetailText(detail .. "/DescriptionText", "")
 		self:SetDetailText(detail .. "/UnlockConditionText", "")
+		local preview = _EntityService:GetEntityByPath(detail .. "/PreviewImage")
+		if preview ~= nil and isvalid(preview) and preview.SpriteGUIRendererComponent ~= nil then
+			preview.SpriteGUIRendererComponent.ImageRUID = DataRef("")
+		end
 
 		local empty = _EntityService:GetEntityByPath(detail .. "/EmptyState")
 		if empty ~= nil and isvalid(empty) then empty:SetEnable(true) end
@@ -1352,6 +1363,13 @@ script LobbyController extends Component
 		-- overlay marks "not experienced yet". Slots 5-8 are unannounced placeholders.
 		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/RolePage"
 		local defs = self:GetRoleCollectionDefs()
+		local roleCardRuidByKey = {
+			["0"] = "9b45713ea3ea4673a069d4f2ea0aedd4", -- 시민
+			["1"] = "4ab50fbe108a483994b6f8d992c8c598", -- 마피아
+			["2"] = "4de7462417ec4147ba94df5e1c9ef4ed", -- 경찰
+			["3"] = "a1f56de4e9184a508d7aef9e7d4ab46d", -- 의사
+		}
+		local lockedCardRuid = "876153f80e8a4f92bd349d205b82484e"
 		local pageSize = self.COLLECTION_PAGE_SIZE
 		local totalPages = self:GetPageCount(#defs)
 		if self.rolePage > totalPages then self.rolePage = totalPages end
@@ -1380,23 +1398,36 @@ script LobbyController extends Component
 					card:SetEnable(true)
 					local isReal = def.key ~= ""
 					local isUnlocked = isReal and unlockedSet[def.key] == true
+					local cardRuid = lockedCardRuid
+					if isReal and roleCardRuidByKey[def.key] ~= nil then
+						cardRuid = roleCardRuidByKey[def.key]
+					end
+					local cardFrame = _EntityService:GetEntityByPath(cardPath .. "/CardFrame")
+					if cardFrame ~= nil and isvalid(cardFrame) and cardFrame.SpriteGUIRendererComponent ~= nil then
+						cardFrame.SpriteGUIRendererComponent.ImageRUID = DataRef(cardRuid)
+						cardFrame.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
+						log("[CollectionPopup] role card slot=" .. tostring(slot) .. " key=" .. tostring(def.key) .. " ruid=" .. cardRuid)
+					end
+					local selectedBorder = _EntityService:GetEntityByPath(cardPath .. "/SelectedBorder")
+					if selectedBorder ~= nil and isvalid(selectedBorder) and selectedBorder.SpriteGUIRendererComponent ~= nil then
+						selectedBorder.SpriteGUIRendererComponent.ImageRUID = DataRef(cardRuid)
+					end
 
 					local nameEnt = _EntityService:GetEntityByPath(cardPath .. "/RoleNamePanel/RoleNameText")
 					if nameEnt ~= nil and isvalid(nameEnt) and nameEnt.TextComponent ~= nil then
 						nameEnt.TextComponent.Text = def.name
 					end
 
-					-- Real roles: dim only while un-experienced. Placeholders: always locked.
+					-- The locked card resource already contains the locked presentation.
 					local lockOverlay = _EntityService:GetEntityByPath(cardPath .. "/LockOverlay")
-					if lockOverlay ~= nil and isvalid(lockOverlay) then lockOverlay:SetEnable(not isUnlocked) end
+					if lockOverlay ~= nil and isvalid(lockOverlay) then lockOverlay:SetEnable(false) end
 
 					local lockIcon = _EntityService:GetEntityByPath(cardPath .. "/LockIcon")
-					if lockIcon ~= nil and isvalid(lockIcon) then lockIcon:SetEnable(not isUnlocked) end
+					if lockIcon ~= nil and isvalid(lockIcon) then lockIcon:SetEnable(false) end
 
-					-- Mirrors the costume tab's OwnedBadge: lights up once the role is collected.
-					self:SetDetailText(cardPath .. "/CollectedBadge/CollectedText", "수집")
+					-- The full-card resource includes its own presentation, so legacy badges stay hidden.
 					local badge = _EntityService:GetEntityByPath(cardPath .. "/CollectedBadge")
-					if badge ~= nil and isvalid(badge) then badge:SetEnable(isUnlocked) end
+					if badge ~= nil and isvalid(badge) then badge:SetEnable(false) end
 				end
 			end
 		end
