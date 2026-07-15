@@ -11365,6 +11365,208 @@
         }
       },
       {
+        "id": "af9e6fe0-6b69-4de3-ab9b-9842ffe87312",
+        "path": "/ui/MafiaDayHUD/VoteObserverText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "VoteObserverText",
+          "path": "/ui/MafiaDayHUD/VoteObserverText",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 10,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 200.0,
+                "y": 20.0
+              },
+              "OffsetMin": {
+                "x": -200.0,
+                "y": -20.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 400.0,
+                "y": 40.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FontSize": 52,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 52,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.698039234,
+                "g": 0.698039234,
+                "b": 0.698039234,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 1.0,
+                "y": -1.0
+              },
+              "OutlineWidth": 1.0,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "투표가 진행중입니다",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "ada89d4c-e47b-470e-83b8-2ef13744947c",
         "path": "/ui/MafiaDayHUD/UISprite_2",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
@@ -11375,7 +11577,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 10,
+          "displayOrder": 11,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -11573,7 +11775,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 11,
+          "displayOrder": 12,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -11771,7 +11973,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 12,
+          "displayOrder": 13,
           "pathConstraints": "///",
           "revision": 1,
           "origin": {
@@ -19295,7 +19497,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 13,
+          "displayOrder": 14,
           "pathConstraints": "///",
           "revision": 1,
           "origin": {
@@ -19367,9 +19569,361 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "dcad19faabb844159562bbcd6a33cfa0"
+                "DataId": "dfa13af52a144d7abdc119482139cf29"
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "GroupAlpha": 0.0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "d3d0f39b-1ed0-421b-8010-f51ca7e7adc8",
+        "path": "/ui/MafiaDayHUD/VoteAnime/AnimeText_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "AnimeText_1",
+          "path": "/ui/MafiaDayHUD/VoteAnime/AnimeText_1",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 700.0,
+                "y": 180.0
+              },
+              "OffsetMin": {
+                "x": -700.0,
+                "y": 20.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 1400.0,
+                "y": 160.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 100.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 100.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "MapLayer0",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": true,
+              "BestFit": false,
+              "Bold": false,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 1,
+              "FontColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FontSize": 32,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 46,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 2.0,
+                "y": -2.0
+              },
+              "OutlineWidth": 2.0,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "06a57467-e8a1-4936-8a43-400302500eb9",
+        "path": "/ui/MafiaDayHUD/VoteResultDimBg",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.CanvasGroupComponent",
+        "jsonString": {
+          "name": "VoteResultDimBg",
+          "path": "/ui/MafiaDayHUD/VoteResultDimBg",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 15,
+          "pathConstraints": "///",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UISprite",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 15,
+              "AnchorsMax": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "AnchorsMin": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": -910.0,
+                "y": -490.0
+              },
+              "OffsetMin": {
+                "x": 910.0,
+                "y": 490.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 100.0,
+                "y": 100.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
               "Enable": true
             },
             {
@@ -19392,7 +19946,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 14,
+          "displayOrder": 16,
           "pathConstraints": "///",
           "revision": 1,
           "origin": {
@@ -19454,7 +20008,7 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "5e1fbde5df594f428920ed16861968d7"
+                "DataId": "83e446ccfd4e4bc184b3c712741886f4"
               },
               "OverrideSorting": false,
               "Enable": true
@@ -19508,11 +20062,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 700.0,
-                "y": -30.0
+                "y": 180.0
               },
               "OffsetMin": {
                 "x": -700.0,
-                "y": -190.0
+                "y": 20.0
               },
               "Pivot": {
                 "x": 0.5,
@@ -19531,11 +20085,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0.0,
-                "y": -110.0
+                "y": 100.0
               },
               "Position": {
                 "x": 0.0,
-                "y": -110.0,
+                "y": 100.0,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -19635,7 +20189,7 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FontSize": 34,
+              "FontSize": 30,
               "IgnoreMapLayerCheck": false,
               "IsLocalizationKey": false,
               "MaxSize": 46,
@@ -20263,7 +20817,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 15,
+          "displayOrder": 17,
           "pathConstraints": "///",
           "revision": 1,
           "origin": {
@@ -20325,7 +20879,7 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "39da270e9d6e49be89d9b7f9475b7062"
+                "DataId": "1d65edf1e1f44d59a52475ee4973fae0"
               },
               "OverrideSorting": false,
               "Enable": true
@@ -20379,11 +20933,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 700.0,
-                "y": -30.0
+                "y": 180.0
               },
               "OffsetMin": {
                 "x": -700.0,
-                "y": -190.0
+                "y": 20.0
               },
               "Pivot": {
                 "x": 0.5,
@@ -20402,11 +20956,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0.0,
-                "y": -110.0
+                "y": 100.0
               },
               "Position": {
                 "x": 0.0,
-                "y": -110.0,
+                "y": 100.0,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -20506,7 +21060,7 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FontSize": 34,
+              "FontSize": 30,
               "IgnoreMapLayerCheck": false,
               "IsLocalizationKey": false,
               "MaxSize": 46,
@@ -21134,7 +21688,7 @@
           "enable": false,
           "visible": true,
           "localize": true,
-          "displayOrder": 16,
+          "displayOrder": 18,
           "pathConstraints": "///",
           "revision": 1,
           "origin": {
@@ -21196,7 +21750,7 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "d858cd10814043a2b894021fb866682c"
+                "DataId": "4945780b67ea448abb2473ed7347aca4"
               },
               "OverrideSorting": false,
               "SortingLayer": "MapLayer0",
@@ -21251,11 +21805,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 700.0,
-                "y": -30.0
+                "y": 180.0
               },
               "OffsetMin": {
                 "x": -700.0,
-                "y": -190.0
+                "y": 20.0
               },
               "Pivot": {
                 "x": 0.5,
@@ -21274,11 +21828,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0.0,
-                "y": -110.0
+                "y": 100.0
               },
               "Position": {
                 "x": 0.0,
-                "y": -110.0,
+                "y": 100.0,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -21378,7 +21932,7 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FontSize": 34,
+              "FontSize": 30,
               "IgnoreMapLayerCheck": false,
               "IsLocalizationKey": false,
               "MaxSize": 46,

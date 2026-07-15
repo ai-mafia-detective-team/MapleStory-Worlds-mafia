@@ -9317,6 +9317,130 @@
         }
       },
       {
+        "id": "414631a9-032f-45f4-8902-1a1ee2faab30",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge1/LobbyAvatarArea",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge1/LobbyAvatarArea",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": 282.5,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "62c62f63-a389-49db-a9c4-15ef14eea0e5",
         "path": "/ui/MafiaLobbyHUD/RoomBadge2",
         "componentNames": "MOD.Core.UITransformComponent",
@@ -10384,6 +10508,130 @@
               "UVs": [],
               "UseCustomUVs": false,
               "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "e7b40175-a357-4f79-a0cd-310e6669fde4",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge2/LobbyAvatarArea_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_1",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge2/LobbyAvatarArea_1",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": 282.5,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
             }
           ],
           "@version": 1
@@ -11463,6 +11711,130 @@
         }
       },
       {
+        "id": "12633db5-03dc-4076-8673-78187e3a874b",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge3/LobbyAvatarArea_2",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_2",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge3/LobbyAvatarArea_2",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": 282.5,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "f7a5a24c-2290-4742-853a-4826a0ee6064",
         "path": "/ui/MafiaLobbyHUD/RoomBadge4",
         "componentNames": "MOD.Core.UITransformComponent",
@@ -12530,6 +12902,130 @@
               "UVs": [],
               "UseCustomUVs": false,
               "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "74638444-bdd8-45b5-82a1-39227c665951",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge4/LobbyAvatarArea_3",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_3",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge4/LobbyAvatarArea_3",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": 282.5,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
             }
           ],
           "@version": 1
@@ -13609,6 +14105,130 @@
         }
       },
       {
+        "id": "cabfbde4-7001-45a0-80b0-a93f235ab991",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge5/LobbyAvatarArea_4",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_4",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge5/LobbyAvatarArea_4",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": -280.0,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "1c262daf-0301-4de2-a814-454557afffd2",
         "path": "/ui/MafiaLobbyHUD/RoomBadge6",
         "componentNames": "MOD.Core.UITransformComponent",
@@ -14676,6 +15296,130 @@
               "UVs": [],
               "UseCustomUVs": false,
               "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "cd31cce0-1f65-4aea-b50c-f2a764ffd921",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge6/LobbyAvatarArea_5",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_5",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge6/LobbyAvatarArea_5",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": -280.0,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
             }
           ],
           "@version": 1
@@ -15755,6 +16499,130 @@
         }
       },
       {
+        "id": "665d040f-44eb-41d2-b730-4456c75ac3e6",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge7/LobbyAvatarArea_6",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_6",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge7/LobbyAvatarArea_6",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": -280.0,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "885f317f-69dd-4c75-ae30-793675a911cf",
         "path": "/ui/MafiaLobbyHUD/RoomBadge8",
         "componentNames": "MOD.Core.UITransformComponent",
@@ -16822,6 +17690,130 @@
               "UVs": [],
               "UseCustomUVs": false,
               "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "afd44468-cfa2-4b7c-b955-57500271c6f5",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge8/LobbyAvatarArea_7",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "jsonString": {
+          "name": "LobbyAvatarArea_7",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge8/LobbyAvatarArea_7",
+          "nameEditable": true,
+          "enable": false,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 7,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 55.0,
+                "y": 27.5
+              },
+              "OffsetMin": {
+                "x": -55.0,
+                "y": -137.5
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 110.0,
+                "y": 165.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -55.0
+              },
+              "Position": {
+                "x": -280.0,
+                "y": -55.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.AvatarGUIRendererComponent",
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+              },
+              "FlipX": false,
+              "FlipY": false,
+              "MaterialId": "",
+              "PlayRate": 1.0,
+              "PreserveAvatar": 1,
+              "RaycastTarget": false,
+              "Enable": false
+            },
+            {
+              "@type": "MOD.Core.CostumeManagerComponent",
+              "CustomBodyEquip": "",
+              "CustomCapEquip": "",
+              "CustomCapeEquip": "",
+              "CustomCoatEquip": "",
+              "CustomEarAccessoryEquip": "",
+              "CustomEarEquip": "",
+              "CustomEyeAccessoryEquip": "",
+              "CustomFaceAccessoryEquip": "",
+              "CustomFaceEquip": "",
+              "CustomGloveEquip": "",
+              "CustomHairEquip": "",
+              "CustomLongcoatEquip": "",
+              "CustomOneHandedWeaponEquip": "",
+              "CustomPantsEquip": "",
+              "CustomShoesEquip": "",
+              "CustomSubWeaponEquip": "",
+              "CustomTwoHandedWeaponEquip": "",
+              "DefaultEquipUserId": "",
+              "UseCustomEquipOnly": false,
+              "Enable": false
             }
           ],
           "@version": 1
@@ -34172,7 +35164,7 @@
           "name": "LobbyAvatarArea",
           "path": "/ui/MafiaLobbyHUD/LobbyAvatarArea",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 19,
@@ -34257,7 +35249,7 @@
           "name": "LobbyAvatar",
           "path": "/ui/MafiaLobbyHUD/LobbyAvatarArea/LobbyAvatar",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 0,
@@ -34344,13 +35336,13 @@
               "PlayRate": 1.0,
               "PreserveAvatar": 0,
               "RaycastTarget": false,
-              "Enable": true
+              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -34364,7 +35356,7 @@
           "name": "AvatarNameText",
           "path": "/ui/MafiaLobbyHUD/LobbyAvatarArea/AvatarNameText",
           "nameEditable": true,
-          "enable": true,
+          "enable": false,
           "visible": true,
           "localize": true,
           "displayOrder": 1,

@@ -89,6 +89,58 @@ script QAAchievementUI extends Component
 		log("[QAAchievementUI] Tab=" .. period)
 	end
 
+	method void SetSummaryText(string nodeName, string value)
+		local path = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/SummaryPanel/" .. nodeName
+		local entity = _EntityService:GetEntityByPath(path)
+		if entity == nil or isvalid(entity) == false then return end
+
+		if entity.TextGUIRendererComponent ~= nil then
+			entity.TextGUIRendererComponent.Text = value
+		elseif entity.TextComponent ~= nil then
+			entity.TextComponent.Text = value
+		end
+	end
+
+	method void UpdateSummary(number rewardBalance)
+		local totalCount = 0
+		local completedCount = 0
+		local claimableCount = 0
+		local periodTotals = { DAILY = 0, WEEKLY = 0, MONTHLY = 0 }
+		local periodCompleted = { DAILY = 0, WEEKLY = 0, MONTHLY = 0 }
+
+		for _, item in ipairs(self.serverItems) do
+			totalCount = totalCount + 1
+			local period = item.period or ""
+			if periodTotals[period] ~= nil then
+				periodTotals[period] = periodTotals[period] + 1
+			end
+
+			local completed = (item.progress or 0) >= math.max(1, item.target or 1)
+			if completed then
+				completedCount = completedCount + 1
+				if periodCompleted[period] ~= nil then
+					periodCompleted[period] = periodCompleted[period] + 1
+				end
+				if item.claimed ~= true then
+					claimableCount = claimableCount + 1
+				end
+			end
+		end
+
+		local percent = 0
+		if totalCount > 0 then
+			percent = math.floor((completedCount / totalCount) * 100 + 0.5)
+		end
+
+		self:SetSummaryText("PercentText", tostring(percent) .. "%")
+		self:SetSummaryText("CompletionText", tostring(completedCount) .. " / " .. tostring(totalCount))
+		self:SetSummaryText("DailyValue", tostring(periodCompleted.DAILY) .. " / " .. tostring(periodTotals.DAILY))
+		self:SetSummaryText("WeeklyValue", tostring(periodCompleted.WEEKLY) .. " / " .. tostring(periodTotals.WEEKLY))
+		self:SetSummaryText("MonthlyValue", tostring(periodCompleted.MONTHLY) .. " / " .. tostring(periodTotals.MONTHLY))
+		self:SetSummaryText("ClaimableValue", tostring(claimableCount) .. "개")
+		self:SetSummaryText("CoinValue", tostring(rewardBalance))
+	end
+
 	method void ApplyServerState(string payloadJson, string message)
 		local payload = _HttpService:JSONDecode(payloadJson)
 		if payload == nil then
@@ -97,6 +149,7 @@ script QAAchievementUI extends Component
 		end
 		self.serverItems = payload.items or {}
 		self.balanceText.Text = "보유 메소  " .. tostring(payload.rewardBalance or 0)
+		self:UpdateSummary(payload.rewardBalance or 0)
 		self.statusText.Text = message or ""
 		self:Render()
 		if message ~= nil and message ~= "" and _UIToast ~= nil then
@@ -137,9 +190,11 @@ script QAAchievementUI extends Component
 				local completed = (item.progress or 0) >= (item.target or 1)
 				claimEntity.ButtonComponent.Enable = completed and item.claimed ~= true
 				if item.claimed == true then
-					self:ApplyClaimButtonLayout(claimEntity, true)
-					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("4fea64a3307cda641809ad8be0d4890b")
-					claimEntity.TextComponent.Text = "수령 완료"
+					self:ApplyClaimButtonLayout(claimEntity, false)
+					claimEntity.UITransformComponent.anchoredPosition = Vector2(-25, -5.165)
+					claimEntity.UITransformComponent.RectSize = Vector2(180, 70)
+					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("28b4995597af40d4a79601a3eab742c7")
+					claimEntity.TextComponent.Text = ""
 				elseif completed then
 					self:ApplyClaimButtonLayout(claimEntity, true)
 					claimEntity.SpriteGUIRendererComponent.ImageRUID = DataRef("8d808a399e75441b8e4e876d8cb3b061")
