@@ -249,6 +249,8 @@ script LobbyController extends Component
 
 	property any btnProfileModalCloseHandler = nil
 
+	property any popupBackdropHandlers = nil
+
 	property any btnProfileModalSaveHandler = nil
 
 	property any btnProfileModalCancelHandler = nil
@@ -2000,10 +2002,63 @@ script LobbyController extends Component
 	end
 
 	method void WireKeyboardInput()
-		-- Connects KeyDownEvent for jump. Guards against double-wiring.
+		-- Connects KeyDownEvent for jump/ESC. Guards against double-wiring.
 		if self.keyDownHandler ~= nil then return end
 		self.keyDownHandler = self.Entity:ConnectEvent(KeyDownEvent, self.OnKeyDown)
+		self:WirePopupBackdrops()
 		log("[LobbyController] Keyboard wired")
+	end
+
+	method void CloseAllPopups()
+		-- Closes every lobby popup/modal. Idempotent — safe on already-closed ones.
+		self:HideExternalPopups()
+		self:CloseCollectionPopup()
+		self:CloseBagPopup()
+		self:HideSettingsPopup()
+		self:CloseMatchmakingModal()
+		self:CloseFindRoomModal()
+		self:CloseCreateRoomModal()
+		self:CloseProfileModal()
+		self:CloseCommonPopup()
+		local achPopup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot")
+		if achPopup ~= nil and isvalid(achPopup) then achPopup:SetEnable(false) end
+		log("[LobbyController] CloseAllPopups")
+	end
+
+	method void OnPopupBackdropClicked(ButtonClickEvent event)
+		-- Clicking the dim area outside any popup panel closes all popups.
+		self:CloseAllPopups()
+	end
+
+	method void WirePopupBackdrops()
+		-- Wires each popup's full-screen backdrop (dim) so a click outside the
+		-- panel closes it. Guards against double-wiring. CreateRoom's dim is
+		-- already wired to CloseCreateRoomModal, so it is omitted here.
+		if self.popupBackdropHandlers ~= nil then return end
+		self.popupBackdropHandlers = {}
+		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/"
+		local paths = {
+			base .. "ShopPopup/DimOverlay",
+			base .. "FriendPopup/CloseBackdrop",
+			base .. "AlertPopup/CloseBackdrop",
+			base .. "CollectionPopup/DimOverlay",
+			base .. "BagPopup/DimOverlay",
+			base .. "SettingsPopup/CloseBackdrop",
+			base .. "Matchmaking/Dimmer",
+			base .. "PopupRoot/Dim",
+			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/DimOverlay",
+			"/ui/UI_InvestigationRoomSearch/CloseBackdrop",
+		}
+		for _, path in ipairs(paths) do
+			local ent = _EntityService:GetEntityByPath(path)
+			if ent ~= nil and isvalid(ent) then
+				local h = ent:ConnectEvent(ButtonClickEvent, self.OnPopupBackdropClicked)
+				self.popupBackdropHandlers[#self.popupBackdropHandlers + 1] = { entity = ent, eventHandler = h }
+			else
+				log_warning("[LobbyController] popup backdrop not found: " .. path)
+			end
+		end
+		log("[LobbyController] popup backdrops wired = " .. tostring(#self.popupBackdropHandlers))
 	end
 
 	method void WireExternalPopupEvents()
@@ -2926,10 +2981,15 @@ script LobbyController extends Component
 		-- Toggles the hidden-on-start search UI group only through the lobby flow.
 		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
 		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		-- Full-screen outside-click backdrop: kept disabled until the search opens so
+		-- it never covers (and blocks) the intro/other screens.
+		local searchBackdrop = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/CloseBackdrop")
 		if visible then
 			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
+			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(true) end
 		else
+			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(false) end
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
 			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
@@ -3549,6 +3609,11 @@ script LobbyController extends Component
 	end
 
 	method void OnKeyDown(KeyDownEvent event)
+		-- ESC closes any open lobby popup/modal.
+		if event.key == KeyboardKey.Escape then
+			self:CloseAllPopups()
+			return
+		end
 		-- Triggers a single jump when Space is pressed while avatar is on the ground.
 		if event.key == KeyboardKey.Space then
 			log("[LobbyController] Space input detected")
@@ -4339,6 +4404,15 @@ script LobbyController extends Component
 		if self.keyDownHandler ~= nil then
 			self.Entity:DisconnectEvent(KeyDownEvent, self.keyDownHandler)
 			self.keyDownHandler = nil
+		end
+
+		if self.popupBackdropHandlers ~= nil then
+			for _, rec in ipairs(self.popupBackdropHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.popupBackdropHandlers = nil
 		end
 
 		if self.avatarCheckTimerId ~= 0 then

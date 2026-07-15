@@ -199,7 +199,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "308971272f144a0d866dd322127e445e"
+                "DataId": "df5d81f6753a47b595c4f58302de88a2"
               },
               "LocalPosition": {
                 "x": 0.0,
@@ -258,6 +258,88 @@
         }
       },
       {
+        "id": "dd9b5a86-3d33-46dd-94f1-6322fcfc26a8",
+        "path": "/ui/MafiaLoadingHUD/BgSprite_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "BgSprite_1",
+          "path": "/ui/MafiaLoadingHUD/BgSprite_1",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 1,
+          "pathConstraints": "///",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "dd9b5a86-3d33-46dd-94f1-6322fcfc26a8",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 960.0,
+                "y": 540.0
+              },
+              "OffsetMin": {
+                "x": -960.0,
+                "y": -540.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 1920.0,
+                "y": 1080.0
+              },
+              "UIMode": 1,
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "7fa0800388ce4594b47e61faa3198a3b"
+              },
+              "OverrideSorting": false,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
         "id": "93d8c824-af98-4924-9f33-475fd0ebc7aa",
         "path": "/ui/MafiaLoadingHUD/DarkOverlay",
         "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
@@ -268,7 +350,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 2,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -413,7 +495,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 3,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -558,7 +640,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 3,
+          "displayOrder": 4,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -760,7 +842,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 4,
+          "displayOrder": 5,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -962,7 +1044,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 5,
+          "displayOrder": 6,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1164,7 +1246,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 6,
+          "displayOrder": 7,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1309,7 +1391,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 7,
+          "displayOrder": 8,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1511,7 +1593,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 8,
+          "displayOrder": 9,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1713,7 +1795,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 9,
+          "displayOrder": 10,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
@@ -1915,7 +1997,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 10,
+          "displayOrder": 11,
           "pathConstraints": "///",
           "revision": 0,
           "origin": {
