@@ -2020,7 +2020,7 @@ script LobbyController extends Component
 		end
 
 		if self.shopPopupCancelHandler == nil then
-			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/PurchaseBar/BottomCloseBtn")
 			if ent ~= nil and isvalid(ent) then
 				self.shopPopupCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnExternalPopupCloseClicked)
 			end
@@ -2582,7 +2582,7 @@ script LobbyController extends Component
 		end
 
 		if self.shopPopupCancelHandler ~= nil then
-			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/UseBar/CancelBtn")
+			ent = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/PurchaseBar/BottomCloseBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.shopPopupCancelHandler) end
 			self.shopPopupCancelHandler = nil
 		end
