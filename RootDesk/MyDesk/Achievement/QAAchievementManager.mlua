@@ -253,7 +253,7 @@ script QAAchievementManager extends Logic
 			self:DeliverState(userId, state, "보상을 받을 수 없습니다.")
 			return
 		end
-		self:DeliverState(userId, state, "보상을 수령했습니다. 코인 +" .. tostring(definition.reward))
+		self:DeliverState(userId, state, "보상을 수령했습니다. 메소 +" .. tostring(definition.reward))
 	end
 
 	@ExecSpace("Server")
@@ -268,7 +268,7 @@ script QAAchievementManager extends Logic
 				totalReward += definition.reward
 			end
 		end
-		self:DeliverState(userId, state, claimedCount > 0 and "보상을 수령했습니다. 코인 +" .. tostring(totalReward) or "수령 가능한 보상이 없습니다.")
+		self:DeliverState(userId, state, claimedCount > 0 and "보상을 수령했습니다. 메소 +" .. tostring(totalReward) or "수령 가능한 보상이 없습니다.")
 	end
 
 	@ExecSpace("ServerOnly")
