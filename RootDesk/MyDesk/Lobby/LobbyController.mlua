@@ -265,6 +265,12 @@ script LobbyController extends Component
 
 	property any dimOverlayHandler = nil
 
+	property number popupOpenGuardUntil = 0
+
+	property Entity achievementPopupRoot = "01a4c1cd-0b0e-4f3e-ba6f-35c9c5fb9c9d"
+
+	property any achievementPopupEnabledHandler = nil
+
 	property any avatarCache = nil
 
 	property any profileAvatarCache = nil
@@ -837,6 +843,7 @@ script LobbyController extends Component
 			self:SyncSettingsSoundState()
 			self:ShowSettingsTab("sound")
 		end
+		self:SetLobbyUIDimmed(active)
 		log("[LobbyController] Settings popup active=" .. tostring(active))
 	end
 
@@ -920,6 +927,7 @@ script LobbyController extends Component
 			if active == true and uiTransform ~= nil then
 				_UILogic:SetSiblingIndex(uiTransform, 1000000)
 			end
+			self:SetLobbyUIDimmed(active)
 			log("[ExternalPopup] name=" .. popupName .. " active=" .. tostring(active))
 		else
 			log_warning("[LobbyController] External popup not found: " .. popupPath)
@@ -954,6 +962,7 @@ script LobbyController extends Component
 			canvasGroup.BlocksRaycasts = active
 		end
 
+		self:SetLobbyUIDimmed(active)
 		log("[CollectionPopup] active=" .. tostring(active))
 	end
 
@@ -1536,6 +1545,7 @@ script LobbyController extends Component
 			canvasGroup.BlocksRaycasts = active
 		end
 
+		self:SetLobbyUIDimmed(active)
 		log("[BagPopup] active=" .. tostring(active))
 	end
 
@@ -2076,6 +2086,7 @@ script LobbyController extends Component
 		if self.keyDownHandler ~= nil then return end
 		self.keyDownHandler = self.Entity:ConnectEvent(KeyDownEvent, self.OnKeyDown)
 		self:WirePopupBackdrops()
+		self:WireAchievementPopupDim()
 		log("[LobbyController] Keyboard wired")
 	end
 
@@ -2097,7 +2108,33 @@ script LobbyController extends Component
 
 	method void OnPopupBackdropClicked(ButtonClickEvent event)
 		-- Clicking the dim area outside any popup panel closes all popups.
+		if self:IsPopupOpenGuardActive() then return end
 		self:CloseAllPopups()
+	end
+
+	method boolean IsPopupOpenGuardActive()
+		-- True for a beat right after a popup opens. Opening dims the lobby chrome and
+		-- clears its BlocksRaycasts, so the very click that opened the popup would
+		-- otherwise fall straight through the button onto the popup's own DimOverlay
+		-- and close it again in the same gesture.
+		return _UtilLogic.ElapsedSeconds < self.popupOpenGuardUntil
+	end
+
+	method void WireAchievementPopupDim()
+		-- The achievement popup is owned by QAAchievementUI, which toggles its root's
+		-- Enable directly — LobbyController never sees an Open/Close call it can hook.
+		-- Watching EnabledInHierarchy instead catches every path (the popup's own close
+		-- button, CloseAllPopups, ...) so the lobby dim can never get stuck on.
+		if self.achievementPopupEnabledHandler ~= nil then return end
+		if self.achievementPopupRoot == nil or isvalid(self.achievementPopupRoot) == false then
+			log_warning("[LobbyController] achievement popup root not found for dim wiring")
+			return
+		end
+		self.achievementPopupEnabledHandler = self.achievementPopupRoot:ConnectEvent(EntityEnabledInHierarchyChangedEvent, function(event)
+			self:SetLobbyUIDimmed(event.EnabledInHierarchy)
+			log("[LobbyController] achievement popup enabled=" .. tostring(event.EnabledInHierarchy))
+		end)
+		log("[LobbyController] achievement popup dim wired")
 	end
 
 	method void WirePopupBackdrops()
@@ -4305,6 +4342,7 @@ script LobbyController extends Component
 		if modal ~= nil and isvalid(modal) then
 			modal.Enable = true
 		end
+		self:SetLobbyUIDimmed(true)
 		self:RefreshProfileModalFields()
 		self:UpdateSelectedIndicators()
 		-- Wire slot buttons
@@ -4347,6 +4385,7 @@ script LobbyController extends Component
 			local dimBtn = self.modalDimOverlay.ButtonComponent
 			if dimBtn ~= nil then
 				self.dimOverlayHandler = self.modalDimOverlay:ConnectEvent(ButtonClickEvent, function(evt)
+					if self:IsPopupOpenGuardActive() then return end
 					self:CloseProfileModal()
 				end)
 			end
@@ -4361,6 +4400,7 @@ script LobbyController extends Component
 		self.profileModalOpen = false
 		self:SetLobbyAvatarAreaVisible(true)
 		self:SetAvatarNameTextVisible(true)
+		self:SetLobbyUIDimmed(false)
 		if self.btnProfileSlot1Handler ~= nil and self.btnProfileSlot1 ~= nil and isvalid(self.btnProfileSlot1) then
 			self.btnProfileSlot1.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot1Handler)
 			self.btnProfileSlot1Handler = nil
@@ -4398,6 +4438,66 @@ script LobbyController extends Component
 			modal.Enable = false
 		end
 		log("[LobbyController] ProfileModal closed handlers disconnected")
+	end
+
+	method table GetLobbyDimTargets()
+		-- Lobby chrome that sits behind a popup and must not stay clickable while it
+		-- is open. Each entry carries its own CanvasGroupComponent.
+		-- ButtonGroup itself is NOT listed: the popups (CollectionPopup, BagPopup, ...)
+		-- live inside it, and CanvasGroup alpha multiplies into children — dimming the
+		-- container would dim the very popup being opened. So its chrome is listed
+		-- element by element instead.
+		return {
+			"/ui/UI_Lobby/LobbyRoot/TopHud",
+			"/ui/UI_Lobby/LobbyRoot/LeftMenu",
+			"/ui/UI_Lobby/LobbyRoot/RightActionButtons",
+			"/ui/UI_Lobby/LobbyRoot/ProfileRoot",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/도감",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/가방",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/업적",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/알림",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/상점",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/친구",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/설정",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/찾기",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/방만들기",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/start",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay",
+		}
+	end
+
+	method void SetLobbyUIDimmed(boolean dimmed)
+		-- Dims the lobby buttons behind an open popup and makes them ignore input.
+		-- BlocksRaycasts=false lets the click fall through to that popup's DimOverlay,
+		-- whose handler closes it — so clicking any lobby button closes the popup.
+		-- Shared by the profile modal and CollectionPopup.
+		if dimmed == true then
+			self.popupOpenGuardUntil = _UtilLogic.ElapsedSeconds + 0.25
+		end
+		local applied = 0
+		for _, path in ipairs(self:GetLobbyDimTargets()) do
+			local ent = _EntityService:GetEntityByPath(path)
+			if ent ~= nil and isvalid(ent) then
+				local canvasGroup = ent.CanvasGroupComponent
+				if canvasGroup ~= nil then
+					if dimmed == true then
+						canvasGroup.GroupAlpha = 0.45
+						canvasGroup.Interactable = false
+						canvasGroup.BlocksRaycasts = false
+					else
+						canvasGroup.GroupAlpha = 1
+						canvasGroup.Interactable = true
+						canvasGroup.BlocksRaycasts = true
+					end
+					applied = applied + 1
+				else
+					log_warning("[LobbyController] CanvasGroup missing on " .. path)
+				end
+			else
+				log_warning("[LobbyController] dim target not found: " .. path)
+			end
+		end
+		log("[LobbyController] lobby UI dimmed=" .. tostring(dimmed) .. " applied=" .. tostring(applied))
 	end
 
 	method void SetAvatarNameTextVisible(boolean visible)
@@ -4512,6 +4612,13 @@ script LobbyController extends Component
 				end
 			end
 			self.popupBackdropHandlers = nil
+		end
+
+		if self.achievementPopupEnabledHandler ~= nil then
+			if self.achievementPopupRoot ~= nil and isvalid(self.achievementPopupRoot) then
+				self.achievementPopupRoot:DisconnectEvent(EntityEnabledInHierarchyChangedEvent, self.achievementPopupEnabledHandler)
+			end
+			self.achievementPopupEnabledHandler = nil
 		end
 
 		if self.avatarCheckTimerId ~= 0 then
