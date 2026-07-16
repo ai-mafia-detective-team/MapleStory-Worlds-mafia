@@ -98,6 +98,14 @@ script LobbyController extends Component
 
 	property integer selectedCostumeIndex = 0
 
+	property table costumeCategoryHandlers = nil
+
+	property string costumeCategory = "전체"
+
+	property string CATEGORY_ACTIVE_RUID = "1bbac083829c4c738b351ea238bef7fd"
+
+	property string CATEGORY_INACTIVE_RUID = "10c10be2edab40e0a5be2c78492f8ab9"
+
 	property any collectionTabRoleHandler = nil
 
 	property any collectionTabCostumeHandler = nil
@@ -955,6 +963,8 @@ script LobbyController extends Component
 		self.rolePage = 1
 		self.costumePage = 1
 		self:SetCollectionTab("role")
+		self:ShowRoleDetail(1)
+		log("[CollectionPopup] default role detail=시민 index=1")
 	end
 
 	method void CloseCollectionPopup()
@@ -1169,6 +1179,7 @@ script LobbyController extends Component
 		self:HighlightCollectionTab(tab)
 
 		if tab == "costume" then
+			self:HighlightCostumeCollectionCategory(self.costumeCategory)
 			self:ClearCostumeDetail()
 			self:RenderCostumeCards()
 		else
@@ -1214,11 +1225,65 @@ script LobbyController extends Component
 		return _ShopController.costumeData
 	end
 
+	method table GetCostumeCategoryButtons()
+		-- CategoryBar node name -> catalog category value.
+		return {
+			{ node = "Category_All",       category = "전체" },
+			{ node = "Category_Top",       category = "상의" },
+			{ node = "Category_Bottom",    category = "하의" },
+			{ node = "Category_Shoes",     category = "신발" },
+			{ node = "Category_Accessory", category = "장식" },
+			{ node = "Category_Set",       category = "세트" },
+		}
+	end
+
+	method any GetFilteredCostumeCollectionItems()
+		-- Returns costume dex items matching the active costume category.
+		local source = self:GetCostumeCollectionItems()
+		if self.costumeCategory == "전체" then return source end
+
+		local result = {}
+		for _, item in ipairs(source) do
+			if item.category == self.costumeCategory then
+				result[#result + 1] = item
+			end
+		end
+		return result
+	end
+
+	method void SelectCostumeCollectionCategory(string category)
+		-- Switches the costume dex category and repaints from page 1.
+		self.costumeCategory = category
+		self.costumePage = 1
+		self:HighlightCostumeCollectionCategory(category)
+		self:ClearCostumeDetail()
+		self:RenderCostumeCards()
+		log("[CollectionPopup] costume category=" .. category)
+	end
+
+	method void HighlightCostumeCollectionCategory(string category)
+		-- Swaps the costume dex category button background while preserving label text.
+		local bar = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage/CategoryBar"
+		local white = Color(1.0, 1.0, 1.0, 1.0)
+		for _, entry in ipairs(self:GetCostumeCategoryButtons()) do
+			local ent = _EntityService:GetEntityByPath(bar .. "/" .. entry.node)
+			if ent ~= nil and isvalid(ent) and ent.SpriteGUIRendererComponent ~= nil then
+				if entry.category == category then
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_ACTIVE_RUID)
+				else
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_INACTIVE_RUID)
+				end
+				ent.SpriteGUIRendererComponent.Color = white
+			end
+		end
+	end
+
 	method void RenderCostumeCards()
 		-- Paints the costume cards: owned ones are lit, unowned stay covered by the lock overlay.
 		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage"
 		local grid = base .. "/ListPanel/CardGrid"
-		local items = self:GetCostumeCollectionItems()
+		local allItems = self:GetCostumeCollectionItems()
+		local items = self:GetFilteredCostumeCollectionItems()
 		local pageSize = self.COLLECTION_PAGE_SIZE
 		local totalPages = self:GetPageCount(#items)
 		if self.costumePage > totalPages then self.costumePage = totalPages end
@@ -1226,7 +1291,7 @@ script LobbyController extends Component
 
 		-- Progress counts the whole catalog, not just the visible page.
 		local ownedCount = 0
-		for _, item in ipairs(items) do
+		for _, item in ipairs(allItems) do
 			if item.owned == true then ownedCount = ownedCount + 1 end
 		end
 
@@ -1261,30 +1326,32 @@ script LobbyController extends Component
 
 		local progress = _EntityService:GetEntityByPath(base .. "/CollectionHeader/ProgressText")
 		if progress ~= nil and isvalid(progress) and progress.TextComponent ~= nil then
-			progress.TextComponent.Text = tostring(ownedCount) .. "/" .. tostring(#items)
+			progress.TextComponent.Text = tostring(ownedCount) .. "/" .. tostring(#allItems)
 		end
 
-		log("[CollectionPopup] costume cards rendered owned=" .. tostring(ownedCount) .. "/" .. tostring(#items))
+		log("[CollectionPopup] costume cards rendered category=" .. self.costumeCategory ..
+			" owned=" .. tostring(ownedCount) .. "/" .. tostring(#allItems) ..
+			" visible=" .. tostring(#items))
 	end
 
 	method void OnCostumeCardClicked(integer slot)
-		-- `slot` is the 1..8 grid position; convert it to an index into the full catalog.
+		-- `slot` is the 1..8 grid position; convert it to an index into the filtered catalog.
 		local index = (self.costumePage - 1) * self.COLLECTION_PAGE_SIZE + slot
-		log("[CollectionPopup] costume card clicked: slot=" .. tostring(slot) .. " index=" .. tostring(index))
-		self:ShowCostumeDetail(index)
-	end
-
-	method void ShowCostumeDetail(integer index)
-		-- Fills the costume DetailPanel from the clicked card's catalog entry.
-		local items = self:GetCostumeCollectionItems()
+		local items = self:GetFilteredCostumeCollectionItems()
 		local item = items[index]
 		if item == nil then return end
+		log("[CollectionPopup] costume card clicked: slot=" .. tostring(slot) .. " categoryIndex=" .. tostring(index))
+		self:ShowCostumeDetail(item)
+	end
 
-		self.selectedCostumeIndex = index
+	method void ShowCostumeDetail(any item)
+		-- Fills the costume DetailPanel from the clicked card's catalog entry.
+		if item == nil then return end
 
 		local base = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage"
 		local detail = base .. "/DetailPanel"
 		local isOwned = item.owned == true
+		self.selectedCostumeIndex = item.id
 
 		self:SetDetailText(detail .. "/CostumeNameText", item.name)
 		self:SetDetailText(detail .. "/CategoryRow/CategoryText", item.category)
@@ -1302,10 +1369,13 @@ script LobbyController extends Component
 		if empty ~= nil and isvalid(empty) then empty:SetEnable(false) end
 
 		local grid = base .. "/ListPanel/CardGrid"
-		local selectedSlot = index - (self.costumePage - 1) * self.COLLECTION_PAGE_SIZE
+		local visibleItems = self:GetFilteredCostumeCollectionItems()
 		for slot = 1, self.COLLECTION_PAGE_SIZE do
 			local border = _EntityService:GetEntityByPath(grid .. "/CostumeCard_0" .. tostring(slot) .. "/SelectedBorder")
-			if border ~= nil and isvalid(border) then border:SetEnable(slot == selectedSlot) end
+			if border ~= nil and isvalid(border) then
+				local visibleItem = visibleItems[(self.costumePage - 1) * self.COLLECTION_PAGE_SIZE + slot]
+				border:SetEnable(visibleItem ~= nil and visibleItem.id == self.selectedCostumeIndex)
+			end
 		end
 	end
 
@@ -2143,6 +2213,26 @@ script LobbyController extends Component
 		end
 
 		self:WireRoleCardEvents()
+		self:WireCostumeCategoryEvents()
+	end
+
+	method void WireCostumeCategoryEvents()
+		-- Connects costume dex category buttons once.
+		if self.costumeCategoryHandlers ~= nil then return end
+		self.costumeCategoryHandlers = {}
+
+		local bar = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/ContentRoot/CostumePage/CategoryBar"
+		for _, entry in ipairs(self:GetCostumeCategoryButtons()) do
+			local ent = _EntityService:GetEntityByPath(bar .. "/" .. entry.node)
+			if ent ~= nil and isvalid(ent) then
+				local capturedCategory = entry.category
+				local h = ent:ConnectEvent(ButtonClickEvent, function() self:SelectCostumeCollectionCategory(capturedCategory) end)
+				self.costumeCategoryHandlers[#self.costumeCategoryHandlers + 1] = { entity = ent, eventHandler = h }
+			else
+				log_warning("[CollectionPopup] costume category button not found: " .. entry.node)
+			end
+		end
+		log("[CollectionPopup] costume categories wired: " .. tostring(#self.costumeCategoryHandlers))
 	end
 
 	method void WireRoleCardEvents()
@@ -2239,6 +2329,15 @@ script LobbyController extends Component
 				end
 			end
 			self.costumeCardHandlers = nil
+		end
+
+		if self.costumeCategoryHandlers ~= nil then
+			for _, rec in ipairs(self.costumeCategoryHandlers) do
+				if rec.entity ~= nil and isvalid(rec.entity) then
+					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
+				end
+			end
+			self.costumeCategoryHandlers = nil
 		end
 
 		local nav = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/CollectionPopup/Panel/NavigationPanel"
@@ -2430,18 +2529,18 @@ script LobbyController extends Component
 	end
 
 	method void HighlightBagCategory(string category)
-		-- Gold for the active category, dim for the rest.
+		-- Swaps the category button background while preserving its label text.
 		local bar = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/Panel/CategoryBar"
-		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
-		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+		local white = Color(1.0, 1.0, 1.0, 1.0)
 		for _, entry in ipairs(self:GetBagCategoryButtons()) do
 			local ent = _EntityService:GetEntityByPath(bar .. "/" .. entry.node)
 			if ent ~= nil and isvalid(ent) and ent.SpriteGUIRendererComponent ~= nil then
 				if entry.category == category then
-					ent.SpriteGUIRendererComponent.Color = activeColor
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_ACTIVE_RUID)
 				else
-					ent.SpriteGUIRendererComponent.Color = idleColor
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_INACTIVE_RUID)
 				end
+				ent.SpriteGUIRendererComponent.Color = white
 			end
 		end
 	end

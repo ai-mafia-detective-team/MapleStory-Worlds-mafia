@@ -15,6 +15,9 @@ script ShopController extends Logic
 	-- The grid has 8 slots, so a page holds 8 items.
 	property integer PAGE_SIZE = 8
 
+	property string CATEGORY_ACTIVE_RUID = "1bbac083829c4c738b351ea238bef7fd"
+	property string CATEGORY_INACTIVE_RUID = "10c10be2edab40e0a5be2c78492f8ab9"
+
 	-- ── Handler storage ──────────────────────────────────────────────────────
 	property any categoryHandlers = nil
 	property any cardHandlers     = nil
@@ -222,18 +225,18 @@ script ShopController extends Logic
 	end
 
 	method void HighlightCategory(string category)
-		-- Gold for the active category, dim for the rest.
+		-- Swaps the category button background while preserving its label text.
 		local panel = self.PANEL_PATH
-		local activeColor = Color(0.96, 0.84, 0.42, 1.0)
-		local idleColor = Color(0.20, 0.25, 0.31, 1.0)
+		local white = Color(1.0, 1.0, 1.0, 1.0)
 		for _, entry in ipairs(self:GetCategoryButtons()) do
 			local ent = _EntityService:GetEntityByPath(panel .. "/CategoryBar/" .. entry.node)
 			if ent ~= nil and isvalid(ent) and ent.SpriteGUIRendererComponent ~= nil then
 				if entry.category == category then
-					ent.SpriteGUIRendererComponent.Color = activeColor
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_ACTIVE_RUID)
 				else
-					ent.SpriteGUIRendererComponent.Color = idleColor
+					ent.SpriteGUIRendererComponent.ImageRUID = DataRef(self.CATEGORY_INACTIVE_RUID)
 				end
+				ent.SpriteGUIRendererComponent.Color = white
 			end
 		end
 	end
