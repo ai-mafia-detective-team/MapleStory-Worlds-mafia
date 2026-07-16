@@ -345,7 +345,7 @@
       {
         "id": "598ae5f1-6f2d-4e4d-9081-2bcfe03bb1bf",
         "path": "/ui/UI_Lobby/LobbyRoot/TopHud",
-        "componentNames": "MOD.Core.UITransformComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "TopHud",
           "path": "/ui/UI_Lobby/LobbyRoot/TopHud",
@@ -421,6 +421,13 @@
                 "y": 1,
                 "z": 1
               },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -1104,7 +1111,7 @@
       {
         "id": "a7957e14-8f2a-4b9b-b34d-2ee18b6a6567",
         "path": "/ui/UI_Lobby/LobbyRoot/LeftMenu",
-        "componentNames": "MOD.Core.UITransformComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "LeftMenu",
           "path": "/ui/UI_Lobby/LobbyRoot/LeftMenu",
@@ -1180,6 +1187,13 @@
                 "y": 1,
                 "z": 1
               },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -2886,7 +2900,7 @@
       {
         "id": "437d23b7-45c6-4a00-9e11-a4aa2e9ca6e1",
         "path": "/ui/UI_Lobby/LobbyRoot/RightActionButtons",
-        "componentNames": "MOD.Core.UITransformComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "RightActionButtons",
           "path": "/ui/UI_Lobby/LobbyRoot/RightActionButtons",
@@ -2962,6 +2976,13 @@
                 "y": 1,
                 "z": 1
               },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -3812,7 +3833,7 @@
       {
         "id": "ce94df57-be57-4e03-b2a8-4e06d0895998",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/start",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "start",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/start",
@@ -3948,6 +3969,13 @@
               },
               "OverrideSorting": false,
               "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -3956,7 +3984,7 @@
       {
         "id": "91c5fc54-d9c6-42c3-9d7b-3f28b931e3f4",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/방만들기",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "방만들기",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/방만들기",
@@ -4091,6 +4119,13 @@
                 "DisabledSprite": null
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -5629,7 +5664,7 @@
       {
         "id": "00cd24e3-8977-4072-96cf-fd6e3b548da1",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/찾기",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "찾기",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/찾기",
@@ -5767,6 +5802,13 @@
               },
               "OverrideSorting": false,
               "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -5775,7 +5817,7 @@
       {
         "id": "6973f452-668a-4504-93c9-8022d6b5a22f",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/도감",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "도감",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/도감",
@@ -5894,6 +5936,13 @@
               },
               "OverrideSorting": false,
               "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -5902,7 +5951,7 @@
       {
         "id": "92259fea-1832-42a5-acfc-1e702ab3739d",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/가방",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "가방",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/가방",
@@ -6022,6 +6071,13 @@
               },
               "OverrideSorting": false,
               "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -6030,7 +6086,7 @@
       {
         "id": "e2242f05-f94e-4fb5-bd08-c71325b8337b",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/업적",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "업적",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/업적",
@@ -6150,6 +6206,13 @@
               },
               "OverrideSorting": false,
               "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -6158,7 +6221,7 @@
       {
         "id": "cce49f65-b4e9-40d7-97f2-3db2d857ad2c",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/설정",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "설정",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/설정",
@@ -6276,6 +6339,13 @@
                 "DisabledSprite": null
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -6438,7 +6508,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -11695,7 +11765,7 @@
       {
         "id": "ce7b0595-50d2-4872-8ed6-6fad313d137e",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/친구",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "친구",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/친구",
@@ -11813,6 +11883,13 @@
                 "DisabledSprite": null
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -11975,7 +12052,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -15594,7 +15671,7 @@
       {
         "id": "197940d0-8081-4a14-87f6-29123a20eab0",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/상점",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "상점",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/상점",
@@ -15723,6 +15800,13 @@
                 "DisabledSprite": null
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -15892,7 +15976,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -47864,7 +47948,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -47881,21 +47965,21 @@
               "ActivePlatform": 255,
               "AlignmentOption": 0,
               "AnchorsMax": {
-                "x": 0.5,
-                "y": 0.5
+                "x": 1,
+                "y": 1
               },
               "AnchorsMin": {
-                "x": 0.5,
-                "y": 0.5
+                "x": 0,
+                "y": 0
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 960,
-                "y": 540
+                "x": 0,
+                "y": 0
               },
               "OffsetMin": {
-                "x": -960,
-                "y": -540
+                "x": 0,
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
@@ -47961,7 +48045,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0.33
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -48051,7 +48135,7 @@
       {
         "id": "c115dc30-d58f-4866-9a17-34d19527828b",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/알림",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.ButtonComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "알림",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/알림",
@@ -48169,6 +48253,13 @@
                 "DisabledSprite": null
               },
               "OverrideSorting": false,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -48423,7 +48514,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -135272,10 +135363,10 @@
           "name": "DimOverlay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/BagPopup/DimOverlay",
           "nameEditable": true,
-          "enable": false,
-          "visible": false,
+          "enable": true,
+          "visible": true,
           "localize": true,
-          "displayOrder": 2,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -135372,7 +135463,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -143919,7 +144010,7 @@
       {
         "id": "996cf3b2-f142-4ba2-8ef9-15502ed09b3e",
         "path": "/ui/UI_Lobby/LobbyRoot/ProfileRoot",
-        "componentNames": "MOD.Core.UITransformComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "ProfileRoot",
           "path": "/ui/UI_Lobby/LobbyRoot/ProfileRoot",
@@ -143995,6 +144086,13 @@
                 "y": 1,
                 "z": 1
               },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -151668,20 +151766,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -910,
-                "y": -490
+                "x": 0,
+                "y": 0
               },
               "OffsetMin": {
-                "x": 910,
-                "y": 490
+                "x": 0,
+                "y": 0
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 100,
-                "y": 100
+                "x": 1920,
+                "y": 1080
               },
               "UIMode": 1,
               "UIScale": {
@@ -151739,7 +151837,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0.65
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -160315,7 +160413,7 @@
       {
         "id": "c7752be5-1556-47fd-8019-5cf9f959c440",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay",
-        "componentNames": "MOD.Core.UITransformComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CanvasGroupComponent",
         "jsonString": {
           "name": "MoneyDisplay",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay",
@@ -160391,6 +160489,13 @@
                 "y": 1,
                 "z": 1
               },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.CanvasGroupComponent",
+              "BlocksRaycasts": true,
+              "GroupAlpha": 1,
+              "Interactable": true,
               "Enable": true
             }
           ],
@@ -161392,7 +161497,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -161489,7 +161594,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -161630,7 +161735,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -161727,7 +161832,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -161868,7 +161973,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -161965,7 +162070,7 @@
                 "r": 0,
                 "g": 0,
                 "b": 0,
-                "a": 0
+                "a": 0.55
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
