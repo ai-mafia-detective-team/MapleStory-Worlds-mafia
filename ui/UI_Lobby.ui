@@ -15892,7 +15892,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 0,
+          "displayOrder": 1,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -16208,20 +16208,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -380,
-                "y": 32
+                "x": 300,
+                "y": 90
               },
               "OffsetMin": {
-                "x": -740,
-                "y": -32
+                "x": -300,
+                "y": -60
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 360,
-                "y": 64
+                "x": 600,
+                "y": 150
               },
               "UIMode": 1,
               "UIScale": {
@@ -16231,11 +16231,11 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": -560,
-                "y": 0
+                "x": 0,
+                "y": 15
               },
               "Position": {
-                "x": -560,
+                "x": 0,
                 "y": 0,
                 "z": 0
               },
@@ -21263,7 +21263,7 @@
                 "r": 0.06666667,
                 "g": 0.09411765,
                 "b": 0.152941182,
-                "a": 0.98
+                "a": 0
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -21872,7 +21872,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "1bbac083829c4c738b351ea238bef7fd"
               },
               "LocalPosition": {
                 "x": 0,
@@ -21890,9 +21890,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.192156866,
-                "g": 0.3137255,
-                "b": 0.435294122,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -22124,7 +22124,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -22142,9 +22142,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.105882354,
-                "g": 0.149019614,
-                "b": 0.219607845,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -22376,7 +22376,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -22394,9 +22394,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.105882354,
-                "g": 0.149019614,
-                "b": 0.219607845,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -22628,7 +22628,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -22646,9 +22646,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.105882354,
-                "g": 0.149019614,
-                "b": 0.219607845,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -22880,7 +22880,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -22898,9 +22898,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.105882354,
-                "g": 0.149019614,
-                "b": 0.219607845,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -23132,7 +23132,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -23150,9 +23150,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.105882354,
-                "g": 0.149019614,
-                "b": 0.219607845,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -47436,20 +47436,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 790,
-                "y": 28
+                "x": 730,
+                "y": 25
               },
               "OffsetMin": {
-                "x": 670,
-                "y": -28
+                "x": 530,
+                "y": -25
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 120,
-                "y": 56
+                "x": 200,
+                "y": 50
               },
               "UIMode": 1,
               "UIScale": {
@@ -47459,11 +47459,11 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 730,
+                "x": 630,
                 "y": 0
               },
               "Position": {
-                "x": 730,
+                "x": 0,
                 "y": 0,
                 "z": 0
               },
@@ -47486,7 +47486,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "214644776c034efdaf7ba83afa9b212e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -47504,9 +47504,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.203921571,
-                "g": 0.2509804,
-                "b": 0.321568638,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -47641,11 +47641,11 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "닫기",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -47659,9 +47659,9 @@
           "name": "LabelText",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel/PurchaseBar/BottomCloseBtn/LabelText",
           "nameEditable": true,
-          "enable": true,
-          "visible": true,
-          "localize": true,
+          "enable": false,
+          "visible": false,
+          "localize": false,
           "displayOrder": 0,
           "pathConstraints": "/////////",
           "revision": 0,
@@ -47843,11 +47843,11 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "닫기",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -47864,7 +47864,7 @@
           "enable": true,
           "visible": true,
           "localize": true,
-          "displayOrder": 1,
+          "displayOrder": 0,
           "pathConstraints": "//////",
           "revision": 0,
           "origin": {
@@ -66777,11 +66777,11 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -50,
+                "x": -65,
                 "y": 313
               },
               "OffsetMin": {
-                "x": -410,
+                "x": -415,
                 "y": -337
               },
               "Pivot": {
@@ -66789,7 +66789,7 @@
                 "y": 0.5
               },
               "RectSize": {
-                "x": 360,
+                "x": 350,
                 "y": 650
               },
               "UIMode": 1,
@@ -66800,7 +66800,7 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": -50,
+                "x": -65,
                 "y": -12
               },
               "Position": {
@@ -66828,10 +66828,10 @@
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.1254902,
-                "g": 0.1882353,
-                "b": 0.247058824,
-                "a": 1
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -69646,7 +69646,7 @@
                 "r": 0.1254902,
                 "g": 0.141176477,
                 "b": 0.172549024,
-                "a": 1
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -70199,11 +70199,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 868,
-                "y": -90
+                "y": -70
               },
               "OffsetMin": {
                 "x": 18,
-                "y": -144
+                "y": -124
               },
               "Pivot": {
                 "x": 0,
@@ -70222,11 +70222,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 18,
-                "y": -90
+                "y": -70
               },
               "Position": {
-                "x": -617,
-                "y": 263,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -70346,13 +70346,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "1bbac083829c4c738b351ea238bef7fd"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.847058833,
-                "g": 0.7058824,
-                "b": 0.3529412,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -70756,13 +70756,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -71166,13 +71166,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -71576,13 +71576,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -71986,13 +71986,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -72396,13 +72396,13 @@
             {
               "@type": "MOD.Core.SpriteGUIRendererComponent",
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "OverrideSorting": false,
               "Color": {
-                "r": 0.294117659,
-                "g": 0.3372549,
-                "b": 0.384313732,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "RaycastTarget": true,
@@ -72760,11 +72760,11 @@
               "MobileOnly": false,
               "OffsetMax": {
                 "x": 868,
-                "y": 261
+                "y": 209
               },
               "OffsetMin": {
                 "x": 18,
-                "y": -337
+                "y": -389
               },
               "Pivot": {
                 "x": 0,
@@ -72783,11 +72783,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 18,
-                "y": -38
+                "y": -90
               },
               "Position": {
-                "x": -617,
-                "y": -38,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -87152,11 +87152,11 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": -18,
+                "x": -65,
                 "y": 313
               },
               "OffsetMin": {
-                "x": -378,
+                "x": -415,
                 "y": -337
               },
               "Pivot": {
@@ -87164,7 +87164,7 @@
                 "y": 0.5
               },
               "RectSize": {
-                "x": 360,
+                "x": 350,
                 "y": 650
               },
               "UIMode": 1,
@@ -87175,12 +87175,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": -18,
+                "x": -65,
                 "y": -12
               },
               "Position": {
-                "x": 617,
-                "y": -12,
+                "x": 0,
+                "y": 0,
                 "z": 0
               },
               "QuaternionRotation": {
@@ -87206,7 +87206,7 @@
                 "r": 0.1254902,
                 "g": 0.1882353,
                 "b": 0.247058824,
-                "a": 1
+                "a": 0
               },
               "RaycastTarget": false,
               "Type": 0,
@@ -101014,7 +101014,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "1bbac083829c4c738b351ea238bef7fd"
               },
               "LocalPosition": {
                 "x": 0,
@@ -101032,8 +101032,8 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.298039228,
-                "g": 0.5529412,
+                "r": 1,
+                "g": 1,
                 "b": 1,
                 "a": 1
               },
@@ -101468,7 +101468,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -101486,9 +101486,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.172549024,
-                "g": 0.215686277,
-                "b": 0.270588249,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -101922,7 +101922,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -101940,9 +101940,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.172549024,
-                "g": 0.215686277,
-                "b": 0.270588249,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -102376,7 +102376,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -102394,9 +102394,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.172549024,
-                "g": 0.215686277,
-                "b": 0.270588249,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -102830,7 +102830,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -102848,9 +102848,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.172549024,
-                "g": 0.215686277,
-                "b": 0.270588249,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -103284,7 +103284,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "10c10be2edab40e0a5be2c78492f8ab9"
               },
               "LocalPosition": {
                 "x": 0,
@@ -103302,9 +103302,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.172549024,
-                "g": 0.215686277,
-                "b": 0.270588249,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -134618,7 +134618,7 @@
           "nameEditable": true,
           "enable": true,
           "visible": true,
-          "localize": true,
+          "localize": false,
           "displayOrder": 4,
           "pathConstraints": "////////",
           "revision": 0,
@@ -134645,20 +134645,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 65,
-                "y": 24
+                "x": 730,
+                "y": 25
               },
               "OffsetMin": {
-                "x": -65,
-                "y": -24
+                "x": 530,
+                "y": -25
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 130,
-                "y": 48
+                "x": 200,
+                "y": 50
               },
               "UIMode": 1,
               "UIScale": {
@@ -134668,7 +134668,7 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0,
+                "x": 630,
                 "y": 0
               },
               "Position": {
@@ -134695,7 +134695,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "214644776c034efdaf7ba83afa9b212e"
               },
               "LocalPosition": {
                 "x": 0,
@@ -134713,9 +134713,9 @@
               "SortingLayer": "UI",
               "StartFrameIndex": 0,
               "Color": {
-                "r": 0.31764707,
-                "g": 0.3647059,
-                "b": 0.431372553,
+                "r": 1,
+                "g": 1,
+                "b": 1,
                 "a": 1
               },
               "DropShadow": false,
@@ -134850,11 +134850,11 @@
               },
               "SizeFit": false,
               "SortingLayer": "UI",
-              "Text": "닫기",
+              "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
               "UseOutLine": false,
-              "Enable": true
+              "Enable": false
             }
           ],
           "@version": 1
@@ -137091,7 +137091,7 @@
                 "r": 0.09411765,
                 "g": 0.2,
                 "b": 0.215686277,
-                "a": 0.98
+                "a": 0
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -138586,7 +138586,7 @@
                 "r": 0.09411765,
                 "g": 0.2,
                 "b": 0.215686277,
-                "a": 0.98
+                "a": 0
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -140081,7 +140081,7 @@
                 "r": 0.09411765,
                 "g": 0.2,
                 "b": 0.215686277,
-                "a": 0.98
+                "a": 0
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
@@ -141576,7 +141576,7 @@
                 "r": 0.09411765,
                 "g": 0.2,
                 "b": 0.215686277,
-                "a": 0.98
+                "a": 0
               },
               "DropShadow": false,
               "DropShadowAngle": 120,
