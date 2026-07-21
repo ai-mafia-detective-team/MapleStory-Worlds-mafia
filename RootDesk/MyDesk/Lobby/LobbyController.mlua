@@ -26,6 +26,8 @@ script LobbyController extends Component
 
 	property any btnShopHandler = nil
 
+	property any underDevelopmentConfirmHandler = nil
+
 	property any btnAlertHandler = nil
 
 	property any btnSettingsHandler = nil
@@ -485,6 +487,7 @@ script LobbyController extends Component
 		self:CloseBagPopup()
 		self:SetCreateRoomModalVisible(false)
 		self:CloseCommonPopup()
+		self:SetUnderDevelopmentPopup(false)
 		self:WireCommonPopupEvents()
 
 		-- Cache fallback entity (disabled by default)
@@ -1192,10 +1195,14 @@ script LobbyController extends Component
 			self:ClearCostumeDetail()
 			self:RenderCostumeCards()
 		else
-			self:ClearRoleDetail()
+			-- Returning from the costume dex should always open the role dex on
+			-- its default entry instead of leaving the detail panel empty.
+			self.rolePage = 1
+			self:ShowRoleDetail(1)
 			if _CollectionManager ~= nil then
 				_CollectionManager:RequestRoleCollection()
 			end
+			log("[CollectionPopup] default role detail=시민 index=1")
 		end
 		log("[CollectionPopup] tab=" .. tab)
 	end
@@ -1593,6 +1600,38 @@ script LobbyController extends Component
 		-- Closes BagPopup from either close button.
 		log("[BagPopup] close clicked")
 		self:CloseBagPopup()
+	end
+
+	method void SetUnderDevelopmentPopup(boolean active)
+		local popup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/UnderDevelopmentPopup")
+		if popup ~= nil and isvalid(popup) then
+			popup:SetEnable(active)
+		end
+		log("[UnderDevelopmentPopup] active=" .. tostring(active))
+	end
+
+	method void ShowUnderDevelopmentPopup()
+		self:SetUnderDevelopmentPopup(true)
+	end
+
+	method void HideUnderDevelopmentPopup()
+		self:SetUnderDevelopmentPopup(false)
+	end
+
+	method void OnUnderDevelopmentConfirmClicked(ButtonClickEvent event)
+		log("[UnderDevelopmentPopup] confirm clicked")
+		self:HideUnderDevelopmentPopup()
+	end
+
+	method void WireUnderDevelopmentPopupEvents()
+		if self.underDevelopmentConfirmHandler ~= nil then return end
+		local confirm = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/UnderDevelopmentPopup/PopupFrame/ConfirmButton")
+		if confirm ~= nil and isvalid(confirm) then
+			self.underDevelopmentConfirmHandler = confirm:ConnectEvent(ButtonClickEvent, self.OnUnderDevelopmentConfirmClicked)
+			log("[UnderDevelopmentPopup] confirm wired")
+		else
+			log_warning("[UnderDevelopmentPopup] ConfirmButton not found")
+		end
 	end
 
 	method void SetCreateRoomModalVisible(boolean active)
@@ -2343,7 +2382,7 @@ script LobbyController extends Component
 
 	method void OnCollectionCostumeTabClicked(ButtonClickEvent event)
 		-- 의상 도감 tab.
-		self:SetCollectionTab("costume")
+		self:ShowUnderDevelopmentPopup()
 	end
 
 	method void DisconnectCollectionPopupEvents()
@@ -3061,6 +3100,7 @@ script LobbyController extends Component
 		self:WireExternalPopupEvents()
 		self:WireCollectionPopupEvents()
 		self:WireBagPopupEvents()
+		self:WireUnderDevelopmentPopupEvents()
 		ent = _EntityService:GetEntityByPath(buttonBase .. "/Matchmaking/Box/CancelBtn")
 		if ent ~= nil and isvalid(ent) then
 			self.btnMatchCancelHandler = ent:ConnectEvent(ButtonClickEvent, self.OnMatchmakingCancelClicked)
@@ -3098,7 +3138,7 @@ script LobbyController extends Component
 			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
 			self:ConnectInvestigationSearchButton("JoinRoom" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i) .. "/RoomStatusText")
 		end
-		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/SearchInput")
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/SearchInput")
 		if searchInput ~= nil and isvalid(searchInput) and searchInput.TextInputComponent ~= nil then
 			self.findRoomSearchInputHandler = searchInput:ConnectEvent(TextInputValueChangeEvent, function(evt)
 				self.findRoomSearchKeyword = searchInput.TextInputComponent.Text or ""
@@ -3231,7 +3271,7 @@ script LobbyController extends Component
 			end
 			self.searchButtonHandlers = nil
 		end
-		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/SearchInput")
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/SearchInput")
 		if self.findRoomSearchInputHandler ~= nil and searchInput ~= nil and isvalid(searchInput) then
 			searchInput:DisconnectEvent(TextInputValueChangeEvent, self.findRoomSearchInputHandler)
 		end
@@ -3398,7 +3438,7 @@ script LobbyController extends Component
 	end
 
 	method void LegacyUpdateFindRoomPageText()
-		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border")
+		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
 		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
 			pageText.TextComponent.Text = "1 / 3"
 		end
@@ -3607,7 +3647,7 @@ script LobbyController extends Component
 	end
 
 	method void UpdateFindRoomPageText()
-		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border")
+		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
 		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
 			pageText.TextComponent.Text = tostring(self.findRoomCurrentPage) .. " / " .. tostring(self.findRoomTotalPages)
 		end
@@ -3738,10 +3778,15 @@ script LobbyController extends Component
 	method void UpdateFindRoomFilterLabels()
 		local modeText = self.findRoomModeFilter == "ALL" and "모드: 전체" or "모드: " .. self.findRoomModeFilter
 		local statusText = self.findRoomStatusFilter == "ALL" and "상태: 전체" or "상태: " .. self:GetFindRoomStatusText(self.findRoomStatusFilter)
-		local privateText = self.findRoomHidePrivate and "비밀번호 방 숨김: ON" or "비밀번호 방 숨김: OFF"
 		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton", modeText)
 		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton", statusText)
-		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox", privateText)
+
+		local toggle = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
+		if toggle ~= nil and isvalid(toggle) and toggle.SpriteGUIRendererComponent ~= nil then
+			local toggleRuid = self.findRoomHidePrivate and "695b16b6c24d46a3bb4b1eb85169b7b2" or "b045be0151a34dfaab745edb8dd83946"
+			toggle.SpriteGUIRendererComponent.ImageRUID = DataRef(toggleRuid)
+			toggle.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
+		end
 	end
 
 	method void OnKeyDown(KeyDownEvent event)
@@ -4203,9 +4248,9 @@ script LobbyController extends Component
 	end
 
 	method void OnBagClicked(ButtonClickEvent event)
-		-- Opens BagPopup; internal bag features remain unimplemented.
+		-- Bag content is not released yet.
 		log("[LobbyController] BagButton clicked")
-		self:OpenBagPopup()
+		self:ShowUnderDevelopmentPopup()
 	end
 
 	method any EnsureAchievementUI()
@@ -4258,7 +4303,7 @@ script LobbyController extends Component
 
 	method void OnShopClicked(ButtonClickEvent event)
 		log("[LobbyController] ShopButton clicked")
-		self:OpenExternalPopup("ShopPopup")
+		self:ShowUnderDevelopmentPopup()
 	end
 
 	method void OnAlertClicked(ButtonClickEvent event)
