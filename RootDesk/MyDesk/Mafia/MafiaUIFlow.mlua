@@ -69,9 +69,25 @@ script MafiaUIFlow extends Logic
 
 	property table lobbyAvatarHomeX = nil
 
+	property table lobbyFootholdLeftEntities = nil
+
+	property table lobbyFootholdRightEntities = nil
+
 	property number lobbyAvatarMoveSpeed = 170
 
 	property number lobbyAvatarMoveLimit = 105
+
+	-- Lobby avatar visual tuning. Change only lobbyAvatarScale to resize proportionally.
+	property number lobbyAvatarScale = 0.8
+
+	property number lobbyAvatarBaseWidth = 120
+
+	property number lobbyAvatarBaseHeight = 180
+
+	-- Negative values place the nickname below the avatar's foothold point.
+	property number lobbyNicknameOffsetY = -18
+
+	property boolean lobbyAvatarFollowLogged = false
 
 	property any dayPlayerCountText = nil
 
@@ -1236,14 +1252,77 @@ script MafiaUIFlow extends Logic
 		    if self.lobbyAvatarEntities == nil then self.lobbyAvatarEntities = {} end
 		    if self.lobbyRoomTexts == nil then self.lobbyRoomTexts = {} end
 		    if self.cachedLobbySeats == nil then self.cachedLobbySeats = {} end
+		    if self.lobbyFootholdLeftEntities == nil then self.lobbyFootholdLeftEntities = {} end
+		    if self.lobbyFootholdRightEntities == nil then self.lobbyFootholdRightEntities = {} end
+		    local lobbyFootholdLeftPaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUIFoothold_Left",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUIFoothold_Left_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUIFoothold_Left_3"
+		    }
+		    local lobbyFootholdRightPaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUIFoothold_Right",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUIFoothold_Right_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUIFoothold_Right_3"
+		    }
+		    local lobbyFootholdLinePaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUITextFoothold_Line",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUITextFoothold_Line_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUITextFoothold_Line_3"
+		    }
 		
 		    for i = 1, 8 do
 		        local suffix = (i == 1) and "" or ("_" .. tostring(i - 1))
 		        local avatarEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/LobbyAvatarArea" .. suffix)
+		        local leftFoothold = _EntityService:GetEntityByPath(lobbyFootholdLeftPaths[i])
+		        local rightFoothold = _EntityService:GetEntityByPath(lobbyFootholdRightPaths[i])
+		        local footholdLine = _EntityService:GetEntityByPath(lobbyFootholdLinePaths[i])
 		        local textEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/Text")
 		        self.lobbyAvatarEntities[i] = avatarEntity
+		        self.lobbyFootholdLeftEntities[i] = leftFoothold
+		        self.lobbyFootholdRightEntities[i] = rightFoothold
 		        if textEntity ~= nil then self.lobbyRoomTexts[i] = textEntity.TextComponent end
+		        if avatarEntity ~= nil and leftFoothold ~= nil and rightFoothold ~= nil and footholdLine ~= nil
+		            and avatarEntity.UITransformComponent ~= nil
+		            and leftFoothold.UITransformComponent ~= nil
+		            and rightFoothold.UITransformComponent ~= nil
+		            and footholdLine.UITransformComponent ~= nil then
+		            local avatarTransform = avatarEntity.UITransformComponent
+		            avatarTransform.RectSize = Vector2(
+		                self.lobbyAvatarBaseWidth * self.lobbyAvatarScale,
+		                self.lobbyAvatarBaseHeight * self.lobbyAvatarScale)
+		            local leftTransform = leftFoothold.UITransformComponent
+		            local rightTransform = rightFoothold.UITransformComponent
+		            local spawnX = footholdLine.UITransformComponent.anchoredPosition.x
+		            local leftPosition = leftTransform.anchoredPosition
+		            local rightPosition = rightTransform.anchoredPosition
+		            local span = rightPosition.x - leftPosition.x
+		            local ratio = 0.5
+		            if span ~= 0 then ratio = math.max(0, math.min(1, (spawnX - leftPosition.x) / span)) end
+		            local leftFloorY = leftPosition.y - leftTransform.RectSize.y * 0.5
+		            local rightFloorY = rightPosition.y - rightTransform.RectSize.y * 0.5
+		            local floorY = leftFloorY + (rightFloorY - leftFloorY) * ratio
+		            avatarTransform.anchoredPosition = Vector2(spawnX, floorY)
+		            self:PositionLobbyNickname(i, spawnX, floorY)
+		            if self.lobbyAvatarHomeX ~= nil then self.lobbyAvatarHomeX[i] = spawnX end
+		        end
 		    end
+		    log("[MafiaUIFlow] lobby avatar layout configured scale=" .. tostring(self.lobbyAvatarScale)
+		        .. " nicknameOffsetY=" .. tostring(self.lobbyNicknameOffsetY))
 		
 		    local entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ReadyButton")
 		    if entity ~= nil then
@@ -2016,15 +2095,36 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void RequestLobbyRoomPlacementOnce()
-		    -- Requests server-side assignment and teleport to the player's lobby room once per lobby entry.
+		    -- MafiaGameLogic.CheckNewLobbyPlayers handles room assignment automatically.
 		    if self.lobbyPlacementRequested then return end
 		    self.lobbyPlacementRequested = true
-		    if _MafiaGameLogic ~= nil then
-		        _MafiaGameLogic:RequestLobbyRoomPlacement()
-		        log("[MafiaUIFlow] requested lobby room placement")
-		    else
-		        log_warning("[MafiaUIFlow] cannot request lobby room placement: MafiaGameLogic nil")
+		    log("[MafiaUIFlow] lobby room placement delegated to MafiaGameLogic")
+	end
+
+	method void SetLobbyAvatarScale(number scale)
+		    local nextScale = math.max(0.5, math.min(2.0, scale))
+		    self.lobbyAvatarScale = nextScale
+		    if self.lobbyAvatarEntities ~= nil then
+		        for i = 1, 8 do
+		            local avatarEntity = self.lobbyAvatarEntities[i]
+		            if avatarEntity ~= nil and isvalid(avatarEntity)
+		                and avatarEntity.UITransformComponent ~= nil then
+		                avatarEntity.UITransformComponent.RectSize = Vector2(
+		                    self.lobbyAvatarBaseWidth * nextScale,
+		                    self.lobbyAvatarBaseHeight * nextScale)
+		            end
+		        end
 		    end
+		    log("[MafiaUIFlow] lobby avatar scale applied=" .. tostring(nextScale))
+	end
+
+	method void PositionLobbyNickname(integer seatIndex, number avatarX, number floorY)
+		    if self.lobbyRoomTexts == nil then return end
+		    local roomText = self.lobbyRoomTexts[seatIndex]
+		    if roomText == nil or roomText.Entity == nil or isvalid(roomText.Entity) == false then return end
+		    local textTransform = roomText.Entity.UITransformComponent
+		    if textTransform == nil then return end
+		    textTransform.anchoredPosition = Vector2(avatarX, floorY + self.lobbyNicknameOffsetY)
 	end
 
 	method void UpdateLocalLobbyAvatarMovement(number delta)
@@ -2070,6 +2170,12 @@ script MafiaUIFlow extends Logic
 		        dir = dir + 1
 		    end
 		    if dir == 0 then return end
+
+		    local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+		    if avatarRenderer ~= nil then
+		        -- The unflipped lobby avatar faces left; flip it while moving right.
+		        avatarRenderer.FlipX = (dir > 0)
+		    end
 		
 		    local homeX = self.lobbyAvatarHomeX[seatIndex]
 		    local minX = homeX - self.lobbyAvatarMoveLimit
@@ -2077,7 +2183,38 @@ script MafiaUIFlow extends Logic
 		    local nextX = pos.x + dir * self.lobbyAvatarMoveSpeed * delta
 		    if nextX < minX then nextX = minX end
 		    if nextX > maxX then nextX = maxX end
-		    avatarEntity.UITransformComponent.anchoredPosition = Vector2(nextX, pos.y)
+
+		    local nextY = pos.y
+		    local leftFoothold = self.lobbyFootholdLeftEntities[seatIndex]
+		    local rightFoothold = self.lobbyFootholdRightEntities[seatIndex]
+		    if leftFoothold ~= nil and rightFoothold ~= nil
+		        and leftFoothold.UITransformComponent ~= nil and rightFoothold.UITransformComponent ~= nil then
+		        local leftTransform = leftFoothold.UITransformComponent
+		        local rightTransform = rightFoothold.UITransformComponent
+		        local leftPosition = leftTransform.anchoredPosition
+		        local rightPosition = rightTransform.anchoredPosition
+		        local span = rightPosition.x - leftPosition.x
+		        local ratio = 0.5
+		        if span ~= 0 then ratio = math.max(0, math.min(1, (nextX - leftPosition.x) / span)) end
+		        local leftFloorY = leftPosition.y - leftTransform.RectSize.y * 0.5
+		        local rightFloorY = rightPosition.y - rightTransform.RectSize.y * 0.5
+		        local floorY = leftFloorY + (rightFloorY - leftFloorY) * ratio
+		        nextY = floorY
+		    end
+		    avatarEntity.UITransformComponent.anchoredPosition = Vector2(nextX, nextY)
+		    self:PositionLobbyNickname(seatIndex, nextX, nextY)
+		    if self.lobbyAvatarFollowLogged == false then
+		        local roomText = self.lobbyRoomTexts[seatIndex]
+		        if roomText ~= nil and roomText.Entity ~= nil
+		            and roomText.Entity.UITransformComponent ~= nil then
+		            local nicknamePosition = roomText.Entity.UITransformComponent.anchoredPosition
+		            self.lobbyAvatarFollowLogged = true
+		            log("[MafiaUIFlow] lobby nickname follow verified seat=" .. tostring(seatIndex)
+		                .. " avatarX=" .. tostring(nextX)
+		                .. " nicknameX=" .. tostring(nicknamePosition.x)
+		                .. " offsetY=" .. tostring(nicknamePosition.y - nextY))
+		        end
+		    end
 	end
 
 	method void OpenLobbyAfterRoomCreated(string roomTitle, boolean isPrivate, string password, integer maxPlayers, integer mafiaCount)
@@ -2195,48 +2332,66 @@ script MafiaUIFlow extends Logic
 
 	method void RefreshLobbyAvatars()
 		if self.lobbyAvatarEntities == nil then return end
+
 		local seats = {}
 		local seat = 1
 		for _, uid in ipairs(_UserService.Users.Keys) do
-		if seat <= 8 then seats[seat] = tostring(uid); seat = seat + 1 end
-		end
-		
-		    for i = 1, 8 do
-		        local userId = seats[i]
-		        local avatarEntity = self.lobbyAvatarEntities[i]
-		        local roomText = self.lobbyRoomTexts[i]
-		if userId ~= nil and userId ~= "" then
-			if avatarEntity ~= nil then
-				local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
-				local costume = avatarEntity.CostumeManagerComponent
-				if costume ~= nil then costume.Enable = true end
-				if avatarRenderer ~= nil then avatarRenderer.Enable = true end
-				avatarEntity.Enable = true
-				if self.cachedLobbySeats[i] ~= userId then
-					if costume ~= nil then
-						costume.UseCustomEquipOnly = false
-						costume.DefaultEquipUserId = userId
-		                    end
-		                    self.cachedLobbySeats[i] = userId
-		                    log("[MafiaUIFlow] lobby avatar seat " .. tostring(i) .. " <- " .. userId)
-		                end
-		            end
-		            if roomText ~= nil then
-		                local nickname = "플레이어"
-		                local user = _UserService.Users[userId]
-		                if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then nickname = user.Nickname end
-		                roomText.Text = tostring(i) .. "번 · " .. nickname
-		            end
-		else
-			if avatarEntity ~= nil then
-				avatarEntity.Enable = false
-				if avatarEntity.AvatarGUIRendererComponent ~= nil then avatarEntity.AvatarGUIRendererComponent.Enable = false end
-				if avatarEntity.CostumeManagerComponent ~= nil then avatarEntity.CostumeManagerComponent.Enable = false end
+			if seat <= 8 then
+				seats[seat] = tostring(uid)
+				seat = seat + 1
 			end
-		            if roomText ~= nil then roomText.Text = tostring(i) .. "번 자리 · 대기 중" end
-		            self.cachedLobbySeats[i] = nil
-		        end
-		    end
+		end
+
+		for i = 1, 8 do
+			local userId = seats[i]
+			local avatarEntity = self.lobbyAvatarEntities[i]
+			local roomText = self.lobbyRoomTexts[i]
+
+			if userId ~= nil and userId ~= "" then
+				if avatarEntity ~= nil then
+					local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+					local costume = avatarEntity.CostumeManagerComponent
+
+					if self.cachedLobbySeats[i] ~= userId then
+						-- Apply the user's equipment before the first rendered frame.
+						if avatarRenderer ~= nil then avatarRenderer.Enable = false end
+						if costume ~= nil then
+							costume.Enable = false
+							costume.UseCustomEquipOnly = false
+							costume.DefaultEquipUserId = userId
+							costume.Enable = true
+						end
+
+						self.cachedLobbySeats[i] = userId
+						log("[MafiaUIFlow] lobby avatar initialized seat=" .. tostring(i)
+							.. " userId=" .. userId
+							.. " costume=" .. tostring(costume ~= nil)
+							.. " renderer=" .. tostring(avatarRenderer ~= nil))
+					end
+
+					avatarEntity.Enable = true
+					avatarEntity.Visible = true
+					if costume ~= nil then costume.Enable = true end
+					if avatarRenderer ~= nil then avatarRenderer.Enable = true end
+				end
+
+				if roomText ~= nil then
+					local nickname = "플레이어"
+					local user = _UserService.Users[userId]
+					if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then nickname = user.Nickname end
+					roomText.Text = nickname
+				end
+			else
+				if avatarEntity ~= nil then
+					avatarEntity.Enable = false
+					if avatarEntity.AvatarGUIRendererComponent ~= nil then avatarEntity.AvatarGUIRendererComponent.Enable = false end
+					if avatarEntity.CostumeManagerComponent ~= nil then avatarEntity.CostumeManagerComponent.Enable = false end
+				end
+
+				if roomText ~= nil then roomText.Text = "" end
+				self.cachedLobbySeats[i] = nil
+			end
+		end
 	end
 
 	method void RefreshDay(integer phase)
