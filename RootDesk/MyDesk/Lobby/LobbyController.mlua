@@ -204,8 +204,6 @@ script LobbyController extends Component
 
 	property Entity profileSlot4Border = "c88838dc-a38d-42e6-8dcd-ffd29f9a3df5"
 
-	property ButtonComponent btnProfileModalClose = "e9551409-7040-4320-9c14-5b66de23d702"
-
 	property ButtonComponent btnProfileModalSave = "4232e8f1-8c6b-412f-b64c-70f960224f57"
 
 	property ButtonComponent btnProfileModalCancel = "bd7699f6-b47b-4ab2-9fcd-00505ee6de52"
@@ -256,8 +254,6 @@ script LobbyController extends Component
 	property any btnProfileSlot3Handler = nil
 
 	property any btnProfileSlot4Handler = nil
-
-	property any btnProfileModalCloseHandler = nil
 
 	property any popupBackdropHandlers = nil
 
@@ -359,6 +355,8 @@ script LobbyController extends Component
 
 	property boolean isCreateRoomModalOpen = false
 
+	property boolean isCreateRoomRequestPending = false
+
 	property integer selectedMaxPlayers = 8
 
 	property boolean isPrivateRoom = false
@@ -396,30 +394,6 @@ script LobbyController extends Component
 	property string RUID_ROOM_ROW_EMPTY_BUTTON = "0a45fe74c281462e8866282fc600558d"
 
 	property any findRoomSearchInputHandler = nil
-
-	property any commonPopupConfirmHandler = nil
-
-	property any commonPopupCloseHandler = nil
-
-	property Entity commonPopupLayer = "c1f78705-e07d-4362-b1d6-f0025782fe1c"
-
-	property SpriteGUIRendererComponent commonPopupImage = "f643273b-18c4-4ef6-8ac6-c6c186040fa6"
-
-	property TextComponent commonPopupMessageText = "0539d75b-4a08-4556-b96e-10ab21f7b02f"
-
-	property ButtonComponent commonPopupConfirmButton = "9bd56e7c-d180-46b9-8323-778bc9e13000"
-
-	property ButtonComponent commonPopupCloseButton = "9fef4770-39f6-4a2b-b23e-b6cf171a7ec4"
-
-	property string RUID_COMMON_POPUP_COMPLETE = "d31da21f1c134b199aa336ddce69095f"
-
-	property string RUID_COMMON_POPUP_ERROR = "d965ccb079504df0983ef6f0425e78b2"
-
-	property string RUID_COMMON_POPUP_WARNING = "e169a6491a0e400ebd579c0e53270ea1"
-
-	property string RUID_COMMON_POPUP_CONFIRM_BUTTON = "40e76bf69ce64ff38804425f07c38b58"
-
-	property string RUID_COMMON_POPUP_CLOSE_BUTTON = "7401410fdf374de2bc21b4b815efe408"
 
 	method void OnBeginPlay()
 		-- Fires when UI_Lobby is enabled by IntroFlowController (SetEnable → OnBeginPlay).
@@ -486,9 +460,7 @@ script LobbyController extends Component
 		self:CloseCollectionPopup()
 		self:CloseBagPopup()
 		self:SetCreateRoomModalVisible(false)
-		self:CloseCommonPopup()
 		self:SetUnderDevelopmentPopup(false)
-		self:WireCommonPopupEvents()
 
 		-- Cache fallback entity (disabled by default)
 		local fallbackEnt = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarFallback")
@@ -1664,6 +1636,7 @@ script LobbyController extends Component
 	method void OpenCreateRoomModal()
 		-- Opens the create-room modal and resets the form to its default values.
 		self.isCreateRoomModalOpen = true
+		self:SetCreateRoomRequestPending(false)
 		self:ResetCreateRoomForm()
 		self:UpdateCreateRoomFormView()
 		self:WireCreateRoomModalEvents()
@@ -1671,116 +1644,12 @@ script LobbyController extends Component
 		log("[Room] RoomCreateModal opened")
 	end
 
-	method void WireCommonPopupEvents()
-		-- Connects common popup buttons once; DimOverlay intentionally does not close the popup.
-		if self.commonPopupConfirmHandler == nil and self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
-			self.commonPopupConfirmHandler = self.commonPopupConfirmButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
-				self:CloseCommonPopup()
-			end)
-		end
-		if self.commonPopupCloseHandler == nil and self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
-			self.commonPopupCloseHandler = self.commonPopupCloseButton.Entity:ConnectEvent(ButtonClickEvent, function(evt)
-				self:CloseCommonPopup()
-			end)
-		end
-		log("[CommonPopup] events wired")
-	end
-
-	method void DisconnectCommonPopupEvents()
-		-- Disconnects common popup button handlers.
-		if self.commonPopupConfirmHandler ~= nil and self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
-			self.commonPopupConfirmButton.Entity:DisconnectEvent(ButtonClickEvent, self.commonPopupConfirmHandler)
-			self.commonPopupConfirmHandler = nil
-		end
-		if self.commonPopupCloseHandler ~= nil and self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
-			self.commonPopupCloseButton.Entity:DisconnectEvent(ButtonClickEvent, self.commonPopupCloseHandler)
-			self.commonPopupCloseHandler = nil
-		end
-	end
-
-	method void CloseCommonPopup()
-		-- Hides the common popup layer.
-		if self.commonPopupLayer ~= nil and isvalid(self.commonPopupLayer) then
-			self.commonPopupLayer:SetEnable(false)
-			self.commonPopupLayer.Visible = false
-		end
-		log("[CommonPopup] closed")
-	end
-
-	method void ApplyCommonPopupLayout()
-		-- Keeps complete, warning, and error popups aligned to the confirmed common modal layout.
-		if self.commonPopupImage ~= nil and isvalid(self.commonPopupImage) then
-			local popupTransform = self.commonPopupImage.Entity.UITransformComponent
-			if popupTransform ~= nil then
-				popupTransform.anchoredPosition = Vector2(0, 40)
-				popupTransform.RectSize = Vector2(760, 420)
-			end
-		end
-
-		if self.commonPopupMessageText ~= nil and isvalid(self.commonPopupMessageText) then
-			local messageTransform = self.commonPopupMessageText.Entity.UITransformComponent
-			if messageTransform ~= nil then
-				messageTransform.anchoredPosition = Vector2(0, 20)
-				messageTransform.RectSize = Vector2(560, 120)
-			end
-		end
-
-		if self.commonPopupConfirmButton ~= nil and isvalid(self.commonPopupConfirmButton) then
-			local confirmEntity = self.commonPopupConfirmButton.Entity
-			local confirmTransform = confirmEntity.UITransformComponent
-			if confirmTransform ~= nil then
-				confirmTransform.anchoredPosition = Vector2(0, -132)
-				confirmTransform.RectSize = Vector2(220, 82)
-			end
-			local confirmSprite = confirmEntity.SpriteGUIRendererComponent
-			if confirmSprite ~= nil then
-				confirmSprite.ImageRUID = DataRef(self.RUID_COMMON_POPUP_CONFIRM_BUTTON)
-			end
-		end
-
-		if self.commonPopupCloseButton ~= nil and isvalid(self.commonPopupCloseButton) then
-			local closeEntity = self.commonPopupCloseButton.Entity
-			local closeTransform = closeEntity.UITransformComponent
-			if closeTransform ~= nil then
-				closeTransform.anchoredPosition = Vector2(336, 222)
-				closeTransform.RectSize = Vector2(88, 88)
-			end
-			local closeSprite = closeEntity.SpriteGUIRendererComponent
-			if closeSprite ~= nil then
-				closeSprite.ImageRUID = DataRef(self.RUID_COMMON_POPUP_CLOSE_BUTTON)
-			end
-		end
-	end
-
 	method void ShowCommonPopup(string popupType, string message)
-		-- Shows a common modal popup and swaps the popup image by type.
-		self:ApplyCommonPopupLayout()
-		local targetRuid = self.RUID_COMMON_POPUP_WARNING
-		if popupType == "complete" then
-			targetRuid = self.RUID_COMMON_POPUP_COMPLETE
-		elseif popupType == "error" then
-			targetRuid = self.RUID_COMMON_POPUP_ERROR
-		elseif popupType == "warning" then
-			targetRuid = self.RUID_COMMON_POPUP_WARNING
+		-- The stale UUID-bound common popup was removed. Preserve caller behavior with a toast.
+		if _UIToast ~= nil and message ~= nil and message ~= "" then
+			_UIToast:ShowMessage(message)
 		end
-
-		if self.commonPopupImage ~= nil and isvalid(self.commonPopupImage) then
-			self.commonPopupImage.ImageRUID = DataRef(targetRuid)
-		end
-		if self.commonPopupMessageText ~= nil and isvalid(self.commonPopupMessageText) then
-			self.commonPopupMessageText.Text = message or ""
-		end
-		if self.commonPopupLayer ~= nil and isvalid(self.commonPopupLayer) then
-			self.commonPopupLayer:SetEnable(true)
-			self.commonPopupLayer.Visible = true
-			local uiTransform = self.commonPopupLayer.UITransformComponent
-			if uiTransform ~= nil then
-				_UILogic:SetSiblingIndex(uiTransform, 1000000)
-			end
-		else
-			log_warning("[CommonPopup] CommonPopupLayer missing")
-		end
-		log("[CommonPopup] opened type=" .. tostring(popupType) .. " message=" .. tostring(message))
+		log("[CommonPopupFallback] type=" .. tostring(popupType) .. " message=" .. tostring(message))
 	end
 
 	method void ShowJoinFailurePopup(string reason, string fallbackMessage)
@@ -1963,6 +1832,10 @@ script LobbyController extends Component
 
 	method void SubmitCreateRoomForm()
 		-- Validates the form, then requests authoritative server-side room creation.
+		if self.isCreateRoomRequestPending then
+			log_warning("[Room] Duplicate room creation click ignored while request is pending")
+			return
+		end
 		if self:ValidateCreateRoomForm() == false then return end
 		local roomName = ""
 		local password = ""
@@ -1972,13 +1845,32 @@ script LobbyController extends Component
 		if self.isPrivateRoom and self.createRoomPasswordInput ~= nil then
 			password = self:TrimCreateRoomText(self.createRoomPasswordInput.Text)
 		end
-		log("[Room] Room creation requested name=" .. roomName .. " maxPlayers=" .. tostring(self.selectedMaxPlayers) .. " private=" .. tostring(self.isPrivateRoom))
-		self:SetCreateRoomError("방을 생성하는 중입니다...")
+		if _InvestigationRoomManager == nil then
+			self:SetCreateRoomError("수사방 서버에 연결할 수 없습니다.")
+			log_warning("[Room] Room creation rejected: InvestigationRoomManager unavailable")
+			return
+		end
+		-- Lock before sending the RPC so rapid clicks in the same frame cannot enqueue duplicates.
+		self:SetCreateRoomRequestPending(true)
+		log("[Room] Room creation requested once name=" .. roomName .. " maxPlayers=" .. tostring(self.selectedMaxPlayers) .. " private=" .. tostring(self.isPrivateRoom))
 		_InvestigationRoomManager:CreateRoom(roomName, "기본 수사", self.selectedMaxPlayers, self.isPrivateRoom, password, self.currentProfileNickname)
+	end
+
+	method void SetCreateRoomRequestPending(boolean pending)
+		-- Keeps the submit button and loading feedback in sync with the active server request.
+		self.isCreateRoomRequestPending = pending
+		if self.createRoomSubmitButton ~= nil and isvalid(self.createRoomSubmitButton) then
+			self.createRoomSubmitButton.Enable = not pending
+		end
+		if pending then
+			self:SetCreateRoomError("방을 생성하는 중입니다...")
+		end
+		log("[Room] Room creation pending=" .. tostring(pending))
 	end
 
 	method void OnRoomCreateResult(boolean success, string message, string roomJson)
 		-- Receives the server result and moves the user into the waiting-state view.
+		self:SetCreateRoomRequestPending(false)
 		if success == false then
 			log_warning("[Room] Room creation failed: " .. message)
 			self:SetCreateRoomError(message)
@@ -2139,7 +2031,6 @@ script LobbyController extends Component
 		self:CloseFindRoomModal()
 		self:CloseCreateRoomModal()
 		self:CloseProfileModal()
-		self:CloseCommonPopup()
 		local achPopup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot")
 		if achPopup ~= nil and isvalid(achPopup) then achPopup:SetEnable(false) end
 		log("[LobbyController] CloseAllPopups")
@@ -4411,11 +4302,6 @@ script LobbyController extends Component
 				self:SelectProfileSlot(self.RUID_PROFILE_4)
 			end)
 		end
-		if self.btnProfileModalClose ~= nil and isvalid(self.btnProfileModalClose) then
-			self.btnProfileModalCloseHandler = self.btnProfileModalClose.Entity:ConnectEvent(ButtonClickEvent, function(evt)
-				self:CloseProfileModal()
-			end)
-		end
 		if self.btnProfileModalSave ~= nil and isvalid(self.btnProfileModalSave) then
 			self.btnProfileModalSaveHandler = self.btnProfileModalSave.Entity:ConnectEvent(ButtonClickEvent, function(evt)
 				self:SaveProfileModal()
@@ -4461,10 +4347,6 @@ script LobbyController extends Component
 		if self.btnProfileSlot4Handler ~= nil and self.btnProfileSlot4 ~= nil and isvalid(self.btnProfileSlot4) then
 			self.btnProfileSlot4.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileSlot4Handler)
 			self.btnProfileSlot4Handler = nil
-		end
-		if self.btnProfileModalCloseHandler ~= nil and self.btnProfileModalClose ~= nil and isvalid(self.btnProfileModalClose) then
-			self.btnProfileModalClose.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileModalCloseHandler)
-			self.btnProfileModalCloseHandler = nil
 		end
 		if self.btnProfileModalSaveHandler ~= nil and self.btnProfileModalSave ~= nil and isvalid(self.btnProfileModalSave) then
 			self.btnProfileModalSave.Entity:DisconnectEvent(ButtonClickEvent, self.btnProfileModalSaveHandler)
@@ -4675,8 +4557,6 @@ script LobbyController extends Component
 		self:CloseProfileModal()
 		self:CloseCreateRoomModal()
 		self:CloseFindRoomModal()
-		self:CloseCommonPopup()
-		self:DisconnectCommonPopupEvents()
 		self:DisconnectInvestigationRoomSearchEvents()
 		self:DisconnectExternalPopupEvents()
 		self:DisconnectCollectionPopupEvents()
