@@ -135,6 +135,17 @@ script MafiaGameLogic extends Logic
 	property string ReadyStatusList = ""
 
 	@Sync
+	property string LobbySeatOrder = ""
+
+	@Sync
+	property string LobbySeatNicknames = ""
+
+	@Sync
+	property string DayAvatarMotionData = ""
+
+	property table dayAvatarMotionByUser = nil
+
+	@Sync
 	property string DaySkipStatusList = ""
 
 	property table skipPlayers = nil
@@ -192,6 +203,10 @@ script MafiaGameLogic extends Logic
 		    self.LobbyPlayerCount = 0
 		    self.ReadyCount = 0
 		    self.ReadyStatusList = ""
+		    self.LobbySeatOrder = ""
+		    self.LobbySeatNicknames = ""
+		    self.DayAvatarMotionData = ""
+		    self.dayAvatarMotionByUser = {}
 		    self.RoomTitle = "커닝시티 마피아"
 		    self.IsPrivateRoom = true
 		    self.RoomPassword = ""
@@ -309,6 +324,7 @@ script MafiaGameLogic extends Logic
 		        self.gameStartPending = false
 		        self.gameStartCountdown = 0.0
 		    end
+		    self:UpdateLobbySeatOrder()
 		    self:UpdateReadyStatusList()
 		    log("[Mafia] leave room requested userId=" .. userId)
 	end
@@ -357,6 +373,81 @@ script MafiaGameLogic extends Logic
 		            end
 		        end
 		    end
+	end
+
+	-- Lobby: sync user seat order for deterministic UI rendering by room index.
+	@ExecSpace("ServerOnly")
+	method void UpdateLobbySeatOrder()
+		    local seats = {}
+		    local nicknames = {}
+		    for i = 1, 8 do
+		        seats[i] = ""
+		        nicknames[i] = ""
+		    end
+		    for seatIndex = 1, 8 do
+		        local seatUserId = ""
+		        for uid, roomIndex in pairs(self.playerRooms) do
+		            if roomIndex == seatIndex then
+		                seatUserId = uid
+		                break
+		            end
+		        end
+		        seats[seatIndex] = seatUserId
+		        if seatUserId ~= "" then
+		            local user = _UserService.Users[seatUserId]
+		            if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then
+		                nicknames[seatIndex] = user.Nickname
+		            else
+		                nicknames[seatIndex] = seatUserId
+		            end
+		        end
+		    end
+		    self.LobbySeatOrder = table.concat(seats, ",")
+		    self.LobbySeatNicknames = table.concat(nicknames, ",")
+	end
+
+	@ExecSpace("Server")
+	method void SetDayAvatarMotion(string userId, number avatarX, boolean flipX, string actionState)
+		    if self.GameStarted == false then return end
+		    if userId == nil or userId == "" then return end
+		    local assigned = false
+		    for token in string.gmatch((self.LobbySeatOrder or "") .. ",", "(.-),") do
+		        if token == userId then
+		            assigned = true
+		            break
+		        end
+		    end
+		    if assigned == false then return end
+		    if actionState ~= "walk" then actionState = "idle" end
+		    avatarX = math.max(-2000, math.min(2000, avatarX))
+		    if self.dayAvatarMotionByUser == nil then self.dayAvatarMotionByUser = {} end
+		    self.dayAvatarMotionByUser[userId] = {
+		        x = avatarX,
+		        flip = flipX,
+		        state = actionState
+		    }
+		    self:RebuildDayAvatarMotionData()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RebuildDayAvatarMotionData()
+		    local records = {}
+		    if self.dayAvatarMotionByUser == nil then
+		        self.DayAvatarMotionData = ""
+		        return
+		    end
+		    for token in string.gmatch((self.LobbySeatOrder or "") .. ",", "(.-),") do
+		        if token ~= "" then
+		            local motion = self.dayAvatarMotionByUser[token]
+		            if motion ~= nil then
+		                records[#records + 1] = token
+		                    .. "|" .. tostring(motion.x)
+		                    .. "|" .. (motion.flip and "1" or "0")
+		                    .. "|" .. tostring(motion.state)
+		            end
+		        end
+		    end
+		    self.DayAvatarMotionData = table.concat(records, ";")
 	end
 
 	@ExecSpace("ServerOnly")
@@ -823,6 +914,10 @@ script MafiaGameLogic extends Logic
 		    self.LobbyPlayerCount = 0
 		    self.ReadyCount = 0
 		    self.ReadyStatusList = ""
+		    self.LobbySeatOrder = ""
+		    self.LobbySeatNicknames = ""
+		    self.DayAvatarMotionData = ""
+		    self.dayAvatarMotionByUser = {}
 		    self:ResetLocalRole()
 		    self:SetPhase(self.PHASE_LOBBY, 0.0)
 		    self:TeleportAllToLobbyRooms()
@@ -971,6 +1066,7 @@ script MafiaGameLogic extends Logic
 		        return
 		    end
 		    self.playerRooms[userId] = roomId
+		    self:UpdateLobbySeatOrder()
 		    log("[Lobby] " .. userId .. " → 방 " .. roomId)
 	end
 
@@ -1000,6 +1096,7 @@ script MafiaGameLogic extends Logic
 		            end
 		        end
 		    end
+		    self:UpdateLobbySeatOrder()
 	end
 
 	-- 클라이언트가 채팅 메시지 전송 (FREE_ROAM / MEETING 페이즈에서만 허용)
