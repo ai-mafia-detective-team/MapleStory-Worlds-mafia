@@ -8645,7 +8645,7 @@
       {
         "id": "31692f7f-e191-4925-96c9-5c57d129cee7",
         "path": "/ui/MafiaLobbyHUD/RoomBadge1/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge1/PlayerAvatar",
@@ -8722,22 +8722,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": false,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -9353,20 +9337,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 60.0,
+                "y": 81.43375
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -60.0,
+                "y": -98.56625
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -9377,11 +9361,11 @@
               "UIVersion": 2,
               "anchoredPosition": {
                 "x": 0.0,
-                "y": -55.0
+                "y": -98.56625
               },
               "Position": {
                 "x": 282.5,
-                "y": -55.0,
+                "y": -98.56625,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -9409,7 +9393,7 @@
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -9435,6 +9419,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "d4ac4721-0fd2-48eb-9df9-a39b90aa4e36",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge1/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge1/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 140.0,
+                "y": -102.566254
+              },
+              "OffsetMin": {
+                "x": -140.0,
+                "y": -130.566254
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": -116.566254
+              },
+              "Position": {
+                "x": 282.5,
+                "y": -116.566254,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -9818,7 +10004,7 @@
       {
         "id": "89e6c03f-3aae-43b3-ac4b-83cc5ac0a039",
         "path": "/ui/MafiaLobbyHUD/RoomBadge2/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge2/PlayerAvatar",
@@ -9895,22 +10081,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": false,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -10550,20 +10720,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 55.1377869,
+                "y": 67.44864
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -64.86221,
+                "y": -112.551361
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -10573,12 +10743,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": -4.862213,
+                "y": -112.551361
               },
               "Position": {
-                "x": 282.5,
-                "y": -55.0,
+                "x": 277.6378,
+                "y": -112.551361,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -10606,7 +10776,7 @@
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -10632,6 +10802,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "042a8fb1-07dd-4299-b4df-f5d4bcd14e6f",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge2/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge2/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 135.137787,
+                "y": -116.551361
+              },
+              "OffsetMin": {
+                "x": -144.862213,
+                "y": -144.551361
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -4.862213,
+                "y": -130.551361
+              },
+              "Position": {
+                "x": 277.6378,
+                "y": -130.551361,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -11015,7 +11387,7 @@
       {
         "id": "9fc85d2c-7adf-452d-ba7e-99ae46a5928f",
         "path": "/ui/MafiaLobbyHUD/RoomBadge3/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge3/PlayerAvatar",
@@ -11092,22 +11464,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": false,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -11747,20 +12103,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 54.34189,
+                "y": 80.3259
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -65.65811,
+                "y": -99.6741
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -11770,12 +12126,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": -5.65811157,
+                "y": -99.6741
               },
               "Position": {
-                "x": 282.5,
-                "y": -55.0,
+                "x": 276.8419,
+                "y": -99.6741,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -11803,7 +12159,7 @@
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -11829,6 +12185,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "6186977b-7f6f-4378-851d-28961150c261",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge3/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge3/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 134.341888,
+                "y": -103.6741
+              },
+              "OffsetMin": {
+                "x": -145.658112,
+                "y": -131.6741
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -5.65811157,
+                "y": -117.6741
+              },
+              "Position": {
+                "x": 276.8419,
+                "y": -117.6741,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -12212,7 +12770,7 @@
       {
         "id": "4c7fd0dd-a6a9-45f5-a333-1c879c5034fd",
         "path": "/ui/MafiaLobbyHUD/RoomBadge4/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge4/PlayerAvatar",
@@ -12289,22 +12847,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": false,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -12944,20 +13486,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 56.5054,
+                "y": 111.935791
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -63.4946,
+                "y": -68.06421
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -12967,12 +13509,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": -3.49459839,
+                "y": -68.06421
               },
               "Position": {
-                "x": 282.5,
-                "y": -55.0,
+                "x": 279.0054,
+                "y": -68.06421,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -13000,7 +13542,7 @@
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -13026,6 +13568,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "bb04be29-46d7-4854-8183-6c89c3288af4",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge4/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge4/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 136.5054,
+                "y": -72.06421
+              },
+              "OffsetMin": {
+                "x": -143.4946,
+                "y": -100.064209
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -3.49459839,
+                "y": -86.06421
+              },
+              "Position": {
+                "x": 279.0054,
+                "y": -86.06421,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -13409,7 +14153,7 @@
       {
         "id": "0a74959c-462e-41ea-b8fb-fb969a7c03ee",
         "path": "/ui/MafiaLobbyHUD/RoomBadge5/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge5/PlayerAvatar",
@@ -13486,22 +14230,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": true,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -14141,20 +14869,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 59.7580872,
+                "y": 82.7651443
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -60.2419128,
+                "y": -97.2348557
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -14164,12 +14892,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": -0.241912842,
+                "y": -97.2348557
               },
               "Position": {
-                "x": -280.0,
-                "y": -55.0,
+                "x": -280.2419,
+                "y": -97.2348557,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -14193,11 +14921,11 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FlipX": false,
+              "FlipX": true,
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -14223,6 +14951,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "2471c8b7-fbb4-49e6-9166-e0ec56a82e2a",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge5/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge5/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 139.758087,
+                "y": -101.234856
+              },
+              "OffsetMin": {
+                "x": -140.241913,
+                "y": -129.234863
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -0.241912842,
+                "y": -115.234856
+              },
+              "Position": {
+                "x": -280.2419,
+                "y": -115.234856,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -14606,7 +15536,7 @@
       {
         "id": "42e88593-5c02-443d-890b-c235edd82662",
         "path": "/ui/MafiaLobbyHUD/RoomBadge6/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge6/PlayerAvatar",
@@ -14683,22 +15613,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": true,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -15338,20 +16252,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 68.5757141,
+                "y": 66.68504
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -51.4242859,
+                "y": -113.314957
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -15361,12 +16275,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": 8.575714,
+                "y": -113.314957
               },
               "Position": {
-                "x": -280.0,
-                "y": -55.0,
+                "x": -271.4243,
+                "y": -113.314957,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -15390,11 +16304,11 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FlipX": false,
+              "FlipX": true,
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -15420,6 +16334,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "92ce14b0-df77-4d04-a28d-691ddfd059be",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge6/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge6/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 148.575714,
+                "y": -117.314957
+              },
+              "OffsetMin": {
+                "x": -131.424286,
+                "y": -145.314957
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 8.575714,
+                "y": -131.314957
+              },
+              "Position": {
+                "x": -271.4243,
+                "y": -131.314957,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -15803,7 +16919,7 @@
       {
         "id": "d367c869-0238-41a4-92fc-ab0982c5b2e9",
         "path": "/ui/MafiaLobbyHUD/RoomBadge7/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge7/PlayerAvatar",
@@ -15880,22 +16996,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": true,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -16535,20 +17635,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 62.9744873,
+                "y": 93.8574448
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -57.0255127,
+                "y": -86.1425552
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -16558,12 +17658,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": 2.9744873,
+                "y": -86.1425552
               },
               "Position": {
-                "x": -280.0,
-                "y": -55.0,
+                "x": -277.0255,
+                "y": -86.1425552,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -16587,11 +17687,11 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FlipX": false,
+              "FlipX": true,
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -16617,6 +17717,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "c36ba4bd-bd7e-4daa-885d-939785062810",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge7/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge7/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 142.974487,
+                "y": -90.1425552
+              },
+              "OffsetMin": {
+                "x": -137.025513,
+                "y": -118.142555
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 2.9744873,
+                "y": -104.142555
+              },
+              "Position": {
+                "x": -277.0255,
+                "y": -104.142555,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -17000,7 +18302,7 @@
       {
         "id": "bbc33f66-514e-4147-b24c-2ebb4b0b0cc3",
         "path": "/ui/MafiaLobbyHUD/RoomBadge8/PlayerAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "PlayerAvatar",
           "path": "/ui/MafiaLobbyHUD/RoomBadge8/PlayerAvatar",
@@ -17077,22 +18379,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": true,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 1,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",
@@ -17732,20 +19018,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 55.0,
-                "y": 27.5
+                "x": 68.4646,
+                "y": 101.067039
               },
               "OffsetMin": {
-                "x": -55.0,
-                "y": -137.5
+                "x": -51.5354,
+                "y": -78.93296
               },
               "Pivot": {
                 "x": 0.5,
-                "y": 0.5
+                "y": 0.0
               },
               "RectSize": {
-                "x": 110.0,
-                "y": 165.0
+                "x": 120.0,
+                "y": 180.0
               },
               "UIMode": 1,
               "UIScale": {
@@ -17755,12 +19041,12 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": -55.0
+                "x": 8.4646,
+                "y": -78.93296
               },
               "Position": {
-                "x": -280.0,
-                "y": -55.0,
+                "x": -271.5354,
+                "y": -78.93296,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -17784,11 +19070,11 @@
                 "b": 1.0,
                 "a": 1.0
               },
-              "FlipX": false,
+              "FlipX": true,
               "FlipY": false,
               "MaterialId": "",
               "PlayRate": 1.0,
-              "PreserveAvatar": 1,
+              "PreserveAvatar": 0,
               "RaycastTarget": false,
               "Enable": false
             },
@@ -17814,6 +19100,208 @@
               "DefaultEquipUserId": "",
               "UseCustomEquipOnly": false,
               "Enable": false
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "cbf26def-e19b-47d7-93c9-777c7f7c6e0d",
+        "path": "/ui/MafiaLobbyHUD/RoomBadge8/Text",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent",
+        "jsonString": {
+          "name": "Text",
+          "path": "/ui/MafiaLobbyHUD/RoomBadge8/Text",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 8,
+          "pathConstraints": "////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIText",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uitext",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 148.4646,
+                "y": -82.93296
+              },
+              "OffsetMin": {
+                "x": -131.5354,
+                "y": -110.932961
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 280.0,
+                "y": 28.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 8.4646,
+                "y": -96.93296
+              },
+              "Position": {
+                "x": -271.5354,
+                "y": -96.93296,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": ""
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": false,
+              "Type": 0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.TextComponent",
+              "Alignment": 4,
+              "AllowAutomaticTranslation": false,
+              "BestFit": false,
+              "Bold": true,
+              "ConstraintX": 100.0,
+              "ConstraintY": 100.0,
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "Font": 0,
+              "FontColor": {
+                "r": 0.9529412,
+                "g": 0.8745098,
+                "b": 0.75686276,
+                "a": 1.0
+              },
+              "FontSize": 21,
+              "IgnoreMapLayerCheck": false,
+              "IsLocalizationKey": false,
+              "MaxSize": 40,
+              "MinSize": 10,
+              "OrderInLayer": 0,
+              "OutlineColor": {
+                "r": 0.07058824,
+                "g": 0.0509803928,
+                "b": 0.03529412,
+                "a": 1.0
+              },
+              "OutlineDistance": {
+                "x": 0.28,
+                "y": -0.28
+              },
+              "OutlineWidth": 0.28,
+              "Overflow": 0,
+              "OverrideSorting": false,
+              "Padding": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0
+              },
+              "SizeFit": false,
+              "SortingLayer": "UI",
+              "Text": "",
+              "UseConstraintX": false,
+              "UseConstraintY": false,
+              "UseOutLine": true,
+              "Enable": true
             }
           ],
           "@version": 1
@@ -35244,7 +36732,7 @@
       {
         "id": "15dae76b-e828-413e-a57f-029e842c8922",
         "path": "/ui/MafiaLobbyHUD/LobbyAvatarArea/LobbyAvatar",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.AvatarGUIRendererComponent,MOD.Core.CostumeManagerComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.CostumeManagerComponent",
         "jsonString": {
           "name": "LobbyAvatar",
           "path": "/ui/MafiaLobbyHUD/LobbyAvatarArea/LobbyAvatar",
@@ -35321,22 +36809,6 @@
                 "z": 1.0
               },
               "Enable": true
-            },
-            {
-              "@type": "MOD.Core.AvatarGUIRendererComponent",
-              "Color": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
-              },
-              "FlipX": false,
-              "FlipY": false,
-              "MaterialId": "",
-              "PlayRate": 1.0,
-              "PreserveAvatar": 0,
-              "RaycastTarget": false,
-              "Enable": false
             },
             {
               "@type": "MOD.Core.CostumeManagerComponent",

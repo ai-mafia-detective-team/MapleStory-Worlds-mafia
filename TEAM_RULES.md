@@ -1,139 +1,261 @@
 # 팀 작업 충돌 방지 규칙
 
-3인 동시 작업 시 git 충돌 및 조용한(무음) 연결 끊김을 방지하기 위한 규칙. **Claude Code / Codex로 작업할 때는 세션 시작 시 이 문서 전체를 먼저 읽고 시작한다** (강제 적용 방법은 문서 맨 아래 "AI 도구 강제 적용" 참고).
+3인 동시 작업 시 Git 충돌과 파일 간 연결 계약의 무음 단절을 방지하기 위한 최우선 규칙이다. 다른 역할 분배 문서와 충돌하면 이 문서를 우선한다. 실제 코드와 이 문서가 다르면 코드를 확인한 뒤 이 문서를 갱신한다. Claude Code/Codex로 작업할 때는 세션 시작 시 이 문서 전체를 먼저 읽는다.
 
 ## 목차
 
-1. [담당 구조](#1-담당-구조)
-2. [핵심 협업 원칙](#2-핵심-협업-원칙)
-3. [Git 워크플로우 체크리스트](#3-git-워크플로우-체크리스트)
-4. [파일/폴더 구조 규칙](#4-파일폴더-구조-규칙)
-5. [게임 화면 흐름 문서화 규칙](#5-게임-화면-흐름-문서화-규칙)
-6. [AI 도구(Claude/Codex) 강제 적용](#6-ai-도구claudecodex-강제-적용)
+1. [담당 구조와 경계](#1-담당-구조와-경계)
+2. [파일 및 UI 소유권](#2-파일-및-ui-소유권)
+3. [현재 공용 계약](#3-현재-공용-계약)
+4. [핵심 협업 원칙](#4-핵심-협업-원칙)
+5. [Git 워크플로우 체크리스트](#5-git-워크플로우-체크리스트)
+6. [파일 및 폴더 구조 규칙](#6-파일-및-폴더-구조-규칙)
+7. [게임 화면 흐름 문서화 규칙](#7-게임-화면-흐름-문서화-규칙)
+8. [권장 작업 순서](#8-권장-작업-순서)
+9. [AI 도구 강제 적용](#9-ai-도구-강제-적용)
 
 ---
 
-## 1. 담당 구조
+## 1. 담당 구조와 경계
 
 | 이름 | 역할 | 담당 파일 | 브랜치 |
 |---|---|---|---|
-| 형래 | 로비 기능 구현 | `RootDesk/MyDesk/Lobby/LobbyController.mlua` (버튼 클릭 로직, 이벤트 바인딩) | `hyeongrae` |
-| 도하 | 로비 기능에 맞춘 UI 설정 | `ui/MafiaLobbyHUD.ui` 등 관련 `.ui` 파일 (구조·레이아웃·RUID 전체) | `DOHA` |
-| 지건 | 게임 전체 흐름 | `RootDesk/MyDesk/Mafia/MafiaGameLogic.mlua`, `RootDesk/MyDesk/Mafia/MafiaUIFlow.mlua` | `jiKeon` |
+| 김도하 | 수사방 입장 전 UI 디자인: 메인 로비, 프로필, 수사방 만들기·찾기, 상점·친구·설정·도감·가방·업적, 입장 전 팝업과 UI 리소스 | `ui/UI_Lobby.ui`, `ui/UI_InvestigationRoomSearch.ui`, 입장 전 관련 `.ui` 및 이미지 리소스 | `DOHA` |
+| 노형래 | 메인 로비 기능과 수사방 Registry, 생성·검색·입장 검증·퇴장·삭제, 대기실 이동 | `RootDesk/MyDesk/Room/InvestigationRoomManager.mlua`, `RootDesk/MyDesk/Lobby/LobbyController.mlua`, `RootDesk/MyDesk/NicknameSetupController.mlua` | `hyeongrae` |
+| 이지건 | 수사방 대기실 표시 시점부터 준비·시작·게임 진행·결과·재게임까지 | `RootDesk/MyDesk/Mafia/MafiaGameLogic.mlua`, `RootDesk/MyDesk/Mafia/MafiaUIFlow.mlua`, `RootDesk/MyDesk/UI/MafiaPlayHUD.mlua`, `ui/MafiaLobbyHUD.ui`, `ui/MafiaDayHUD.ui`, `ui/MafiaNightHUD.ui`, `ui/MafiaCitizenWinHUD.ui`, `ui/MafiaMafiaWinHUD.ui` | `jiKeon` |
 
-파일 종류가 사람별로 겹치지 않도록 나눈 구조(`.mlua` 둘 + `.ui` 하나)이므로, 원칙만 지키면 git 레벨 충돌은 거의 발생하지 않는다. 진짜 위험은 **파일 간 연결고리가 에러 없이 조용히 끊어지는 것**이다.
+### 담당 경계
 
-## 2. 핵심 협업 원칙
+```text
+[김도하]
+수사방 입장 전 UI
+        ↓
+[노형래]
+로비 기능 → 방 생성·검색·입장 검증 → Registry
+        ↓
+수사방 입장 성공 → MafiaLobbyHUD 표시
+        ↓
+[이지건]
+수사방 대기실 → 준비·시작 → 낮·투표·밤 → 결과·재게임
+```
 
-1. **UI 엔티티 경로/이름은 계약(contract)이다.**
-   형래의 스크립트는 `/ui/UI_Lobby/LobbyRoot/RightActionButtons/StartButton` 같은 UI 경로를 코드에 하드코딩해서 참조한다. 도하가 UI 구조나 버튼 이름을 바꾸면 형래 스크립트는 에러 없이 조용히 동작하지 않는 상태가 된다.
-   → **UI 쪽 엔티티 경로/이름을 바꾸기 전에 반드시 형래에게 먼저 공지**하고, 바뀐 경로 목록을 공유한다.
+- 노형래 담당 종료: 방 선택, 입장 검증, 입장 성공 처리, 해당 수사방 대기실로 이동.
+- 이지건 담당 시작: `ui/MafiaLobbyHUD.ui`가 표시되는 시점.
+- 김도하는 기능 스크립트를 직접 수정하지 않는다.
+- 노형래는 `.ui` 파일을 직접 수정하지 않는다.
 
-2. **`.ui` 파일은 도하만 편집한다.**
-   형래나 지건이 새 UI 요소가 필요하면 직접 만들지 말고 도하에게 요청한다. `.ui`는 대용량 JSON이라 두 명이 동시에 건드리면 병합이 사실상 불가능하다.
+## 2. 파일 및 UI 소유권
 
-3. **`MafiaUIFlow.mlua`는 지건 소유, 다른 사람은 호출만 한다.**
-   형래가 로비 로직에서 지건의 `MafiaUIFlow` 메서드를 호출해야 하면 직접 그 파일을 수정하지 않고 지건에게 필요한 메서드를 요청한다. 지건이 기존 메서드 시그니처를 바꿀 때는 형래에게 미리 알린다.
+### 2.1 UI 소유권
 
-4. **작업 순서 권장:** 형래가 버튼 기능/필요한 UI 요소를 먼저 확정 → 도하가 그에 맞춰 UI 반영 → 지건은 독립적으로 게임 흐름 작업. 완전히 순차일 필요는 없고, 구조가 바뀌는 시점만 서로 공지한다.
+- 수사방 입장 전 `.ui`는 김도하 소유이다.
+  - `ui/UI_Lobby.ui`
+  - `ui/UI_InvestigationRoomSearch.ui`
+  - 프로필 및 입장 전 팝업·로비 관련 UI
+- 수사방 입장 후 `.ui`는 이지건 소유이다.
+  - `ui/MafiaLobbyHUD.ui`
+  - `ui/MafiaDayHUD.ui`
+  - `ui/MafiaNightHUD.ui`
+  - `ui/MafiaCitizenWinHUD.ui`
+  - `ui/MafiaMafiaWinHUD.ui`
+- 담당자가 아닌 사람이 UI 변경이 필요하면 해당 UI 소유자에게 요청한다.
+- UI 엔티티 이름·경로·구조는 관련 `.mlua`와의 연결 계약이다. 변경 전 관련 스크립트 담당자에게 알리고, 변경 후 전체 경로 목록을 공유한다.
+- `.ui` 충돌은 raw JSON이나 충돌 마커를 직접 편집해 해결하지 않는다. MSW Maker 또는 UIBuilder로 담당 소유자가 다시 반영한다.
 
-5. **각자 브랜치에서 자주, 짧게 develop에 병합한다.** `.ui` 파일은 오래 갈라질수록 병합이 어려워지므로 하루 단위로 자주 병합한다.
+### 2.2 스크립트 소유권
 
-6. **RUID/에셋 교체는 반드시 UIBuilder를 통해서만 한다.** `.ui` raw JSON을 직접 수정하면 스키마가 깨져도 에러 없이 조용히 실패할 수 있다.
+- 노형래 소유:
+  - `RootDesk/MyDesk/Room/InvestigationRoomManager.mlua`
+  - `RootDesk/MyDesk/Lobby/LobbyController.mlua`
+  - `RootDesk/MyDesk/NicknameSetupController.mlua`
+- 이지건 소유:
+  - `RootDesk/MyDesk/Mafia/MafiaGameLogic.mlua`
+  - `RootDesk/MyDesk/Mafia/MafiaUIFlow.mlua`
+  - `RootDesk/MyDesk/UI/MafiaPlayHUD.mlua`
+- 다른 담당자는 소유 파일을 직접 수정하지 않는다. 필요한 메서드나 인터페이스를 소유자에게 요청한다.
 
-## 3. Git 워크플로우 체크리스트
+## 3. 현재 공용 계약
 
-"develop이 앞서 나갔다 → 내 브랜치로 pull(merge) → 작업 이어서 → 커밋/푸시" 흐름에서 충돌을 놓치지 않기 위한 순서.
+아래 내용은 현재 코드에서 확인된 계약이다. 제안 API를 현재 구현처럼 기록하지 않는다.
 
-### 3.1 develop을 내 브랜치로 가져오기 전
+### 3.1 수사방 Registry API
 
-- [ ] `git status`로 내 브랜치에 커밋 안 된 변경사항이 없는지 확인 (있으면 먼저 커밋하거나 `git stash`)
-- [ ] Maker 에디터에서 진행 중이던 작업을 저장/refresh 해둔다 (파일 시스템 변경과 Maker 내부 상태가 어긋나지 않게)
+`InvestigationRoomManager.mlua`의 현재 API:
 
-### 3.2 가져오기 전 미리 확인 (실제로 merge 하기 전)
+```text
+JoinRoom(roomId, password)
+LeaveRoom(roomId)
+UpdateRoomStatus(roomId)
+```
 
+- 서버 사용자 식별은 별도의 `userId` 매개변수가 아니라 `senderUserId`를 사용한다.
+- `JoinRoom(roomId, userId)`, `LeaveRoom(roomId, userId)`는 현재 계약이 아니다.
+- `GetRoomSnapshot`, `UpdateReadyState`, `RemoveDisconnectedPlayer`는 현재 구현된 API가 아니다.
+- 추가 API가 필요하면 구현 전 두 담당자가 인터페이스를 합의하고 `[계획]` 또는 `[제안]`으로만 문서화한다.
+
+### 3.2 공개 방 DTO
+
+`InvestigationRoomManager.mlua`의 `ToPublicRoom()`이 현재 반환하는 필드:
+
+```text
+roomId
+roomName
+mode
+hostUserId
+hostNickname
+currentPlayers
+maxPlayers
+status
+isPrivate
+hasPassword
+createdAt
+```
+
+현재 공개 DTO에는 다음 필드가 없다.
+
+```text
+players
+localUserId
+ownerUserId
+roomTitle
+roomStatus
+currentPlayerCount
+```
+
+대기실 연결에 참가자 상세 목록이나 `localUserId` 등 추가 정보가 필요하면 기존 DTO 확장 또는 별도 조회 API를 설계한다. 확인되지 않은 필드를 먼저 계약으로 확정하지 않는다.
+
+### 3.3 준비 상태와 게임 시작
+
+- 준비 상태의 원본은 `MafiaGameLogic.mlua`의 `SetReady()`가 관리한다.
+- 노형래는 `InvestigationRoomManager.mlua`에 준비 상태 원본을 중복 구현하지 않는다.
+- Registry/검색 목록에 준비 상태 요약이 필요하면 노형래와 이지건이 별도 인터페이스로 합의한다.
+- 현재 시작 방식은 모든 접속자가 준비 완료되면 자동 3초 카운트다운 후 자동으로 게임을 시작하는 구조이다.
+- 현재 게임 순서는 `게임 시작 → 낮 토론 → 투표 → 게임 진행 중 처음 도달하는 밤`이다.
+
+### 3.4 팀 논의가 필요한 정책
+
+- 전원 준비 완료 후 자동 시작을 유지할지, 방장이 시작 버튼을 누르는 방식으로 변경할지.
+- 방장 퇴장 및 연결 끊김·재접속의 전체 정책.
+- 대기실 연결에 필요한 상세 정보의 전달 방식을 기존 DTO 확장으로 할지 별도 조회 API로 할지.
+- 정책이 확정되기 전에는 현재 구현이나 P0 확정 항목처럼 기록하지 않는다.
+
+## 4. 핵심 협업 원칙
+
+1. 담당자가 아닌 파일을 수정해야 하면 팀 채팅에서 해당 소유자의 승인을 먼저 받는다.
+2. DTO, API, 공개 메서드 시그니처, UI 경로 같은 공용 인터페이스 변경은 기능 변경과 분리된 별도 커밋을 권장한다.
+3. 공용 계약 변경 커밋 메시지에는 `CONTRACT` 또는 `INTERFACE`를 포함한다.
+4. 공용 계약 변경 PR에는 영향받는 파일, 호출부, 담당자를 명시한다.
+5. 노형래가 변경 시 공유해야 하는 항목:
+   - `ToPublicRoom()` DTO 필드
+   - `JoinRoom`, `LeaveRoom`, `UpdateRoomStatus` 반환 형식
+   - 대기실 진입 시점과 `roomId` 전달 방식
+6. 이지건이 변경 시 공유해야 하는 항목:
+   - `SetReady()` 사용 방식과 준비 상태 데이터 구조
+   - 게임 시작 조건
+   - 게임 종료 후 대기실 복귀 및 대기실 나가기 요청 방식
+   - `MafiaUIFlow` 공개 메서드 시그니처
+7. 김도하 또는 이지건이 UI 엔티티 이름·경로를 변경하면 관련 `.mlua` 담당자에게 변경 전 공지하고 변경된 전체 경로를 공유한다.
+8. 각자 브랜치에서 자주, 짧게 develop에 병합한다. 구조화 파일은 오래 갈라질수록 병합 위험이 커진다.
+
+## 5. Git 워크플로우 체크리스트
+
+### 5.1 develop을 내 브랜치로 가져오기 전
+
+- [ ] `git status`로 커밋되지 않은 변경을 확인하고 먼저 커밋하거나 안전하게 보관한다.
+- [ ] Maker 에디터 작업을 저장하고 refresh한다.
 - [ ] `git fetch origin`
-- [ ] `git log --oneline <내브랜치>..origin/develop` — 어떤 커밋이 들어오는지 확인
-- [ ] `git diff --stat <내브랜치> origin/develop` — **내가 지금 작업 중인 파일과 겹치는 게 있는지** 확인. 특히:
-  - 내 담당 `.mlua` 파일이 develop에서도 바뀌었으면 → 병합 전에 어떤 내용인지 먼저 확인
-  - `.ui`/`.model`/`.map` 파일이 겹치면 → **가장 위험한 케이스.** 병합을 시도하기 전에 담당자(도하)와 먼저 말로 조율 — 최악의 경우 한쪽 작업을 다시 해야 할 수도 있음
+- [ ] `git log --oneline <내브랜치>..origin/develop`으로 유입 커밋을 확인한다.
+- [ ] `git diff --stat <내브랜치> origin/develop`으로 담당 파일 중복 변경을 확인한다.
+- [ ] 다른 사람 소유 파일 또는 공용 계약 파일이 겹치면 merge 전에 소유자와 조율한다.
 
-### 3.3 병합 실행
+### 5.2 병합 실행과 충돌 처리
 
-- [ ] `git merge origin/develop` (fast-forward 가능하면 충돌 자체가 안 남)
-- [ ] 충돌이 나면 파일 종류에 따라 다르게 대응:
+- [ ] `git merge origin/develop`
 
 | 파일 종류 | 충돌 시 대응 |
 |---|---|
-| `.mlua` | 일반 텍스트라 git이 충돌 마커(`<<<<<<<`)를 표시해줌 — 양쪽 로직을 읽고 수동으로 합친다 |
-| `.ui` / `.model` / `.map` | **절대 충돌 마커를 손으로 편집해서 합치지 않는다.** JSON 구조(UUID, componentNames 등)가 깨져도 에러 없이 조용히 실패한다. 둘 중 하나를 선택하거나, 빌더(UIBuilder/ModelBuilder/MapBuilder)로 처음부터 다시 반영한다 |
-| `.codeblock` | 절대 병합하지 않는다 — 애초에 git에 안 올라가는 파일(gitignore 대상). 충돌 표시되면 그냥 무시하고 나중에 refresh로 재생성 |
+| `.mlua` | 양쪽 로직과 소유권을 확인하고 소유자와 합의해 수동 병합한다. |
+| `.ui` / `.model` / `.map` | 충돌 마커를 손으로 편집하지 않는다. 한쪽을 선택한 뒤 담당 소유자가 빌더 또는 Maker로 다시 반영한다. |
+| `.codeblock` | 직접 병합하거나 수정하지 않는다. Maker refresh로 재생성한다. |
 
-### 3.4 병합 후 검증 (커밋 전에 반드시)
+### 5.3 병합 후 검증
 
-- [ ] Maker에서 `refresh` 실행 (play 모드 중이었다면 `stop` 먼저)
-- [ ] 빌드 로그 확인 — **Error 0건**인지, 기존에 없던 새 Warning이 생기지 않았는지 (숫자만 보지 말고 내용 비교)
-- [ ] 내가 작업 중이던 화면을 실제로 Play 모드에서 눌러서 확인 (문서/코드만 보고 "될 것 같다"로 넘기지 않기)
-- [ ] 에셋(스프라이트 등)을 옮기거나 지운 작업이 껴 있었다면, RUID 참조가 살아있는지 확인 (`.ui`/`.model`/`.map`뿐 아니라 `.mlua` 안의 하드코딩 RUID 문자열까지 grep) — 2026-07-08에 이 문제로 삭제 대상 재조정한 적 있음
+- [ ] Maker에서 refresh한다. Play 모드이면 먼저 stop한다.
+- [ ] 빌드 로그에서 Error 0건과 신규 Warning 유무를 확인한다.
+- [ ] 변경된 화면과 연결을 실제 Play 모드에서 확인한다.
+- [ ] 에셋 변경이 있다면 `.ui`, `.model`, `.map`, `.mlua`의 RUID 참조를 모두 확인한다.
 
-### 3.5 푸시 전 최종 확인
+### 5.4 푸시 전 최종 확인
 
-- [ ] `git status` — 스테이징 안 된 변경사항 없는지
-- [ ] UI 엔티티 경로/이름을 바꿨다면 관련 담당자(형래)에게 공지 완료했는지
-- [ ] `MafiaUIFlow.mlua` 공개 메서드 시그니처를 바꿨다면 호출하는 쪽(형래)에 공지 완료했는지
-- [ ] 화면 전환/버튼 연결을 추가하거나 바꿨다면 `Docs/GameFlow.md` 업데이트했는지
-- [ ] 커밋 메시지에 "무엇을 했는지"가 명확한지 (나중에 팀원이 로그만 보고 파악 가능하게)
-- [ ] 푸시 후 PR을 올린다면, 본문에 "refresh + 빌드 로그 확인함" 같은 검증 내역을 남긴다
+- [ ] `git status`로 불필요한 파일과 스테이징 누락을 확인한다.
+- [ ] 다른 담당자 소유 파일 수정 승인을 받았는지 확인한다.
+- [ ] DTO/API/UI 경로 변경을 관련 담당자에게 공지했는지 확인한다.
+- [ ] 공용 계약 변경을 별도 커밋으로 분리하고 메시지에 `CONTRACT` 또는 `INTERFACE`를 넣었는지 확인한다.
+- [ ] 화면 전환이나 버튼 연결 변경 시 `Docs/GameFlow.md`를 갱신했는지 확인한다.
+- [ ] PR 본문에 영향받는 파일·담당자와 refresh·빌드·Play 검증 내역을 기록한다.
 
-## 4. 파일/폴더 구조 규칙
+## 6. 파일 및 폴더 구조 규칙
 
-### 4.1 에셋(.sprite) 폴더 구조
+### 6.1 에셋 폴더
 
-`RootDesk/MyDesk/` 루트에 스프라이트가 폴더 구분 없이 쌓이면 (1) 뭐가 실제 쓰이는 자산인지 구분이 안 되고 (2) 같은 이미지를 이름만 다르게 중복 업로드하는 사고가 생긴다 (2026-07-08에 인코딩 깨짐으로 생긴 중복 파일 18개를 발견해 정리함). 아래 규칙으로 재발을 막는다.
+1. 새 스프라이트는 `RootDesk/MyDesk/Assets/` 아래에 분류한다.
+   - UI 파츠: `Assets/UI/`
+   - 스토리 연출 이미지: `Assets/Story/`
+2. UUID나 내보내기 기본 이름 대신 용도를 알 수 있는 파일명을 사용한다.
+3. `.sprite` 이동 후 Maker refresh와 빌드 로그를 확인한다. RUID는 파일 경로가 아니라 파일 내부 식별자에 있다.
+4. 에셋 삭제 전 `.ui`, `.model`, `.map`, `.mlua` 전체에서 RUID 참조를 확인한다.
+5. 삭제는 Git으로 추적 가능한 상태에서 수행한다.
 
-1. **새 스프라이트는 `RootDesk/MyDesk/Assets/` 하위에 분류해서 넣는다.**
-   - UI 파츠(버튼/모달/라벨/아이콘 등) → `Assets/UI/`
-   - 스토리 연출 이미지 → `Assets/Story/`
-   - 새로운 분류가 필요하면 그때 하위 폴더를 추가한다. **루트에 바로 놓지 않는다.**
-2. **파일명은 내용을 알 수 있게 짓는다.** `remove.bg` 같은 툴에서 내보낸 UUID 이름(`05375158-346f-....sprite`), `Untitled-1-01.sprite`, `KakaoTalk_2026....sprite` 그대로 커밋하지 말고, 실제 사용할 때 의미 있는 이름으로 바꿔서 넣는다.
-3. **RUID는 파일 경로가 아니라 파일 내용(`EntryKey`/`resource_guid`)에 박혀 있다.** 그래서 `.sprite` 파일을 폴더 이동해도 이미 걸려있는 참조(RUID)는 안 깨진다 — 다만 이동 후에는 항상 Maker `refresh` + 빌드 로그로 에러 0건 확인한다.
-4. **안 쓰는 것처럼 보이는 파일을 지우기 전에 반드시 전수 확인한다.** RUID 참조는 `.ui`/`.model`/`.map`뿐 아니라 **`.mlua` 스크립트 안에 문자열로 하드코딩**되어 있을 수 있다 (예: `ResourceConfig.mlua`, `MafiaUIFlow.mlua`). `.ui`/`.model`/`.map`만 확인하고 "안 쓰임"이라 판단하면 스크립트에서 실제로 쓰는 걸 지울 수 있다 — 반드시 전체 `.mlua`도 RUID 문자열로 grep해서 대조한 뒤 삭제 여부를 정한다.
-5. **삭제는 git으로 추적되는 상태에서만 한다.** 커밋된 상태에서 지우면 실수해도 `git revert`/히스토리로 복구 가능하다.
+### 6.2 스크립트 및 구조화 파일
 
-### 4.2 스크립트(.mlua) 폴더 구조 (정리 진행 중)
+- 새 `.mlua`는 `Lobby/`, `Room/`, `Mafia/`, `UI/` 등 기능별 폴더에 둔다.
+- `.codeblock`은 직접 생성·수정하지 않는다.
+- `.ui`, `.model`, `.map`은 각 MSW 빌더 또는 Maker를 사용하고 raw JSON을 직접 편집하지 않는다.
+- `Global/`과 `Environment/`는 읽기 전용으로 취급한다.
 
-`Achievement/`, `Finance/`, `Friends/`, `Room/`, `Mafia/`, `Scripts/`, `UI/`, `Lobby/` 등 기능별 폴더가 있는데도 일부 스크립트가 정작 루트에 있는 불일치가 있었다 (2026-07-08에 `LobbyController.mlua`→`Lobby/`, `MafiaUIFlow.mlua`→`Mafia/`, `UIPopup.mlua`/`UIToast.mlua`/`UIPathConfig.mlua`→`UI/`로 정리 완료). **지금부터 스크립트를 새로 만들 때는 위 폴더 목록 중 맞는 곳에 넣고, 애매하면 팀에 먼저 물어본다.**
+## 7. 게임 화면 흐름 문서화 규칙
 
-## 5. 게임 화면 흐름 문서화 규칙
+화면 전환 흐름은 `Docs/GameFlow.md`에 기록한다.
 
-화면(페이지) 전환 흐름은 `Docs/GameFlow.md`에 정리되어 있다 — 인트로 고정 순서(로고→스토리→닉네임→로비), 로비 버튼별 이동 대상, 게임 진행 중 화면 전환 규칙(작성 예정).
+- 입장 전 화면 흐름은 김도하와 노형래가 공동 확인한다.
+  - 기능 흐름과 핸들러는 노형래가 우선 갱신한다.
+  - UI 엔티티 경로와 화면 구조는 김도하가 확인한다.
+- 입장 후 게임 흐름은 이지건이 우선 책임진다.
+  - 대기실, 준비, 자동 시작, 낮, 투표, 밤, 결과, 재게임을 포함한다.
+- 새 버튼이나 화면 연결을 추가하면 엔티티 경로, 핸들러, 이동 대상을 기록한다.
+- 문서와 코드가 다르면 실제 코드를 확인한 뒤 문서를 코드에 맞게 갱신한다.
 
-1. **기능을 추가하거나 화면 간 연결(버튼 클릭 → 다른 페이지/팝업 오픈)을 새로 만들거나 바꿀 때는 `Docs/GameFlow.md`를 함께 업데이트한다.** 코드 리뷰/PR 시 화면 흐름이 바뀌었는데 문서가 그대로면 반려 사유가 된다.
-2. **새 버튼을 추가하면** 버튼 엔티티 경로, 클릭 핸들러 메서드명, 이동 대상(내부 팝업인지 / 다른 `.ui` 파일인지)을 표에 한 줄 추가한다.
-3. **게임 진행 중 화면 전환 규칙(낮/밤/회의 등 페이즈)을 정하면** `Docs/GameFlow.md` 3번 섹션에 순서와 분기 조건을 채워 넣는다. 이 규칙은 `Mafia/MafiaGameLogic.mlua`를 건드리는 사람(지건)이 우선 책임진다.
-4. 문서와 실제 코드가 어긋난 걸 발견하면, 코드가 아니라 **문서를 코드에 맞게 고친다** (문서가 항상 최신 진실은 아니므로, 애매하면 코드를 먼저 확인).
+## 8. 권장 작업 순서
 
-## 6. AI 도구(Claude/Codex) 강제 적용
+1. 노형래가 입장 전 기능과 필요한 UI 계약을 확정한다.
+2. 김도하가 입장 전 UI를 반영한다.
+3. 노형래가 입장 전 기능 연결을 완료한다.
+4. 노형래와 이지건이 입장 성공 경계와 전달 인터페이스를 확정한다.
+5. 이지건이 수사방 대기실부터 게임 종료·재게임까지 구현한다.
+6. 실제 사용자 2명 이상으로 멀티플레이 통합 테스트를 수행한다.
 
-**중요한 제약**: 이 프로젝트의 `.gitignore`는 `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.codex/`를 전부 제외하고 있다. 즉 이 파일들은 **각자 컴퓨터에만 있는 로컬 파일**이고, git으로 팀원에게 공유되지 않는다 (MSW Maker 플러그인이 로컬에 자동 생성/관리하는 파일이라 의도적으로 제외된 것으로 보임). 그래서 이 저장소를 통해 "모든 팀원의 Claude/Codex 세션에 규칙을 강제로 주입"하는 것은 **git만으로는 불가능**하다 — 각자 자기 컴퓨터에 아래 설정을 직접 해야 한다.
+## 9. AI 도구 강제 적용
 
-### 팀원 각자 해야 할 설정 (1회만)
+이 프로젝트의 `.gitignore`는 `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.codex/`를 제외하므로 해당 설정은 각자 로컬에서 적용해야 한다.
 
-**Claude Code 사용자:**
-자신의 로컬 `CLAUDE.md` 파일 맨 위에 아래 한 줄을 추가한다.
-```
+### Claude Code
+
+로컬 `CLAUDE.md` 맨 위에 다음을 추가한다.
+
+```text
 @TEAM_RULES.md
 ```
-이렇게 하면 Claude Code가 세션 시작 시 이 문서 전체를 자동으로 읽어온다 (`AGENTS.md`를 `@AGENTS.md`로 불러오는 것과 같은 방식).
 
-**Codex 사용자:**
-Codex는 저장소 루트의 `AGENTS.md`를 자동으로 읽는다. 자신의 로컬 `AGENTS.md` 맨 위(`# ROLE` 이전)에 아래 문단을 추가한다.
-```
+### Codex
+
+로컬 `AGENTS.md` 맨 위에 다음을 추가한다.
+
+```text
 # 팀 규칙 (필수)
-작업 시작 전 저장소 루트의 `TEAM_RULES.md`를 전체를 읽고 그 규칙을 따른다.
+작업 시작 전 저장소 루트의 TEAM_RULES.md 전체를 읽고 그 규칙을 따른다.
 ```
 
-### 그나마 git으로 공유되는 보완 장치
+### 저장소 공용 보완 장치
 
-- `README.md`에 `TEAM_RULES.md`로 가는 링크를 눈에 띄게 넣어둔다 — 사람이 직접 열어볼 확률을 높이고, AI 툴도 저장소를 훑을 때 README를 먼저 읽는 경우가 많아 완전히 무의미하지는 않다.
-- 근본적인 해결책은 아니므로, **팀 채팅 등으로 "각자 위 설정 1회 해달라"고 직접 공지하는 것이 가장 확실하다.**
+- `README.md`의 `TEAM_RULES.md` 링크를 유지한다.
+- 팀 채팅으로 각 팀원이 로컬 설정을 적용했는지 직접 확인한다.

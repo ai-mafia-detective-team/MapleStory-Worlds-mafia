@@ -67,11 +67,29 @@ script MafiaUIFlow extends Logic
 
 	property table cachedLobbySeats = nil
 
+	property table lobbyAvatarActionStates = nil
+
 	property table lobbyAvatarHomeX = nil
+
+	property table lobbyFootholdLeftEntities = nil
+
+	property table lobbyFootholdRightEntities = nil
 
 	property number lobbyAvatarMoveSpeed = 170
 
 	property number lobbyAvatarMoveLimit = 105
+
+	-- Lobby avatar visual tuning. Change only lobbyAvatarScale to resize proportionally.
+	property number lobbyAvatarScale = 0.8
+
+	property number lobbyAvatarBaseWidth = 120
+
+	property number lobbyAvatarBaseHeight = 180
+
+	-- Negative values place the nickname below the avatar's foothold point.
+	property number lobbyNicknameOffsetY = -18
+
+	property boolean lobbyAvatarFollowLogged = false
 
 	property any dayPlayerCountText = nil
 
@@ -98,6 +116,40 @@ script MafiaUIFlow extends Logic
 	property any daySkipButton = nil
 
 	property any daySkipCountText = nil
+
+	property table dayRoomBadgeRoots = nil
+
+	property table dayRoomBadgeDungeonBgs = nil
+
+	property table dayRoomBadgeBgs = nil
+
+	property table dayRoomBadgeAvatars = nil
+
+	property table dayRoomBadgeFloorLeft = nil
+
+	property table dayRoomBadgeFloorRight = nil
+
+	property table dayRoomBadgeFloorLine = nil
+
+	property table dayRoomBadgeTexts = nil
+
+	property table dayRoomBadgeBoundUsers = nil
+
+	property table dayAvatarActionStates = nil
+
+	property table dayAvatarHomeX = nil
+
+	property number dayAvatarSyncAccumulator = 0
+
+	property number dayAvatarLastSentX = 0
+
+	property string dayAvatarLastSentState = ""
+
+	property boolean dayAvatarLastSentFlip = false
+
+	property boolean dayAvatarHasSentMotion = false
+
+	property boolean dayLobbyTemplateSynced = false
 
 	property any nightChatLogText = nil
 
@@ -718,7 +770,25 @@ script MafiaUIFlow extends Logic
 		    self.lobbyAvatarEntities = {}
 		    self.lobbyRoomTexts = {}
 		    self.cachedLobbySeats = {}
+		    self.lobbyAvatarActionStates = {}
 		    self.lobbyAvatarHomeX = {}
+		    self.dayRoomBadgeRoots = {}
+		    self.dayRoomBadgeDungeonBgs = {}
+		    self.dayRoomBadgeBgs = {}
+		    self.dayRoomBadgeAvatars = {}
+		    self.dayRoomBadgeFloorLeft = {}
+		    self.dayRoomBadgeFloorRight = {}
+		    self.dayRoomBadgeFloorLine = {}
+		    self.dayRoomBadgeTexts = {}
+		    self.dayRoomBadgeBoundUsers = {}
+		    self.dayAvatarActionStates = {}
+		    self.dayAvatarHomeX = {}
+		    self.dayAvatarSyncAccumulator = 0
+		    self.dayAvatarLastSentX = 0
+		    self.dayAvatarLastSentState = ""
+		    self.dayAvatarLastSentFlip = false
+		    self.dayAvatarHasSentMotion = false
+		    self.dayLobbyTemplateSynced = false
 		    self.inviteSlotTexts = {}
 		    self.inviteFilteredPlayers = {}
 		    self.inviteCheckedPlayers = {}
@@ -792,6 +862,8 @@ script MafiaUIFlow extends Logic
 		    end
 		    if self.mafiaHudUnlocked then
 		        self:UpdateLocalLobbyAvatarMovement(delta)
+		        self:ApplySyncedDayAvatarMotions()
+		        self:UpdateLocalDayAvatarMovement(delta)
 		    end
 		    -- 나이트 액션 엔티티 페이드인
 		    -- 나이트 액션 패널 페이드아웃 (서브페이즈 전환 시)
@@ -1236,14 +1308,77 @@ script MafiaUIFlow extends Logic
 		    if self.lobbyAvatarEntities == nil then self.lobbyAvatarEntities = {} end
 		    if self.lobbyRoomTexts == nil then self.lobbyRoomTexts = {} end
 		    if self.cachedLobbySeats == nil then self.cachedLobbySeats = {} end
+		    if self.lobbyFootholdLeftEntities == nil then self.lobbyFootholdLeftEntities = {} end
+		    if self.lobbyFootholdRightEntities == nil then self.lobbyFootholdRightEntities = {} end
+		    local lobbyFootholdLeftPaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUIFoothold_Left",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUIFoothold_Left_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUIFoothold_Left_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUIFoothold_Left_3"
+		    }
+		    local lobbyFootholdRightPaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUIFoothold_Right",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUIFoothold_Right_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUIFoothold_Right_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUIFoothold_Right_3"
+		    }
+		    local lobbyFootholdLinePaths = {
+		        "/ui/MafiaLobbyHUD/RoomBadge1/DebugUITextFoothold_Line",
+		        "/ui/MafiaLobbyHUD/RoomBadge2/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge3/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge4/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge5/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge6/DebugUITextFoothold_Line_1",
+		        "/ui/MafiaLobbyHUD/RoomBadge7/DebugUITextFoothold_Line_2",
+		        "/ui/MafiaLobbyHUD/RoomBadge8/DebugUITextFoothold_Line_3"
+		    }
 		
 		    for i = 1, 8 do
 		        local suffix = (i == 1) and "" or ("_" .. tostring(i - 1))
 		        local avatarEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/LobbyAvatarArea" .. suffix)
+		        local leftFoothold = _EntityService:GetEntityByPath(lobbyFootholdLeftPaths[i])
+		        local rightFoothold = _EntityService:GetEntityByPath(lobbyFootholdRightPaths[i])
+		        local footholdLine = _EntityService:GetEntityByPath(lobbyFootholdLinePaths[i])
 		        local textEntity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/RoomBadge" .. tostring(i) .. "/Text")
 		        self.lobbyAvatarEntities[i] = avatarEntity
+		        self.lobbyFootholdLeftEntities[i] = leftFoothold
+		        self.lobbyFootholdRightEntities[i] = rightFoothold
 		        if textEntity ~= nil then self.lobbyRoomTexts[i] = textEntity.TextComponent end
+		        if avatarEntity ~= nil and leftFoothold ~= nil and rightFoothold ~= nil and footholdLine ~= nil
+		            and avatarEntity.UITransformComponent ~= nil
+		            and leftFoothold.UITransformComponent ~= nil
+		            and rightFoothold.UITransformComponent ~= nil
+		            and footholdLine.UITransformComponent ~= nil then
+		            local avatarTransform = avatarEntity.UITransformComponent
+		            avatarTransform.RectSize = Vector2(
+		                self.lobbyAvatarBaseWidth * self.lobbyAvatarScale,
+		                self.lobbyAvatarBaseHeight * self.lobbyAvatarScale)
+		            local leftTransform = leftFoothold.UITransformComponent
+		            local rightTransform = rightFoothold.UITransformComponent
+		            local spawnX = footholdLine.UITransformComponent.anchoredPosition.x
+		            local leftPosition = leftTransform.anchoredPosition
+		            local rightPosition = rightTransform.anchoredPosition
+		            local span = rightPosition.x - leftPosition.x
+		            local ratio = 0.5
+		            if span ~= 0 then ratio = math.max(0, math.min(1, (spawnX - leftPosition.x) / span)) end
+		            local leftFloorY = leftPosition.y - leftTransform.RectSize.y * 0.5
+		            local rightFloorY = rightPosition.y - rightTransform.RectSize.y * 0.5
+		            local floorY = leftFloorY + (rightFloorY - leftFloorY) * ratio
+		            avatarTransform.anchoredPosition = Vector2(spawnX, floorY)
+		            self:PositionLobbyNickname(i, spawnX, floorY)
+		            if self.lobbyAvatarHomeX ~= nil then self.lobbyAvatarHomeX[i] = spawnX end
+		        end
 		    end
+		    log("[MafiaUIFlow] lobby avatar layout configured scale=" .. tostring(self.lobbyAvatarScale)
+		        .. " nicknameOffsetY=" .. tostring(self.lobbyNicknameOffsetY))
 		
 		    local entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ReadyButton")
 		    if entity ~= nil then
@@ -1870,6 +2005,7 @@ script MafiaUIFlow extends Logic
 		    if force or phase ~= self.cachedPhase then
 		        local prevPhase = self.cachedPhase
 		        self.cachedPhase = phase
+		        self:SyncDayLobbyTemplatesFromLobby()
 		        -- PHASE_MORNING 진입 시 결과 애니메이션 시작 (inNight 계산 전에 호출)
 		        if phase == _MafiaGameLogic.PHASE_MORNING and prevPhase ~= _MafiaGameLogic.PHASE_MORNING then
 		            self:StartMorningResultAnime()
@@ -2016,15 +2152,551 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void RequestLobbyRoomPlacementOnce()
-		    -- Requests server-side assignment and teleport to the player's lobby room once per lobby entry.
+		    -- MafiaGameLogic.CheckNewLobbyPlayers handles room assignment automatically.
 		    if self.lobbyPlacementRequested then return end
 		    self.lobbyPlacementRequested = true
-		    if _MafiaGameLogic ~= nil then
-		        _MafiaGameLogic:RequestLobbyRoomPlacement()
-		        log("[MafiaUIFlow] requested lobby room placement")
-		    else
-		        log_warning("[MafiaUIFlow] cannot request lobby room placement: MafiaGameLogic nil")
+		    log("[MafiaUIFlow] lobby room placement delegated to MafiaGameLogic")
+	end
+
+	method void SetLobbyAvatarScale(number scale)
+		    local nextScale = math.max(0.5, math.min(2.0, scale))
+		    self.lobbyAvatarScale = nextScale
+		    if self.lobbyAvatarEntities ~= nil then
+		        for i = 1, 8 do
+		            local avatarEntity = self.lobbyAvatarEntities[i]
+		            if avatarEntity ~= nil and isvalid(avatarEntity)
+		                and avatarEntity.UITransformComponent ~= nil then
+		                avatarEntity.UITransformComponent.RectSize = Vector2(
+		                    self.lobbyAvatarBaseWidth * nextScale,
+		                    self.lobbyAvatarBaseHeight * nextScale)
+		            end
+		        end
 		    end
+		    log("[MafiaUIFlow] lobby avatar scale applied=" .. tostring(nextScale))
+	end
+
+	method void PositionLobbyNickname(integer seatIndex, number avatarX, number floorY)
+		    if self.lobbyRoomTexts == nil then return end
+		    local roomText = self.lobbyRoomTexts[seatIndex]
+		    if roomText == nil or roomText.Entity == nil or isvalid(roomText.Entity) == false then return end
+		    local textTransform = roomText.Entity.UITransformComponent
+		    if textTransform == nil then return end
+		    textTransform.anchoredPosition = Vector2(avatarX, floorY + self.lobbyNicknameOffsetY)
+	end
+
+	method void CopyUISlotTransform(Entity sourceEntity, Entity targetEntity)
+		    if sourceEntity == nil or isvalid(sourceEntity) == false then return end
+		    if targetEntity == nil or isvalid(targetEntity) == false then return end
+		    local srcTransform = sourceEntity.UITransformComponent
+		    local dstTransform = targetEntity.UITransformComponent
+		    if srcTransform == nil or dstTransform == nil then return end
+		    if srcTransform.anchoredPosition ~= nil then
+		        dstTransform.anchoredPosition = Vector2(srcTransform.anchoredPosition.x, srcTransform.anchoredPosition.y)
+		    end
+		    if srcTransform.RectSize ~= nil then
+		        dstTransform.RectSize = Vector2(srcTransform.RectSize.x, srcTransform.RectSize.y)
+		    end
+		    if srcTransform.OffsetMin ~= nil then
+		        dstTransform.OffsetMin = Vector2(srcTransform.OffsetMin.x, srcTransform.OffsetMin.y)
+		    end
+		    if srcTransform.OffsetMax ~= nil then
+		        dstTransform.OffsetMax = Vector2(srcTransform.OffsetMax.x, srcTransform.OffsetMax.y)
+		    end
+		    if srcTransform.AnchorsMin ~= nil then
+		        dstTransform.AnchorsMin = Vector2(srcTransform.AnchorsMin.x, srcTransform.AnchorsMin.y)
+		    end
+		    if srcTransform.AnchorsMax ~= nil then
+		        dstTransform.AnchorsMax = Vector2(srcTransform.AnchorsMax.x, srcTransform.AnchorsMax.y)
+		    end
+		    if srcTransform.Pivot ~= nil then
+		        dstTransform.Pivot = Vector2(srcTransform.Pivot.x, srcTransform.Pivot.y)
+		    end
+	end
+
+	method void CopyUISpriteTemplate(Entity sourceEntity, Entity targetEntity)
+		    if sourceEntity == nil or isvalid(sourceEntity) == false then return end
+		    if targetEntity == nil or isvalid(targetEntity) == false then return end
+		    local srcSprite = sourceEntity.SpriteGUIRendererComponent
+		    local dstSprite = targetEntity.SpriteGUIRendererComponent
+		    if srcSprite == nil or dstSprite == nil then return end
+		    if srcSprite.ImageRUID ~= nil then
+		        dstSprite.ImageRUID = srcSprite.ImageRUID
+		    end
+		    if srcSprite.Color ~= nil then
+		        dstSprite.Color = Color(srcSprite.Color.r, srcSprite.Color.g, srcSprite.Color.b, srcSprite.Color.a)
+		    end
+		    dstSprite.FlipX = srcSprite.FlipX
+		    dstSprite.FlipY = srcSprite.FlipY
+		    dstSprite.Type = srcSprite.Type
+		    dstSprite.OrderInLayer = srcSprite.OrderInLayer
+		    dstSprite.SortingLayer = srcSprite.SortingLayer
+		    dstSprite.Enable = srcSprite.Enable
+	end
+
+	method void MakeUISpriteTransparent(Entity targetEntity)
+		    if targetEntity == nil or isvalid(targetEntity) == false then return end
+		    -- Keep the boundary entity enabled for layout/movement calculations, but hide
+		    -- every renderer in its hierarchy regardless of the concrete renderer type.
+		    targetEntity.Enable = true
+		    targetEntity.Visible = false
+		    local hiddenRendererCount = 0
+		    local spriteRenderer = targetEntity.SpriteGUIRendererComponent
+		    if spriteRenderer ~= nil then
+		        spriteRenderer:SetAlpha(0)
+		        hiddenRendererCount = hiddenRendererCount + 1
+		    end
+		    local pixelRenderer = targetEntity.PixelGUIRendererComponent
+		    if pixelRenderer ~= nil then
+		        pixelRenderer.Enable = false
+		        hiddenRendererCount = hiddenRendererCount + 1
+		    end
+		    local lineRenderer = targetEntity.LineGUIRendererComponent
+		    if lineRenderer ~= nil then
+		        lineRenderer.Enable = false
+		        hiddenRendererCount = hiddenRendererCount + 1
+		    end
+		    log("[MafiaUIFlow] Day boundary hidden path=" .. tostring(targetEntity.Path)
+		        .. " visible=" .. tostring(targetEntity.Visible)
+		        .. " enabled=" .. tostring(targetEntity.Enable)
+		        .. " rendererCount=" .. tostring(hiddenRendererCount))
+	end
+
+	method void CopyAvatarTemplateBindings(Entity sourceEntity, Entity targetEntity)
+		    if sourceEntity == nil or isvalid(sourceEntity) == false then return end
+		    if targetEntity == nil or isvalid(targetEntity) == false then return end
+		    local srcRenderer = sourceEntity.AvatarGUIRendererComponent
+		    local dstRenderer = targetEntity.AvatarGUIRendererComponent
+		    if srcRenderer ~= nil and dstRenderer ~= nil then
+		        dstRenderer.FlipX = srcRenderer.FlipX
+		    end
+		    local srcCostume = sourceEntity.CostumeManagerComponent
+		    local dstCostume = targetEntity.CostumeManagerComponent
+		    if srcCostume ~= nil and dstCostume ~= nil then
+		        dstCostume.UseCustomEquipOnly = srcCostume.UseCustomEquipOnly
+		        dstCostume.DefaultEquipUserId = srcCostume.DefaultEquipUserId
+		    end
+	end
+
+	method string GetLobbyAvatarSuffix(integer slotIndex)
+		    if slotIndex == 1 then return "" end
+		    return "_" .. tostring(slotIndex - 1)
+	end
+
+	method string GetLobbyVariantSuffix(integer slotIndex)
+		    if slotIndex <= 1 then return "" end
+		    if slotIndex <= 6 then return "_1" end
+		    if slotIndex == 7 then return "_2" end
+		    return "_3"
+	end
+
+	method Entity EnsureDayRoomBadgeChild(Entity sourceEntity, Entity daySlot, string childName)
+		    if sourceEntity == nil or isvalid(sourceEntity) == false then return nil end
+		    if daySlot == nil or isvalid(daySlot) == false then return nil end
+		    local existing = daySlot:GetChildByName(childName, false)
+		    if existing ~= nil and isvalid(existing) then return existing end
+		    -- AvatarGUIRendererComponent creates AvatarRoot/Body/Face itself. Excluding
+		    -- live children prevents duplicate body renderers and costume flicker.
+		    local clone = _SpawnService:SpawnByEntity(sourceEntity, childName, Vector3.zero, daySlot, false)
+		    if clone ~= nil and isvalid(clone) then
+		        log("[MafiaUIFlow] Day RoomBadge child cloned at runtime: " .. tostring(clone.Path))
+		        return clone
+		    end
+		    log_warning("[MafiaUIFlow] failed to clone Day RoomBadge child: " .. childName)
+		    return nil
+	end
+
+	method void SyncDayRoomBadgeSlot(integer slotIndex)
+		    if slotIndex < 1 or slotIndex > 8 then return end
+		    local slotText = tostring(slotIndex)
+		    local lobbySuffix = self:GetLobbyAvatarSuffix(slotIndex)
+		    local variantSuffix = self:GetLobbyVariantSuffix(slotIndex)
+		    local lobbyBase = "/ui/MafiaLobbyHUD/RoomBadge" .. slotText
+		    local dayBase = "/ui/MafiaDayHUD/RoomBadge" .. slotText
+		
+		    local lobbySlot = _EntityService:GetEntityByPath(lobbyBase)
+		    local daySlot = _EntityService:GetEntityByPath(dayBase)
+		    self:CopyUISlotTransform(lobbySlot, daySlot)
+		    self:CopyUISpriteTemplate(lobbySlot, daySlot)
+		    if daySlot ~= nil then
+		        if lobbySlot ~= nil then
+		            daySlot.Enable = lobbySlot.Enable
+		            daySlot.Visible = lobbySlot.Visible
+		        end
+		        self.dayRoomBadgeRoots[slotIndex] = daySlot
+		    end
+		
+		    local lobbyDungeon = _EntityService:GetEntityByPath(lobbyBase .. "/DungeonBg")
+		    local dayDungeon = _EntityService:GetEntityByPath(dayBase .. "/DungeonBg")
+		    if dayDungeon == nil then dayDungeon = self:EnsureDayRoomBadgeChild(lobbyDungeon, daySlot, "DungeonBg") end
+		    self:CopyUISlotTransform(lobbyDungeon, dayDungeon)
+		    self:CopyUISpriteTemplate(lobbyDungeon, dayDungeon)
+		    if dayDungeon ~= nil then self.dayRoomBadgeDungeonBgs[slotIndex] = dayDungeon end
+		
+		    local lobbyBg = _EntityService:GetEntityByPath(lobbyBase .. "/Bg")
+		    local dayBg = _EntityService:GetEntityByPath(dayBase .. "/Bg")
+		    if dayBg == nil then dayBg = self:EnsureDayRoomBadgeChild(lobbyBg, daySlot, "Bg") end
+		    self:CopyUISlotTransform(lobbyBg, dayBg)
+		    self:CopyUISpriteTemplate(lobbyBg, dayBg)
+		    if dayBg ~= nil then self.dayRoomBadgeBgs[slotIndex] = dayBg end
+		
+		    local lobbyAvatarArea = _EntityService:GetEntityByPath(lobbyBase .. "/LobbyAvatarArea" .. lobbySuffix)
+		    local dayAvatarArea = _EntityService:GetEntityByPath(dayBase .. "/LobbyAvatarArea" .. lobbySuffix)
+		    if dayAvatarArea == nil then
+		        dayAvatarArea = self:EnsureDayRoomBadgeChild(lobbyAvatarArea, daySlot, "LobbyAvatarArea" .. lobbySuffix)
+		    end
+		    self:CopyUISlotTransform(lobbyAvatarArea, dayAvatarArea)
+		    self:CopyAvatarTemplateBindings(lobbyAvatarArea, dayAvatarArea)
+		    if dayAvatarArea ~= nil then self.dayRoomBadgeAvatars[slotIndex] = dayAvatarArea end
+		
+		    local lobbyPlayerAvatar = _EntityService:GetEntityByPath(lobbyBase .. "/PlayerAvatar")
+		    local dayPlayerAvatar = _EntityService:GetEntityByPath(dayBase .. "/PlayerAvatar")
+		    if dayPlayerAvatar == nil then
+		        dayPlayerAvatar = self:EnsureDayRoomBadgeChild(lobbyPlayerAvatar, daySlot, "PlayerAvatar")
+		    end
+		    self:CopyUISlotTransform(lobbyPlayerAvatar, dayPlayerAvatar)
+		    self:CopyAvatarTemplateBindings(lobbyPlayerAvatar, dayPlayerAvatar)
+		    if dayPlayerAvatar ~= nil then
+		        dayPlayerAvatar.Enable = false
+		        dayPlayerAvatar.Visible = false
+		        if dayPlayerAvatar.AvatarGUIRendererComponent ~= nil then dayPlayerAvatar.AvatarGUIRendererComponent.Enable = false end
+		        if dayPlayerAvatar.CostumeManagerComponent ~= nil then dayPlayerAvatar.CostumeManagerComponent.Enable = false end
+		    end
+		
+		    local lobbyLeft = _EntityService:GetEntityByPath(lobbyBase .. "/DebugUIFoothold_Left" .. variantSuffix)
+		    local dayLeft = _EntityService:GetEntityByPath(dayBase .. "/DebugUIFoothold_Left" .. variantSuffix)
+		    if dayLeft == nil then
+		        dayLeft = self:EnsureDayRoomBadgeChild(lobbyLeft, daySlot, "DebugUIFoothold_Left" .. variantSuffix)
+		    end
+		    self:CopyUISlotTransform(lobbyLeft, dayLeft)
+		    self:CopyUISpriteTemplate(lobbyLeft, dayLeft)
+		    self:MakeUISpriteTransparent(dayLeft)
+		    if dayLeft ~= nil then self.dayRoomBadgeFloorLeft[slotIndex] = dayLeft end
+		
+		    local lobbyRight = _EntityService:GetEntityByPath(lobbyBase .. "/DebugUIFoothold_Right" .. variantSuffix)
+		    local dayRight = _EntityService:GetEntityByPath(dayBase .. "/DebugUIFoothold_Right" .. variantSuffix)
+		    if dayRight == nil then
+		        dayRight = self:EnsureDayRoomBadgeChild(lobbyRight, daySlot, "DebugUIFoothold_Right" .. variantSuffix)
+		    end
+		    self:CopyUISlotTransform(lobbyRight, dayRight)
+		    self:CopyUISpriteTemplate(lobbyRight, dayRight)
+		    self:MakeUISpriteTransparent(dayRight)
+		    if dayRight ~= nil then self.dayRoomBadgeFloorRight[slotIndex] = dayRight end
+		
+		    local lobbyLine = _EntityService:GetEntityByPath(lobbyBase .. "/DebugUITextFoothold_Line" .. variantSuffix)
+		    local dayLine = _EntityService:GetEntityByPath(dayBase .. "/DebugUITextFoothold_Line" .. variantSuffix)
+		    if dayLine == nil then
+		        dayLine = self:EnsureDayRoomBadgeChild(lobbyLine, daySlot, "DebugUITextFoothold_Line" .. variantSuffix)
+		    end
+		    self:CopyUISlotTransform(lobbyLine, dayLine)
+		    self:CopyUISpriteTemplate(lobbyLine, dayLine)
+		    self:MakeUISpriteTransparent(dayLine)
+		    if dayLine ~= nil then self.dayRoomBadgeFloorLine[slotIndex] = dayLine end
+		
+		    local lobbyText = _EntityService:GetEntityByPath(lobbyBase .. "/Text")
+		    local dayTextEntity = _EntityService:GetEntityByPath(dayBase .. "/Text")
+		    if dayTextEntity == nil then dayTextEntity = self:EnsureDayRoomBadgeChild(lobbyText, daySlot, "Text") end
+		    if lobbyText ~= nil and dayTextEntity ~= nil and dayTextEntity.TextComponent ~= nil then
+		        self:CopyUISlotTransform(lobbyText, dayTextEntity)
+		        if lobbyText.TextComponent ~= nil then
+		            dayTextEntity.TextComponent.Text = lobbyText.TextComponent.Text
+		        end
+		    end
+		    if dayTextEntity ~= nil then self.dayRoomBadgeTexts[slotIndex] = dayTextEntity.TextComponent end
+	end
+
+	method void SyncDayLobbyTemplatesFromLobby()
+		    if self.dayLobbyTemplateSynced then return end
+		    local resolvedAvatarCount = 0
+		    for i = 1, 8 do
+		        self:SyncDayRoomBadgeSlot(i)
+		        if self.dayRoomBadgeAvatars[i] ~= nil and isvalid(self.dayRoomBadgeAvatars[i]) then
+		            resolvedAvatarCount = resolvedAvatarCount + 1
+		        end
+		    end
+		    self.dayLobbyTemplateSynced = (resolvedAvatarCount == 8)
+		    log("[MafiaUIFlow] synced MafiaLobbyHUD room badge template to MafiaDayHUD (1:1 slot mapping) avatars="
+		        .. tostring(resolvedAvatarCount) .. "/8")
+	end
+
+	method void RefreshDayRoomBadgeAvatars()
+		    self:SyncDayLobbyTemplatesFromLobby()
+		    if self.dayRoomBadgeAvatars == nil then return end
+		    if self.dayRoomBadgeBoundUsers == nil then self.dayRoomBadgeBoundUsers = {} end
+
+		    local seats = self:GetLobbySeatOrderForDisplay()
+		    local nicknames = self:GetLobbySeatNicknamesForDisplay(seats)
+		    local localUserId = self:GetLocalUserId()
+		    local localProfileNickname = self:GetMainLobbyProfileNickname()
+
+		    for i = 1, 8 do
+		        local userId = seats[i]
+		        local dayAvatar = self.dayRoomBadgeAvatars[i]
+		        local dayText = self.dayRoomBadgeTexts[i]
+		        if userId ~= nil and userId ~= "" and dayAvatar ~= nil and isvalid(dayAvatar) then
+		            local sourceAvatar = self.lobbyAvatarEntities[i]
+		            local sourceCostume = nil
+		            local sourceRenderer = nil
+		            if sourceAvatar ~= nil and isvalid(sourceAvatar) then
+		                sourceCostume = sourceAvatar.CostumeManagerComponent
+		                sourceRenderer = sourceAvatar.AvatarGUIRendererComponent
+		            end
+
+		            local targetCostume = dayAvatar.CostumeManagerComponent
+		            local targetRenderer = dayAvatar.AvatarGUIRendererComponent
+		            local needsBinding = (self.dayRoomBadgeBoundUsers[i] ~= userId)
+		            if needsBinding and targetRenderer ~= nil then targetRenderer.Enable = false end
+		            if needsBinding and targetCostume ~= nil then
+		                targetCostume.Enable = false
+		                if sourceCostume ~= nil then
+		                    targetCostume.UseCustomEquipOnly = sourceCostume.UseCustomEquipOnly
+		                    local equipUserId = tostring(sourceCostume.DefaultEquipUserId or "")
+		                    targetCostume.DefaultEquipUserId = (equipUserId ~= "") and equipUserId or userId
+		                else
+		                    targetCostume.UseCustomEquipOnly = false
+		                    targetCostume.DefaultEquipUserId = userId
+		                end
+		                targetCostume.Enable = true
+		            end
+		            if targetRenderer ~= nil then
+		                if needsBinding and sourceRenderer ~= nil then targetRenderer.FlipX = sourceRenderer.FlipX end
+		                targetRenderer.Enable = true
+		            end
+		            dayAvatar.Enable = true
+		            dayAvatar.Visible = true
+
+		            if dayText ~= nil then
+		                local nickname = nicknames[i]
+		                if userId == localUserId and localProfileNickname ~= nil and localProfileNickname ~= "" then
+		                    nickname = localProfileNickname
+		                end
+		                if nickname == nil or nickname == "" then nickname = "플레이어" end
+		                dayText.Text = nickname
+		            end
+
+		            if needsBinding then
+		                self.dayRoomBadgeBoundUsers[i] = userId
+		                self.dayAvatarActionStates[i] = nil
+		                if dayAvatar.UITransformComponent ~= nil then
+		                    self.dayAvatarHomeX[i] = dayAvatar.UITransformComponent.anchoredPosition.x
+		                end
+		                log("[MafiaUIFlow] Day avatar bound 1:1 slot=" .. tostring(i) .. " userId=" .. tostring(userId))
+		            end
+		else
+		            if dayAvatar ~= nil and isvalid(dayAvatar) then
+		                dayAvatar.Enable = false
+		                if dayAvatar.AvatarGUIRendererComponent ~= nil then dayAvatar.AvatarGUIRendererComponent.Enable = false end
+		                if dayAvatar.CostumeManagerComponent ~= nil then dayAvatar.CostumeManagerComponent.Enable = false end
+		            end
+		            if dayText ~= nil then dayText.Text = "" end
+		            self.dayRoomBadgeBoundUsers[i] = nil
+		        end
+		    end
+	end
+
+	method void PositionDayNickname(integer seatIndex, number avatarX, number floorY)
+		    if self.dayRoomBadgeTexts == nil then return end
+		    local roomText = self.dayRoomBadgeTexts[seatIndex]
+		    if roomText == nil or roomText.Entity == nil or isvalid(roomText.Entity) == false then return end
+		    local textTransform = roomText.Entity.UITransformComponent
+		    if textTransform == nil then return end
+		    textTransform.anchoredPosition = Vector2(avatarX, floorY + self.lobbyNicknameOffsetY)
+	end
+
+	method void ApplyDayAvatarMotion(integer seatIndex, number avatarX, boolean flipX, string actionState)
+		    if self.dayRoomBadgeAvatars == nil then return end
+		    local avatarEntity = self.dayRoomBadgeAvatars[seatIndex]
+		    if avatarEntity == nil or isvalid(avatarEntity) == false or avatarEntity.UITransformComponent == nil then return end
+		    local nextY = avatarEntity.UITransformComponent.anchoredPosition.y
+		    local leftFoothold = self.dayRoomBadgeFloorLeft[seatIndex]
+		    local rightFoothold = self.dayRoomBadgeFloorRight[seatIndex]
+		    if leftFoothold ~= nil and rightFoothold ~= nil
+		        and leftFoothold.UITransformComponent ~= nil and rightFoothold.UITransformComponent ~= nil then
+		        local leftTransform = leftFoothold.UITransformComponent
+		        local rightTransform = rightFoothold.UITransformComponent
+		        local leftPosition = leftTransform.anchoredPosition
+		        local rightPosition = rightTransform.anchoredPosition
+		        local span = rightPosition.x - leftPosition.x
+		        local ratio = 0.5
+		        if span ~= 0 then ratio = math.max(0, math.min(1, (avatarX - leftPosition.x) / span)) end
+		        local leftFloorY = leftPosition.y - leftTransform.RectSize.y * 0.5
+		        local rightFloorY = rightPosition.y - rightTransform.RectSize.y * 0.5
+		        nextY = leftFloorY + (rightFloorY - leftFloorY) * ratio
+		    end
+		    avatarEntity.UITransformComponent.anchoredPosition = Vector2(avatarX, nextY)
+		    local renderer = avatarEntity.AvatarGUIRendererComponent
+		    if renderer ~= nil then renderer.FlipX = flipX end
+		    if self.dayAvatarActionStates == nil then self.dayAvatarActionStates = {} end
+		    if self.dayAvatarActionStates[seatIndex] ~= actionState and renderer ~= nil then
+		        local body = renderer:GetBodyEntity()
+		        if body ~= nil and isvalid(body) then
+		            self:ApplyLobbyAvatarBodyAction(avatarEntity, actionState)
+		            self.dayAvatarActionStates[seatIndex] = actionState
+		        end
+		    end
+		    self:PositionDayNickname(seatIndex, avatarX, nextY)
+	end
+
+	method void ApplySyncedDayAvatarMotions()
+		    if self:IsServer() then return end
+		    if self.dayRoot == nil or self.dayRoot.Enable == false or _MafiaGameLogic == nil then return end
+		    local raw = _MafiaGameLogic.DayAvatarMotionData or ""
+		    if raw == "" then return end
+		    local seats = self:GetLobbySeatOrderForDisplay()
+		    local localUserId = self:GetLocalUserId()
+		    for record in string.gmatch(raw .. ";", "(.-);") do
+		        local uid, xText, flipText, state = string.match(record, "([^|]+)|([^|]+)|([^|]+)|([^|]+)")
+		        if uid ~= nil and uid ~= localUserId then
+		            local seatIndex = 0
+		            for i = 1, 8 do
+		                if seats[i] == uid then seatIndex = i break end
+		            end
+		            local avatarX = tonumber(xText)
+		            if seatIndex > 0 and avatarX ~= nil then
+		                self:ApplyDayAvatarMotion(seatIndex, avatarX, flipText == "1", state)
+		            end
+		        end
+		    end
+	end
+
+	method void UpdateLocalDayAvatarMovement(number delta)
+		    if self:IsServer() then return end
+		    if self.dayRoot == nil or self.dayRoot.Enable == false then return end
+		    if _MafiaGameLogic == nil or _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_LOBBY
+		        or _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_NIGHT
+		        or _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_GAME_OVER then return end
+		    if self.dayChatInput ~= nil and self.dayChatInput.IsFocused then return end
+
+		    local localUserId = self:GetLocalUserId()
+		    if localUserId == "" then return end
+		    local seats = self:GetLobbySeatOrderForDisplay()
+		    local seatIndex = 0
+		    for i = 1, 8 do
+		        if seats[i] == localUserId then seatIndex = i break end
+		    end
+		    if seatIndex <= 0 then return end
+		    local avatarEntity = self.dayRoomBadgeAvatars[seatIndex]
+		    if avatarEntity == nil or isvalid(avatarEntity) == false or avatarEntity.UITransformComponent == nil then return end
+
+		    local dir = 0
+		    if _InputService:IsKeyPressed(KeyboardKey.LeftArrow) or _InputService:IsKeyPressed(KeyboardKey.A) then dir = dir - 1 end
+		    if _InputService:IsKeyPressed(KeyboardKey.RightArrow) or _InputService:IsKeyPressed(KeyboardKey.D) then dir = dir + 1 end
+		    local actionState = (dir ~= 0) and "walk" or "idle"
+		    local renderer = avatarEntity.AvatarGUIRendererComponent
+		    local flipX = (renderer ~= nil) and renderer.FlipX or false
+		    if dir ~= 0 then flipX = (dir > 0) end
+
+		    local pos = avatarEntity.UITransformComponent.anchoredPosition
+		    local minX = pos.x - self.lobbyAvatarMoveLimit
+		    local maxX = pos.x + self.lobbyAvatarMoveLimit
+		    local leftFoothold = self.dayRoomBadgeFloorLeft[seatIndex]
+		    local rightFoothold = self.dayRoomBadgeFloorRight[seatIndex]
+		    if leftFoothold ~= nil and rightFoothold ~= nil
+		        and leftFoothold.UITransformComponent ~= nil and rightFoothold.UITransformComponent ~= nil then
+		        minX = math.min(leftFoothold.UITransformComponent.anchoredPosition.x, rightFoothold.UITransformComponent.anchoredPosition.x)
+		        maxX = math.max(leftFoothold.UITransformComponent.anchoredPosition.x, rightFoothold.UITransformComponent.anchoredPosition.x)
+		    elseif self.dayAvatarHomeX[seatIndex] ~= nil then
+		        minX = self.dayAvatarHomeX[seatIndex] - self.lobbyAvatarMoveLimit
+		        maxX = self.dayAvatarHomeX[seatIndex] + self.lobbyAvatarMoveLimit
+		    end
+		    local nextX = pos.x + dir * self.lobbyAvatarMoveSpeed * delta
+		    nextX = math.max(minX, math.min(maxX, nextX))
+		    self:ApplyDayAvatarMotion(seatIndex, nextX, flipX, actionState)
+
+		    self.dayAvatarSyncAccumulator = self.dayAvatarSyncAccumulator + delta
+		    local changed = self.dayAvatarHasSentMotion == false
+		        or math.abs(nextX - self.dayAvatarLastSentX) >= 1
+		        or actionState ~= self.dayAvatarLastSentState
+		        or flipX ~= self.dayAvatarLastSentFlip
+		    if changed and self.dayAvatarSyncAccumulator >= 0.1 then
+		        self.dayAvatarSyncAccumulator = 0
+		        self.dayAvatarLastSentX = nextX
+		        self.dayAvatarLastSentState = actionState
+		        self.dayAvatarLastSentFlip = flipX
+		        self.dayAvatarHasSentMotion = true
+		        _MafiaGameLogic:SetDayAvatarMotion(localUserId, nextX, flipX, actionState)
+		        log("[MafiaUIFlow] Day avatar motion sent slot=" .. tostring(seatIndex)
+		            .. " x=" .. tostring(nextX) .. " state=" .. actionState .. " flip=" .. tostring(flipX))
+		    end
+	end
+
+	method void ApplyLobbyAvatarBodyAction(Entity avatarEntity, string state)
+		    if avatarEntity == nil or isvalid(avatarEntity) == false then return end
+		    local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+		    if avatarRenderer == nil then return end
+		    local bodyEntity = avatarRenderer:GetBodyEntity()
+		    if bodyEntity == nil or isvalid(bodyEntity) == false then return end
+
+		    local coreAction = "stand1"
+		    local partsAction = "stand1"
+		    local playRate = 1.0
+		    if state == "walk" then
+		        coreAction = "walk1"
+		        partsAction = "walk1"
+		        playRate = 1.35
+		    end
+
+		    local event = ActionStateChangedEvent(
+		        coreAction,
+		        partsAction,
+		        playRate,
+		        SpriteAnimClipPlayType.Loop,
+		        0,
+		        2147483647
+		    )
+		    bodyEntity:SendEvent(event)
+	end
+
+	method boolean ApplyLobbyAvatarFromMainLobby(integer seatIndex, string userId, Entity avatarEntity, boolean applyAction)
+	    if avatarEntity == nil or isvalid(avatarEntity) == false then return false end
+		    local localUserId = self:GetLocalUserId()
+		    if localUserId == "" then
+		        if _UserService.LocalPlayer ~= nil and isvalid(_UserService.LocalPlayer) and _UserService.LocalPlayer.PlayerComponent ~= nil then
+		            localUserId = tostring(_UserService.LocalPlayer.PlayerComponent.UserId)
+		        end
+		    end
+		    if localUserId == "" or localUserId ~= tostring(userId) then return false end
+
+		    local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		    if lobbyRoot == nil or isvalid(lobbyRoot) == false then return false end
+
+		    local uiLobbyAvatar = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar")
+		    if uiLobbyAvatar == nil or isvalid(uiLobbyAvatar) == false then return false end
+		    local uiCostume = uiLobbyAvatar.CostumeManagerComponent
+		    local uiRenderer = uiLobbyAvatar.AvatarGUIRendererComponent
+		    local uiBodyState = self:GetMainLobbyAvatarState()
+		    local uiFlip = false
+
+		    if uiRenderer ~= nil then
+		        uiFlip = uiRenderer.FlipX
+		    end
+
+		    local targetCostume = avatarEntity.CostumeManagerComponent
+		    local targetRenderer = avatarEntity.AvatarGUIRendererComponent
+		    if applyAction == nil then applyAction = false end
+		    if uiCostume ~= nil and targetCostume ~= nil then
+		        local sourceAvatarUserId = tostring(uiCostume.DefaultEquipUserId or "")
+		        if sourceAvatarUserId == "" then
+		            sourceAvatarUserId = localUserId
+		        end
+		        targetCostume.UseCustomEquipOnly = uiCostume.UseCustomEquipOnly
+		        targetCostume.DefaultEquipUserId = sourceAvatarUserId
+		        targetCostume.Enable = true
+		    end
+		    if targetRenderer ~= nil then
+		        targetRenderer.FlipX = uiFlip
+		    end
+
+		    if applyAction == true then
+		        if uiBodyState == "" then uiBodyState = "idle" end
+		        self:ApplyLobbyAvatarBodyAction(avatarEntity, uiBodyState)
+		    end
+
+		    log("[MafiaUIFlow] mirrored local lobby avatar from UI_Lobby slot=" .. tostring(seatIndex)
+		        .. " userId=" .. tostring(userId)
+		        .. " equipUserId=" .. tostring(targetCostume ~= nil and targetCostume.DefaultEquipUserId or "")
+		        .. " flipX=" .. tostring(uiFlip)
+		        .. " action=" .. tostring(applyAction and uiBodyState or "keep-mafia-motion"))
+		    return true
 	end
 
 	method void UpdateLocalLobbyAvatarMovement(number delta)
@@ -2069,7 +2741,15 @@ script MafiaUIFlow extends Logic
 		    if _InputService:IsKeyPressed(KeyboardKey.RightArrow) or _InputService:IsKeyPressed(KeyboardKey.D) then
 		        dir = dir + 1
 		    end
-		    if dir == 0 then return end
+
+		    local nextState = "idle"
+		    if dir ~= 0 then nextState = "walk" end
+
+		    local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+		    if avatarRenderer ~= nil and dir ~= 0 then
+		        -- The unflipped lobby avatar faces left; flip it while moving right.
+		        avatarRenderer.FlipX = (dir > 0)
+		    end
 		
 		    local homeX = self.lobbyAvatarHomeX[seatIndex]
 		    local minX = homeX - self.lobbyAvatarMoveLimit
@@ -2077,7 +2757,45 @@ script MafiaUIFlow extends Logic
 		    local nextX = pos.x + dir * self.lobbyAvatarMoveSpeed * delta
 		    if nextX < minX then nextX = minX end
 		    if nextX > maxX then nextX = maxX end
-		    avatarEntity.UITransformComponent.anchoredPosition = Vector2(nextX, pos.y)
+
+		    local nextY = pos.y
+		    local leftFoothold = self.lobbyFootholdLeftEntities[seatIndex]
+		    local rightFoothold = self.lobbyFootholdRightEntities[seatIndex]
+		    if leftFoothold ~= nil and rightFoothold ~= nil
+		        and leftFoothold.UITransformComponent ~= nil and rightFoothold.UITransformComponent ~= nil then
+		        local leftTransform = leftFoothold.UITransformComponent
+		        local rightTransform = rightFoothold.UITransformComponent
+		        local leftPosition = leftTransform.anchoredPosition
+		        local rightPosition = rightTransform.anchoredPosition
+		        local span = rightPosition.x - leftPosition.x
+		        local ratio = 0.5
+		        if span ~= 0 then ratio = math.max(0, math.min(1, (nextX - leftPosition.x) / span)) end
+		        local leftFloorY = leftPosition.y - leftTransform.RectSize.y * 0.5
+		        local rightFloorY = rightPosition.y - rightTransform.RectSize.y * 0.5
+		        local floorY = leftFloorY + (rightFloorY - leftFloorY) * ratio
+		        nextY = floorY
+		    end
+		    avatarEntity.UITransformComponent.anchoredPosition = Vector2(nextX, nextY)
+
+		    if self.lobbyAvatarActionStates == nil then self.lobbyAvatarActionStates = {} end
+		    if self.lobbyAvatarActionStates[seatIndex] ~= nextState then
+		        self.lobbyAvatarActionStates[seatIndex] = nextState
+		        self:ApplyLobbyAvatarBodyAction(avatarEntity, nextState)
+		    end
+
+		    self:PositionLobbyNickname(seatIndex, nextX, nextY)
+		    if self.lobbyAvatarFollowLogged == false then
+		        local roomText = self.lobbyRoomTexts[seatIndex]
+		        if roomText ~= nil and roomText.Entity ~= nil
+		            and roomText.Entity.UITransformComponent ~= nil then
+		            local nicknamePosition = roomText.Entity.UITransformComponent.anchoredPosition
+		            self.lobbyAvatarFollowLogged = true
+		            log("[MafiaUIFlow] lobby nickname follow verified seat=" .. tostring(seatIndex)
+		                .. " avatarX=" .. tostring(nextX)
+		                .. " nicknameX=" .. tostring(nicknamePosition.x)
+		                .. " offsetY=" .. tostring(nicknamePosition.y - nextY))
+		        end
+		    end
 	end
 
 	method void OpenLobbyAfterRoomCreated(string roomTitle, boolean isPrivate, string password, integer maxPlayers, integer mafiaCount)
@@ -2085,6 +2803,7 @@ script MafiaUIFlow extends Logic
 		    self.lobbyLeavePending = false
 		    self.mafiaHudUnlocked = true
 		    self.cachedPhase = -1
+		    self.dayLobbyTemplateSynced = false
 		    if _MafiaGameLogic ~= nil then
 		        _MafiaGameLogic:SetRoomSettings(roomTitle, isPrivate, password, maxPlayers, mafiaCount)
 		    end
@@ -2109,6 +2828,7 @@ script MafiaUIFlow extends Logic
 		    self:RequestLobbyRoomPlacementOnce()
 		
 		    self:ResolveUI()
+		    self:SyncDayLobbyTemplatesFromLobby()
 		    self:RefreshUI(true)
 		    log("[MafiaUIFlow] mafia lobby unlocked after room creation title=" .. tostring(roomTitle) .. " max=" .. tostring(maxPlayers) .. " mafia=" .. tostring(mafiaCount))
 	end
@@ -2118,6 +2838,7 @@ script MafiaUIFlow extends Logic
 		    self.lobbyLeavePending = false
 		    self.mafiaHudUnlocked = true
 		    self.cachedPhase = -1
+		    self.dayLobbyTemplateSynced = false
 		    local introUI = _EntityService:GetEntityByPath("/ui/UI_IntroSequence")
 		    if introUI ~= nil and isvalid(introUI) then introUI:SetEnable(false) end
 		    local storyUI = _EntityService:GetEntityByPath("/ui/UI_StorySequence")
@@ -2132,6 +2853,7 @@ script MafiaUIFlow extends Logic
 		    self:RestoreLocalWorldPlayerForLobby()
 		    self:RequestLobbyRoomPlacementOnce()
 		    self:ResolveUI()
+		    self:SyncDayLobbyTemplatesFromLobby()
 		    self:RefreshUI(true)
 		    log("[MafiaUIFlow] EnterRoomLobby: mafia HUD unlocked")
 	end
@@ -2193,54 +2915,190 @@ script MafiaUIFlow extends Logic
 		    end
 	end
 
-	method void RefreshLobbyAvatars()
-		if self.lobbyAvatarEntities == nil then return end
-		local seats = {}
-		local seat = 1
-		for _, uid in ipairs(_UserService.Users.Keys) do
-		if seat <= 8 then seats[seat] = tostring(uid); seat = seat + 1 end
-		end
-		
-		    for i = 1, 8 do
-		        local userId = seats[i]
-		        local avatarEntity = self.lobbyAvatarEntities[i]
-		        local roomText = self.lobbyRoomTexts[i]
-		if userId ~= nil and userId ~= "" then
-			if avatarEntity ~= nil then
-				local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
-				local costume = avatarEntity.CostumeManagerComponent
-				if costume ~= nil then costume.Enable = true end
-				if avatarRenderer ~= nil then avatarRenderer.Enable = true end
-				avatarEntity.Enable = true
-				if self.cachedLobbySeats[i] ~= userId then
-					if costume ~= nil then
-						costume.UseCustomEquipOnly = false
-						costume.DefaultEquipUserId = userId
-		                    end
-		                    self.cachedLobbySeats[i] = userId
-		                    log("[MafiaUIFlow] lobby avatar seat " .. tostring(i) .. " <- " .. userId)
-		                end
-		            end
-		            if roomText ~= nil then
-		                local nickname = "플레이어"
-		                local user = _UserService.Users[userId]
-		                if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then nickname = user.Nickname end
-		                roomText.Text = tostring(i) .. "번 · " .. nickname
-		            end
-		else
-			if avatarEntity ~= nil then
-				avatarEntity.Enable = false
-				if avatarEntity.AvatarGUIRendererComponent ~= nil then avatarEntity.AvatarGUIRendererComponent.Enable = false end
-				if avatarEntity.CostumeManagerComponent ~= nil then avatarEntity.CostumeManagerComponent.Enable = false end
-			end
-		            if roomText ~= nil then roomText.Text = tostring(i) .. "번 자리 · 대기 중" end
-		            self.cachedLobbySeats[i] = nil
+	method table ParseLobbySeatString(string rawValue)
+		    local seats = {}
+		    for i = 1, 8 do seats[i] = "" end
+		    if rawValue == nil or rawValue == "" then return seats end
+		    local seatIndex = 1
+		    for token in string.gmatch(rawValue .. ",", "(.-),") do
+		        if seatIndex > 8 then break end
+		        seats[seatIndex] = token
+		        seatIndex = seatIndex + 1
+		    end
+		    return seats
+	end
+
+	method table GetLobbySeatOrderForDisplay()
+		    local seats = self:ParseLobbySeatString(tostring(_MafiaGameLogic ~= nil and _MafiaGameLogic.LobbySeatOrder or ""))
+		    if _MafiaGameLogic == nil or self:SeatCsvEmpty(_MafiaGameLogic.LobbySeatOrder) then
+		        for i = 1, 8 do seats[i] = "" end
+		        local seat = 1
+		        for _, uid in ipairs(_UserService.Users.Keys) do
+		            if seat > 8 then break end
+		            seats[seat] = tostring(uid)
+		            seat = seat + 1
 		        end
 		    end
+		    return seats
+	end
+
+	method boolean SeatCsvEmpty(string value)
+		    return value == nil or value == ""
+	end
+
+	method table GetLobbySeatNicknamesForDisplay(table seatOrder)
+		    local names = {}
+		    for i = 1, 8 do names[i] = "" end
+		    if seatOrder == nil then
+		        seatOrder = self:GetLobbySeatOrderForDisplay()
+		    end
+
+		    if _MafiaGameLogic ~= nil then
+		        local nickSource = self:ParseLobbySeatString(tostring(_MafiaGameLogic.LobbySeatNicknames or ""))
+		        if not self:SeatCsvEmpty(_MafiaGameLogic.LobbySeatNicknames) then
+		            for i = 1, 8 do
+		                names[i] = nickSource[i]
+		            end
+		        end
+		    end
+
+		    for i = 1, 8 do
+		        if names[i] == "" then
+		            local uid = seatOrder[i]
+		            if uid ~= nil and uid ~= "" then
+		                local user = _UserService.Users[uid]
+		                if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then
+		                    names[i] = user.Nickname
+		                else
+		                    names[i] = "플레이어"
+		                end
+		            end
+		        end
+		    end
+
+		    return names
+	end
+
+	method string GetMainLobbyProfileNickname()
+		    local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		    if lobbyRoot == nil or isvalid(lobbyRoot) == false then return "" end
+		    local lobbyCtrl = lobbyRoot:GetComponent("script.LobbyController")
+		    if lobbyCtrl ~= nil and lobbyCtrl.currentProfileNickname ~= nil and lobbyCtrl.currentProfileNickname ~= "" then
+		        return lobbyCtrl.currentProfileNickname
+		    end
+
+		    local profileText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileRoot/NicknamePlate/NicknameText")
+		    if profileText ~= nil and profileText.TextComponent ~= nil and profileText.TextComponent.Text ~= "" then
+		        return profileText.TextComponent.Text
+		    end
+
+		    local avatarNameText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/AvatarNameText")
+		    if avatarNameText ~= nil and avatarNameText.TextComponent ~= nil and avatarNameText.TextComponent.Text ~= "" then
+		        return avatarNameText.TextComponent.Text
+		    end
+		    return ""
+	end
+
+	method string GetMainLobbyAvatarState()
+		    local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		    if lobbyRoot == nil or isvalid(lobbyRoot) == false then return "idle" end
+		    local lobbyCtrl = lobbyRoot:GetComponent("script.LobbyController")
+		    if lobbyCtrl ~= nil then
+		        if lobbyCtrl.currentAvatarState ~= nil and lobbyCtrl.currentAvatarState ~= "" then
+		            return lobbyCtrl.currentAvatarState
+		        end
+		    end
+		    return "idle"
+	end
+
+	method void RefreshLobbyAvatars()
+		if self.lobbyAvatarEntities == nil then return end
+
+		local seats = self:GetLobbySeatOrderForDisplay()
+		local nicknames = self:GetLobbySeatNicknamesForDisplay(seats)
+		local localUserId = self:GetLocalUserId()
+		if localUserId == "" and _UserService.LocalPlayer ~= nil and isvalid(_UserService.LocalPlayer) and _UserService.LocalPlayer.PlayerComponent ~= nil then
+		    localUserId = tostring(_UserService.LocalPlayer.PlayerComponent.UserId)
+		end
+		local localProfileNickname = self:GetMainLobbyProfileNickname()
+		for i = 1, 8 do
+			local userId = seats[i]
+			local avatarEntity = self.lobbyAvatarEntities[i]
+			local roomText = self.lobbyRoomTexts[i]
+			local isNewLocalSeat = false
+
+			if userId ~= nil and userId ~= "" then
+				if avatarEntity ~= nil then
+					local avatarRenderer = avatarEntity.AvatarGUIRendererComponent
+					local costume = avatarEntity.CostumeManagerComponent
+
+					if self.cachedLobbySeats[i] ~= userId then
+						isNewLocalSeat = true
+						if self.lobbyAvatarActionStates ~= nil then
+							self.lobbyAvatarActionStates[i] = nil
+						end
+						-- Apply the user's equipment before the first rendered frame.
+						if avatarRenderer ~= nil then avatarRenderer.Enable = false end
+						if costume ~= nil then
+							costume.Enable = false
+							costume.UseCustomEquipOnly = false
+							costume.DefaultEquipUserId = userId
+							costume.Enable = true
+						end
+
+						self.cachedLobbySeats[i] = userId
+						log("[MafiaUIFlow] lobby avatar initialized seat=" .. tostring(i)
+							.. " userId=" .. userId
+							.. " costume=" .. tostring(costume ~= nil)
+							.. " renderer=" .. tostring(avatarRenderer ~= nil))
+					end
+
+					if userId == localUserId then
+						-- Local slot must always mirror UI_Lobby profile nickname and avatar state.
+						if isNewLocalSeat == true then
+							-- Initialize with idle so movement state is managed only by lobby movement input afterward.
+							self.lobbyAvatarActionStates[i] = "idle"
+							self:ApplyLobbyAvatarBodyAction(avatarEntity, "idle")
+						end
+						self:ApplyLobbyAvatarFromMainLobby(i, userId, avatarEntity, false)
+					elseif costume ~= nil then
+						costume.UseCustomEquipOnly = false
+						costume.DefaultEquipUserId = userId
+						costume.Enable = true
+					end
+
+					avatarEntity.Enable = true
+					avatarEntity.Visible = true
+					if costume ~= nil then costume.Enable = true end
+					if avatarRenderer ~= nil then avatarRenderer.Enable = true end
+				end
+
+				if roomText ~= nil then
+					local nickname = nicknames[i]
+					if userId == localUserId then
+						if localProfileNickname ~= nil and localProfileNickname ~= "" then
+							nickname = localProfileNickname
+						end
+					end
+					if nickname == "" then nickname = "플레이어" end
+					roomText.Text = nickname
+				end
+			else
+				if avatarEntity ~= nil then
+					avatarEntity.Enable = false
+					if avatarEntity.AvatarGUIRendererComponent ~= nil then avatarEntity.AvatarGUIRendererComponent.Enable = false end
+					if avatarEntity.CostumeManagerComponent ~= nil then avatarEntity.CostumeManagerComponent.Enable = false end
+				end
+
+				if roomText ~= nil then roomText.Text = "" end
+				self.cachedLobbySeats[i] = nil
+			end
+		end
 	end
 
 	method void RefreshDay(integer phase)
 		    self:ResolvePhaseChatContext("MafiaDayHUD")
+		    self:RefreshDayRoomBadgeAvatars()
 		    local playerCount = #(_UserService.Users.Keys)
 		    if self.dayPlayerCountText ~= nil then
 		        self.dayPlayerCountText.Text = "플레이어 " .. tostring(playerCount) .. "/" .. tostring(_MafiaGameLogic.MAX_PLAYERS)
