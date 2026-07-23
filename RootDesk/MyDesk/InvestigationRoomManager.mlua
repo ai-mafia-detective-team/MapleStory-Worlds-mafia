@@ -7,10 +7,48 @@ script InvestigationRoomManager extends Logic
 
 	property integer MAX_WRITE_RETRIES = 3
 
+	property any userLeaveHandler = nil
+
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
-		-- Announces that the server-shared investigation room registry is ready.
+		-- Subscribes to user-leave so departed players are purged from the room registry (no ghosts).
+		self.userLeaveHandler = _UserService:ConnectEvent(UserLeaveEvent, self.OnUserLeft)
 		log("[InvestigationRoomManager] server shared registry ready")
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- Releases the user-leave subscription.
+		if self.userLeaveHandler ~= nil then
+			_UserService:DisconnectEvent(UserLeaveEvent, self.userLeaveHandler)
+			self.userLeaveHandler = nil
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUserLeft(UserLeaveEvent event)
+		-- On permanent exit, removes the user from every room (host migrates; empty rooms deleted).
+		local userId = tostring(event.UserId)
+		if userId == nil or userId == "" then return end
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then
+				log_warning("[InvestigationRoomManager] User-left cleanup read failed userId=" .. userId)
+				return
+			end
+			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
+			if removedCount <= 0 then return end
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] User-left cleanup done userId=" .. userId .. " rooms=" .. tostring(removedCount))
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then
+				log_warning("[InvestigationRoomManager] User-left cleanup write failed userId=" .. userId .. " code=" .. tostring(writeCode))
+				return
+			end
+			log_warning("[InvestigationRoomManager] User-left cleanup retry attempt=" .. tostring(attempt) .. " userId=" .. userId)
+		end
 	end
 
 	@ExecSpace("ServerOnly")
@@ -20,7 +58,7 @@ script InvestigationRoomManager extends Logic
 		if memoryCode ~= SharedMemoryResultCode.OK or memory == nil then
 			return { Ok = false, ErrorCode = tostring(memoryCode), Rooms = {} }
 		end
-
+		
 		local getResult = memory:GetVariableAndWait(self.REGISTRY_VARIABLE)
 		if getResult.Code == SharedMemoryResultCode.NotFound then
 			return {
@@ -34,7 +72,7 @@ script InvestigationRoomManager extends Logic
 		if getResult.Code ~= SharedMemoryResultCode.OK or getResult.Info == nil then
 			return { Ok = false, ErrorCode = tostring(getResult.Code), Rooms = {} }
 		end
-
+		
 		local rooms = {}
 		local encoded = getResult.Info.Value
 		if encoded ~= nil and encoded ~= "" then
@@ -43,7 +81,7 @@ script InvestigationRoomManager extends Logic
 				rooms = decoded.rooms
 			end
 		end
-
+		
 		return {
 			Ok = true,
 			Exists = true,
@@ -61,7 +99,7 @@ script InvestigationRoomManager extends Logic
 			local createResult = snapshot.Memory:CreateVariableAndWait(self.REGISTRY_VARIABLE, encoded)
 			return createResult.Code
 		end
-
+		
 		local keyInfo = SharedVariableKeyInfo(self.REGISTRY_VARIABLE, snapshot.ETag)
 		local updateResult = snapshot.Memory:UpdateVariableAndWait(keyInfo, encoded)
 		return updateResult.Code
@@ -165,7 +203,7 @@ script InvestigationRoomManager extends Logic
 		password = string.match(password or "", "^%s*(.-)%s*$") or ""
 		hostNickname = string.match(hostNickname or "", "^%s*(.-)%s*$") or ""
 		log("[InvestigationRoomManager] Room creation requested userId=" .. userId .. " roomName=" .. roomName)
-
+		
 		if roomName == "" then
 			self:DeliverCreateResult(false, "방 이름을 입력하세요.", "", userId)
 			return
@@ -184,7 +222,7 @@ script InvestigationRoomManager extends Logic
 		end
 		if mode == "" then mode = "기본 수사" end
 		if hostNickname == "" then hostNickname = "수사관" end
-
+		
 		for attempt = 1, self.MAX_WRITE_RETRIES do
 			local snapshot = self:ReadRegistrySnapshot()
 			if snapshot.Ok == false then
@@ -192,9 +230,9 @@ script InvestigationRoomManager extends Logic
 				self:DeliverCreateResult(false, "수사방 저장소를 불러오지 못했습니다.", "", userId)
 				return
 			end
-
+		
 			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, "")
-
+		
 			for _, room in ipairs(snapshot.Rooms) do
 				if string.lower(room.roomName or "") == string.lower(roomName) then
 					log_warning("[InvestigationRoomManager] Room creation failed duplicateName=" .. roomName)
@@ -202,7 +240,7 @@ script InvestigationRoomManager extends Logic
 					return
 				end
 			end
-
+		
 			local room = {
 				roomId = self:MakeRoomId(userId),
 				roomName = roomName,
@@ -238,7 +276,7 @@ script InvestigationRoomManager extends Logic
 			end
 			log_warning("[InvestigationRoomManager] Room creation retry attempt=" .. tostring(attempt))
 		end
-
+		
 		self:DeliverCreateResult(false, "동시에 많은 요청이 발생했습니다. 다시 시도하세요.", "", userId)
 	end
 
@@ -264,7 +302,7 @@ script InvestigationRoomManager extends Logic
 			self:DeliverRoomList(false, "[]", "수사방 검색에 실패했습니다.", userId)
 			return
 		end
-
+		
 		local filtered = {}
 		for _, room in ipairs(snapshot.Rooms) do
 			self:RecalculateRoomStatus(room)
@@ -292,42 +330,48 @@ script InvestigationRoomManager extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void RemoveMemberFromRoom(table rooms, integer roomIndex, string userId)
+		-- Removes one member; promotes the next member to host, or deletes the room when it becomes empty.
+		local room = rooms[roomIndex]
+		if room.memberUserIds == nil then room.memberUserIds = {} end
+		for memberIndex = #room.memberUserIds, 1, -1 do
+			if tostring(room.memberUserIds[memberIndex]) == userId then
+				table.remove(room.memberUserIds, memberIndex)
+			end
+		end
+		if #room.memberUserIds == 0 then
+			table.remove(rooms, roomIndex)
+			return
+		end
+		if room.hostUserId == userId then
+			-- Host migration: member nicknames are not stored, so the promoted host shows a generic name.
+			room.hostUserId = tostring(room.memberUserIds[1])
+			room.hostNickname = "수사관"
+			log("[InvestigationRoomManager] Host migrated roomId=" .. tostring(room.roomId) .. " newHost=" .. room.hostUserId)
+		end
+		self:RecalculateRoomStatus(room)
+	end
+
+	@ExecSpace("ServerOnly")
 	method void RemoveUserFromOtherRooms(table rooms, string userId, string exceptRoomId)
-		-- Removes a user from previous rooms so one user belongs to at most one room.
+		-- Removes a user from previous rooms so one user belongs to at most one room (host migrates).
 		for roomIndex = #rooms, 1, -1 do
 			local room = rooms[roomIndex]
 			if room.roomId ~= exceptRoomId and self:ContainsUser(room, userId) then
-				if room.hostUserId == userId then
-					table.remove(rooms, roomIndex)
-				else
-					for memberIndex = #room.memberUserIds, 1, -1 do
-						if tostring(room.memberUserIds[memberIndex]) == userId then
-							table.remove(room.memberUserIds, memberIndex)
-						end
-					end
-					self:RecalculateRoomStatus(room)
-				end
+				self:RemoveMemberFromRoom(rooms, roomIndex, userId)
 			end
 		end
 	end
 
 	@ExecSpace("ServerOnly")
 	method integer RemoveUserFromAllRooms(table rooms, string userId)
-		-- Removes every room membership owned by the user and deletes host-owned rooms.
+		-- Removes the user from every room (host migrates; empty rooms deleted). Returns rooms affected.
 		local removedCount = 0
 		for roomIndex = #rooms, 1, -1 do
 			local room = rooms[roomIndex]
-			if room.hostUserId == userId then
-				table.remove(rooms, roomIndex)
+			if self:ContainsUser(room, userId) then
+				self:RemoveMemberFromRoom(rooms, roomIndex, userId)
 				removedCount += 1
-			elseif self:ContainsUser(room, userId) then
-				for memberIndex = #room.memberUserIds, 1, -1 do
-					if tostring(room.memberUserIds[memberIndex]) == userId then
-						table.remove(room.memberUserIds, memberIndex)
-						removedCount += 1
-					end
-				end
-				self:RecalculateRoomStatus(room)
 			end
 		end
 		return removedCount
@@ -347,7 +391,7 @@ script InvestigationRoomManager extends Logic
 				self:DeliverJoinResult(false, "NOT_FOUND", "수사방을 찾을 수 없습니다.", "", userId)
 				return
 			end
-
+		
 			local room = snapshot.Rooms[roomIndex]
 			self:RecalculateRoomStatus(room)
 			if room.status == "PLAYING" then
@@ -370,12 +414,12 @@ script InvestigationRoomManager extends Logic
 				self:DeliverJoinResult(false, "PASSWORD_INVALID", "비밀번호가 올바르지 않습니다.", "", userId)
 				return
 			end
-
+		
 			if self:ContainsUser(room, userId) then
 				self:DeliverJoinResult(true, "OK", "이미 입장한 수사방입니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
 				return
 			end
-
+		
 			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, roomId)
 			table.insert(room.memberUserIds, userId)
 			self:RecalculateRoomStatus(room)
@@ -430,7 +474,7 @@ script InvestigationRoomManager extends Logic
 
 	@ExecSpace("Server")
 	method void LeaveRoom(string roomId)
-		-- Removes the requesting user from every investigation room and deletes host-owned rooms.
+		-- Removes the requesting user from EVERY room (roomId is informational only; host migrates, empty rooms deleted).
 		local userId = tostring(senderUserId)
 		roomId = roomId or ""
 		for attempt = 1, self.MAX_WRITE_RETRIES do

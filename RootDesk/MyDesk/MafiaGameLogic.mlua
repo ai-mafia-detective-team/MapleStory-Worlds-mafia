@@ -167,8 +167,11 @@ script MafiaGameLogic extends Logic
 
 	property table readyPlayers = nil
 
+	property any userLeaveHandler = nil
+
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
+		    self.userLeaveHandler = _UserService:ConnectEvent(UserLeaveEvent, self.OnUserLeft)
 		    self.playerRoles   = {}
 		    self.playerAlive   = {}
 		    self.playerRooms   = {}
@@ -244,6 +247,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void SetReady(string userId, boolean ready)
+		    -- Trust only the authenticated sender; ignore the client-supplied userId (anti-impersonation).
+		    userId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_LOBBY or self.GameStarted then return end
 		    local exists = false
 		    for _, uid in ipairs(_UserService.Users.Keys) do
@@ -322,7 +327,7 @@ script MafiaGameLogic extends Logic
 		    if string.len(password) > 16 then password = string.sub(password, 1, 16) end
 		    if maxPlayers ~= 6 and maxPlayers ~= 7 and maxPlayers ~= 8 then maxPlayers = 8 end
 		    if mafiaCount ~= 1 and mafiaCount ~= 2 and mafiaCount ~= 3 then mafiaCount = 2 end
-
+		
 		    self.RoomTitle = roomTitle
 		    self.IsPrivateRoom = isPrivate
 		    self.RoomPassword = password
@@ -335,7 +340,6 @@ script MafiaGameLogic extends Logic
 		        " mafia=" .. tostring(mafiaCount))
 	end
 
-	-- LOBBY: 새로 입장한 플레이어를 감지해서 순서대로 방 배정 + 텔레포트
 	@ExecSpace("ServerOnly")
 	method void CheckNewLobbyPlayers()
 		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
@@ -746,6 +750,64 @@ script MafiaGameLogic extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		    -- Releases the user-leave subscription.
+		    if self.userLeaveHandler ~= nil then
+		        _UserService:DisconnectEvent(UserLeaveEvent, self.userLeaveHandler)
+		        self.userLeaveHandler = nil
+		    end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUserLeft(UserLeaveEvent event)
+		    -- On permanent exit, clears the user's game state and re-checks win while a game is in progress.
+		    local userId = tostring(event.UserId)
+		    if userId == nil or userId == "" then return end
+		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
+		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
+		    if self.playerRoles ~= nil then self.playerRoles[userId] = nil end
+		    if self.playerAlive ~= nil then self.playerAlive[userId] = nil end
+		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
+		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
+		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
+		        self:UpdateReadyStatusList()
+		        return
+		    end
+		    if self.GameStarted and self.CurrentPhase ~= self.PHASE_GAME_OVER then
+		        self:UpdateAlivePlayersList()
+		        self:CheckWinOnly()
+		    end
+		    log("[Mafia] user left cleaned userId=" .. userId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CheckWinOnly()
+		    -- Ends the game only if a win condition is now met; never forces a phase transition otherwise.
+		    if self.CurrentPhase == self.PHASE_GAME_OVER then return end
+		    local mafiaAlive   = 0
+		    local citizenAlive = 0
+		    local users = self:GetAllUserIds()
+		    for _, uid in ipairs(users) do
+		        if self.playerAlive[uid] then
+		            if self.playerRoles[uid] == self.ROLE_MAFIA then
+		                mafiaAlive = mafiaAlive + 1
+		            else
+		                citizenAlive = citizenAlive + 1
+		            end
+		        end
+		    end
+		    if mafiaAlive == 0 then
+		        self.WinnerRole = self.ROLE_CITIZEN
+		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
+		        log("[Mafia] 시민 승리 (이탈로 재판정)")
+		    elseif mafiaAlive >= citizenAlive then
+		        self.WinnerRole = self.ROLE_MAFIA
+		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
+		        log("[Mafia] 마피아 승리 (이탈로 재판정)")
+		    end
+	end
+
+	@ExecSpace("ServerOnly")
 	method void KillPlayer(string userId)
 		    self.playerAlive[userId] = false
 		    self:UpdateAlivePlayersList()
@@ -914,7 +976,6 @@ script MafiaGameLogic extends Logic
 		    else return "시민" end
 	end
 
-	-- 방 번호로 그 방에 배정된 플레이어 UID 반환 (없으면 "")
 	@ExecSpace("ServerOnly")
 	method string GetPlayerByRoom(integer roomIndex)
 		    for uid, room in pairs(self.playerRooms) do
@@ -923,8 +984,6 @@ script MafiaGameLogic extends Logic
 		    return ""
 	end
 
-	-- 클라이언트가 방 번호를 선택해서 밤 행동 제출
-	-- actorId: 행동하는 플레이어 UID, targetRoom: 선택한 방 번호 (1~6)
 	@ExecSpace("Server")
 	method void SubmitNightAction(string actorId, integer targetRoom)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then
@@ -948,7 +1007,6 @@ script MafiaGameLogic extends Logic
 		    log("[Mafia] SubmitNightAction: " .. actorId .. " 역할=" .. role .. " 방 " .. targetRoom .. " 대상=" .. targetId)
 	end
 
-	-- LOBBY: 빈 방 번호 반환 (없으면 -1)
 	@ExecSpace("ServerOnly")
 	method integer FindEmptyRoom()
 		    local used = {}
@@ -961,7 +1019,6 @@ script MafiaGameLogic extends Logic
 		    return -1
 	end
 
-	-- LOBBY: 플레이어에게 빈 방 배정
 	@ExecSpace("ServerOnly")
 	method void AssignLobbyRoom(string userId)
 		    if self.playerRooms[userId] ~= nil then return end
@@ -974,7 +1031,6 @@ script MafiaGameLogic extends Logic
 		    log("[Lobby] " .. userId .. " → 방 " .. roomId)
 	end
 
-	-- LOBBY: 배정된 방 번호 반환 (없으면 -1)
 	@ExecSpace("ServerOnly")
 	method integer GetLobbyRoom(string userId)
 		    local room = self.playerRooms[userId]
@@ -982,7 +1038,6 @@ script MafiaGameLogic extends Logic
 		    return room
 	end
 
-	-- LOBBY: 현재 접속 중인 모든 플레이어를 자신의 방으로 텔레포트
 	@ExecSpace("ServerOnly")
 	method void TeleportAllToLobbyRooms()
 		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
@@ -1002,7 +1057,6 @@ script MafiaGameLogic extends Logic
 		    end
 	end
 
-	-- 클라이언트가 채팅 메시지 전송 (FREE_ROAM / MEETING 페이즈에서만 허용)
 	@ExecSpace("Server")
 	method void SendChat(string userId, string message)
 		    if self.CurrentPhase ~= self.PHASE_LOBBY and
