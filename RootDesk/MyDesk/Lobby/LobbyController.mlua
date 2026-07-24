@@ -371,6 +371,10 @@ script LobbyController extends Component
 
 	property number ROOM_LIST_POLL_INTERVAL = 4.0
 
+	-- Set only while applying a polled refresh, so the periodic room-list update does not clear
+	-- the user's current selection or the password they are typing.
+	property boolean findRoomPreserveSelection = false
+
 	property any findRoomAllRooms = nil
 
 	property any findRoomVisibleRooms = nil
@@ -3421,8 +3425,11 @@ script LobbyController extends Component
 		end
 		if rooms == nil then rooms = {} end
 		self.findRoomAllRooms = rooms
-		self.findRoomCurrentPage = 1
+		-- A refresh is not a filter change: keep the page and the selection so a poll landing
+		-- mid-interaction does not yank the user back to page 1 with the selection dropped.
+		self.findRoomPreserveSelection = true
 		self:ApplyRoomFilters()
+		self.findRoomPreserveSelection = false
 		log("[Room] Room list refreshed count=" .. tostring(#rooms))
 	end
 
@@ -3442,9 +3449,22 @@ script LobbyController extends Component
 		self.findRoomVisibleRooms = filtered
 		self.findRoomTotalPages = math.max(1, math.ceil(#filtered / self.findRoomPageSize))
 		if self.findRoomCurrentPage > self.findRoomTotalPages then self.findRoomCurrentPage = self.findRoomTotalPages end
-		self.findRoomSelectedIndex = 0
-		self.findRoomSelectedRoomId = ""
-		self:SetFindRoomPasswordInputVisible(false)
+		-- Keep the selection when this is a periodic refresh and the selected room is still
+		-- listed; clearing it unconditionally also wiped a password mid-entry.
+		local keepSelection = false
+		if self.findRoomPreserveSelection and (self.findRoomSelectedRoomId or "") ~= "" then
+			for _, room in ipairs(filtered) do
+				if room.roomId == self.findRoomSelectedRoomId then
+					keepSelection = true
+					break
+				end
+			end
+		end
+		if keepSelection == false then
+			self.findRoomSelectedIndex = 0
+			self.findRoomSelectedRoomId = ""
+			self:SetFindRoomPasswordInputVisible(false)
+		end
 		self:RenderFindRoomList()
 		if #filtered == 0 then
 			self:SetFindRoomDetailMessage("생성된 수사방이 없습니다")
@@ -3624,6 +3644,11 @@ script LobbyController extends Component
 		self:CloseMatchmakingModal()
 		self:CloseFindRoomModal()
 		self:CloseCreateRoomModal()
+		-- Register presence on the server: seating, ready checks and role assignment all read
+		-- this roster, so without it the user is never seated in the room lobby.
+		if _MafiaGameLogic ~= nil then
+			_MafiaGameLogic:EnterRoomLobby()
+		end
 		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
 		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
 			lobbyRoot.Enable = false
