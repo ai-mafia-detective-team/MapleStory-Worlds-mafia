@@ -34,10 +34,10 @@
 | 알림 | `ButtonGroup/알림` | `OnAlertClicked` → `OpenExternalPopup("AlertPopup")` | `ui/UI_Lobby.ui` 내부 팝업 (별도 파일 아님) |
 | 설정 | `ButtonGroup/설정` | `OnSettingsClicked` | `ui/UI_Lobby.ui` 내부 팝업 (`SettingsPopup`, 별도 파일 아님) |
 | 수사방 찾기 | `ButtonGroup/찾기` | `OnFindRoomClicked` → `OpenFindRoomModal()` | `ui/UI_InvestigationRoomSearch.ui` (`SearchRoot`) |
-| 수사방 만들기 | `ButtonGroup/방만들기` | `OnCreateRoomClicked` → `OpenCreateRoomModal()` | 생성 폼은 `ui/UI_Lobby.ui` 내부 모달 → 제출 성공 시 `MafiaUIFlow:OpenLobbyAfterRoomCreated()` 호출 → **`ui/MafiaLobbyHUD.ui`** 로 이동 |
+| 수사방 만들기 | `ButtonGroup/방만들기` | `OnCreateRoomClicked` → `OpenCreateRoomModal()` | 생성 폼은 `ui/UI_Lobby.ui` 내부 모달 → 제출 성공 시 `MafiaUIFlow:OpenLobbyAfterRoomCreated()`가 방 설정 저장과 생성자 `EnterRoomLobby()` 등록을 각각 1회 요청 → **`ui/MafiaLobbyHUD.ui`** 로 이동 |
 | 바로 게임화면 (start) | `ButtonGroup/start` | `OnStartClicked` → `OpenMatchmakingModal()` + `QuickJoinRoom()` | 매칭 대기 모달은 `ui/UI_Lobby.ui` 내부 → 참가 성공 시 `LobbyController:EnterInvestigationRoomLobby()` → `MafiaUIFlow:EnterRoomLobby()` 호출 → **`ui/MafiaLobbyHUD.ui`** 로 이동 |
 
-**핵심 포인트**: "수사방 만들기"와 "바로 게임화면(start)"은 서로 다른 진입 경로(방 생성 vs 빠른 참가)를 거치지만 **최종적으로 같은 화면인 `ui/MafiaLobbyHUD.ui`(수사방 대기실)로 합류**한다. 이후 실제 낮/밤 게임 진행 화면(`MafiaDayHUD.ui`, `MafiaNightHUD.ui` 등)으로의 전환은 `Mafia/MafiaGameLogic.mlua`가 관리하며, 이 부분의 순서/조건(룰)은 별도로 정의해서 아래 3번 섹션에 채울 예정이다.
+**핵심 포인트**: "수사방 만들기"와 "바로 게임화면(start)"은 서로 다른 진입 경로(방 생성 vs 빠른 참가)를 거치지만 **최종적으로 같은 화면인 `ui/MafiaLobbyHUD.ui`(수사방 대기실)로 합류**한다. 방 생성 경로는 `MafiaUIFlow:OpenLobbyAfterRoomCreated()`에서 생성자를, 빠른 참가 경로는 `LobbyController:EnterInvestigationRoomLobby()`에서 참가자를 서버 대기실 명단에 등록하므로, 두 경로 모두 `MafiaGameLogic:EnterRoomLobby()`를 정확히 1회 요청한다. 이후 실제 낮/밤 게임 진행 화면(`MafiaDayHUD.ui`, `MafiaNightHUD.ui` 등)으로의 전환은 `Mafia/MafiaGameLogic.mlua`가 관리하며, 이 부분의 순서/조건(룰)은 별도로 정의해서 아래 3번 섹션에 채울 예정이다.
 
 ## 2.1 수사방 대기실 → 메인 로비 복귀
 
@@ -97,7 +97,7 @@ LOBBY
 
 | 페이즈 | 진입 시 서버가 하는 일 | 다음 페이즈로 넘어가는 조건 | 다음 페이즈 |
 |---|---|---|---|
-| `LOBBY` | 새 접속자에게 빈 방 번호 배정 + 해당 `RoomSpawn_N`으로 텔레포트 | **접속자 전원이 준비 완료** → 3초 카운트다운 → `StartGame()`. 카운트다운 중 누구든 준비를 해제하면 취소 | `FREE_ROAM` |
+| `LOBBY` | `EnterRoomLobby()`로 등록된 사용자에게 빈 방 번호 배정 + 해당 `RoomSpawn_N`으로 텔레포트 | **대기실 등록 사용자 전원이 준비 완료** → 3초 카운트다운 → `StartGame()`. 카운트다운 중 준비 해제·신규 입장·퇴장·접속 종료로 명단/준비 상태가 바뀌면 기존 카운트다운을 취소 | `FREE_ROAM` |
 | `FREE_ROAM` | 스킵 상태 초기화, `DayCount` +1 (첫 진입은 `StartGame`에서 1로 설정) | 타이머 만료 **또는** 생존자 전원이 스킵 버튼을 눌렀을 때(`RequestSkipToMeeting`) | `MEETING` |
 | `MEETING` | 투표 집계 초기화(생존자만 후보), `ExecuteTarget` 비움 | 타이머 만료 **또는** 생존자 전원이 투표 제출 완료(`AllVoted`) | `MEETING_RESULT` |
 | `MEETING_RESULT` | 최다 득표자 처형 판정 후 사망 처리 | 타이머 만료 → `CheckWinAndContinue()` 승리 판정 | `GAME_OVER` 또는 `NIGHT` |
@@ -112,6 +112,8 @@ LOBBY
 1. 접속자 수가 최소 인원 이상 — `MIN_PLAYERS = 6`. 단 **`DebugMode = true`이면 최소 1명**으로 완화된다(현재 기본값이 `true`).
 2. 접속자 수가 `RoomMaxPlayers`(방 설정에서 6/7/8 중 선택, 기본 8) 이하.
 3. 접속자 **전원**이 준비 완료 상태.
+
+대기실 명단·인원·준비 표시는 `MafiaGameLogic`이 동기화하는 `LobbySeatOrder`, `LobbyPlayerCount`, `ReadyStatusList`, `ReadyCount`만 사용한다. 동기화 값이 비어 있어도 클라이언트가 `_UserService.Users` 전체를 대체 명단으로 표시하지 않으므로, 메인 로비에 머무는 사용자가 수사방 슬롯에 나타나지 않는다. 같은 사용자의 중복 `EnterRoomLobby()`·동일 준비값 요청은 상태를 중복 생성하지 않는다. 카운트다운 만료 순간에도 서버가 전원 준비 여부를 마지막으로 다시 검사한다.
 
 `StartGame()` 시점의 처리 순서는 다음과 같다.
 
@@ -186,7 +188,7 @@ LOBBY
 - 화면: 승자에 따라 `ui/MafiaMafiaWinHUD.ui`(마피아 승) 또는 `ui/MafiaCitizenWinHUD.ui`(시민 승)가 열린다.
 - 지속 시간이 `0.0`이라 서버 타이머가 돌지 않고, 이 페이즈에서 자동으로 빠져나가지 않는다.
 
-> ⚠️ **알려진 결함**: 승리 화면의 `ReturnButton`은 `MafiaUIFlow:HandleLobbyExit()` → `_MafiaGameLogic:RequestLeaveRoom()`을 호출하는데, **`RequestLeaveRoom`은 `MafiaGameLogic`에 정의돼 있지 않다**. 반대로 로비 복귀·재시작에 쓸 수 있는 `RestartGame()`은 구현돼 있으나 아무도 호출하지 않는다. 현재로선 게임이 끝나면 대기실로 돌아갈 수단이 없다. 둘을 연결하는 작업이 필요하다.
+승리 화면의 `ReturnButton`은 `MafiaUIFlow:HandleLobbyExit()` → `_MafiaGameLogic:RequestLeaveRoom()`으로 Mafia 런타임 명단을 정리하고, `InvestigationRoomManager:LeaveRoom(roomId)`으로 공개 방 참가 상태 정리를 요청한 뒤 메인 로비로 복귀한다. `RestartGame()`은 구현돼 있지만 현재 UI에서는 호출하지 않는다. 서버 재시작 경로를 사용할 경우에도 재배치 대상은 `EnterRoomLobby()`에 등록된 현재 대기실 사용자로 제한한다.
 
 ### 3.11 관련 파일
 

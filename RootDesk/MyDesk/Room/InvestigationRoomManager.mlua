@@ -198,11 +198,13 @@ script InvestigationRoomManager extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
-	method void RecalculateRoomStatus(table room)
+	method integer RecalculateRoomStatus(table room)
 		-- Keeps currentPlayers and WAITING/FULL status consistent with membership.
 		-- Ghost members are dropped first so the count reflects who is actually present.
+		-- Returns how many ghost members were pruned, so callers can decide whether the
+		-- in-memory cleanup needs to be persisted back to the shared registry.
 		if room.memberUserIds == nil then room.memberUserIds = {} end
-		self:PruneDisconnectedMembers(room)
+		local removed = self:PruneDisconnectedMembers(room)
 		room.currentPlayers = #room.memberUserIds
 		if room.status ~= "PLAYING" then
 			if room.currentPlayers >= room.maxPlayers then
@@ -210,6 +212,33 @@ script InvestigationRoomManager extends Logic
 			else
 				room.status = "WAITING"
 			end
+		end
+		return removed
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SelfHealRegistry(table snapshot)
+		-- Persists read-time ghost pruning back to the shared registry, so a room that never gets
+		-- touched by an explicit join/leave/create write does not keep showing stale members (or
+		-- linger forever at 0/maxPlayers once every member has disconnected).
+		-- Best-effort, single attempt: on an ETag conflict the next read simply repeats the heal.
+		local changed = false
+		for index = #snapshot.Rooms, 1, -1 do
+			local room = snapshot.Rooms[index]
+			local removed = self:RecalculateRoomStatus(room)
+			if removed > 0 then changed = true end
+			if room.currentPlayers <= 0 then
+				table.remove(snapshot.Rooms, index)
+				changed = true
+				log("[InvestigationRoomManager] Self-heal removed empty ghost room roomId=" .. tostring(room.roomId))
+			end
+		end
+		if changed == false then return end
+		local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+		if writeCode == SharedMemoryResultCode.OK then
+			log("[InvestigationRoomManager] Self-heal persisted pruned registry")
+		else
+			log_warning("[InvestigationRoomManager] Self-heal write skipped code=" .. tostring(writeCode))
 		end
 	end
 
@@ -284,6 +313,7 @@ script InvestigationRoomManager extends Logic
 			self:DeliverRoomList(false, "[]", "수사방 목록을 불러오지 못했습니다.", userId)
 			return
 		end
+		self:SelfHealRegistry(snapshot)
 		local encoded = self:EncodePublicRooms(snapshot.Rooms)
 		log("[InvestigationRoomManager] Room list refreshed count=" .. tostring(#snapshot.Rooms))
 		self:DeliverRoomList(true, encoded, message or "", userId)
@@ -400,10 +430,10 @@ script InvestigationRoomManager extends Logic
 			self:DeliverRoomList(false, "[]", "수사방 검색에 실패했습니다.", userId)
 			return
 		end
-		
+		self:SelfHealRegistry(snapshot)
+
 		local filtered = {}
 		for _, room in ipairs(snapshot.Rooms) do
-			self:RecalculateRoomStatus(room)
 			local keywordOk = keyword == "" or string.find(string.lower(room.roomName or ""), keyword, 1, true) ~= nil
 			local modeOk = modeFilter == "" or modeFilter == "ALL" or room.mode == modeFilter
 			local statusOk = statusFilter == "" or statusFilter == "ALL" or room.status == statusFilter
