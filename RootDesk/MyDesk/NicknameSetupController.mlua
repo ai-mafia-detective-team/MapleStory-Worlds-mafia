@@ -11,7 +11,7 @@ script NicknameSetupController extends Component
 
 	method void OnBeginPlay()
 		-- Pre-attached to UI_NicknameSetup entity. Wires events at world start.
-		-- ShowNicknameSetup() is called explicitly by IntroFlowController, not here.
+		-- ShowNicknameSetup() is invoked explicitly by IntroFlowController, not by OnBeginPlay.
 		log("[NicknameSetupController] UI_NicknameSetup ready (pre-attached)")
 		log("[NicknameSetupController] DEBUG_SHOW_NICKNAME_SETUP=" .. tostring(self.DEBUG_SHOW_NICKNAME_SETUP))
 		self:ApplyNicknameBackgroundVisuals()
@@ -98,10 +98,10 @@ script NicknameSetupController extends Component
 			log_warning("[NicknameSetupController] NicknameBackground applied failed: entity missing")
 			return
 		end
-
+		
 		bg:SetEnable(true)
 		bg.Visible = true
-
+		
 		local transform = bg.UITransformComponent
 		if transform ~= nil then
 			transform.AlignmentOption = AlignmentType.StretchAll
@@ -112,7 +112,7 @@ script NicknameSetupController extends Component
 			transform.RectSize = Vector2(1920, 1080)
 			transform.anchoredPosition = Vector2(0, 0)
 		end
-
+		
 		if bg.SpriteGUIRendererComponent ~= nil then
 			bg.SpriteGUIRendererComponent.Enable = false
 			bg.SpriteGUIRendererComponent.Color = Color(1, 1, 1, 1)
@@ -123,7 +123,7 @@ script NicknameSetupController extends Component
 			log_warning("[NicknameSetupController] NicknameBackground applied failed: SpriteGUIRendererComponent missing")
 			return
 		end
-
+		
 		log("[NicknameSetupController] NicknameBackground visible=true alpha=1")
 		log("[NicknameSetupController] NicknameBackground applied success")
 	end

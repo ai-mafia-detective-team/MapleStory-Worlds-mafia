@@ -98,8 +98,13 @@ script CollectionManager extends Logic
 				unlocked[#unlocked + 1] = roleKey
 			end
 		end
-		local payload = { unlocked = unlocked }
-		self:ReceiveRoleCollection(_HttpService:JSONEncode(payload), userId)
+		-- JSONEncode raises LuaTableToJsonType.UnknownType on a nested empty table, so a user
+		-- who has not unlocked any role yet is sent an explicit JSON literal.
+		local payloadJson = "{\"unlocked\":[]}"
+		if #unlocked > 0 then
+			payloadJson = _HttpService:JSONEncode({ unlocked = unlocked })
+		end
+		self:ReceiveRoleCollection(payloadJson, userId)
 	end
 
 	@ExecSpace("Client")

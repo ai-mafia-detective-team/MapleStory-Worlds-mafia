@@ -5,12 +5,52 @@ script InvestigationRoomManager extends Logic
 
 	property string REGISTRY_VARIABLE = "RoomsV1"
 
-	property integer MAX_WRITE_RETRIES = 3
+	-- 3 proved thin for an 8-player room where joins and leaves collide on the same ETag.
+	property integer MAX_WRITE_RETRIES = 5
+
+	property any userLeaveHandler = nil
 
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
-		-- Announces that the server-shared investigation room registry is ready.
+		-- Subscribes to user-leave so departed players are purged from the room registry (no ghosts).
+		self.userLeaveHandler = _UserService:ConnectEvent(UserLeaveEvent, self.OnUserLeft)
 		log("[InvestigationRoomManager] server shared registry ready")
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- Releases the user-leave subscription.
+		if self.userLeaveHandler ~= nil then
+			_UserService:DisconnectEvent(UserLeaveEvent, self.userLeaveHandler)
+			self.userLeaveHandler = nil
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUserLeft(UserLeaveEvent event)
+		-- On permanent exit, removes the user from every room (host migrates; empty rooms deleted).
+		local userId = tostring(event.UserId)
+		if userId == nil or userId == "" then return end
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then
+				log_warning("[InvestigationRoomManager] User-left cleanup read failed userId=" .. userId)
+				return
+			end
+			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
+			if removedCount <= 0 then return end
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] User-left cleanup done userId=" .. userId .. " rooms=" .. tostring(removedCount))
+				self:BroadcastRoomListToMembers(snapshot.Rooms)
+				return
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then
+				log_warning("[InvestigationRoomManager] User-left cleanup write failed userId=" .. userId .. " code=" .. tostring(writeCode))
+				return
+			end
+			log_warning("[InvestigationRoomManager] User-left cleanup retry attempt=" .. tostring(attempt) .. " userId=" .. userId)
+		end
 	end
 
 	@ExecSpace("ServerOnly")
@@ -20,7 +60,7 @@ script InvestigationRoomManager extends Logic
 		if memoryCode ~= SharedMemoryResultCode.OK or memory == nil then
 			return { Ok = false, ErrorCode = tostring(memoryCode), Rooms = {} }
 		end
-
+		
 		local getResult = memory:GetVariableAndWait(self.REGISTRY_VARIABLE)
 		if getResult.Code == SharedMemoryResultCode.NotFound then
 			return {
@@ -34,7 +74,7 @@ script InvestigationRoomManager extends Logic
 		if getResult.Code ~= SharedMemoryResultCode.OK or getResult.Info == nil then
 			return { Ok = false, ErrorCode = tostring(getResult.Code), Rooms = {} }
 		end
-
+		
 		local rooms = {}
 		local encoded = getResult.Info.Value
 		if encoded ~= nil and encoded ~= "" then
@@ -43,7 +83,7 @@ script InvestigationRoomManager extends Logic
 				rooms = decoded.rooms
 			end
 		end
-
+		
 		return {
 			Ok = true,
 			Exists = true,
@@ -56,12 +96,17 @@ script InvestigationRoomManager extends Logic
 	@ExecSpace("ServerOnly")
 	method any WriteRegistrySnapshot(table snapshot, table rooms)
 		-- Writes the modified registry using optimistic ETag concurrency control.
-		local encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
+		-- JSONEncode raises LuaTableToJsonType.UnknownType on a nested empty table, so an
+		-- emptied registry (last room deleted) is written as an explicit JSON literal.
+		local encoded = "{\"version\":1,\"rooms\":[]}"
+		if rooms ~= nil and #rooms > 0 then
+			encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
+		end
 		if snapshot.Exists == false then
 			local createResult = snapshot.Memory:CreateVariableAndWait(self.REGISTRY_VARIABLE, encoded)
 			return createResult.Code
 		end
-
+		
 		local keyInfo = SharedVariableKeyInfo(self.REGISTRY_VARIABLE, snapshot.ETag)
 		local updateResult = snapshot.Memory:UpdateVariableAndWait(keyInfo, encoded)
 		return updateResult.Code
@@ -79,11 +124,73 @@ script InvestigationRoomManager extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method table EnsureMemberNicknames(table room)
+		-- Nicknames live in a side map keyed by userId, so memberUserIds stays a plain string
+		-- array (no schema migration, no mixed-type rows). The __schema sentinel keeps the map a
+		-- JSON object even while empty — JSONEncode cannot serialize a nested empty table.
+		if room.memberNicknames == nil then room.memberNicknames = {} end
+		room.memberNicknames.__schema = true
+		return room.memberNicknames
+	end
+
+	@ExecSpace("ServerOnly")
+	method string GetMemberNickname(table room, string userId)
+		-- Falls back to the live profile when the row predates the nickname map.
+		local names = self:EnsureMemberNicknames(room)
+		local stored = names[userId]
+		if stored ~= nil and stored ~= "" and userId ~= "__schema" then return tostring(stored) end
+		return self:GetUserNickname(userId)
+	end
+
+	@ExecSpace("ServerOnly")
+	method string GetUserNickname(string userId)
+		-- Authoritative nickname from the platform. Never trust a client-supplied display name.
+		local user = _UserService.Users[userId]
+		if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then
+			return tostring(user.Nickname)
+		end
+		return "수사관"
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean IsUserConnected(string userId)
+		-- Whether the user is currently connected to this world instance.
+		for _, uid in ipairs(_UserService.Users.Keys) do
+			if tostring(uid) == userId then return true end
+		end
+		return false
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer PruneDisconnectedMembers(table room)
+		-- Self-heals ghosts left behind when UserLeaveEvent is missed (force quit, network drop)
+		-- or when a leave write exhausted its ETag retries.
+		-- NOTE: assumes one world instance. If rooms are ever split across instances, replace the
+		-- connection test with a per-member lastSeen timestamp — otherwise members legitimately
+		-- sitting in another instance would be pruned.
+		if room.memberUserIds == nil then
+			room.memberUserIds = {}
+			return 0
+		end
+		local removed = 0
+		for index = #room.memberUserIds, 1, -1 do
+			if self:IsUserConnected(tostring(room.memberUserIds[index])) == false then
+				table.remove(room.memberUserIds, index)
+				removed += 1
+			end
+		end
+		if removed > 0 then
+			log("[InvestigationRoomManager] Pruned ghost members roomId=" .. tostring(room.roomId) .. " count=" .. tostring(removed))
+		end
+		return removed
+	end
+
+	@ExecSpace("ServerOnly")
 	method boolean ContainsUser(table room, string userId)
 		-- Returns whether the user is already a member of the room.
 		if room.memberUserIds == nil then return false end
-		for _, memberUserId in ipairs(room.memberUserIds) do
-			if tostring(memberUserId) == userId then
+		for _, memberId in ipairs(room.memberUserIds) do
+			if tostring(memberId) == userId then
 				return true
 			end
 		end
@@ -93,7 +200,9 @@ script InvestigationRoomManager extends Logic
 	@ExecSpace("ServerOnly")
 	method void RecalculateRoomStatus(table room)
 		-- Keeps currentPlayers and WAITING/FULL status consistent with membership.
+		-- Ghost members are dropped first so the count reflects who is actually present.
 		if room.memberUserIds == nil then room.memberUserIds = {} end
+		self:PruneDisconnectedMembers(room)
 		room.currentPlayers = #room.memberUserIds
 		if room.status ~= "PLAYING" then
 			if room.currentPlayers >= room.maxPlayers then
@@ -133,7 +242,31 @@ script InvestigationRoomManager extends Logic
 		table.sort(publicRooms, function(left, right)
 			return (left.createdAt or 0) > (right.createdAt or 0)
 		end)
+		-- Preserves an empty room list as a valid JSON array; JSONEncode returns "" for an empty table.
+		if #publicRooms == 0 then return "[]" end
 		return _HttpService:JSONEncode(publicRooms)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void BroadcastRoomListToMembers(table rooms)
+		-- Membership changes must reach the members who did NOT make the request, otherwise their
+		-- room view keeps showing someone who already left. This project uses no Multicast, so the
+		-- existing per-user targeted RPC idiom is applied once per connected member.
+		-- Encoding first also prunes ghosts, so the loop below walks the cleaned lists.
+		local encoded = self:EncodePublicRooms(rooms)
+		local notified = 0
+		for _, room in ipairs(rooms) do
+			if room.memberUserIds ~= nil then
+				for _, memberId in ipairs(room.memberUserIds) do
+					local id = tostring(memberId)
+					if self:IsUserConnected(id) then
+						self:DeliverRoomList(true, encoded, "", id)
+						notified += 1
+					end
+				end
+			end
+		end
+		log("[InvestigationRoomManager] Room list pushed to members count=" .. tostring(notified))
 	end
 
 	@ExecSpace("ServerOnly")
@@ -163,9 +296,11 @@ script InvestigationRoomManager extends Logic
 		roomName = string.match(roomName or "", "^%s*(.-)%s*$") or ""
 		mode = string.match(mode or "", "^%s*(.-)%s*$") or ""
 		password = string.match(password or "", "^%s*(.-)%s*$") or ""
-		hostNickname = string.match(hostNickname or "", "^%s*(.-)%s*$") or ""
+		-- The display name is resolved server-side. A client-supplied nickname would let a caller
+		-- impersonate another player or an operator, so the argument is deliberately ignored.
+		hostNickname = self:GetUserNickname(userId)
 		log("[InvestigationRoomManager] Room creation requested userId=" .. userId .. " roomName=" .. roomName)
-
+		
 		if roomName == "" then
 			self:DeliverCreateResult(false, "방 이름을 입력하세요.", "", userId)
 			return
@@ -182,9 +317,8 @@ script InvestigationRoomManager extends Logic
 			self:DeliverCreateResult(false, "비밀번호는 숫자 4자리로 입력하세요.", "", userId)
 			return
 		end
-		if mode == "" then mode = "기본 수사" end
-		if hostNickname == "" then hostNickname = "수사관" end
-
+		if mode ~= "기본 수사" and mode ~= "심화 수사" then mode = "기본 수사" end
+		
 		for attempt = 1, self.MAX_WRITE_RETRIES do
 			local snapshot = self:ReadRegistrySnapshot()
 			if snapshot.Ok == false then
@@ -192,9 +326,9 @@ script InvestigationRoomManager extends Logic
 				self:DeliverCreateResult(false, "수사방 저장소를 불러오지 못했습니다.", "", userId)
 				return
 			end
-
+		
 			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, "")
-
+		
 			for _, room in ipairs(snapshot.Rooms) do
 				if string.lower(room.roomName or "") == string.lower(roomName) then
 					log_warning("[InvestigationRoomManager] Room creation failed duplicateName=" .. roomName)
@@ -202,7 +336,7 @@ script InvestigationRoomManager extends Logic
 					return
 				end
 			end
-
+		
 			local room = {
 				roomId = self:MakeRoomId(userId),
 				roomName = roomName,
@@ -217,6 +351,8 @@ script InvestigationRoomManager extends Logic
 				password = isPrivate and password or "",
 				createdAt = _UtilLogic.ServerElapsedSeconds,
 				memberUserIds = { userId },
+				-- __schema keeps this map a JSON object while it holds a single entry or none.
+				memberNicknames = { __schema = true, [userId] = hostNickname },
 			}
 			table.insert(snapshot.Rooms, room)
 			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
@@ -225,7 +361,7 @@ script InvestigationRoomManager extends Logic
 				log("[InvestigationRoomManager] Room created successfully roomId=" .. room.roomId)
 				-- 이전 게임이 PHASE_GAME_OVER 상태로 남아있으면 새 게임을 위해 리셋
 				if _MafiaGameLogic ~= nil and _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_GAME_OVER then
-					_MafiaGameLogic:RestartGame()
+					_MafiaGameLogic:ResetGameState()
 					log("[InvestigationRoomManager] Reset MafiaGameLogic from PHASE_GAME_OVER for new room")
 				end
 				self:DeliverCreateResult(true, "수사방을 만들었습니다.", publicJson, userId)
@@ -238,7 +374,7 @@ script InvestigationRoomManager extends Logic
 			end
 			log_warning("[InvestigationRoomManager] Room creation retry attempt=" .. tostring(attempt))
 		end
-
+		
 		self:DeliverCreateResult(false, "동시에 많은 요청이 발생했습니다. 다시 시도하세요.", "", userId)
 	end
 
@@ -264,7 +400,7 @@ script InvestigationRoomManager extends Logic
 			self:DeliverRoomList(false, "[]", "수사방 검색에 실패했습니다.", userId)
 			return
 		end
-
+		
 		local filtered = {}
 		for _, room in ipairs(snapshot.Rooms) do
 			self:RecalculateRoomStatus(room)
@@ -292,42 +428,59 @@ script InvestigationRoomManager extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void RemoveMemberFromRoom(table rooms, integer roomIndex, string userId)
+		-- Removes one member; promotes the next member to host, or deletes the room when it becomes empty.
+		local room = rooms[roomIndex]
+		if room.memberUserIds == nil then room.memberUserIds = {} end
+		for memberIndex = #room.memberUserIds, 1, -1 do
+			if tostring(room.memberUserIds[memberIndex]) == userId then
+				table.remove(room.memberUserIds, memberIndex)
+			end
+		end
+		local leaveNames = self:EnsureMemberNicknames(room)
+		leaveNames[userId] = nil
+		if #room.memberUserIds == 0 then
+			table.remove(rooms, roomIndex)
+			return
+		end
+		if room.hostUserId == userId then
+			-- Promote the first member that is actually connected, so a ghost never becomes host.
+			local newHostId = ""
+			for _, memberId in ipairs(room.memberUserIds) do
+				if self:IsUserConnected(tostring(memberId)) then
+					newHostId = tostring(memberId)
+					break
+				end
+			end
+			if newHostId == "" then newHostId = tostring(room.memberUserIds[1]) end
+			room.hostUserId = newHostId
+			room.hostNickname = self:GetMemberNickname(room, newHostId)
+			log("[InvestigationRoomManager] Host migrated roomId=" .. tostring(room.roomId) ..
+				" newHost=" .. newHostId .. " nickname=" .. room.hostNickname)
+		end
+		self:RecalculateRoomStatus(room)
+	end
+
+	@ExecSpace("ServerOnly")
 	method void RemoveUserFromOtherRooms(table rooms, string userId, string exceptRoomId)
-		-- Removes a user from previous rooms so one user belongs to at most one room.
+		-- Removes a user from previous rooms so one user belongs to at most one room (host migrates).
 		for roomIndex = #rooms, 1, -1 do
 			local room = rooms[roomIndex]
 			if room.roomId ~= exceptRoomId and self:ContainsUser(room, userId) then
-				if room.hostUserId == userId then
-					table.remove(rooms, roomIndex)
-				else
-					for memberIndex = #room.memberUserIds, 1, -1 do
-						if tostring(room.memberUserIds[memberIndex]) == userId then
-							table.remove(room.memberUserIds, memberIndex)
-						end
-					end
-					self:RecalculateRoomStatus(room)
-				end
+				self:RemoveMemberFromRoom(rooms, roomIndex, userId)
 			end
 		end
 	end
 
 	@ExecSpace("ServerOnly")
 	method integer RemoveUserFromAllRooms(table rooms, string userId)
-		-- Removes every room membership owned by the user and deletes host-owned rooms.
+		-- Removes the user from every room (host migrates; empty rooms deleted). Returns rooms affected.
 		local removedCount = 0
 		for roomIndex = #rooms, 1, -1 do
 			local room = rooms[roomIndex]
-			if room.hostUserId == userId then
-				table.remove(rooms, roomIndex)
+			if self:ContainsUser(room, userId) then
+				self:RemoveMemberFromRoom(rooms, roomIndex, userId)
 				removedCount += 1
-			elseif self:ContainsUser(room, userId) then
-				for memberIndex = #room.memberUserIds, 1, -1 do
-					if tostring(room.memberUserIds[memberIndex]) == userId then
-						table.remove(room.memberUserIds, memberIndex)
-						removedCount += 1
-					end
-				end
-				self:RecalculateRoomStatus(room)
 			end
 		end
 		return removedCount
@@ -347,7 +500,7 @@ script InvestigationRoomManager extends Logic
 				self:DeliverJoinResult(false, "NOT_FOUND", "수사방을 찾을 수 없습니다.", "", userId)
 				return
 			end
-
+		
 			local room = snapshot.Rooms[roomIndex]
 			self:RecalculateRoomStatus(room)
 			if room.status == "PLAYING" then
@@ -370,18 +523,22 @@ script InvestigationRoomManager extends Logic
 				self:DeliverJoinResult(false, "PASSWORD_INVALID", "비밀번호가 올바르지 않습니다.", "", userId)
 				return
 			end
-
+		
 			if self:ContainsUser(room, userId) then
 				self:DeliverJoinResult(true, "OK", "이미 입장한 수사방입니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
 				return
 			end
-
+		
 			self:RemoveUserFromOtherRooms(snapshot.Rooms, userId, roomId)
 			table.insert(room.memberUserIds, userId)
+			-- Record the joiner's nickname so host migration can name the promoted member.
+			local joinNames = self:EnsureMemberNicknames(room)
+			joinNames[userId] = self:GetUserNickname(userId)
 			self:RecalculateRoomStatus(room)
 			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
 			if writeCode == SharedMemoryResultCode.OK then
 				log("[InvestigationRoomManager] Join room success roomId=" .. roomId .. " quick=" .. tostring(quickJoin))
+				self:BroadcastRoomListToMembers(snapshot.Rooms)
 				self:DeliverJoinResult(true, "OK", "수사방에 입장했습니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
 				return
 			end
@@ -428,9 +585,48 @@ script InvestigationRoomManager extends Logic
 		self:DeliverJoinResult(false, "NO_ROOM", "빠르게 입장할 수 있는 공개 수사방이 없습니다.", "", userId)
 	end
 
+	@ExecSpace("ServerOnly")
+	method boolean SetRoomPlayingByMember(string userId, boolean playing)
+		-- Locks the room a member belongs to while its game runs, so it stops accepting joins,
+		-- and unlocks it when the game ends. Without this the status never leaves WAITING and an
+		-- in-progress room keeps showing up as joinable.
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then return false end
+			local target = nil
+			for _, room in ipairs(snapshot.Rooms) do
+				if self:ContainsUser(room, userId) then
+					target = room
+					break
+				end
+			end
+			if target == nil then return false end
+			if playing then
+				target.status = "PLAYING"
+			else
+				-- Clear PLAYING first; RecalculateRoomStatus deliberately never overwrites it.
+				target.status = "WAITING"
+				self:RecalculateRoomStatus(target)
+			end
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] Room playing=" .. tostring(playing) ..
+					" roomId=" .. tostring(target.roomId) .. " status=" .. tostring(target.status))
+				self:BroadcastRoomListToMembers(snapshot.Rooms)
+				return true
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then return false end
+		end
+		log_warning("[InvestigationRoomManager] SetRoomPlaying retries exhausted userId=" .. userId)
+		return false
+	end
+
 	@ExecSpace("Server")
 	method void LeaveRoom(string roomId)
-		-- Removes the requesting user from every investigation room and deletes host-owned rooms.
+		-- Removes the requesting user from every room. Because a user may belong to at most one
+		-- room, "every room" and "the room" are the same set; the sweep also reclaims rows left
+		-- behind by an earlier failed leave. roomId is only used to detect a client/server
+		-- disagreement, never to select what gets removed.
 		local userId = tostring(senderUserId)
 		roomId = roomId or ""
 		for attempt = 1, self.MAX_WRITE_RETRIES do
@@ -438,6 +634,19 @@ script InvestigationRoomManager extends Logic
 			if snapshot.Ok == false then
 				self:DeliverLeaveResult(false, "수사방 나가기에 실패했습니다.", userId)
 				return
+			end
+			if roomId ~= "" then
+				local inRequested = false
+				for _, room in ipairs(snapshot.Rooms) do
+					if room.roomId == roomId and self:ContainsUser(room, userId) then
+						inRequested = true
+						break
+					end
+				end
+				if inRequested == false then
+					log_warning("[InvestigationRoomManager] Leave roomId mismatch: caller believes roomId=" ..
+						roomId .. " but is not a member of it userId=" .. userId)
+				end
 			end
 			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
 			if removedCount <= 0 then
@@ -448,6 +657,7 @@ script InvestigationRoomManager extends Logic
 			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
 			if writeCode == SharedMemoryResultCode.OK then
 				log("[InvestigationRoomManager] Leave room success roomId=" .. tostring(roomId) .. " removedCount=" .. tostring(removedCount))
+				self:BroadcastRoomListToMembers(snapshot.Rooms)
 				self:DeliverLeaveResult(true, "수사방에서 나왔습니다.", userId)
 				return
 			end
@@ -459,10 +669,11 @@ script InvestigationRoomManager extends Logic
 		self:DeliverLeaveResult(false, "나가기 요청이 많습니다. 다시 시도하세요.", userId)
 	end
 
-	@ExecSpace("Server")
-	method void UpdateRoomStatus(string roomId)
+	@ExecSpace("ServerOnly")
+	method void UpdateRoomStatus(string roomId, string userId)
 		-- Recalculates a room's WAITING/FULL state and persists the result.
-		local userId = tostring(senderUserId)
+		-- ServerOnly: as a client-reachable entry this allowed unlimited writes to any roomId,
+		-- which could starve other users' join/leave attempts on the shared ETag.
 		for attempt = 1, self.MAX_WRITE_RETRIES do
 			local snapshot = self:ReadRegistrySnapshot()
 			if snapshot.Ok == false then return end
@@ -516,18 +727,15 @@ script InvestigationRoomManager extends Logic
 
 	@ExecSpace("Client")
 	method void DeliverLeaveResult(boolean success, string message)
-		-- Forwards a room-leave result to the active Mafia UI flow first.
-		if _MafiaUIFlow ~= nil then
-			_MafiaUIFlow:OnInvestigationRoomLeaveResult(success, message)
+		-- MafiaUIFlow is a @Logic, so on a client it is never nil. The previous `if _MafiaUIFlow
+		-- ~= nil then ... else <LobbyController fallback> end` therefore never took the fallback
+		-- branch — it only looked like a safety net. MafiaUIFlow owns the room HUD and already
+		-- clears LobbyController.joinedRoomId, so it is the single correct receiver.
+		if _MafiaUIFlow == nil then
+			log_warning("[InvestigationRoomManager] MafiaUIFlow missing; leave result dropped")
 			return
 		end
-		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
-		if lobby == nil or isvalid(lobby) == false then return end
-		---@type LobbyController
-		local controller = lobby:GetComponent("script.LobbyController")
-		if controller ~= nil then
-			controller:OnRoomLeaveResult(success, message)
-		end
+		_MafiaUIFlow:OnInvestigationRoomLeaveResult(success, message)
 	end
 
 end
