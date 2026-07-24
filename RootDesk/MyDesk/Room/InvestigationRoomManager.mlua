@@ -94,7 +94,12 @@ script InvestigationRoomManager extends Logic
 	@ExecSpace("ServerOnly")
 	method any WriteRegistrySnapshot(table snapshot, table rooms)
 		-- Writes the modified registry using optimistic ETag concurrency control.
-		local encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
+		-- JSONEncode raises LuaTableToJsonType.UnknownType on a nested empty table, so an
+		-- emptied registry (last room deleted) is written as an explicit JSON literal.
+		local encoded = "{\"version\":1,\"rooms\":[]}"
+		if rooms ~= nil and #rooms > 0 then
+			encoded = _HttpService:JSONEncode({ version = 1, rooms = rooms })
+		end
 		if snapshot.Exists == false then
 			local createResult = snapshot.Memory:CreateVariableAndWait(self.REGISTRY_VARIABLE, encoded)
 			return createResult.Code
@@ -171,6 +176,8 @@ script InvestigationRoomManager extends Logic
 		table.sort(publicRooms, function(left, right)
 			return (left.createdAt or 0) > (right.createdAt or 0)
 		end)
+		-- Preserves an empty room list as a valid JSON array; JSONEncode returns "" for an empty table.
+		if #publicRooms == 0 then return "[]" end
 		return _HttpService:JSONEncode(publicRooms)
 	end
 
