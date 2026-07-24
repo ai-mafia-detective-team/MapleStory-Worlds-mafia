@@ -2815,6 +2815,10 @@ script MafiaUIFlow extends Logic
 		    self.dayLobbyTemplateSynced = false
 		    if _MafiaGameLogic ~= nil then
 		        _MafiaGameLogic:SetRoomSettings(roomTitle, isPrivate, password, maxPlayers, mafiaCount)
+		        -- Room creation bypasses LobbyController:EnterInvestigationRoomLobby,
+		        -- so register the creator on the authoritative lobby roster here exactly once.
+		        _MafiaGameLogic:EnterRoomLobby()
+		        log("[MafiaUIFlow] creator lobby registration requested title=" .. tostring(roomTitle))
 		    end
 		    self.lobbyPlacementRequested = false
 		
@@ -2877,8 +2881,9 @@ script MafiaUIFlow extends Logic
 		            self.lobbyRoomInfoText.Text = title
 		        end
 		    end
-		    local playerCount = _MafiaGameLogic.LobbyPlayerCount
-		    if playerCount <= 0 then playerCount = #(_UserService.Users.Keys) end
+		    -- LobbyPlayerCount is authoritative. World users include people still on UI_Lobby,
+		    -- so an empty/late Sync must remain empty instead of manufacturing ghost members.
+		    local playerCount = math.max(0, _MafiaGameLogic.LobbyPlayerCount)
 		    local readyCount = _MafiaGameLogic.ReadyCount
 		    local maxPlayers = _MafiaGameLogic.RoomMaxPlayers
 		    if maxPlayers == nil or maxPlayers <= 0 then maxPlayers = _MafiaGameLogic.MAX_PLAYERS end
@@ -2918,7 +2923,25 @@ script MafiaUIFlow extends Logic
 		            local userId = self.cachedLobbySeats[i]
 		            local ent = self.lobbyReadyEntities[i]
 		            if ent ~= nil then
-		                ent.Enable = (userId ~= nil and userId ~= "" and readySet[userId] == true)
+		                local isReady = (userId ~= nil and userId ~= "" and readySet[userId] == true)
+		                if i == 1 then
+		                    -- Slot 1 is also the parent of slots 2-8. Keep the parent active and
+		                    -- toggle only its own renderer so another player's marker stays visible.
+		                    ent.Enable = true
+		                    local readyRenderer = ent.SpriteGUIRendererComponent
+		                    if readyRenderer ~= nil then
+		                        if readyRenderer.Enable ~= isReady then
+		                            log("[MafiaUIFlow] lobby ready marker updated seat=1 ready=" .. tostring(isReady))
+		                        end
+		                        readyRenderer.Enable = isReady
+		                    end
+		                else
+		                    if ent.Enable ~= isReady then
+		                        log("[MafiaUIFlow] lobby ready marker updated seat=" .. tostring(i) ..
+		                            " ready=" .. tostring(isReady))
+		                    end
+		                    ent.Enable = isReady
+		                end
 		            end
 		        end
 		    end
@@ -2938,16 +2961,8 @@ script MafiaUIFlow extends Logic
 	end
 
 	method table GetLobbySeatOrderForDisplay()
+		    -- LobbySeatOrder is authoritative; never substitute every user connected to the world.
 		    local seats = self:ParseLobbySeatString(tostring(_MafiaGameLogic ~= nil and _MafiaGameLogic.LobbySeatOrder or ""))
-		    if _MafiaGameLogic == nil or self:SeatCsvEmpty(_MafiaGameLogic.LobbySeatOrder) then
-		        for i = 1, 8 do seats[i] = "" end
-		        local seat = 1
-		        for _, uid in ipairs(_UserService.Users.Keys) do
-		            if seat > 8 then break end
-		            seats[seat] = tostring(uid)
-		            seat = seat + 1
-		        end
-		    end
 		    return seats
 	end
 

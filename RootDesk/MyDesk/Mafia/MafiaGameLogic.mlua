@@ -240,6 +240,18 @@ script MafiaGameLogic extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void CancelLobbyStartCountdown(string reason)
+		    -- Invalidates the only pending lobby start without creating a second timer source.
+		    if self.gameStartPending == false then
+		        self.gameStartCountdown = 0.0
+		        return
+		    end
+		    self.gameStartPending = false
+		    self.gameStartCountdown = 0.0
+		    log("[Lobby] game start cancelled reason=" .. tostring(reason))
+	end
+
+	@ExecSpace("ServerOnly")
 	method void CheckLobbyStart(number delta)
 		    if self.GameStarted then return end
 		    self:CheckNewLobbyPlayers()
@@ -251,17 +263,20 @@ script MafiaGameLogic extends Logic
 		            log("[Lobby] all players ready; game starting in 3 seconds")
 		        end
 		    else
-		        if self.gameStartPending then
-		            self.gameStartPending   = false
-		            self.gameStartCountdown = 0.0
-		            log("[Lobby] not all players ready; game start cancelled")
-		        end
+		        self:CancelLobbyStartCountdown("not all lobby players are ready")
 		    end
 		    if self.gameStartPending then
 		        self.gameStartCountdown = self.gameStartCountdown - delta
 		        if self.gameStartCountdown <= 0.0 then
-		            self.gameStartPending = false
-		            self:StartGame()
+		            -- Re-check at the commit point so a membership/readiness change cannot
+		            -- start a stale countdown even when it lands on the expiry frame.
+		            if self:AllLobbyPlayersReady() == false then
+		                self:CancelLobbyStartCountdown("final readiness check failed")
+		            else
+		                self.gameStartPending = false
+		                self.gameStartCountdown = 0.0
+		                self:StartGame()
+		            end
 		        end
 		    end
 	end
@@ -276,6 +291,7 @@ script MafiaGameLogic extends Logic
 		        log_warning("[Lobby] ready rejected: not a room lobby member userId=" .. userId)
 		        return
 		    end
+		    if self.readyPlayers[userId] == ready then return end
 		    self.readyPlayers[userId] = ready
 		    self:UpdateReadyStatusList()
 		    log("[Lobby] ready: " .. userId .. " -> " .. tostring(ready) ..
@@ -287,8 +303,7 @@ script MafiaGameLogic extends Logic
 		            log("[Lobby] all players ready; game starting in 3 seconds")
 		        end
 		    else
-		        self.gameStartPending   = false
-		        self.gameStartCountdown = 0.0
+		        self:CancelLobbyStartCountdown("ready changed userId=" .. userId)
 		    end
 	end
 
@@ -298,8 +313,18 @@ script MafiaGameLogic extends Logic
 		    -- Until this is called the user is never seated, so main-lobby idlers are excluded.
 		    local userId = tostring(senderUserId)
 		    if userId == nil or userId == "" then return end
+		    if self.CurrentPhase ~= self.PHASE_LOBBY or self.GameStarted then
+		        log_warning("[Lobby] entry rejected while game is active userId=" .. userId)
+		        return
+		    end
 		    if self.lobbyPresent == nil then self.lobbyPresent = {} end
+		    if self.lobbyPresent[userId] == true then return end
+		    if #(self:GetLobbyUserIds()) >= self.MAX_PLAYERS then
+		        log_warning("[Lobby] entry rejected: room is full userId=" .. userId)
+		        return
+		    end
 		    self.lobbyPresent[userId] = true
+		    self:CancelLobbyStartCountdown("lobby member entered userId=" .. userId)
 		    self:UpdateReadyStatusList()
 		    log("[Lobby] room lobby entered userId=" .. userId)
 	end
@@ -362,6 +387,10 @@ script MafiaGameLogic extends Logic
 		    -- Clears the requesting user's Mafia lobby/game state after leaving the room UI.
 		    local userId = tostring(senderUserId)
 		    if userId == nil or userId == "" then return end
+		    if self.lobbyPresent == nil or self.lobbyPresent[userId] ~= true then
+		        log_warning("[Mafia] leave room ignored: not a room lobby member userId=" .. userId)
+		        return
+		    end
 		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
 		    if self.lobbyPresent ~= nil then self.lobbyPresent[userId] = nil end
 		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
@@ -370,8 +399,7 @@ script MafiaGameLogic extends Logic
 		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
 		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
 		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
-		        self.gameStartPending = false
-		        self.gameStartCountdown = 0.0
+		        self:CancelLobbyStartCountdown("lobby member left userId=" .. userId)
 		    end
 		    self:UpdateLobbySeatOrder()
 		    self:UpdateReadyStatusList()
@@ -762,6 +790,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void RequestSkipToMeeting(string requesterId)
+		    -- Trust only the authenticated sender; ignore the client-supplied requesterId (anti-impersonation).
+		    requesterId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_FREE_ROAM then return end
 		    -- 사망한 플레이어의 스킵은 무시 (AlivePlayersList 기준)
 		    if self.GameStarted and self.AlivePlayersList ~= "" then
@@ -796,6 +826,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void SubmitVote(string voterId, string targetId)
+		    -- Trust only the authenticated sender; ignore the client-supplied voterId (anti-impersonation).
+		    voterId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_MEETING then return end
 		    if self.voteSubmitted[voterId] ~= nil then return end
 		    -- 사망한 플레이어의 투표는 서버에서 차단
@@ -904,6 +936,8 @@ script MafiaGameLogic extends Logic
 		    -- On permanent exit, clears the user's game state and re-checks win while a game is in progress.
 		    local userId = tostring(event.UserId)
 		    if userId == nil or userId == "" then return end
+		    local wasLobbyMember = self.lobbyPresent ~= nil and self.lobbyPresent[userId] == true
+		    if wasLobbyMember == false then return end
 		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
 		    if self.lobbyPresent ~= nil then self.lobbyPresent[userId] = nil end
 		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
@@ -912,7 +946,12 @@ script MafiaGameLogic extends Logic
 		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
 		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
 		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
+		        self:CancelLobbyStartCountdown("lobby member disconnected userId=" .. userId)
+		        self:UpdateLobbySeatOrder()
 		        self:UpdateReadyStatusList()
+		        log("[Lobby] disconnected user removed from seat/ready state userId=" .. userId ..
+		            " players=" .. tostring(self.LobbyPlayerCount) ..
+		            " ready=" .. tostring(self.ReadyCount))
 		        return
 		    end
 		    if self.GameStarted and self.CurrentPhase ~= self.PHASE_GAME_OVER then
@@ -970,6 +1009,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void MafiaChooseTarget(string mafiaId, string targetId)
+		    -- Trust only the authenticated sender; ignore the client-supplied mafiaId (anti-impersonation).
+		    mafiaId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.NightSubPhase ~= self.PHASE_NIGHT_MAFIA then return end
 		    if self.playerRoles[mafiaId] ~= self.ROLE_MAFIA then return end
@@ -981,6 +1022,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void PoliceInvestigate(string policeId, string targetId)
+		    -- Trust only the authenticated sender; ignore the client-supplied policeId (anti-impersonation).
+		    policeId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.NightSubPhase ~= self.PHASE_NIGHT_POLICE then return end
 		    if self.playerRoles[policeId] ~= self.ROLE_POLICE then return end
@@ -992,6 +1035,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void DoctorProtect(string doctorId, string targetId)
+		    -- Trust only the authenticated sender; ignore the client-supplied doctorId (anti-impersonation).
+		    doctorId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.NightSubPhase ~= self.PHASE_NIGHT_DOCTOR then return end
 		    if self.playerRoles[doctorId] ~= self.ROLE_DOCTOR then return end
@@ -1015,6 +1060,8 @@ script MafiaGameLogic extends Logic
 	method void ResetGameState()
 		    -- Unconditional reset. Server-side callers only (no client can reach this).
 		    self.GameStarted     = false
+		    self.gameStartPending = false
+		    self.gameStartCountdown = 0.0
 		    self.InternalTimer   = 0.0
 		    self.LobbyTimer      = 0.0
 		    self.WinnerRole      = -1
@@ -1143,6 +1190,8 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("Server")
 	method void SubmitNightAction(string actorId, integer targetRoom)
+		    -- Trust only the authenticated sender; ignore the client-supplied actorId (anti-impersonation).
+		    actorId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then
 		        log("[Mafia] SubmitNightAction: 밤이 아님")
 		        return
@@ -1200,8 +1249,8 @@ script MafiaGameLogic extends Logic
 	method void TeleportAllToLobbyRooms()
 		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
 		                    "RoomSpawn_5", "RoomSpawn_6", "RoomSpawn_7", "RoomSpawn_8"}
-		    local keys = _UserService.Users.Keys
-		    for _, uid in ipairs(keys) do
+		    local roster = self:GetLobbyUserIds()
+		    for _, uid in ipairs(roster) do
 		        self:AssignLobbyRoom(uid)
 		        local roomId = self.playerRooms[uid]
 		        if roomId ~= nil and roomId >= 1 and roomId <= 8 then
@@ -1214,10 +1263,13 @@ script MafiaGameLogic extends Logic
 		        end
 		    end
 		    self:UpdateLobbySeatOrder()
+		    log("[Lobby] registered roster returned to lobby rooms players=" .. tostring(#roster))
 	end
 
 	@ExecSpace("Server")
 	method void SendChat(string userId, string message)
+		    -- Trust only the authenticated sender; ignore the client-supplied userId (anti-impersonation).
+		    userId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_LOBBY and
 		       self.CurrentPhase ~= self.PHASE_FREE_ROAM and
 		       self.CurrentPhase ~= self.PHASE_MEETING then return end
@@ -1267,8 +1319,14 @@ script MafiaGameLogic extends Logic
 		    log("[Chat] " .. userId .. ": " .. message)
 	end
 
+	@ExecSpace("Server")
 	method void SendMafiaChat(string userId, string message)
+		    -- Trust only the authenticated sender; ignore the client-supplied userId (anti-impersonation).
+		    -- Also fixes a prior bug: this method had no @ExecSpace, so calling it from client code
+		    -- (MafiaUIFlow.SendNightMafiaChat) never actually reached the server.
+		    userId = tostring(senderUserId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
+		    if self.playerRoles[userId] ~= self.ROLE_MAFIA then return end
 		    if message == nil or message == "" then return end
 		    if string.len(message) > 100 then
 		        message = string.sub(message, 1, 100)
