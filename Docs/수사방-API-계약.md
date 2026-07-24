@@ -82,11 +82,22 @@
 
 ---
 
-## 알려진 계약 결함
+## 계약 결함 처리 이력
 
-1. **`LeaveRoom(roomId)`의 `roomId`가 무시된다.** 특정 방만 나가려 해도 모든 방에서 제거된다. 시그니처가 실제 동작과 불일치.
-2. **`PLAYING` reason이 도달 불가능.** `room.status = "PLAYING"` 대입문이 레포 전체에 없다. 게임이 시작돼도 방이 잠기지 않아 진행 중인 방이 계속 `WAITING`으로 노출되고 입장이 허용된다.
-3. **`NO_ROOM`은 `QuickJoin` 전용**인데 `JoinRoom`과 같은 콜백을 공유한다. 클라는 어느 경로에서 온 응답인지 구분할 수 없다.
-4. **`UpdateRoomStatus`는 멤버십 검증이 없다.** 임의 `roomId`로 무제한 쓰기가 가능해 다른 유저의 입퇴장을 `PreconditionFailed`로 밀어낼 수 있다. 현재 호출자가 없으므로 삭제하거나 `ServerOnly`로 강등할 것.
-5. **`DeliverLeaveResult`의 `LobbyController` 폴백은 죽은 코드다.** `nil` 검사가 폴백을 제공한다는 잘못된 안전감을 준다.
-6. **클라의 나가기가 낙관적이다.** `MafiaUIFlow:HandleLobbyExit`가 서버 응답을 기다리지 않고 `joinedRoomId`를 먼저 지우고 UI를 전환한 뒤 `LeaveRoom`을 보낸다. 서버가 `BUSY`/`WRITE_FAILED`를 반환해도 **클라는 재시도하지 않으며** 이미 로컬 상태를 지운 뒤다 → 레지스트리에 유령이 영구 잔존할 수 있다. `PruneDisconnectedMembers`가 접속 종료 시에는 회수해 주지만, 유저가 계속 접속해 있으면 회수되지 않는다.
+아래 6건은 2026-07-24 문서화 시점에 식별되어 같은 날 수정되었다. 이력을 남기는 이유는 계약을 읽는 사람이 "왜 이렇게 되어 있는가"를 알 수 있게 하기 위해서다.
+
+| # | 결함 | 처리 |
+|:-:|---|---|
+| 1 | `LeaveRoom(roomId)`의 `roomId`가 무시됨 — 시그니처가 동작과 불일치 | **해소.** 한 유저는 최대 한 방에만 속하므로 "모든 방에서 제거"가 곧 "그 방에서 제거"임을 주석으로 명문화. `roomId`는 이제 **클라/서버 인식 불일치 탐지용**으로 쓰여, 요청한 방의 멤버가 아니면 `log_warning`을 남긴다. 제거 대상 선택에는 여전히 관여하지 않는다(실패한 이전 퇴장이 남긴 행까지 회수하는 안전망) |
+| 2 | `PLAYING`이 도달 불가 — 게임이 시작돼도 방이 잠기지 않음 | **해소.** `SetRoomPlayingByMember(userId, playing)`(ServerOnly) 신설. `MafiaGameLogic:StartGame`에서 `MarkRoomPlaying(true)`, `SetPhase`가 `PHASE_GAME_OVER`로 **최초 전이**할 때 `MarkRoomPlaying(false)`. 해제 시 `WAITING`으로 되돌린 뒤 재계산한다(`RecalculateRoomStatus`는 의도적으로 `PLAYING`을 덮지 않으므로 선행 초기화가 필요) |
+| 3 | `NO_ROOM`이 `QuickJoin` 전용인데 콜백을 공유 | **변경 없음(문제 아님).** `NO_ROOM`은 `JoinRoom` 경로에서 절대 발생하지 않는 고유값이라 reason만으로 구분 가능하다. 클라(`LobbyController:OnRoomJoinResult`)도 이미 `NO_ROOM`을 방 자동 생성으로 분기한다 |
+| 4 | `UpdateRoomStatus`가 멤버십 검증 없는 클라 도달 가능 쓰기 진입점 | **해소.** `@ExecSpace("ServerOnly")`로 강등하고 `userId`를 인자로 받도록 변경. 클라에서 도달 불가능해져 ETag 고갈 공격 표면이 사라졌다 |
+| 5 | `DeliverLeaveResult`의 `LobbyController` 폴백이 죽은 코드 | **해소.** `MafiaUIFlow`가 `@Logic`이라 클라에서 항상 non-nil임을 주석으로 명시하고 폴백 분기를 제거. `MafiaUIFlow`가 방 HUD를 소유하고 `LobbyController.joinedRoomId`도 정리하므로 단일 수신자가 맞다 |
+| 6 | 낙관적 퇴장 — 서버 실패 시 재시도 없이 유령 잔존 | **해소.** `MafiaUIFlow`에 `lobbyLeaveRoomId`/`lobbyLeaveRetryCount`/`LOBBY_LEAVE_MAX_RETRY(3)` 추가. 실패 응답을 받으면 1초 간격으로 최대 3회 재전송하고, 소진 시 `log_error`로 "레지스트리에 잔존 가능" 사실을 남긴다. UI 즉시 복귀는 유지(사용자 체감 우선) |
+
+부수 변경: `MAX_WRITE_RETRIES`를 3 → **5**로 상향. 8인 방에서 입퇴장이 같은 ETag에 몰릴 때 3회는 얇았다.
+
+## 남은 한계
+
+- **재시도 소진 시의 유령은 여전히 가능하다.** 6번 수정으로 확률은 크게 낮아졌지만 0은 아니다. 최종 안전망은 `PruneDisconnectedMembers`인데, 이것은 **접속을 끊어야** 회수한다. 유저가 계속 접속한 채 재시도까지 모두 실패하면 잔존한다.
+- **`PruneDisconnectedMembers`는 단일 월드 인스턴스를 전제한다.** 인스턴스 룸 도입 시 게임 중인 멤버를 유령으로 오판하므로 `lastSeen` 방식으로 교체해야 한다. `Docs/인스턴스룸-멀티룸-설계.md` 참조.

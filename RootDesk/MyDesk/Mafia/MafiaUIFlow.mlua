@@ -15,6 +15,15 @@ script MafiaUIFlow extends Logic
 
 	property boolean lobbyLeavePending = false
 
+	-- The UI returns to the main lobby immediately, so a failed server-side leave would otherwise
+	-- strand the user as a member in the registry with no way to retry. These retain enough state
+	-- to re-send the request until the server confirms.
+	property string lobbyLeaveRoomId = ""
+
+	property integer lobbyLeaveRetryCount = 0
+
+	property integer LOBBY_LEAVE_MAX_RETRY = 3
+
 	property any lobbyPlayerCountText = nil
 
 	property any lobbyRoomInfoText = nil
@@ -3229,6 +3238,9 @@ script MafiaUIFlow extends Logic
 
 		    if _InvestigationRoomManager ~= nil then
 		        self.lobbyLeavePending = true
+		        -- Retained because ClearJoinedInvestigationRoomId above already wiped the source.
+		        self.lobbyLeaveRoomId = roomId
+		        self.lobbyLeaveRetryCount = 0
 		        _InvestigationRoomManager:LeaveRoom(roomId)
 		        log("[MafiaUIFlow] requested room cleanup roomId=" .. roomId)
 		    else
@@ -3255,13 +3267,26 @@ script MafiaUIFlow extends Logic
 
 	method void OnInvestigationRoomLeaveResult(boolean success, string message)
 		    -- Handles the authoritative room cleanup result after the UI already returned.
-		    self:ResetLobbyLeavePending()
 		    if success == false then
 		        log_warning("[MafiaUIFlow] leave room failed message=" .. tostring(message))
+		        -- The UI already returned to the main lobby, so giving up here would leave the
+		        -- user as a registry member with no path back. Retry before surfacing failure.
+		        if self.lobbyLeaveRetryCount < self.LOBBY_LEAVE_MAX_RETRY and _InvestigationRoomManager ~= nil then
+		            self.lobbyLeaveRetryCount = self.lobbyLeaveRetryCount + 1
+		            log_warning("[MafiaUIFlow] retrying leave attempt=" .. tostring(self.lobbyLeaveRetryCount))
+		            wait(1.0)
+		            _InvestigationRoomManager:LeaveRoom(self.lobbyLeaveRoomId)
+		            return
+		        end
+		        self:ResetLobbyLeavePending()
+		        log_error("[MafiaUIFlow] leave room gave up after " .. tostring(self.lobbyLeaveRetryCount) ..
+		            " retries; the registry may still list this user roomId=" .. tostring(self.lobbyLeaveRoomId))
 		        if _UIToast ~= nil then _UIToast:ShowMessage(message) end
 		        return
 		    end
 
+		    self:ResetLobbyLeavePending()
+		    self.lobbyLeaveRetryCount = 0
 		    self:ClearJoinedInvestigationRoomId()
 		    if _UIToast ~= nil then _UIToast:ShowMessage(message) end
 		    log("[MafiaUIFlow] leave result success; room cleanup completed")

@@ -5,7 +5,8 @@ script InvestigationRoomManager extends Logic
 
 	property string REGISTRY_VARIABLE = "RoomsV1"
 
-	property integer MAX_WRITE_RETRIES = 3
+	-- 3 proved thin for an 8-player room where joins and leaves collide on the same ETag.
+	property integer MAX_WRITE_RETRIES = 5
 
 	property any userLeaveHandler = nil
 
@@ -584,9 +585,48 @@ script InvestigationRoomManager extends Logic
 		self:DeliverJoinResult(false, "NO_ROOM", "빠르게 입장할 수 있는 공개 수사방이 없습니다.", "", userId)
 	end
 
+	@ExecSpace("ServerOnly")
+	method boolean SetRoomPlayingByMember(string userId, boolean playing)
+		-- Locks the room a member belongs to while its game runs, so it stops accepting joins,
+		-- and unlocks it when the game ends. Without this the status never leaves WAITING and an
+		-- in-progress room keeps showing up as joinable.
+		for attempt = 1, self.MAX_WRITE_RETRIES do
+			local snapshot = self:ReadRegistrySnapshot()
+			if snapshot.Ok == false then return false end
+			local target = nil
+			for _, room in ipairs(snapshot.Rooms) do
+				if self:ContainsUser(room, userId) then
+					target = room
+					break
+				end
+			end
+			if target == nil then return false end
+			if playing then
+				target.status = "PLAYING"
+			else
+				-- Clear PLAYING first; RecalculateRoomStatus deliberately never overwrites it.
+				target.status = "WAITING"
+				self:RecalculateRoomStatus(target)
+			end
+			local writeCode = self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
+			if writeCode == SharedMemoryResultCode.OK then
+				log("[InvestigationRoomManager] Room playing=" .. tostring(playing) ..
+					" roomId=" .. tostring(target.roomId) .. " status=" .. tostring(target.status))
+				self:BroadcastRoomListToMembers(snapshot.Rooms)
+				return true
+			end
+			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then return false end
+		end
+		log_warning("[InvestigationRoomManager] SetRoomPlaying retries exhausted userId=" .. userId)
+		return false
+	end
+
 	@ExecSpace("Server")
 	method void LeaveRoom(string roomId)
-		-- Removes the requesting user from EVERY room (roomId is informational only; host migrates, empty rooms deleted).
+		-- Removes the requesting user from every room. Because a user may belong to at most one
+		-- room, "every room" and "the room" are the same set; the sweep also reclaims rows left
+		-- behind by an earlier failed leave. roomId is only used to detect a client/server
+		-- disagreement, never to select what gets removed.
 		local userId = tostring(senderUserId)
 		roomId = roomId or ""
 		for attempt = 1, self.MAX_WRITE_RETRIES do
@@ -594,6 +634,19 @@ script InvestigationRoomManager extends Logic
 			if snapshot.Ok == false then
 				self:DeliverLeaveResult(false, "수사방 나가기에 실패했습니다.", userId)
 				return
+			end
+			if roomId ~= "" then
+				local inRequested = false
+				for _, room in ipairs(snapshot.Rooms) do
+					if room.roomId == roomId and self:ContainsUser(room, userId) then
+						inRequested = true
+						break
+					end
+				end
+				if inRequested == false then
+					log_warning("[InvestigationRoomManager] Leave roomId mismatch: caller believes roomId=" ..
+						roomId .. " but is not a member of it userId=" .. userId)
+				end
 			end
 			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
 			if removedCount <= 0 then
@@ -616,10 +669,11 @@ script InvestigationRoomManager extends Logic
 		self:DeliverLeaveResult(false, "나가기 요청이 많습니다. 다시 시도하세요.", userId)
 	end
 
-	@ExecSpace("Server")
-	method void UpdateRoomStatus(string roomId)
+	@ExecSpace("ServerOnly")
+	method void UpdateRoomStatus(string roomId, string userId)
 		-- Recalculates a room's WAITING/FULL state and persists the result.
-		local userId = tostring(senderUserId)
+		-- ServerOnly: as a client-reachable entry this allowed unlimited writes to any roomId,
+		-- which could starve other users' join/leave attempts on the shared ETag.
 		for attempt = 1, self.MAX_WRITE_RETRIES do
 			local snapshot = self:ReadRegistrySnapshot()
 			if snapshot.Ok == false then return end
@@ -673,18 +727,15 @@ script InvestigationRoomManager extends Logic
 
 	@ExecSpace("Client")
 	method void DeliverLeaveResult(boolean success, string message)
-		-- Forwards a room-leave result to the active Mafia UI flow first.
-		if _MafiaUIFlow ~= nil then
-			_MafiaUIFlow:OnInvestigationRoomLeaveResult(success, message)
+		-- MafiaUIFlow is a @Logic, so on a client it is never nil. The previous `if _MafiaUIFlow
+		-- ~= nil then ... else <LobbyController fallback> end` therefore never took the fallback
+		-- branch — it only looked like a safety net. MafiaUIFlow owns the room HUD and already
+		-- clears LobbyController.joinedRoomId, so it is the single correct receiver.
+		if _MafiaUIFlow == nil then
+			log_warning("[InvestigationRoomManager] MafiaUIFlow missing; leave result dropped")
 			return
 		end
-		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
-		if lobby == nil or isvalid(lobby) == false then return end
-		---@type LobbyController
-		local controller = lobby:GetComponent("script.LobbyController")
-		if controller ~= nil then
-			controller:OnRoomLeaveResult(success, message)
-		end
+		_MafiaUIFlow:OnInvestigationRoomLeaveResult(success, message)
 	end
 
 end

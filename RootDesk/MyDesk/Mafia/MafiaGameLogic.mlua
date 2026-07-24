@@ -320,6 +320,16 @@ script MafiaGameLogic extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void MarkRoomPlaying(boolean playing)
+		    -- Mirrors game state onto the shared room registry, so a room whose game is running
+		    -- stops advertising itself as joinable. Any roster member identifies the room.
+		    if _InvestigationRoomManager == nil then return end
+		    local roster = self:GetLobbyUserIds()
+		    if #roster == 0 then return end
+		    _InvestigationRoomManager:SetRoomPlayingByMember(roster[1], playing)
+	end
+
+	@ExecSpace("ServerOnly")
 	method void UpdateReadyStatusList()
 		    local parts = {}
 		    local roster = self:GetLobbyUserIds()
@@ -490,10 +500,15 @@ script MafiaGameLogic extends Logic
 
 	@ExecSpace("ServerOnly")
 	method void SetPhase(integer phase, number duration)
+		    local wasGameOver = self.CurrentPhase == self.PHASE_GAME_OVER
 		    self.CurrentPhase  = phase
 		    self.InternalTimer = duration
 		    self.PhaseTimer    = duration
 		    self.MaxPhaseTime  = duration
+		    -- Unlock the room on the single transition into game-over, not on every later call.
+		    if phase == self.PHASE_GAME_OVER and wasGameOver == false then
+		        self:MarkRoomPlaying(false)
+		    end
 		    log("[Mafia] 페이즈 " .. phase .. " duration=" .. duration)
 	end
 
@@ -523,6 +538,7 @@ script MafiaGameLogic extends Logic
 	method void StartGame()
 		    if self.GameStarted then return end
 		    self.GameStarted = true
+		    self:MarkRoomPlaying(true)
 		    self.DayCount    = 1
 		    if self.DebugMode then self:AddBots() end
 		    self:AssignRoles()
