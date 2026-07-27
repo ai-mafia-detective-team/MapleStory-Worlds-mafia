@@ -438,6 +438,30 @@ script LobbyController extends Component
 			log_warning("[LobbyController] LobbyRoot not found")
 		end
 
+		-- Keep custom lobby controls clear of the native MSW friend/settings area.
+		local topLayoutPaths = {
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/알림",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/상점",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/친구",
+			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/설정"
+		}
+		local topLayoutX = { 230, 472, 550, 630, 710 }
+		for index = 1, #topLayoutPaths do
+			local entity = _EntityService:GetEntityByPath(topLayoutPaths[index])
+			if entity ~= nil and isvalid(entity) and entity.UITransformComponent ~= nil then
+				local transform = entity.UITransformComponent
+				local x = topLayoutX[index]
+				local halfWidth = transform.RectSize.x * 0.5
+				transform.OffsetMin = Vector2(x - halfWidth, transform.OffsetMin.y)
+				transform.OffsetMax = Vector2(x + halfWidth, transform.OffsetMax.y)
+				transform.anchoredPosition = Vector2(x, transform.anchoredPosition.y)
+			else
+				log_warning("[LobbyController] Top layout entity missing path=" .. topLayoutPaths[index])
+			end
+		end
+		log("[LobbyController] Top layout applied money=230 alert=472 shop=550 friend=630 settings=710")
+
 		self:ApplyLobbyBackgroundVisuals()
 		self:DisableBlackOverlayBlockers()
 
