@@ -13,6 +13,10 @@ script IntroSequenceBootstrap extends Component
 
 	method void OnBeginPlay()
 		-- Shows the loading HUD first, then starts the intro sequence when UI entities are ready.
+		if _RoomService:IsInstanceRoom() then
+			log("[IntroSequenceBootstrap] skipped in instance room roomKey=" .. tostring(_RoomService.RoomKey))
+			return
+		end
 		log("[IntroSequenceBootstrap] OnBeginPlay")
 		self.elapsed = 0
 		self.attached = false

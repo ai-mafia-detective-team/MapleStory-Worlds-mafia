@@ -1912,31 +1912,10 @@ script LobbyController extends Component
 		local room = _HttpService:JSONDecode(roomJson)
 		self.joinedRoomId = room.roomId or ""
 		log("[Room] Room created successfully id=" .. self.joinedRoomId)
-		-- Read room settings before closing the modal so form values are not lost.
-		local roomName = ""
-		if self.createRoomNameInput ~= nil then
-			roomName = self:TrimCreateRoomText(self.createRoomNameInput.Text)
-		end
-		local password = ""
-		if self.isPrivateRoom and self.createRoomPasswordInput ~= nil then
-			password = self:TrimCreateRoomText(self.createRoomPasswordInput.Text)
-		end
 		self:CloseMatchmakingModal()
 		self:CloseFindRoomModal()
 		self:CloseCreateRoomModal()
-		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
-		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
-			lobbyRoot.Enable = false
-		end
-		if _MafiaUIFlow ~= nil then
-			_MafiaUIFlow:OpenLobbyAfterRoomCreated(roomName, self.isPrivateRoom, password, self.selectedMaxPlayers, 2)
-			log("[LobbyController] Entered MafiaLobbyHUD source=create title=" .. roomName)
-		else
-			log_warning("[LobbyController] MafiaUIFlow unavailable source=create")
-		end
-		if _QAAchievementManager ~= nil then
-			_QAAchievementManager:ReportLobbyAction("ROOM_ENTER", "create")
-		end
+		self:EnterInvestigationRoomLobby("create")
 		_UIToast:ShowMessage("수사방이 생성되었습니다. 대기 중입니다.")
 	end
 
@@ -3668,24 +3647,32 @@ script LobbyController extends Component
 		self:CloseMatchmakingModal()
 		self:CloseFindRoomModal()
 		self:CloseCreateRoomModal()
-		-- Register presence on the server: seating, ready checks and role assignment all read
-		-- this roster, so without it the user is never seated in the room lobby.
-		if _MafiaGameLogic ~= nil then
-			_MafiaGameLogic:EnterRoomLobby()
-		end
 		local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot")
-		if lobbyRoot ~= nil and isvalid(lobbyRoot) then
-			lobbyRoot.Enable = false
-		end
+		if lobbyRoot ~= nil and isvalid(lobbyRoot) then lobbyRoot.Enable = false end
 		if _MafiaUIFlow ~= nil then
+			-- Preserve the saved profile nickname before the room HUD starts populating.
+			-- This avoids the authored/default "수사관" text winning a first-frame race.
+			_MafiaUIFlow.localProfileNickname = self.currentProfileNickname or ""
 			_MafiaUIFlow:EnterRoomLobby()
-			log("[LobbyController] Entered MafiaLobbyHUD source=" .. source)
-		else
-			log_warning("[LobbyController] MafiaUIFlow unavailable source=" .. source)
+			_MafiaUIFlow.roomTransitionAwaitingLobbyReady = true
+			_MafiaUIFlow.roomTransitionReadyAttempts = 0
+			_MafiaUIFlow.roomTransitionStableReadyFrames = 0
+			log("[LobbyController] Entered logical MafiaLobbyHUD source=" .. source ..
+				" roomId=" .. tostring(self.joinedRoomId))
 		end
 		if source ~= "test" and _QAAchievementManager ~= nil then
 			_QAAchievementManager:ReportLobbyAction("ROOM_ENTER", source)
 		end
+		if _MafiaGameLogic ~= nil then
+			_MafiaGameLogic:EnterRoomLobby()
+		end
+	end
+
+	method void OnInstanceRoomEnterResult(boolean success, string message)
+		if success then return end
+		log_error("[LobbyController] Instance room entry failed: " .. tostring(message))
+		self:ShowCommonPopup("error", message ~= "" and message or "게임방으로 이동하지 못했습니다.")
+		_UIToast:ShowMessage(message)
 	end
 
 	method void OnRoomLeaveResult(boolean success, string message)

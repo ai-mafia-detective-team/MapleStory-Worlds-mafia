@@ -7,7 +7,7 @@
   "Usage": 0,
   "UsePublish": 1,
   "UseService": 0,
-  "CoreVersion": "26.5.0.0",
+  "CoreVersion": "26.7.0.0",
   "StudioVersion": "0.1.0.0",
   "DynamicLoading": 0,
   "ContentProto": {
@@ -76,6 +76,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -92,6 +97,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -175,6 +181,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -191,6 +202,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -320,6 +332,11 @@
                 "x": 0.000198364258,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.000198364258,
                 "y": 0.0,
@@ -336,6 +353,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -410,6 +428,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -426,6 +449,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -555,6 +579,11 @@
                 "x": 0.0,
                 "y": -33.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 507.0,
@@ -571,6 +600,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -700,6 +730,11 @@
                 "x": 0.0,
                 "y": -25.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 515.0,
@@ -716,6 +751,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -845,6 +881,11 @@
                 "x": 0.0,
                 "y": -166.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 374.0,
@@ -861,6 +902,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1005,6 +1047,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": -362.0,
@@ -1021,6 +1068,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1150,6 +1198,11 @@
                 "x": 0.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 385.0,
@@ -1166,6 +1219,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1295,6 +1349,11 @@
                 "x": 0.0,
                 "y": -58.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 482.0,
@@ -1311,6 +1370,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1497,6 +1557,11 @@
                 "x": 0.0,
                 "y": -112.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 428.0,
@@ -1513,6 +1578,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1699,6 +1765,11 @@
                 "x": -147.202789,
                 "y": -67.89639
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 252.797211,
                 "y": 472.1036,
@@ -1715,6 +1786,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1901,6 +1973,11 @@
                 "x": 158.8569,
                 "y": -67.89639
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -241.1431,
                 "y": 472.1036,
@@ -1917,6 +1994,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2103,6 +2181,11 @@
                 "x": -3.99999976,
                 "y": -61.5574036
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -3.99999976,
                 "y": 478.4426,
@@ -2119,6 +2202,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2305,6 +2389,11 @@
                 "x": -51.5,
                 "y": -303.6224
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -51.5,
                 "y": -303.6224,
@@ -2321,6 +2410,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2529,6 +2619,11 @@
                 "x": -141.1698,
                 "y": -74.3491
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -141.1698,
                 "y": -74.3491,
@@ -2545,6 +2640,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -2614,6 +2710,11 @@
                 "x": 312.0,
                 "y": -10.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 139.1698,
                 "y": 13.88636,
@@ -2630,6 +2731,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2816,6 +2918,11 @@
                 "x": 267.0,
                 "y": -302.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 267.0,
                 "y": -302.0,
@@ -2832,6 +2939,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3068,6 +3176,11 @@
                 "x": -330.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -330.0,
                 "y": 385.0,
@@ -3084,6 +3197,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3213,6 +3327,11 @@
                 "x": 330.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 330.0,
                 "y": 385.0,
@@ -3229,6 +3348,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3358,6 +3478,11 @@
                 "x": -0.999899864,
                 "y": -190.5766
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -0.999899864,
                 "y": 349.4234,
@@ -3374,6 +3499,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3560,6 +3686,11 @@
                 "x": -390.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -390.0,
                 "y": 385.0,
@@ -3576,6 +3707,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3676,6 +3808,11 @@
                 "x": 390.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 390.0,
                 "y": 385.0,
@@ -3692,6 +3829,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3792,6 +3930,11 @@
                 "x": 317.9703,
                 "y": 7.1741
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 317.9703,
                 "y": 7.1741,
@@ -3808,6 +3951,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3894,6 +4038,11 @@
                 "x": 317.71,
                 "y": -190.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 317.71,
                 "y": -190.0,
@@ -3910,6 +4059,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4043,6 +4193,11 @@
                 "x": 0.0,
                 "y": -155.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 385.0,
@@ -4059,6 +4214,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4188,6 +4344,11 @@
                 "x": 0.0,
                 "y": -915.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": -375.0,
@@ -4204,6 +4365,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4333,6 +4495,11 @@
                 "x": -176.0,
                 "y": 211.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 211.0,
@@ -4349,6 +4516,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4535,6 +4703,11 @@
                 "x": -176.0,
                 "y": 188.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 188.0,
@@ -4551,6 +4724,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4788,6 +4962,11 @@
                 "x": -176.0,
                 "y": 140.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 140.0,
@@ -4804,6 +4983,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -5041,6 +5221,11 @@
                 "x": -176.0,
                 "y": 163.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 163.0,
@@ -5057,6 +5242,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -5243,6 +5429,11 @@
                 "x": -176.0,
                 "y": 92.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 92.0,
@@ -5259,6 +5450,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -5496,6 +5688,11 @@
                 "x": -176.0,
                 "y": 44.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 44.0,
@@ -5512,6 +5709,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -5749,6 +5947,11 @@
                 "x": -176.0,
                 "y": 115.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 115.0,
@@ -5765,6 +5968,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -5951,6 +6155,11 @@
                 "x": -176.0,
                 "y": -4.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -4.0,
@@ -5967,6 +6176,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -6204,6 +6414,11 @@
                 "x": 0.0001,
                 "y": -439.7129
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0001,
                 "y": -439.7129,
@@ -6220,6 +6435,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -6456,6 +6672,11 @@
                 "x": -176.0,
                 "y": -52.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -52.0,
@@ -6472,6 +6693,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -6709,6 +6931,11 @@
                 "x": -176.0,
                 "y": 67.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 67.0,
@@ -6725,6 +6952,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -6911,6 +7139,11 @@
                 "x": -176.0,
                 "y": -100.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -100.0,
@@ -6927,6 +7160,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -7164,6 +7398,11 @@
                 "x": -176.0,
                 "y": -148.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -148.0,
@@ -7180,6 +7419,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -7417,6 +7657,11 @@
                 "x": -176.0,
                 "y": 19.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": 19.0,
@@ -7433,6 +7678,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -7619,6 +7865,11 @@
                 "x": -176.0,
                 "y": -29.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -29.0,
@@ -7635,6 +7886,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -7821,6 +8073,11 @@
                 "x": -176.0,
                 "y": -77.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -77.0,
@@ -7837,6 +8094,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -8023,6 +8281,11 @@
                 "x": -176.0,
                 "y": -125.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -176.0,
                 "y": -125.0,
@@ -8039,6 +8302,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -8225,6 +8489,11 @@
                 "x": 220.0,
                 "y": -440.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 220.0,
                 "y": -440.0,
@@ -8241,6 +8510,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -8427,6 +8697,11 @@
                 "x": 0.0,
                 "y": 405.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -960.0,
                 "y": 405.0,
@@ -8443,6 +8718,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -8512,6 +8788,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -8528,6 +8809,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -8657,6 +8939,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -8673,6 +8960,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -8733,6 +9021,88 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+        "path": "/ui/MafiaDayHUD/RoomBadge1/Grave",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave",
+          "path": "/ui/MafiaDayHUD/RoomBadge1/Grave",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 145.01564,
+                "y": 73.3080444
+              },
+              "OffsetMin": {
+                "x": -146.930069,
+                "y": -146.768646
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -0.957214355,
+                "y": -36.7303
+              },
+              "Position": {
+                "x": 279.0428,
+                "y": -36.7303,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
               "Enable": true
             }
           ],
@@ -8802,6 +9172,11 @@
                 "x": 0.0,
                 "y": 135.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -960.0,
                 "y": 135.0,
@@ -8818,6 +9193,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -8887,6 +9263,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -8903,6 +9284,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9032,6 +9414,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -9048,6 +9435,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9108,6 +9496,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "9700b450-c42c-4065-85a7-36a8d9ade73b",
+        "path": "/ui/MafiaDayHUD/RoomBadge2/Grave_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_1",
+          "path": "/ui/MafiaDayHUD/RoomBadge2/Grave_1",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 145.01564,
+                "y": 62.2851448
+              },
+              "OffsetMin": {
+                "x": -146.930069,
+                "y": -157.79155
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -0.9572144,
+                "y": -47.7532
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": 279.0428,
+                "y": -47.7532,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -9177,6 +9664,11 @@
                 "x": 0.0,
                 "y": -135.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -960.0,
                 "y": -135.0,
@@ -9193,6 +9685,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -9262,6 +9755,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -9278,6 +9776,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9407,6 +9906,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -9423,6 +9927,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9483,6 +9988,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "473351d4-e8df-42df-985b-c078e2b701f7",
+        "path": "/ui/MafiaDayHUD/RoomBadge3/Grave_2",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_2",
+          "path": "/ui/MafiaDayHUD/RoomBadge3/Grave_2",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 145.01564,
+                "y": 76.07684
+              },
+              "OffsetMin": {
+                "x": -146.930069,
+                "y": -143.999847
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -0.9572144,
+                "y": -33.9615021
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": 279.0428,
+                "y": -33.9615021,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -9552,6 +10156,11 @@
                 "x": 0.0,
                 "y": -405.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -960.0,
                 "y": -405.0,
@@ -9568,6 +10177,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -9637,6 +10247,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -9653,6 +10268,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9782,6 +10398,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 280.0,
                 "y": 0.0,
@@ -9798,6 +10419,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -9858,6 +10480,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "9fb4b0cf-8500-4173-8a4a-b8e2730e5909",
+        "path": "/ui/MafiaDayHUD/RoomBadge4/Grave_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_1",
+          "path": "/ui/MafiaDayHUD/RoomBadge4/Grave_1",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 145.01564,
+                "y": 111.000244
+              },
+              "OffsetMin": {
+                "x": -146.930069,
+                "y": -109.076447
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": -0.9572144,
+                "y": 0.961899757
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": 279.0428,
+                "y": 0.961899757,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -9927,6 +10648,11 @@
                 "x": 0.0,
                 "y": 405.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 960.0,
                 "y": 405.0,
@@ -9943,6 +10669,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -10012,6 +10739,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10028,6 +10760,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10157,6 +10890,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10173,6 +10911,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10233,6 +10972,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "37231d07-da18-4d53-94e8-ec2748168e75",
+        "path": "/ui/MafiaDayHUD/RoomBadge5/Grave_2",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_2",
+          "path": "/ui/MafiaDayHUD/RoomBadge5/Grave_2",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 149.194748,
+                "y": 75.79515
+              },
+              "OffsetMin": {
+                "x": -142.750961,
+                "y": -144.28154
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 3.22189331,
+                "y": -34.2432
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": -276.7781,
+                "y": -34.2432,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -10302,6 +11140,11 @@
                 "x": 0.0,
                 "y": 135.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 960.0,
                 "y": 135.0,
@@ -10318,6 +11161,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -10387,6 +11231,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10403,6 +11252,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10532,6 +11382,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10548,6 +11403,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10608,6 +11464,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "3aa4c1b4-4ca3-420a-965f-14aef1f6c275",
+        "path": "/ui/MafiaDayHUD/RoomBadge6/Grave_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_1",
+          "path": "/ui/MafiaDayHUD/RoomBadge6/Grave_1",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 149.194748,
+                "y": 60.4933472
+              },
+              "OffsetMin": {
+                "x": -142.750961,
+                "y": -159.583344
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 3.22189331,
+                "y": -49.545
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": -276.7781,
+                "y": -49.545,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -10677,6 +11632,11 @@
                 "x": 0.0,
                 "y": -135.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 960.0,
                 "y": -135.0,
@@ -10693,6 +11653,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -10762,6 +11723,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10778,6 +11744,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10907,6 +11874,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -10923,6 +11895,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -10983,6 +11956,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "e524741f-c9a3-4307-a1cd-4dc7c353b03e",
+        "path": "/ui/MafiaDayHUD/RoomBadge7/Grave_2",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_2",
+          "path": "/ui/MafiaDayHUD/RoomBadge7/Grave_2",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 149.194748,
+                "y": 88.0766449
+              },
+              "OffsetMin": {
+                "x": -142.750961,
+                "y": -132.000046
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 3.221893,
+                "y": -21.9617
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": -276.7781,
+                "y": -21.9617,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -11052,6 +12124,11 @@
                 "x": 0.0,
                 "y": -405.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 960.0,
                 "y": -405.0,
@@ -11068,6 +12145,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -11137,6 +12215,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -11153,6 +12236,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -11282,6 +12366,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -280.0,
                 "y": 0.0,
@@ -11298,6 +12387,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -11358,6 +12448,105 @@
               "OutlineWidth": 3.0,
               "RaycastTarget": false,
               "Type": 0,
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "aa30c60d-b622-4fcf-a480-1dc067c7aca7",
+        "path": "/ui/MafiaDayHUD/RoomBadge8/Grave_1",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent",
+        "jsonString": {
+          "name": "Grave_1",
+          "path": "/ui/MafiaDayHUD/RoomBadge8/Grave_1",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 2,
+          "pathConstraints": "////",
+          "revision": 1,
+          "origin": {
+            "type": "Model",
+            "entry_id": "uisprite",
+            "sub_entity_id": null,
+            "root_entity_id": "e686aa39-41ba-42d2-ab24-42d2d494214b",
+            "replaced_model_id": null
+          },
+          "modelId": "uisprite",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 149.194748,
+                "y": 100.000046
+              },
+              "OffsetMin": {
+                "x": -142.750961,
+                "y": -120.076645
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 291.9457,
+                "y": 220.076691
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 3.221893,
+                "y": -10.0383
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": -276.7781,
+                "y": -10.0383,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "ImageRUID": {
+                "DataId": "c76aee58ed96481bb5e87d9c46daf57c"
+              },
+              "OverrideSorting": false,
+              "SortingLayer": "MapLayer0",
               "Enable": true
             }
           ],
@@ -11427,6 +12616,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11443,6 +12637,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12019,6 +13214,11 @@
                 "x": -1.41179991,
                 "y": -2.78450012
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -1.41179991,
                 "y": -2.78450012,
@@ -12030,6 +13230,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12101,6 +13302,11 @@
                 "x": 286.2996,
                 "y": -405.8761
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 286.2996,
                 "y": -405.8761,
@@ -12112,6 +13318,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12265,6 +13472,11 @@
                 "x": -305.6665,
                 "y": -396.8761
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -305.6665,
                 "y": -396.8761,
@@ -12276,6 +13488,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12423,6 +13636,11 @@
                 "x": 1.4039,
                 "y": 397.3472
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 1.4039,
                 "y": 397.3472,
@@ -12434,6 +13652,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12543,6 +13762,11 @@
                 "x": -492.1139,
                 "y": 115.3831
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -492.1139,
                 "y": 115.3831,
@@ -12554,6 +13778,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12676,6 +13901,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -12692,6 +13922,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -12777,6 +14008,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -12793,6 +14029,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -13123,6 +14360,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -13139,6 +14381,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -13224,6 +14467,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -13240,6 +14488,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -13570,6 +14819,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -13586,6 +14840,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -13671,6 +14926,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -13687,6 +14947,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -14017,6 +15278,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -14033,6 +15299,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -14118,6 +15385,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -14134,6 +15406,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -14464,6 +15737,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -14480,6 +15758,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -14565,6 +15844,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -14581,6 +15865,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -14911,6 +16196,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -14927,6 +16217,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -15012,6 +16303,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -15028,6 +16324,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -15358,6 +16655,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -15374,6 +16676,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -15459,6 +16762,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -15475,6 +16783,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -15805,6 +17114,11 @@
                 "x": 0.0,
                 "y": 32.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 32.0,
@@ -15821,6 +17135,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -15906,6 +17221,11 @@
                 "x": -52.0,
                 "y": -96.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -52.0,
                 "y": -96.0,
@@ -15922,6 +17242,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16108,6 +17429,11 @@
                 "x": 101.1586,
                 "y": -90.8815
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 101.1586,
                 "y": -90.8815,
@@ -16124,6 +17450,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16253,6 +17580,11 @@
                 "x": 429.1436,
                 "y": -350.2582
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 429.1436,
                 "y": -350.2582,
@@ -16269,6 +17601,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16398,6 +17731,11 @@
                 "x": 101.3229,
                 "y": -353.1276
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 101.3229,
                 "y": -353.1276,
@@ -16414,6 +17752,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16543,6 +17882,11 @@
                 "x": 428.9533,
                 "y": -90.8815
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 428.9533,
                 "y": -90.8815,
@@ -16559,6 +17903,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16688,6 +18033,11 @@
                 "x": 753.9519,
                 "y": -351.1274
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 753.9519,
                 "y": -351.1274,
@@ -16704,6 +18054,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16833,6 +18184,11 @@
                 "x": 753.9518,
                 "y": -90.2735
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 753.9518,
                 "y": -90.2735,
@@ -16849,6 +18205,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -16978,6 +18335,11 @@
                 "x": 1078.70386,
                 "y": -88.8814
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 1078.70386,
                 "y": -88.8814,
@@ -16994,6 +18356,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -17123,6 +18486,11 @@
                 "x": 1081.48035,
                 "y": -350.1277
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 1081.48035,
                 "y": -350.1277,
@@ -17139,6 +18507,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -17262,6 +18631,11 @@
                 "x": -392.8653,
                 "y": 21.5943
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -392.8653,
                 "y": 21.5943,
@@ -17273,6 +18647,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -17344,6 +18719,11 @@
                 "x": -63.465,
                 "y": 21.5943
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -63.465,
                 "y": 21.5943,
@@ -17355,6 +18735,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18217,6 +19598,11 @@
                 "x": -493.4336,
                 "y": 129.9714
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -493.4336,
                 "y": 129.9714,
@@ -18228,6 +19614,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18300,6 +19687,11 @@
                 "x": -167.3718,
                 "y": 129.9714
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -167.3718,
                 "y": 129.9714,
@@ -18311,6 +19703,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18383,6 +19776,11 @@
                 "x": 158.3773,
                 "y": 129.9714
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 158.3773,
                 "y": 129.9714,
@@ -18394,6 +19792,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18465,6 +19864,11 @@
                 "x": 484.9764,
                 "y": 129.9714
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 484.9764,
                 "y": 129.9714,
@@ -18476,6 +19880,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18548,6 +19953,11 @@
                 "x": -493.4335,
                 "y": -131.0397
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -493.4335,
                 "y": -131.0397,
@@ -18559,6 +19969,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18631,6 +20042,11 @@
                 "x": -167.3717,
                 "y": -131.0396
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -167.3717,
                 "y": -131.0396,
@@ -18642,6 +20058,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18714,6 +20131,11 @@
                 "x": 158.3773,
                 "y": -131.0397
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 158.3773,
                 "y": -131.0397,
@@ -18725,6 +20147,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18797,6 +20220,11 @@
                 "x": 484.9764,
                 "y": -131.0396
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 484.9764,
                 "y": -131.0396,
@@ -18808,6 +20236,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18880,6 +20309,11 @@
                 "x": -492.9736,
                 "y": 132.735
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -492.9736,
                 "y": 132.735,
@@ -18891,6 +20325,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -18962,6 +20397,11 @@
                 "x": -166.4286,
                 "y": 132.735
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -166.4286,
                 "y": 132.735,
@@ -18973,6 +20413,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19045,6 +20486,11 @@
                 "x": 158.849,
                 "y": 132.735
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 158.849,
                 "y": 132.735,
@@ -19056,6 +20502,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19128,6 +20575,11 @@
                 "x": 486.29,
                 "y": 132.735
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 486.29,
                 "y": 132.735,
@@ -19139,6 +20591,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19211,6 +20664,11 @@
                 "x": -492.9736,
                 "y": -130.1551
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -492.9736,
                 "y": -130.1551,
@@ -19222,6 +20680,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19294,6 +20753,11 @@
                 "x": -166.4286,
                 "y": -130.1551
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -166.4286,
                 "y": -130.1551,
@@ -19305,6 +20769,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19377,6 +20842,11 @@
                 "x": 158.849,
                 "y": -130.1551
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 158.849,
                 "y": -130.1551,
@@ -19388,6 +20858,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19460,6 +20931,11 @@
                 "x": 486.29,
                 "y": -130.1551
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 486.29,
                 "y": -130.1551,
@@ -19471,6 +20947,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19548,6 +21025,11 @@
                 "x": 1.2585,
                 "y": -2.0981
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 1.2585,
                 "y": -2.0981,
@@ -19564,6 +21046,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19646,6 +21129,11 @@
                 "x": 0.0,
                 "y": 100.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 100.0,
@@ -19662,6 +21150,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19848,6 +21337,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -19864,6 +21358,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -19992,6 +21487,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20003,6 +21503,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20087,6 +21588,11 @@
                 "x": 0.0,
                 "y": 100.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 100.0,
@@ -20103,6 +21609,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20289,6 +21796,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": 457.6443,
@@ -20305,6 +21817,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20434,6 +21947,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": 457.6443,
@@ -20450,6 +21968,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20579,6 +22098,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": -457.6443,
@@ -20595,6 +22119,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20724,6 +22249,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": -457.6443,
@@ -20740,6 +22270,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20863,6 +22394,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -20874,6 +22410,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -20958,6 +22495,11 @@
                 "x": 0.0,
                 "y": 100.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 100.0,
@@ -20974,6 +22516,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21160,6 +22703,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": 457.6443,
@@ -21176,6 +22724,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21305,6 +22854,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": 457.6443,
@@ -21321,6 +22875,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21450,6 +23005,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": -457.6443,
@@ -21466,6 +23026,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21595,6 +23156,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": -457.6443,
@@ -21611,6 +23177,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21734,6 +23301,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -21745,6 +23317,7 @@
                 "z": 0.0,
                 "w": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -21830,6 +23403,11 @@
                 "x": 0.0,
                 "y": 100.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 0.0,
                 "y": 100.0,
@@ -21846,6 +23424,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -22032,6 +23611,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": 457.6443,
@@ -22048,6 +23632,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -22177,6 +23762,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": 457.6443,
@@ -22193,6 +23783,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -22322,6 +23913,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": -818.124,
                 "y": -457.6443,
@@ -22338,6 +23934,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -22467,6 +24064,11 @@
                 "x": 0.0,
                 "y": 0.0
               },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
               "Position": {
                 "x": 818.124,
                 "y": -457.6443,
@@ -22483,6 +24085,7 @@
                 "y": 1.0,
                 "z": 1.0
               },
+              "ZRotation": 0.0,
               "Enable": true
             },
             {
