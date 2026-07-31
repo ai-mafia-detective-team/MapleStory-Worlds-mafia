@@ -45,7 +45,9 @@ end
 @ExecSpace("ClientOnly")
 method void SetTouchZonesActive(boolean active)
     for i = 1, 8 do
-        local zone = _EntityService:GetEntityByPath("/maps/map01/RoomZone_" .. i)
+        local mapRoot = "/maps/map01"
+        if _RoomService:IsInstanceRoom() then mapRoot = "/maps/map02" end
+        local zone = _EntityService:GetEntityByPath(mapRoot .. "/RoomZone_" .. i)
         if zone ~= nil then
             local zoneScript = zone.RoomTouchZone
             if zoneScript ~= nil then

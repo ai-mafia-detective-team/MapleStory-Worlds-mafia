@@ -245,14 +245,40 @@ script QAAchievementUI extends Component
 	end
 
 	method void OnEndPlay()
-		if self.closeHandler ~= nil then self.closeHandler:Disconnect() end
-		if self.dailyHandler ~= nil then self.dailyHandler:Disconnect() end
-		if self.weeklyHandler ~= nil then self.weeklyHandler:Disconnect() end
-		if self.monthlyHandler ~= nil then self.monthlyHandler:Disconnect() end
-		if self.claimAllHandler ~= nil then self.claimAllHandler:Disconnect() end
-		for _, connection in pairs(self.rowHandlers) do
-			if connection ~= nil then connection:Disconnect() end
+		if self.closeHandler ~= nil and self.closeButton ~= nil and self.closeButton.Entity ~= nil
+			and isvalid(self.closeButton.Entity) then
+			self.closeButton.Entity:DisconnectEvent(ButtonClickEvent, self.closeHandler)
 		end
+		if self.dailyHandler ~= nil and self.dailyTabButton ~= nil and self.dailyTabButton.Entity ~= nil
+			and isvalid(self.dailyTabButton.Entity) then
+			self.dailyTabButton.Entity:DisconnectEvent(ButtonClickEvent, self.dailyHandler)
+		end
+		if self.weeklyHandler ~= nil and self.weeklyTabButton ~= nil and self.weeklyTabButton.Entity ~= nil
+			and isvalid(self.weeklyTabButton.Entity) then
+			self.weeklyTabButton.Entity:DisconnectEvent(ButtonClickEvent, self.weeklyHandler)
+		end
+		if self.monthlyHandler ~= nil and self.monthlyTabButton ~= nil and self.monthlyTabButton.Entity ~= nil
+			and isvalid(self.monthlyTabButton.Entity) then
+			self.monthlyTabButton.Entity:DisconnectEvent(ButtonClickEvent, self.monthlyHandler)
+		end
+		if self.claimAllHandler ~= nil and self.claimAllButton ~= nil and self.claimAllButton.Entity ~= nil
+			and isvalid(self.claimAllButton.Entity) then
+			self.claimAllButton.Entity:DisconnectEvent(ButtonClickEvent, self.claimAllHandler)
+		end
+		for index, rowHandler in pairs(self.rowHandlers) do
+			local buttonEntity = _EntityService:GetEntityByPath(
+				"/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" ..
+				tostring(index) .. "/ClaimButton")
+			if rowHandler ~= nil and buttonEntity ~= nil and isvalid(buttonEntity) then
+				buttonEntity:DisconnectEvent(ButtonClickEvent, rowHandler)
+			end
+		end
+		self.closeHandler = nil
+		self.dailyHandler = nil
+		self.weeklyHandler = nil
+		self.monthlyHandler = nil
+		self.claimAllHandler = nil
+		self.rowHandlers = {}
 	end
 
 end
