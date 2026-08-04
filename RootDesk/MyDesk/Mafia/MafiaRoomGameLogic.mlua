@@ -201,6 +201,10 @@ script MafiaRoomGameLogic extends Component
 	-- they enter this instance lobby. Mafia UI must not fall back to platform nicknames.
 	property table playerDisplayNames = nil
 
+	property table pendingNameTagUsers = nil
+
+	property number nameTagRetryElapsed = 0.0
+
 	property any userLeaveHandler = nil
 
 	property any userEnterHandler = nil
@@ -216,6 +220,8 @@ script MafiaRoomGameLogic extends Component
 		    self.readyPlayers   = {}
 		    self.lobbyPresent   = {}
 		    self.playerDisplayNames = {}
+		    self.pendingNameTagUsers = {}
+		    self.nameTagRetryElapsed = 0.0
 
 		    self.MafiaTarget   = ""
 		    self.DoctorTarget  = ""
@@ -272,6 +278,7 @@ script MafiaRoomGameLogic extends Component
 		    self.lobbyPresent[userId] = true
 		    self.readyPlayers[userId] = false
 		    self:LoadSavedDisplayName(userId)
+		    self:ApplySavedNameTag(userId)
 		    self:CancelLobbyStartCountdown("new lobby member userId=" .. userId)
 		    self:UpdateLobbySeatOrder()
 		    self:UpdateReadyStatusList()
@@ -299,6 +306,50 @@ script MafiaRoomGameLogic extends Component
 		    log("[Mafia] saved display nickname loaded userId=" .. userId
 		        .. " nickname=" .. tostring(self.playerDisplayNames[userId])
 		        .. " errorCode=" .. tostring(errorCode))
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean ApplySavedNameTag(string userId)
+		    if userId == nil or userId == "" then return false end
+		    if self.pendingNameTagUsers == nil then self.pendingNameTagUsers = {} end
+		    local wasPending = self.pendingNameTagUsers[userId] == true
+		    local playerEntity = _UserService:GetUserEntityByUserId(userId)
+		    if playerEntity == nil or isvalid(playerEntity) == false then
+		        self.pendingNameTagUsers[userId] = true
+		        if not wasPending then
+		            log_warning("[Mafia] name tag target pending userId=" .. tostring(userId))
+		        end
+		        return false
+		    end
+		    local nameTag = playerEntity.NameTagComponent
+		    if nameTag == nil then
+		        self.pendingNameTagUsers[userId] = true
+		        if not wasPending then
+		            log_warning("[Mafia] NameTagComponent pending userId=" .. tostring(userId))
+		        end
+		        return false
+		    end
+		    nameTag.Name = self:GetSavedDisplayName(userId)
+		    nameTag.Enable = true
+		    self.pendingNameTagUsers[userId] = nil
+		    log("[Mafia] name tag applied userId=" .. tostring(userId)
+		        .. " nickname=" .. tostring(nameTag.Name))
+		    return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RetryPendingNameTags(number delta)
+		    if self.pendingNameTagUsers == nil then return end
+		    self.nameTagRetryElapsed = self.nameTagRetryElapsed + delta
+		    if self.nameTagRetryElapsed < 0.5 then return end
+		    self.nameTagRetryElapsed = 0.0
+		    local pendingUserIds = {}
+		    for userId, pending in pairs(self.pendingNameTagUsers) do
+		        if pending == true then pendingUserIds[#pendingUserIds + 1] = userId end
+		    end
+		    for _, userId in ipairs(pendingUserIds) do
+		        self:ApplySavedNameTag(userId)
+		    end
 	end
 
 	@ExecSpace("ServerOnly")
@@ -344,6 +395,7 @@ script MafiaRoomGameLogic extends Component
 
 	@ExecSpace("ServerOnly")
 	method void OnUpdate(number delta)
+		    self:RetryPendingNameTags(delta)
 		    if self.CurrentPhase == self.PHASE_LOBBY then
 		        self:CheckLobbyStart(delta)
 		    elseif self.GameStarted and self.InternalTimer > 0.0 then
@@ -447,6 +499,7 @@ script MafiaRoomGameLogic extends Component
 		    end
 		    self.lobbyPresent[userId] = true
 		    self:LoadSavedDisplayName(userId)
+		    self:ApplySavedNameTag(userId)
 		    -- LoadSavedDisplayName updates the authoritative per-user display name.
 		    -- Republish both seat IDs and their parallel nickname CSV immediately.
 		    self:UpdateLobbySeatOrder()
@@ -520,6 +573,7 @@ script MafiaRoomGameLogic extends Component
 		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
 		    if self.lobbyPresent ~= nil then self.lobbyPresent[userId] = nil end
 		    if self.playerDisplayNames ~= nil then self.playerDisplayNames[userId] = nil end
+		    if self.pendingNameTagUsers ~= nil then self.pendingNameTagUsers[userId] = nil end
 		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
 		    if self.playerRoles ~= nil then self.playerRoles[userId] = nil end
 		    if self.playerAlive ~= nil then self.playerAlive[userId] = nil end
@@ -1484,6 +1538,86 @@ script MafiaRoomGameLogic extends Component
 		    log("[Lobby] registered roster returned to lobby rooms players=" .. tostring(#roster))
 	end
 
+	@ExecSpace("ServerOnly")
+	method string SanitizeChatMessage(string message)
+		    if message == nil then return "" end
+		    message = tostring(message)
+		    -- ChatLog uses newline/tab as record delimiters, so user text must not contain them.
+		    message = string.gsub(message, "[\r\n\t]", " ")
+		    message = string.gsub(message, "%s+", " ")
+		    message = string.gsub(message, "^%s+", "")
+		    message = string.gsub(message, "%s+$", "")
+		    if message == "" then return "" end
+
+		    -- Apply the advertised 100-character limit without cutting a Korean UTF-8 sequence.
+		    local characterCount = utf8.len(message)
+		    if characterCount ~= nil and characterCount ~= false and characterCount > 100 then
+		        local byteAfterLimit = utf8.offset(message, 101)
+		        if byteAfterLimit ~= nil then
+		            message = string.sub(message, 1, byteAfterLimit - 1)
+		        end
+		    elseif characterCount == nil or characterCount == false then
+		        -- Invalid UTF-8 is not safe to synchronize through the shared chat log.
+		        return ""
+		    end
+
+		    -- Conservative built-in list. Masking is authoritative on the server so every
+		    -- normal/dead/mafia chat consumer receives the same sanitized message.
+		    local forbiddenWords = {
+		        "개새끼", "씨발", "시발", "병신", "존나", "좆", "ㅅㅂ", "ㅂㅅ", "ㅈㄴ",
+		        "motherfucker", "fuck", "shit"
+		    }
+		    local filtered = message
+		    for _, forbiddenWord in ipairs(forbiddenWords) do
+		        local lowerFiltered = string.lower(filtered)
+		        local lowerForbidden = string.lower(forbiddenWord)
+		        local searchFrom = 1
+		        while true do
+		            local firstByte, lastByte = string.find(lowerFiltered, lowerForbidden, searchFrom, true)
+		            if firstByte == nil then break end
+		            local matchedText = string.sub(filtered, firstByte, lastByte)
+		            local matchedLength = utf8.len(matchedText)
+		            if matchedLength == nil or matchedLength == false then matchedLength = 3 end
+		            local mask = string.rep("♥", math.max(1, matchedLength))
+		            filtered = string.sub(filtered, 1, firstByte - 1)
+		                .. mask
+		                .. string.sub(filtered, lastByte + 1)
+		            lowerFiltered = string.lower(filtered)
+		            searchFrom = firstByte + string.len(mask)
+		        end
+		    end
+
+		    -- Also catch the most common separator-based evasions ("씨 발", "f.u.c.k",
+		    -- jamo separated by punctuation, and similar forms). The whole matched span is
+		    -- masked so punctuation cannot leave a readable fragment behind.
+		    local obfuscatedPatterns = {
+		        "개[%s%p_]*새[%s%p_]*끼",
+		        "씨[%s%p_]*발", "시[%s%p_]*발", "병[%s%p_]*신", "존[%s%p_]*나",
+		        "ㅅ[%s%p_]*ㅂ", "ㅂ[%s%p_]*ㅅ", "ㅈ[%s%p_]*ㄴ",
+		        "m[%s%p_]*o[%s%p_]*t[%s%p_]*h[%s%p_]*e[%s%p_]*r[%s%p_]*f[%s%p_]*u[%s%p_]*c[%s%p_]*k[%s%p_]*e[%s%p_]*r",
+		        "f[%s%p_]*u[%s%p_]*c[%s%p_]*k",
+		        "s[%s%p_]*h[%s%p_]*i[%s%p_]*t"
+		    }
+		    for _, forbiddenPattern in ipairs(obfuscatedPatterns) do
+		        local lowerFiltered = string.lower(filtered)
+		        local searchFrom = 1
+		        while true do
+		            local firstByte, lastByte = string.find(lowerFiltered, forbiddenPattern, searchFrom)
+		            if firstByte == nil then break end
+		            local matchedText = string.sub(filtered, firstByte, lastByte)
+		            local matchedLength = utf8.len(matchedText)
+		            if matchedLength == nil or matchedLength == false then matchedLength = 3 end
+		            local mask = string.rep("♥", math.max(1, matchedLength))
+		            filtered = string.sub(filtered, 1, firstByte - 1)
+		                .. mask
+		                .. string.sub(filtered, lastByte + 1)
+		            lowerFiltered = string.lower(filtered)
+		            searchFrom = firstByte + string.len(mask)
+		        end
+		    end
+		    return filtered
+	end
+
 	@ExecSpace("Server")
 	method void SendChat(string userId, string message)
 		    -- Trust only the authenticated sender; ignore the client-supplied userId (anti-impersonation).
@@ -1491,11 +1625,8 @@ script MafiaRoomGameLogic extends Component
 		    if self.CurrentPhase ~= self.PHASE_LOBBY and
 		       self.CurrentPhase ~= self.PHASE_FREE_ROAM and
 		       self.CurrentPhase ~= self.PHASE_MEETING then return end
-		    if message == nil or message == "" then return end
-		    -- 메시지 길이 제한 (100자)
-		    if string.len(message) > 100 then
-		        message = string.sub(message, 1, 100)
-		    end
+		    message = self:SanitizeChatMessage(message)
+		    if message == "" then return end
 		    -- 죽은 플레이어(게임 진행 중 탈락) 메시지는 DeadChatLog로 분리
 		    local aliveStr = self.AlivePlayersList or ""
 		    local isDead = self.GameStarted and aliveStr ~= ""
@@ -1545,10 +1676,8 @@ script MafiaRoomGameLogic extends Component
 		    userId = self:ResolveAuthenticatedUserId(userId)
 		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
 		    if self.playerRoles[userId] ~= self.ROLE_MAFIA then return end
-		    if message == nil or message == "" then return end
-		    if string.len(message) > 100 then
-		        message = string.sub(message, 1, 100)
-		    end
+		    message = self:SanitizeChatMessage(message)
+		    if message == "" then return end
 		    local entry = userId .. "\t" .. message
 		    if self.MafiaChatLog == "" then
 		        self.MafiaChatLog = entry
