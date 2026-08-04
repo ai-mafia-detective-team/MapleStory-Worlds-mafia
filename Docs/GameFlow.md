@@ -129,7 +129,7 @@ LOBBY
 4. 업적 이벤트 `GAME_PLAY`, `ROLE_ASSIGNED` 보고(봇 제외).
 5. `SetPhase(FREE_ROAM, 10초)`.
 
-**로딩 화면**: `LOBBY → FREE_ROAM` 최초 전환만 클라이언트에서 가로채서 `ui/MafiaLoadingHUD.ui`(역할 공개 화면)를 약 3초 띄우고 0.5초 페이드아웃한 뒤 `MafiaDayHUD`를 연다(`TriggerLoadingScreen`). 역할이 시민·의사·경찰이면 `BgSprite`, 마피아이면 `BgSprite_1` 배경만 표시한다. 이후의 페이즈 전환에는 로딩 화면이 끼지 않는다.
+**로딩 화면**: `LOBBY → FREE_ROAM` 최초 전환만 클라이언트에서 가로채서 `ui/MafiaLoadingHUD.ui`(역할 공개 화면)를 약 4초 띄우고 0.5초 페이드아웃한 뒤 `MafiaDayHUD`를 연다(`TriggerLoadingScreen`). 역할이 시민·의사·경찰이면 `BgSprite`, 마피아이면 `BgSprite_1` 배경만 표시한다. 하단 아바타는 월드 전체 접속자가 아니라 현재 수사방의 `RoleData`를 기준으로 로컬 플레이어와 같은 직업인 참가자만 표시한다. `CurrentPhase`가 `RoleData`보다 먼저 동기화되면 최대 3초 동안 역할 정보를 기다리고, 끝내 확인되지 않으면 기본 시민으로 오표시하거나 다른 직업 아바타를 노출하지 않는다. 이후의 페이즈 전환에는 로딩 화면이 끼지 않는다.
 
 ### 3.5 낮 토론 (FREE_ROAM)
 
