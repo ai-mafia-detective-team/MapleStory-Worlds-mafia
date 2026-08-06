@@ -1,10 +1,8 @@
 @Logic
 script CollectionManager extends Logic
 
-	-- Permanent role-collection (도감) state, kept separate from QAAchievementManager.
-	-- QAAchievement's state.roles is wiped by its MONTHLY ClearPeriod; the 도감 must never reset,
-	-- so it owns its own storage key and never shares that table.
 	property string KEY_ROLE_COLLECTION = "collection_roles_v1"
+
 	property table UserStates = {}
 
 	@ExecSpace("ServerOnly")
@@ -25,7 +23,7 @@ script CollectionManager extends Logic
 		-- Loads the user's permanent unlock set once, then serves from the in-memory cache.
 		local cached = self.UserStates[userId]
 		if cached ~= nil then return cached end
-
+		
 		local state = self:CreateState()
 		local storage = _DataStorageService:GetUserDataStorage(userId)
 		local errorCode, raw = storage:GetAndWait(self.KEY_ROLE_COLLECTION)
@@ -38,7 +36,7 @@ script CollectionManager extends Logic
 			-- 1000002 NotFound is the normal first-visit signal, not an error.
 			log_warning("[Collection] Load failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
 		end
-
+		
 		state.roles = state.roles or {}
 		state.roles.__schema = true
 		self.UserStates[userId] = state
@@ -64,20 +62,20 @@ script CollectionManager extends Logic
 		-- Marks one role as permanently collected. Called by MafiaGameLogic on role assignment.
 		if userId == nil or userId == "" then return end
 		if roleKey == nil or roleKey == "" then return end
-
+		
 		local state = self:LoadUser(userId)
 		if state.roles[roleKey] == true then
 			-- Already collected: skip the write entirely so repeat plays cost no Credit.
 			return
 		end
-
+		
 		state.roles[roleKey] = true
 		if self:SaveUser(userId, state) == false then
 			-- Roll the cache back so a later attempt retries the write instead of assuming success.
 			state.roles[roleKey] = nil
 			return
 		end
-
+		
 		log("[Collection] Role unlocked userId=" .. userId .. " role=" .. roleKey)
 		self:DeliverRoleCollection(userId, state)
 	end

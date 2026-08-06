@@ -7,10 +7,11 @@ script IntroFlowController extends Logic
 
 	property boolean DEBUG_RESET_NICKNAME = false
 
-	-- ── 스토리지 키 상수 (StorageKeyConfig.mlua 참고) ───────────────────────────
 	property string KEY_STORAGE_INTRO = "IntroProgress"
-	property string KEY_NICKNAME      = "player_nickname_v1"
-	property string KEY_NICKNAME_SET  = "nickname_set_v1"
+
+	property string KEY_NICKNAME = "player_nickname_v1"
+
+	property string KEY_NICKNAME_SET = "nickname_set_v1"
 
 	property any storage = nil
 
@@ -192,7 +193,7 @@ script IntroFlowController extends Logic
 		end
 		nicknameUI:SetEnable(true)
 		nicknameUI.Visible = true
-
+		
 		local nicknameRoot = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup/NicknameRoot")
 		log("[IntroFlowController] NicknameRoot found=" .. tostring(nicknameRoot ~= nil and isvalid(nicknameRoot)))
 		if nicknameRoot == nil or isvalid(nicknameRoot) == false then
@@ -310,7 +311,7 @@ script IntroFlowController extends Logic
 			mapsRoot:SetEnable(true)
 			mapsRoot.Visible = true
 		end
-
+		
 		local defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
 		if defaultGroup ~= nil and isvalid(defaultGroup) then
 			if defaultGroup.Enable == false then
@@ -318,7 +319,7 @@ script IntroFlowController extends Logic
 			end
 			defaultGroup.Visible = true
 		end
-
+		
 		local player = _UserService.LocalPlayer
 		if player == nil then
 			player = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
@@ -327,7 +328,7 @@ script IntroFlowController extends Logic
 			player:SetEnable(true)
 			player.Visible = true
 		end
-
+		
 		log("[IntroFlowController] Lobby shown")
 	end
 

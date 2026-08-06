@@ -159451,7 +159451,7 @@
       {
         "id": "6e23c39f-4ec0-493c-812d-78454723e858",
         "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller",
-        "componentNames": "MOD.Core.UITransformComponent,script.QAAchievementUI",
+        "componentNames": "MOD.Core.UITransformComponent",
         "jsonString": {
           "name": "Controller",
           "path": "/ui/UI_Lobby/LobbyRoot/ButtonGroup/Controller",
@@ -159533,10 +159533,6 @@
                 "z": 1.0
               },
               "ZRotation": 0.0,
-              "Enable": true
-            },
-            {
-              "@type": "script.QAAchievementUI",
               "Enable": true
             }
           ],

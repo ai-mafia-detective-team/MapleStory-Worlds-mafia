@@ -5,7 +5,6 @@ script InvestigationRoomManager extends Logic
 
 	property string REGISTRY_VARIABLE = "RoomsV1"
 
-	-- 3 proved thin for an 8-player room where joins and leaves collide on the same ETag.
 	property integer MAX_WRITE_RETRIES = 5
 
 	property any userLeaveHandler = nil

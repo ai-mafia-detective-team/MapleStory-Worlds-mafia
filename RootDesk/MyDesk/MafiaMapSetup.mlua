@@ -2,12 +2,13 @@
 script MafiaMapSetup extends Logic
 
 	property table roomMinX = {}
+
 	property table roomMaxX = {}
 
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
 		log("[MafiaMapSetup] 방 경계 초기화 시작")
-
+		
 		-- 2026-06-29 기준: 각 방 투명 발판의 양끝 X 좌표
 		self.roomMinX[1] = -5.400  self.roomMaxX[1] = -2.427
 		self.roomMinX[2] = 2.497   self.roomMaxX[2] = 5.406
@@ -17,14 +18,14 @@ script MafiaMapSetup extends Logic
 		self.roomMinX[6] = 2.454   self.roomMaxX[6] = 5.439
 		self.roomMinX[7] = -5.368  self.roomMaxX[7] = -2.437
 		self.roomMinX[8] = 2.422   self.roomMaxX[8] = 5.406
-
+		
 		log("[MafiaMapSetup] 방 경계 초기화 완료 (8개 방, 2026-06-29 좌표)")
 	end
 
 	@ExecSpace("ServerOnly")
 	method void OnUpdate(number delta)
 		if _MafiaGameLogic == nil then return end
-
+		
 		local userKeys = _UserService.Users.Keys
 		for _, userId in ipairs(userKeys) do
 		    local ent = _UserService:GetUserEntityByUserId(tostring(userId))

@@ -178,9 +178,6 @@ script MafiaGameLogic extends Logic
 
 	property table readyPlayers = nil
 
-	-- Users who explicitly entered the investigation room lobby. Seating, ready checks and role
-	-- assignment read this instead of every connected user, so someone idling on the main lobby
-	-- screen neither occupies a seat nor blocks the game from starting.
 	property table lobbyPresent = nil
 
 	property any userLeaveHandler = nil
@@ -196,7 +193,7 @@ script MafiaGameLogic extends Logic
 		    self.voteSubmitted = {}
 		    self.readyPlayers   = {}
 		    self.lobbyPresent   = {}
-
+		
 		    self.MafiaTarget   = ""
 		    self.DoctorTarget  = ""
 		    self.PoliceTarget  = ""
@@ -423,7 +420,6 @@ script MafiaGameLogic extends Logic
 		    end
 	end
 
-	-- Lobby: sync user seat order for deterministic UI rendering by room index.
 	@ExecSpace("ServerOnly")
 	method void UpdateLobbySeatOrder()
 		    local seats = {}

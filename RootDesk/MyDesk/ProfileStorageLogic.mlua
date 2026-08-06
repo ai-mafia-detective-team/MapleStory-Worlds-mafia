@@ -7,21 +7,27 @@ script ProfileStorageLogic extends Logic
 
 	property string DEFAULT_RUID = "ef1ba8b05d0a4d9e8d4033c9e797f708"
 
-	-- ── 프로필 슬롯 2~4 RUID (슬롯 1 = DEFAULT_RUID) ────────────────────────────
-	-- ResourceConfig.mlua 의 RUID_PROFILE_1~4 와 동일한 값입니다.
 	property string RUID_PROFILE_2 = "ba1ad8baabb5492b8030f62062bac632"
+
 	property string RUID_PROFILE_3 = "889918f7b8454392867298470d9ed43a"
+
 	property string RUID_PROFILE_4 = "f54ce587be5a462d846f64b2de315e3d"
 
-	-- ── 스토리지 키 상수 (StorageKeyConfig.mlua 참고) ───────────────────────────
 	property string KEY_STORAGE_PROFILE = "PlayerProfile"
-	property string KEY_NICKNAME        = "player_nickname_v1"
-	property string KEY_TITLE           = "player_title_v1"
-	property string KEY_PROFILE_IMG     = "selected_profile_image_ruid_v1"
-	property string KEY_NICKNAME_SET    = "nickname_set_v1"
-	property string LEGACY_PREFIX_NICK  = "player_nickname_v1_"
+
+	property string KEY_NICKNAME = "player_nickname_v1"
+
+	property string KEY_TITLE = "player_title_v1"
+
+	property string KEY_PROFILE_IMG = "selected_profile_image_ruid_v1"
+
+	property string KEY_NICKNAME_SET = "nickname_set_v1"
+
+	property string LEGACY_PREFIX_NICK = "player_nickname_v1_"
+
 	property string LEGACY_PREFIX_TITLE = "player_title_v1_"
-	property string LEGACY_PREFIX_IMG   = "player_profile_image_v1_"
+
+	property string LEGACY_PREFIX_IMG = "player_profile_image_v1_"
 
 	property any storage = nil
 

@@ -2,11 +2,17 @@
 script FriendManager extends Logic
 
 	property string KEY_FRIENDS = "friends_v1"
+
 	property string KEY_REQUESTS = "friend_requests_v1"
+
 	property string KEY_NICKNAME = "player_nickname_v1"
+
 	property string DIRECTORY_STORAGE = "FriendDirectory"
+
 	property integer MAX_FRIENDS = 50
+
 	property any directoryStorage = nil
+
 	property table nicknameRegistrationCache = nil
 
 	@ExecSpace("ServerOnly")
