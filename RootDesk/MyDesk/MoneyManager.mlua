@@ -83,9 +83,11 @@ script MoneyManager extends Logic
 			[self.KEY_OWNED_COSTUMES] = _HttpService:JSONEncode(state.owned),
 		}
 		local storage = _DataStorageService:GetUserDataStorage(userId)
-		local errorCode = storage:BatchSetAndWait(saveData)
+		local errorCode, savedKeys = storage:BatchSetAndWait(saveData)
 		if errorCode ~= nil and errorCode ~= 0 then
-			log_error("[MoneyManager] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+			local savedCount = 0
+			if savedKeys ~= nil then savedCount = savedKeys.Count end
+			log_error("[MoneyManager] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode) .. " savedKeys=" .. tostring(savedCount))
 			return false
 		end
 		log("[MoneyManager] Saved userId=" .. userId .. " paid=" .. tostring(state.paid) .. " free=" .. tostring(state.free))
