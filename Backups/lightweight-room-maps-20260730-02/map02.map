@@ -1,26 +1,26 @@
 {
   "Id": "",
   "GameId": "",
-  "EntryKey": "map://map01",
+  "EntryKey": "map://map02",
   "ContentType": "x-mod/map",
   "Content": "",
-  "Usage": 0,
+  "Usage": 1,
   "UsePublish": 1,
   "UseService": 0,
-  "CoreVersion": "26.7.0.0",
+  "CoreVersion": "26.5.0.0",
   "StudioVersion": "0.1.0.0",
   "DynamicLoading": 0,
   "ContentProto": {
     "Use": "Binary",
     "Entities": [
       {
-        "id": "01a20327-e78e-44a9-87e3-93eaf1f49bb3",
-        "path": "/maps/map01",
+        "id": "fb52dce9-3fb1-4f20-aa60-66b5cb1171b1",
+        "path": "/maps/map02",
         "componentNames": "MOD.Core.MapComponent,MOD.Core.FootholdComponent,MOD.Core.SoundComponent",
         "jsonString": {
-          "name": "map01",
-          "path": "/maps/map01",
-          "nameEditable": false,
+          "name": "map02",
+          "path": "/maps/map02",
+          "nameEditable": true,
           "enable": true,
           "visible": true,
           "localize": false,
@@ -31,7 +31,7 @@
           "@components": [
             {
               "@type": "MOD.Core.MapComponent",
-              "IsInstanceMap": false,
+              "IsInstanceMap": true,
               "TileMapMode": 0,
               "Enable": true
             },
@@ -55,7 +55,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 1,
                     "StartPoint": {
                       "x": -3.98,
@@ -86,7 +86,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 2,
                     "StartPoint": {
                       "x": -3.68,
@@ -117,7 +117,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 3,
                     "StartPoint": {
                       "x": -3.53,
@@ -148,7 +148,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 4,
                     "StartPoint": {
                       "x": -3.53,
@@ -179,7 +179,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 5,
                     "StartPoint": {
                       "x": -0.71,
@@ -210,7 +210,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 6,
                     "StartPoint": {
                       "x": -0.71,
@@ -241,7 +241,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
+                    "OwnerId": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
                     "Id": 7,
                     "StartPoint": {
                       "x": -0.14,
@@ -272,7 +272,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 8,
                     "StartPoint": {
                       "x": 0.01,
@@ -303,7 +303,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 9,
                     "StartPoint": {
                       "x": 0.31,
@@ -334,7 +334,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 10,
                     "StartPoint": {
                       "x": 0.46,
@@ -365,7 +365,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 11,
                     "StartPoint": {
                       "x": 0.46,
@@ -396,7 +396,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 12,
                     "StartPoint": {
                       "x": 5.3,
@@ -427,7 +427,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 13,
                     "StartPoint": {
                       "x": 5.3,
@@ -458,7 +458,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "3a38515b-535a-435a-8d9f-70499e447492",
+                    "OwnerId": "4e6c16a6-f664-494b-9038-72df17642dd5",
                     "Id": 14,
                     "StartPoint": {
                       "x": 5.87,
@@ -489,7 +489,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 15,
                     "StartPoint": {
                       "x": -7.98,
@@ -520,7 +520,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 16,
                     "StartPoint": {
                       "x": -7.68,
@@ -551,7 +551,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 17,
                     "StartPoint": {
                       "x": -7.53,
@@ -582,7 +582,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 18,
                     "StartPoint": {
                       "x": -7.53,
@@ -613,7 +613,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 19,
                     "StartPoint": {
                       "x": -4.71,
@@ -644,7 +644,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 20,
                     "StartPoint": {
                       "x": -4.71,
@@ -675,7 +675,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "793abba1-58ec-49a1-819d-b072b224e298",
+                    "OwnerId": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
                     "Id": 21,
                     "StartPoint": {
                       "x": -4.14,
@@ -706,7 +706,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 22,
                     "StartPoint": {
                       "x": 6.02,
@@ -737,7 +737,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 23,
                     "StartPoint": {
                       "x": 6.32,
@@ -768,7 +768,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 24,
                     "StartPoint": {
                       "x": 6.47,
@@ -799,7 +799,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 25,
                     "StartPoint": {
                       "x": 6.47,
@@ -830,7 +830,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 26,
                     "StartPoint": {
                       "x": 9.29,
@@ -861,7 +861,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 27,
                     "StartPoint": {
                       "x": 9.29,
@@ -892,7 +892,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
+                    "OwnerId": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
                     "Id": 28,
                     "StartPoint": {
                       "x": 9.86,
@@ -923,7 +923,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "932003e6-2654-4832-8013-7a244ade82ae",
+                    "OwnerId": "aae2680e-3054-495a-9752-6292a577df80",
                     "Id": 29,
                     "StartPoint": {
                       "x": -5.986,
@@ -954,7 +954,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "932003e6-2654-4832-8013-7a244ade82ae",
+                    "OwnerId": "aae2680e-3054-495a-9752-6292a577df80",
                     "Id": 30,
                     "StartPoint": {
                       "x": -5.986,
@@ -985,7 +985,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "932003e6-2654-4832-8013-7a244ade82ae",
+                    "OwnerId": "aae2680e-3054-495a-9752-6292a577df80",
                     "Id": 31,
                     "StartPoint": {
                       "x": -2.677,
@@ -1016,7 +1016,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "a2e2268a-88ca-4382-a5fa-33c9ac439987",
+                    "OwnerId": "d67add1d-ae5c-4e98-b349-4c0d37cf7931",
                     "Id": 32,
                     "StartPoint": {
                       "x": -6.018,
@@ -1047,7 +1047,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "a2e2268a-88ca-4382-a5fa-33c9ac439987",
+                    "OwnerId": "d67add1d-ae5c-4e98-b349-4c0d37cf7931",
                     "Id": 33,
                     "StartPoint": {
                       "x": -6.018,
@@ -1078,7 +1078,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "a2e2268a-88ca-4382-a5fa-33c9ac439987",
+                    "OwnerId": "d67add1d-ae5c-4e98-b349-4c0d37cf7931",
                     "Id": 34,
                     "StartPoint": {
                       "x": -2.709,
@@ -1109,7 +1109,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c9d7b5e9-35bf-4067-bb88-8fa5e293fa4c",
+                    "OwnerId": "a661555e-5e0c-40f2-985a-763582c0ea9f",
                     "Id": 35,
                     "StartPoint": {
                       "x": -6.029,
@@ -1140,7 +1140,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c9d7b5e9-35bf-4067-bb88-8fa5e293fa4c",
+                    "OwnerId": "a661555e-5e0c-40f2-985a-763582c0ea9f",
                     "Id": 36,
                     "StartPoint": {
                       "x": -6.029,
@@ -1171,7 +1171,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c9d7b5e9-35bf-4067-bb88-8fa5e293fa4c",
+                    "OwnerId": "a661555e-5e0c-40f2-985a-763582c0ea9f",
                     "Id": 37,
                     "StartPoint": {
                       "x": -2.72,
@@ -1202,7 +1202,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c014b1f8-e9c4-4179-a85b-c6673a23211e",
+                    "OwnerId": "3b040e09-63ce-4c0b-94c0-1ef72d7d13b9",
                     "Id": 38,
                     "StartPoint": {
                       "x": -5.998,
@@ -1233,7 +1233,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c014b1f8-e9c4-4179-a85b-c6673a23211e",
+                    "OwnerId": "3b040e09-63ce-4c0b-94c0-1ef72d7d13b9",
                     "Id": 39,
                     "StartPoint": {
                       "x": -5.998,
@@ -1264,7 +1264,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c014b1f8-e9c4-4179-a85b-c6673a23211e",
+                    "OwnerId": "3b040e09-63ce-4c0b-94c0-1ef72d7d13b9",
                     "Id": 40,
                     "StartPoint": {
                       "x": -2.689,
@@ -1295,7 +1295,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c7e88253-397e-413a-ac41-a67dc344c936",
+                    "OwnerId": "e3f3335f-abd4-42f7-9d00-62e9c0187ce5",
                     "Id": 41,
                     "StartPoint": {
                       "x": 1.878,
@@ -1326,7 +1326,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c7e88253-397e-413a-ac41-a67dc344c936",
+                    "OwnerId": "e3f3335f-abd4-42f7-9d00-62e9c0187ce5",
                     "Id": 42,
                     "StartPoint": {
                       "x": 1.878,
@@ -1357,7 +1357,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "c7e88253-397e-413a-ac41-a67dc344c936",
+                    "OwnerId": "e3f3335f-abd4-42f7-9d00-62e9c0187ce5",
                     "Id": 43,
                     "StartPoint": {
                       "x": 5.187,
@@ -1388,7 +1388,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "32eb869a-3efa-41ed-9bbd-df54ee1d903a",
+                    "OwnerId": "6e7981e6-81ba-499f-afba-a2b5f2c47819",
                     "Id": 44,
                     "StartPoint": {
                       "x": 1.834,
@@ -1419,7 +1419,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "32eb869a-3efa-41ed-9bbd-df54ee1d903a",
+                    "OwnerId": "6e7981e6-81ba-499f-afba-a2b5f2c47819",
                     "Id": 45,
                     "StartPoint": {
                       "x": 1.834,
@@ -1450,7 +1450,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "32eb869a-3efa-41ed-9bbd-df54ee1d903a",
+                    "OwnerId": "6e7981e6-81ba-499f-afba-a2b5f2c47819",
                     "Id": 46,
                     "StartPoint": {
                       "x": 5.143,
@@ -1481,7 +1481,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "6c9d9bc1-d3ec-479d-b8d9-f5fc4df1ae7a",
+                    "OwnerId": "d4eb1175-ede5-407e-9757-345a37fb742c",
                     "Id": 47,
                     "StartPoint": {
                       "x": 1.894,
@@ -1512,7 +1512,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "6c9d9bc1-d3ec-479d-b8d9-f5fc4df1ae7a",
+                    "OwnerId": "d4eb1175-ede5-407e-9757-345a37fb742c",
                     "Id": 48,
                     "StartPoint": {
                       "x": 1.894,
@@ -1543,7 +1543,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "6c9d9bc1-d3ec-479d-b8d9-f5fc4df1ae7a",
+                    "OwnerId": "d4eb1175-ede5-407e-9757-345a37fb742c",
                     "Id": 49,
                     "StartPoint": {
                       "x": 5.203,
@@ -1574,7 +1574,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "e2c3f91d-2295-4417-866f-cb097605e4d8",
+                    "OwnerId": "1be43055-c105-4b00-ad3f-7806d724b0a0",
                     "Id": 50,
                     "StartPoint": {
                       "x": 1.898,
@@ -1605,7 +1605,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "e2c3f91d-2295-4417-866f-cb097605e4d8",
+                    "OwnerId": "1be43055-c105-4b00-ad3f-7806d724b0a0",
                     "Id": 51,
                     "StartPoint": {
                       "x": 1.898,
@@ -1636,7 +1636,7 @@
                       "isCustomFoothold": true,
                       "inertiaOption": 0
                     },
-                    "OwnerId": "e2c3f91d-2295-4417-866f-cb097605e4d8",
+                    "OwnerId": "1be43055-c105-4b00-ad3f-7806d724b0a0",
                     "Id": 52,
                     "StartPoint": {
                       "x": 5.207,
@@ -1668,12 +1668,12 @@
         }
       },
       {
-        "id": "446b90a1-2b90-4ba6-9bd5-b187e160dda6",
-        "path": "/maps/map01/MapleMapLayer_1",
+        "id": "7002ab68-08d8-4465-b160-cb46c9fb71c4",
+        "path": "/maps/map02/MapleMapLayer_1",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_1",
-          "path": "/maps/map01/MapleMapLayer_1",
+          "path": "/maps/map02/MapleMapLayer_1",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1704,12 +1704,12 @@
         }
       },
       {
-        "id": "ba8196d7-3b5a-472e-a2bc-0cbeee961966",
-        "path": "/maps/map01/Background",
+        "id": "28df9101-5d23-4302-a3ef-32587a7defdd",
+        "path": "/maps/map02/Background",
         "componentNames": "MOD.Core.BackgroundComponent",
         "jsonString": {
           "name": "Background",
-          "path": "/maps/map01/Background",
+          "path": "/maps/map02/Background",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1731,12 +1731,12 @@
         }
       },
       {
-        "id": "bdeaed96-c34e-4618-9e7c-d7bd73ef64a1",
-        "path": "/maps/map01/TileMap",
+        "id": "80d1a3b1-ac0d-4960-ae4e-cebd49d49fe8",
+        "path": "/maps/map02/TileMap",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap",
-          "path": "/maps/map01/TileMap",
+          "path": "/maps/map02/TileMap",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1755,11 +1755,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -0.225,
                 "y": -0.15,
@@ -1771,7 +1766,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1790,12 +1784,12 @@
         }
       },
       {
-        "id": "217bfe64-5535-433b-851d-0d7227eefd6e",
-        "path": "/maps/map01/MapleMapLayer",
+        "id": "e7c78461-0dc8-4985-8ac3-52216d4b518d",
+        "path": "/maps/map02/MapleMapLayer",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer",
-          "path": "/maps/map01/MapleMapLayer",
+          "path": "/maps/map02/MapleMapLayer",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1826,12 +1820,12 @@
         }
       },
       {
-        "id": "9dcc7f27-3c63-4fba-88fd-cac6df835250",
-        "path": "/maps/map01/TileMap_1",
+        "id": "0190ee84-6f42-409b-9029-9585765bfd84",
+        "path": "/maps/map02/TileMap_1",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_1",
-          "path": "/maps/map01/TileMap_1",
+          "path": "/maps/map02/TileMap_1",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1850,11 +1844,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.225,
                 "y": 0.15,
@@ -1866,7 +1855,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1885,12 +1873,12 @@
         }
       },
       {
-        "id": "0f564788-30f9-4b4e-a011-cbfb868ab6ab",
-        "path": "/maps/map01/MapleMapLayer_2",
+        "id": "26b80df2-a523-4a24-b575-a38175385009",
+        "path": "/maps/map02/MapleMapLayer_2",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_2",
-          "path": "/maps/map01/MapleMapLayer_2",
+          "path": "/maps/map02/MapleMapLayer_2",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1921,12 +1909,12 @@
         }
       },
       {
-        "id": "35b8c2e9-b7b2-4e4c-bae7-e4a3916aaaac",
-        "path": "/maps/map01/TileMap_2",
+        "id": "af027923-917d-430d-abb3-ba56894bda73",
+        "path": "/maps/map02/TileMap_2",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_2",
-          "path": "/maps/map01/TileMap_2",
+          "path": "/maps/map02/TileMap_2",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -1945,11 +1933,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -0.225,
                 "y": -0.15,
@@ -1961,7 +1944,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -1980,12 +1962,12 @@
         }
       },
       {
-        "id": "505eee6f-f29a-446c-9bd9-4dd4d2f679f2",
-        "path": "/maps/map01/MapleMapLayer_3",
+        "id": "631a3101-9c31-487e-abb2-3509a5e56a9e",
+        "path": "/maps/map02/MapleMapLayer_3",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_3",
-          "path": "/maps/map01/MapleMapLayer_3",
+          "path": "/maps/map02/MapleMapLayer_3",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2016,12 +1998,12 @@
         }
       },
       {
-        "id": "77ff5cfd-3e8b-4adb-8043-467f58d14541",
-        "path": "/maps/map01/TileMap_3",
+        "id": "35fb7a2d-0db0-456c-b570-211758ee283e",
+        "path": "/maps/map02/TileMap_3",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_3",
-          "path": "/maps/map01/TileMap_3",
+          "path": "/maps/map02/TileMap_3",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2040,11 +2022,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.225,
                 "y": 0.15,
@@ -2056,7 +2033,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2075,12 +2051,12 @@
         }
       },
       {
-        "id": "85d46d00-fd7d-4d90-94d2-de53cfd7ce8b",
-        "path": "/maps/map01/MapleMapLayer_4",
+        "id": "9379dc53-363a-4039-ac3a-0a2d3cee701c",
+        "path": "/maps/map02/MapleMapLayer_4",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_4",
-          "path": "/maps/map01/MapleMapLayer_4",
+          "path": "/maps/map02/MapleMapLayer_4",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2111,12 +2087,12 @@
         }
       },
       {
-        "id": "f04dad7f-df31-4188-9628-d8bf83832fa6",
-        "path": "/maps/map01/TileMap_4",
+        "id": "87cfaf8d-cc3b-4b6a-9926-3392028c5e96",
+        "path": "/maps/map02/TileMap_4",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_4",
-          "path": "/maps/map01/TileMap_4",
+          "path": "/maps/map02/TileMap_4",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2135,11 +2111,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -0.225,
                 "y": -0.15,
@@ -2151,7 +2122,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2170,12 +2140,12 @@
         }
       },
       {
-        "id": "eff7dec5-ce68-4237-923d-d34a6d6b9ad8",
-        "path": "/maps/map01/foothold-2311",
+        "id": "6c44a831-cafc-4b34-bdb4-46a2203a6b6f",
+        "path": "/maps/map02/foothold-2311",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "foothold-2311",
-          "path": "/maps/map01/foothold-2311",
+          "path": "/maps/map02/foothold-2311",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2194,11 +2164,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -2.01,
                 "y": 1.73,
@@ -2215,7 +2180,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2274,12 +2238,12 @@
         }
       },
       {
-        "id": "3a38515b-535a-435a-8d9f-70499e447492",
-        "path": "/maps/map01/foothold-2279",
+        "id": "4e6c16a6-f664-494b-9038-72df17642dd5",
+        "path": "/maps/map02/foothold-2279",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "foothold-2279",
-          "path": "/maps/map01/foothold-2279",
+          "path": "/maps/map02/foothold-2279",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2298,11 +2262,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 2.99,
                 "y": 1.73,
@@ -2319,7 +2278,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2378,12 +2336,12 @@
         }
       },
       {
-        "id": "f5e83f55-24d0-4c2d-b8f9-bfccdbe54390",
-        "path": "/maps/map01/MapObject",
+        "id": "708b7972-efd1-4745-94bf-a1fcab3db234",
+        "path": "/maps/map02/MapObject",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent",
         "jsonString": {
           "name": "MapObject",
-          "path": "/maps/map01/MapObject",
+          "path": "/maps/map02/MapObject",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2402,11 +2360,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 3.15,
                 "y": 0.9,
@@ -2418,7 +2371,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2437,12 +2389,12 @@
         }
       },
       {
-        "id": "eedc491f-c7e2-4be2-a08b-9b3bc06bc5e3",
-        "path": "/maps/map01/MapObject_1",
+        "id": "607fc4e9-0bee-4c93-ba50-e5b8654eb187",
+        "path": "/maps/map02/MapObject_1",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent",
         "jsonString": {
           "name": "MapObject_1",
-          "path": "/maps/map01/MapObject_1",
+          "path": "/maps/map02/MapObject_1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2461,11 +2413,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -0.42,
                 "y": 0.65,
@@ -2477,7 +2424,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2496,12 +2442,12 @@
         }
       },
       {
-        "id": "fd6632da-6fe6-4d19-954a-096ce2829474",
-        "path": "/maps/map01/MapObject_2",
+        "id": "9b1eaea0-0c83-4c4c-a1a0-e6f6ac8debda",
+        "path": "/maps/map02/MapObject_2",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent",
         "jsonString": {
           "name": "MapObject_2",
-          "path": "/maps/map01/MapObject_2",
+          "path": "/maps/map02/MapObject_2",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2520,11 +2466,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 5.58,
                 "y": 0.65,
@@ -2536,7 +2477,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2555,12 +2495,12 @@
         }
       },
       {
-        "id": "3edd31c0-d1af-4d93-8169-b562fc827e07",
-        "path": "/maps/map01/MapObject_3",
+        "id": "8a33a55b-401b-44fa-89a4-3bc56b431b39",
+        "path": "/maps/map02/MapObject_3",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent",
         "jsonString": {
           "name": "MapObject_3",
-          "path": "/maps/map01/MapObject_3",
+          "path": "/maps/map02/MapObject_3",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2579,11 +2519,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -2.02,
                 "y": 0.18,
@@ -2595,7 +2530,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2614,12 +2548,12 @@
         }
       },
       {
-        "id": "793abba1-58ec-49a1-819d-b072b224e298",
-        "path": "/maps/map01/foothold-2311_1",
+        "id": "cc29a6ae-1d13-49cb-a2b1-c2cfe1dc04b6",
+        "path": "/maps/map02/foothold-2311_1",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "foothold-2311_1",
-          "path": "/maps/map01/foothold-2311_1",
+          "path": "/maps/map02/foothold-2311_1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2638,11 +2572,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -6.01,
                 "y": 1.73,
@@ -2659,7 +2588,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2718,12 +2646,12 @@
         }
       },
       {
-        "id": "59edec9c-dcd5-4159-88d1-d75f3b5be5f2",
-        "path": "/maps/map01/foothold-2377",
+        "id": "ca86a1c8-342e-40cd-a0a6-f8b3bb2de79f",
+        "path": "/maps/map02/foothold-2377",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "foothold-2377",
-          "path": "/maps/map01/foothold-2377",
+          "path": "/maps/map02/foothold-2377",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -2742,11 +2670,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 7.99,
                 "y": 1.73,
@@ -2763,7 +2686,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2822,12 +2744,12 @@
         }
       },
       {
-        "id": "6b19fd4b-962a-4d30-a84f-e4d964a9d1fc",
-        "path": "/maps/map01/MapleMapLayer_5",
+        "id": "6b88e8e0-eeea-440a-be0e-d7e35beda553",
+        "path": "/maps/map02/MapleMapLayer_5",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_5",
-          "path": "/maps/map01/MapleMapLayer_5",
+          "path": "/maps/map02/MapleMapLayer_5",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2858,12 +2780,12 @@
         }
       },
       {
-        "id": "555512fc-4432-4b3b-a29f-4d42275cc5c8",
-        "path": "/maps/map01/TileMap_5",
+        "id": "78daafa3-76f5-4d4d-a893-0233957741bf",
+        "path": "/maps/map02/TileMap_5",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_5",
-          "path": "/maps/map01/TileMap_5",
+          "path": "/maps/map02/TileMap_5",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2882,11 +2804,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.225,
                 "y": 0.15,
@@ -2898,7 +2815,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -2917,12 +2833,12 @@
         }
       },
       {
-        "id": "0ae08792-4378-4e5a-9f33-1fb57559a2ba",
-        "path": "/maps/map01/MapleMapLayer_6",
+        "id": "0e4c2257-ce2d-40ab-8964-eaf960d4203b",
+        "path": "/maps/map02/MapleMapLayer_6",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_6",
-          "path": "/maps/map01/MapleMapLayer_6",
+          "path": "/maps/map02/MapleMapLayer_6",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2953,12 +2869,12 @@
         }
       },
       {
-        "id": "bacf63b0-0c48-4d2f-ab2c-31197777a206",
-        "path": "/maps/map01/TileMap_6",
+        "id": "32d1bfe6-8dea-41a8-aef7-6bcdd8e51f6b",
+        "path": "/maps/map02/TileMap_6",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_6",
-          "path": "/maps/map01/TileMap_6",
+          "path": "/maps/map02/TileMap_6",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -2977,11 +2893,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -0.225,
                 "y": -0.15,
@@ -2993,7 +2904,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3012,12 +2922,12 @@
         }
       },
       {
-        "id": "b9696562-e358-4cad-b96b-a83076f81168",
-        "path": "/maps/map01/MapleMapLayer_7",
+        "id": "12882026-cadb-440e-916f-169540112ee6",
+        "path": "/maps/map02/MapleMapLayer_7",
         "componentNames": "MOD.Core.MapLayerComponent",
         "jsonString": {
           "name": "MapleMapLayer_7",
-          "path": "/maps/map01/MapleMapLayer_7",
+          "path": "/maps/map02/MapleMapLayer_7",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -3048,12 +2958,12 @@
         }
       },
       {
-        "id": "924b51f9-5d55-47c6-9902-e8f179fa036b",
-        "path": "/maps/map01/TileMap_7",
+        "id": "8b54d463-4b04-4d55-adf3-7f1acd9e529c",
+        "path": "/maps/map02/TileMap_7",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.TileMapComponent",
         "jsonString": {
           "name": "TileMap_7",
-          "path": "/maps/map01/TileMap_7",
+          "path": "/maps/map02/TileMap_7",
           "nameEditable": false,
           "enable": true,
           "visible": true,
@@ -3072,11 +2982,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.225,
                 "y": 0.15,
@@ -3088,7 +2993,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3107,12 +3011,12 @@
         }
       },
       {
-        "id": "88651237-c144-4e66-ae8a-40c5f269f71c",
-        "path": "/maps/map01/SpawnLocation",
+        "id": "ad03cb7f-9e88-4a53-81bc-a2c2a5d63521",
+        "path": "/maps/map02/SpawnLocation",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.SpawnLocationComponent",
         "jsonString": {
           "name": "SpawnLocation",
-          "path": "/maps/map01/SpawnLocation",
+          "path": "/maps/map02/SpawnLocation",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3131,11 +3035,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 4.0,
                 "y": 2.5,
@@ -3147,7 +3046,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3169,12 +3067,12 @@
         }
       },
       {
-        "id": "986929a7-de2d-45bb-994b-61c32494ce24",
-        "path": "/maps/map01/Portal",
+        "id": "0ef22607-f368-48f3-addb-65b206938385",
+        "path": "/maps/map02/Portal",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.PortalComponent,MOD.Core.TagComponent",
         "jsonString": {
           "name": "Portal",
-          "path": "/maps/map01/Portal",
+          "path": "/maps/map02/Portal",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3193,11 +3091,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -2.1,
                 "y": -1.49,
@@ -3209,7 +3102,6 @@
                 "z": 0.0,
                 "w": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3247,12 +3139,12 @@
         }
       },
       {
-        "id": "932003e6-2654-4832-8013-7a244ade82ae",
-        "path": "/maps/map01/RoomPlatform_1",
+        "id": "aae2680e-3054-495a-9752-6292a577df80",
+        "path": "/maps/map02/RoomPlatform_1",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_1",
-          "path": "/maps/map01/RoomPlatform_1",
+          "path": "/maps/map02/RoomPlatform_1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3271,11 +3163,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3292,7 +3179,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3345,12 +3231,12 @@
         }
       },
       {
-        "id": "130c4022-4e5d-4eee-8489-1a3f10e1c65d",
-        "path": "/maps/map01/RoomSpawn_1",
+        "id": "737bbab8-faa7-4435-a467-54f788fa0464",
+        "path": "/maps/map02/RoomSpawn_1",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_1",
-          "path": "/maps/map01/RoomSpawn_1",
+          "path": "/maps/map02/RoomSpawn_1",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3369,11 +3255,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -4.329,
                 "y": 1.98,
@@ -3390,7 +3271,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -3398,12 +3278,12 @@
         }
       },
       {
-        "id": "a2e2268a-88ca-4382-a5fa-33c9ac439987",
-        "path": "/maps/map01/RoomPlatform_2",
+        "id": "d67add1d-ae5c-4e98-b349-4c0d37cf7931",
+        "path": "/maps/map02/RoomPlatform_2",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_2",
-          "path": "/maps/map01/RoomPlatform_2",
+          "path": "/maps/map02/RoomPlatform_2",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3422,11 +3302,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3443,7 +3318,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3496,12 +3370,12 @@
         }
       },
       {
-        "id": "8f71fc04-77b3-4d67-bc63-ee717b56624a",
-        "path": "/maps/map01/RoomSpawn_2",
+        "id": "7bba3a65-e964-4068-ab25-7966789ea0b7",
+        "path": "/maps/map02/RoomSpawn_2",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_2",
-          "path": "/maps/map01/RoomSpawn_2",
+          "path": "/maps/map02/RoomSpawn_2",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3520,11 +3394,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -4.361,
                 "y": 0.26,
@@ -3541,7 +3410,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -3549,12 +3417,12 @@
         }
       },
       {
-        "id": "c9d7b5e9-35bf-4067-bb88-8fa5e293fa4c",
-        "path": "/maps/map01/RoomPlatform_3",
+        "id": "a661555e-5e0c-40f2-985a-763582c0ea9f",
+        "path": "/maps/map02/RoomPlatform_3",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_3",
-          "path": "/maps/map01/RoomPlatform_3",
+          "path": "/maps/map02/RoomPlatform_3",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3573,11 +3441,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3594,7 +3457,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3647,12 +3509,12 @@
         }
       },
       {
-        "id": "f8d3e2bc-303f-4c91-afc5-a631ab2998f6",
-        "path": "/maps/map01/RoomSpawn_3",
+        "id": "ab2c31ec-7cb3-4c08-b83f-8111f89fdeaa",
+        "path": "/maps/map02/RoomSpawn_3",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_3",
-          "path": "/maps/map01/RoomSpawn_3",
+          "path": "/maps/map02/RoomSpawn_3",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3671,11 +3533,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -4.372,
                 "y": -1.142,
@@ -3692,7 +3549,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -3700,12 +3556,12 @@
         }
       },
       {
-        "id": "c014b1f8-e9c4-4179-a85b-c6673a23211e",
-        "path": "/maps/map01/RoomPlatform_4",
+        "id": "3b040e09-63ce-4c0b-94c0-1ef72d7d13b9",
+        "path": "/maps/map02/RoomPlatform_4",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_4",
-          "path": "/maps/map01/RoomPlatform_4",
+          "path": "/maps/map02/RoomPlatform_4",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3724,11 +3580,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3745,7 +3596,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3798,12 +3648,12 @@
         }
       },
       {
-        "id": "5ae2158f-e950-492b-b04a-60961fbb8be2",
-        "path": "/maps/map01/RoomSpawn_4",
+        "id": "960575e8-48a9-43cb-801d-91a1c0b98966",
+        "path": "/maps/map02/RoomSpawn_4",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_4",
-          "path": "/maps/map01/RoomSpawn_4",
+          "path": "/maps/map02/RoomSpawn_4",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3822,11 +3672,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": -4.341,
                 "y": -2.278,
@@ -3843,7 +3688,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -3851,12 +3695,12 @@
         }
       },
       {
-        "id": "c7e88253-397e-413a-ac41-a67dc344c936",
-        "path": "/maps/map01/RoomPlatform_5",
+        "id": "e3f3335f-abd4-42f7-9d00-62e9c0187ce5",
+        "path": "/maps/map02/RoomPlatform_5",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_5",
-          "path": "/maps/map01/RoomPlatform_5",
+          "path": "/maps/map02/RoomPlatform_5",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3875,11 +3719,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3896,7 +3735,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -3949,12 +3787,12 @@
         }
       },
       {
-        "id": "9cc34f69-6aad-4f24-96e4-2bc8da1c5b57",
-        "path": "/maps/map01/RoomSpawn_5",
+        "id": "9d6c70ef-6e4a-4cad-8df2-55be2cdc3301",
+        "path": "/maps/map02/RoomSpawn_5",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_5",
-          "path": "/maps/map01/RoomSpawn_5",
+          "path": "/maps/map02/RoomSpawn_5",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -3973,11 +3811,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 3.535,
                 "y": 1.989,
@@ -3994,7 +3827,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -4002,12 +3834,12 @@
         }
       },
       {
-        "id": "32eb869a-3efa-41ed-9bbd-df54ee1d903a",
-        "path": "/maps/map01/RoomPlatform_6",
+        "id": "6e7981e6-81ba-499f-afba-a2b5f2c47819",
+        "path": "/maps/map02/RoomPlatform_6",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_6",
-          "path": "/maps/map01/RoomPlatform_6",
+          "path": "/maps/map02/RoomPlatform_6",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4026,11 +3858,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4047,7 +3874,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4100,12 +3926,12 @@
         }
       },
       {
-        "id": "f323559a-1e66-4708-8b0e-2e82a72c6dc6",
-        "path": "/maps/map01/RoomSpawn_6",
+        "id": "dce7b477-ac97-443b-9a94-8f7c0359405e",
+        "path": "/maps/map02/RoomSpawn_6",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_6",
-          "path": "/maps/map01/RoomSpawn_6",
+          "path": "/maps/map02/RoomSpawn_6",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4124,11 +3950,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 3.492,
                 "y": 0.255,
@@ -4145,7 +3966,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -4153,12 +3973,12 @@
         }
       },
       {
-        "id": "6c9d9bc1-d3ec-479d-b8d9-f5fc4df1ae7a",
-        "path": "/maps/map01/RoomPlatform_7",
+        "id": "d4eb1175-ede5-407e-9757-345a37fb742c",
+        "path": "/maps/map02/RoomPlatform_7",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_7",
-          "path": "/maps/map01/RoomPlatform_7",
+          "path": "/maps/map02/RoomPlatform_7",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4177,11 +3997,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4198,7 +4013,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4251,12 +4065,12 @@
         }
       },
       {
-        "id": "db42cb56-711e-4a1a-8d57-6280ceb37dae",
-        "path": "/maps/map01/RoomSpawn_7",
+        "id": "bce2b73e-5197-459e-89c1-0d63143178e4",
+        "path": "/maps/map02/RoomSpawn_7",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_7",
-          "path": "/maps/map01/RoomSpawn_7",
+          "path": "/maps/map02/RoomSpawn_7",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4275,11 +4089,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 3.551,
                 "y": -1.052,
@@ -4296,7 +4105,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],
@@ -4304,12 +4112,12 @@
         }
       },
       {
-        "id": "e2c3f91d-2295-4417-866f-cb097605e4d8",
-        "path": "/maps/map01/RoomPlatform_8",
+        "id": "1be43055-c105-4b00-ad3f-7806d724b0a0",
+        "path": "/maps/map02/RoomPlatform_8",
         "componentNames": "MOD.Core.TransformComponent,MOD.Core.SpriteRendererComponent,MOD.Core.CustomFootholdComponent",
         "jsonString": {
           "name": "RoomPlatform_8",
-          "path": "/maps/map01/RoomPlatform_8",
+          "path": "/maps/map02/RoomPlatform_8",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4328,11 +4136,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4349,7 +4152,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             },
             {
@@ -4402,12 +4204,12 @@
         }
       },
       {
-        "id": "57394953-37cd-47c6-b6c9-e4698eb8fa83",
-        "path": "/maps/map01/RoomSpawn_8",
+        "id": "8a6b2708-0953-4ff2-a375-50fff169cdef",
+        "path": "/maps/map02/RoomSpawn_8",
         "componentNames": "MOD.Core.TransformComponent",
         "jsonString": {
           "name": "RoomSpawn_8",
-          "path": "/maps/map01/RoomSpawn_8",
+          "path": "/maps/map02/RoomSpawn_8",
           "nameEditable": true,
           "enable": true,
           "visible": true,
@@ -4426,11 +4228,6 @@
           "@components": [
             {
               "@type": "MOD.Core.TransformComponent",
-              "Rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
               "Position": {
                 "x": 3.555,
                 "y": -2.351,
@@ -4447,7 +4244,6 @@
                 "y": 1.0,
                 "z": 1.0
               },
-              "ZRotation": 0.0,
               "Enable": true
             }
           ],

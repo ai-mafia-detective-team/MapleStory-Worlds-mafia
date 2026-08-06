@@ -2,1293 +2,221 @@
 script MafiaGameLogic extends Logic
 
 	property boolean DebugMode = true
-
-	property number LOBBY_MIN_TIME = 5.0
-
-	property number LobbyTimer = 0.0
-
 	property integer PHASE_LOBBY = 0
-
 	property integer PHASE_FREE_ROAM = 1
-
 	property integer PHASE_NIGHT = 2
-
 	property integer PHASE_MORNING = 3
-
 	property integer PHASE_MEETING = 4
-
 	property integer PHASE_MEETING_RESULT = 5
-
 	property integer PHASE_GAME_OVER = 6
-
 	property integer PHASE_NIGHT_MAFIA = 21
-
 	property integer PHASE_NIGHT_POLICE = 22
-
 	property integer PHASE_NIGHT_DOCTOR = 23
-
 	property integer ROLE_CITIZEN = 0
-
 	property integer ROLE_MAFIA = 1
-
 	property integer ROLE_POLICE = 2
-
 	property integer ROLE_DOCTOR = 3
-
 	property integer MAX_PLAYERS = 8
-
 	property integer MIN_PLAYERS = 6
 
-	@Sync
 	property string RoomTitle = "커닝시티 마피아"
-
-	@Sync
 	property boolean IsPrivateRoom = true
-
-	@Sync
 	property string RoomPassword = ""
-
-	@Sync
 	property integer RoomMaxPlayers = 8
-
-	@Sync
 	property integer MafiaPlayerCount = 2
-
-	property number FREE_ROAM_TIME = 60.0
-
-	property number LOADING_SCREEN_BUFFER = 3.5
-
-	property number NIGHT_TIME = 10.0
-
-	property number MAFIA_NIGHT_TIME = 30.0
-
-	property number POLICE_NIGHT_TIME = 15.0
-
-	property number DOCTOR_NIGHT_TIME = 15.0
-
-	property number MORNING_TIME = 3.0
-
-	property number MEETING_TIME = 15.0
-
-	property number RESULT_TIME = 5.0
-
-	@Sync
 	property integer CurrentPhase = 0
-
-	@Sync
+	property integer RoundResetVersion = 0
 	property number PhaseTimer = 0.0
-
-	@Sync
 	property number MaxPhaseTime = 0.0
-
-	@Sync
 	property integer DayCount = 0
-
-	@Sync
 	property integer WinnerRole = -1
-
-	@Sync
 	property boolean PoliceResult = false
-
-	@Sync
 	property string ExecuteTarget = ""
-
-	@Sync
 	property string MorningKilled = ""
-
-	@Sync
 	property boolean DoctorSaved = false
-
 	property integer LocalPlayerRole = -1
-
-	@Sync
 	property string RoleData = ""
-
-	@Sync
 	property string AlivePlayersList = ""
-
-	@Sync
 	property integer NightSubPhase = 0
-
-	@Sync
+	property integer NightStageVersion = 0
 	property string MafiaDeciderId = ""
-
-	@Sync
 	property string VoteStatusList = ""
-
-	@Sync
 	property string ChatLog = ""
-
-	@Sync
 	property string MafiaChatLog = ""
-
-	@Sync
 	property string DeadChatLog = ""
-
-	@Sync
 	property integer LobbyPlayerCount = 0
-
-	@Sync
 	property integer ReadyCount = 0
-
-	@Sync
 	property string ReadyStatusList = ""
-
-	@Sync
 	property string LobbySeatOrder = ""
-
-	@Sync
 	property string LobbySeatNicknames = ""
-
-	@Sync
 	property string DayAvatarMotionData = ""
-
-	property table dayAvatarMotionByUser = nil
-
-	@Sync
 	property string DaySkipStatusList = ""
-
-	property table skipPlayers = nil
-
 	property boolean GameStarted = false
 
-	property boolean gameStartPending = false
+	property string activeRoomEntityId = ""
+	property string activeRoomId = ""
 
-	property number gameStartCountdown = 0.0
-
-	property number InternalTimer = 0.0
-
-	property string MafiaTarget = ""
-
-	property string DoctorTarget = ""
-
-	property string PoliceTarget = ""
-
-	property table playerRoles = nil
-
-	property table playerAlive = nil
-
-	property table playerRooms = nil
-
-	property table botIds = nil
-
-	property table voteCount = nil
-
-	property table voteSubmitted = nil
-
-	property table readyPlayers = nil
-
-	property table lobbyPresent = nil
-
-	property any userLeaveHandler = nil
-
-	@ExecSpace("ServerOnly")
-	method void OnBeginPlay()
-		    self.userLeaveHandler = _UserService:ConnectEvent(UserLeaveEvent, self.OnUserLeft)
-		    self.playerRoles   = {}
-		    self.playerAlive   = {}
-		    self.playerRooms   = {}
-		    self.botIds        = {}
-		    self.voteCount     = {}
-		    self.voteSubmitted = {}
-		    self.readyPlayers   = {}
-		    self.lobbyPresent   = {}
-		
-		    self.MafiaTarget   = ""
-		    self.DoctorTarget  = ""
-		    self.PoliceTarget  = ""
-		    self.GameStarted        = false
-		    self.gameStartPending   = false
-		    self.gameStartCountdown = 0.0
-		    self.InternalTimer      = 0.0
-		    self.skipPlayers       = {}
-		    self.DaySkipStatusList = ""
-		    self.CurrentPhase  = self.PHASE_LOBBY
-		    self.WinnerRole    = -1
-		    self.DayCount      = 0
-		    self.LobbyPlayerCount = 0
-		    self.ReadyCount = 0
-		    self.ReadyStatusList = ""
-		    self.LobbySeatOrder = ""
-		    self.LobbySeatNicknames = ""
-		    self.DayAvatarMotionData = ""
-		    self.dayAvatarMotionByUser = {}
-		    self.RoomTitle = "커닝시티 마피아"
-		    self.IsPrivateRoom = true
-		    self.RoomPassword = ""
-		    self.MAX_PLAYERS = 8
-		    self.RoomMaxPlayers = 8
-		    self.MafiaPlayerCount = 2
-		    log("[Mafia] 게임 로직 초기화 완료. DebugMode=" .. tostring(self.DebugMode))
-	end
-
-	@ExecSpace("ServerOnly")
+	@ExecSpace("ClientOnly")
 	method void OnUpdate(number delta)
-		    if self.CurrentPhase == self.PHASE_LOBBY then
-		        self:CheckLobbyStart(delta)
-		    elseif self.GameStarted and self.InternalTimer > 0.0 then
-		        self.InternalTimer = self.InternalTimer - delta
-		        self.PhaseTimer    = self.InternalTimer
-		        if self.InternalTimer <= 0.0 then
-		            self.PhaseTimer = 0.0
-		            self:OnPhaseEnd()
-		        end
-		    end
+		if _InvestigationRoomManager == nil then return end
+		local entityId = _InvestigationRoomManager.currentLogicalRoomEntityId or ""
+		local roomId = _InvestigationRoomManager.currentLogicalRoomId or ""
+		if entityId == "" or roomId == "" then return end
+		local entity = _EntityService:GetEntity(entityId)
+		if entity == nil or isvalid(entity) == false then return end
+		local room = entity:GetComponent("script.MafiaRoomGameLogic")
+		if room == nil or room.RoomId ~= roomId then return end
+		self.activeRoomEntityId = entityId
+		self.activeRoomId = roomId
+		self:CopyRoomState(room)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void CopyRoomState(any room)
+		self.DebugMode = room.DebugMode
+		self.MAX_PLAYERS = room.MAX_PLAYERS
+		self.MIN_PLAYERS = room.MIN_PLAYERS
+		self.RoomTitle = room.RoomTitle
+		self.IsPrivateRoom = room.IsPrivateRoom
+		self.RoomPassword = room.RoomPassword
+		self.RoomMaxPlayers = room.RoomMaxPlayers
+		self.MafiaPlayerCount = room.MafiaPlayerCount
+		self.CurrentPhase = room.CurrentPhase
+		self.RoundResetVersion = room.RoundResetVersion
+		self.PhaseTimer = room.PhaseTimer
+		self.MaxPhaseTime = room.MaxPhaseTime
+		self.DayCount = room.DayCount
+		self.WinnerRole = room.WinnerRole
+		self.PoliceResult = room.PoliceResult
+		self.ExecuteTarget = room.ExecuteTarget
+		self.MorningKilled = room.MorningKilled
+		self.DoctorSaved = room.DoctorSaved
+		self.RoleData = room.RoleData
+		self.AlivePlayersList = room.AlivePlayersList
+		self.NightSubPhase = room.NightSubPhase
+		self.NightStageVersion = room.NightStageVersion
+		self.MafiaDeciderId = room.MafiaDeciderId
+		self.VoteStatusList = room.VoteStatusList
+		self.ChatLog = room.ChatLog
+		self.MafiaChatLog = room.MafiaChatLog
+		self.DeadChatLog = room.DeadChatLog
+		self.LobbyPlayerCount = room.LobbyPlayerCount
+		self.ReadyCount = room.ReadyCount
+		self.ReadyStatusList = room.ReadyStatusList
+		self.LobbySeatOrder = room.LobbySeatOrder
+		self.LobbySeatNicknames = room.LobbySeatNicknames
+		self.DayAvatarMotionData = room.DayAvatarMotionData
+		self.DaySkipStatusList = room.DaySkipStatusList
+		self.GameStarted = room.GameStarted
 	end
 
 	@ExecSpace("ServerOnly")
-	method void CheckLobbyStart(number delta)
-		    if self.GameStarted then return end
-		    self:CheckNewLobbyPlayers()
-		    self:UpdateReadyStatusList()
-		    if self:AllLobbyPlayersReady() then
-		        if self.gameStartPending == false then
-		            self.gameStartPending   = true
-		            self.gameStartCountdown = 3.0
-		            log("[Lobby] all players ready; game starting in 3 seconds")
-		        end
-		    else
-		        if self.gameStartPending then
-		            self.gameStartPending   = false
-		            self.gameStartCountdown = 0.0
-		            log("[Lobby] not all players ready; game start cancelled")
-		        end
-		    end
-		    if self.gameStartPending then
-		        self.gameStartCountdown = self.gameStartCountdown - delta
-		        if self.gameStartCountdown <= 0.0 then
-		            self.gameStartPending = false
-		            self:StartGame()
-		        end
-		    end
-	end
-
-	@ExecSpace("Server")
-	method void SetReady(string userId, boolean ready)
-		    -- Trust only the authenticated sender; ignore the client-supplied userId (anti-impersonation).
-		    userId = tostring(senderUserId)
-		    if self.CurrentPhase ~= self.PHASE_LOBBY or self.GameStarted then return end
-		    -- Must be an actual room-lobby member, not merely connected to the world.
-		    if self.lobbyPresent == nil or self.lobbyPresent[userId] ~= true then
-		        log_warning("[Lobby] ready rejected: not a room lobby member userId=" .. userId)
-		        return
-		    end
-		    self.readyPlayers[userId] = ready
-		    self:UpdateReadyStatusList()
-		    log("[Lobby] ready: " .. userId .. " -> " .. tostring(ready) ..
-		        " (" .. tostring(self.ReadyCount) .. "/" .. tostring(self.LobbyPlayerCount) .. ")")
-		    if self:AllLobbyPlayersReady() then
-		        if self.gameStartPending == false then
-		            self.gameStartPending   = true
-		            self.gameStartCountdown = 3.0
-		            log("[Lobby] all players ready; game starting in 3 seconds")
-		        end
-		    else
-		        self.gameStartPending   = false
-		        self.gameStartCountdown = 0.0
-		    end
+	method any GetRoomLogicForUser(string userId)
+		if _InvestigationRoomManager == nil then return nil end
+		return _InvestigationRoomManager:GetLogicalRoomLogicForUser(userId)
 	end
 
 	@ExecSpace("Server")
 	method void EnterRoomLobby()
-		    -- Marks the authenticated caller as present in the investigation room lobby.
-		    -- Until this is called the user is never seated, so main-lobby idlers are excluded.
-		    local userId = tostring(senderUserId)
-		    if userId == nil or userId == "" then return end
-		    if self.lobbyPresent == nil then self.lobbyPresent = {} end
-		    self.lobbyPresent[userId] = true
-		    self:UpdateReadyStatusList()
-		    log("[Lobby] room lobby entered userId=" .. userId)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:EnterRoomLobbyForUser(tostring(senderUserId)) end
 	end
 
-	@ExecSpace("ServerOnly")
-	method table GetLobbyUserIds()
-		    -- Single source of truth for the roster: opted-in AND still connected.
-		    -- Intersecting with the live user list makes stale entries self-heal.
-		    local list = {}
-		    if self.lobbyPresent == nil then return list end
-		    for _, uid in ipairs(_UserService.Users.Keys) do
-		        local id = tostring(uid)
-		        if self.lobbyPresent[id] == true then
-		            list[#list + 1] = id
-		        end
-		    end
-		    return list
-	end
-
-	@ExecSpace("ServerOnly")
-	method void MarkRoomPlaying(boolean playing)
-		    -- Mirrors game state onto the shared room registry, so a room whose game is running
-		    -- stops advertising itself as joinable. Any roster member identifies the room.
-		    if _InvestigationRoomManager == nil then return end
-		    local roster = self:GetLobbyUserIds()
-		    if #roster == 0 then return end
-		    _InvestigationRoomManager:SetRoomPlayingByMember(roster[1], playing)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void UpdateReadyStatusList()
-		    local parts = {}
-		    local roster = self:GetLobbyUserIds()
-		    self.LobbyPlayerCount = #roster
-		    for _, id in ipairs(roster) do
-		        if self.readyPlayers[id] == true then
-		            parts[#parts + 1] = id
-		        end
-		    end
-		    self.ReadyCount = #parts
-		    self.ReadyStatusList = table.concat(parts, ",")
-	end
-
-	@ExecSpace("ServerOnly")
-	method boolean AllLobbyPlayersReady()
-		    local roster = self:GetLobbyUserIds()
-		    local count = #roster
-		    local minimum = self.MIN_PLAYERS
-		    if self.DebugMode then minimum = 1 end
-		    if count < minimum then return false end
-		    if count > self.MAX_PLAYERS then return false end
-		    for _, id in ipairs(roster) do
-		        if self.readyPlayers[id] ~= true then return false end
-		    end
-		    return count > 0
+	@ExecSpace("Server")
+	method void SetReady(string userId, boolean ready)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SetReady(tostring(senderUserId), ready) end
 	end
 
 	@ExecSpace("Server")
 	method void RequestLeaveRoom()
-		    -- Clears the requesting user's Mafia lobby/game state after leaving the room UI.
-		    local userId = tostring(senderUserId)
-		    if userId == nil or userId == "" then return end
-		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
-		    if self.lobbyPresent ~= nil then self.lobbyPresent[userId] = nil end
-		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
-		    if self.playerRoles ~= nil then self.playerRoles[userId] = nil end
-		    if self.playerAlive ~= nil then self.playerAlive[userId] = nil end
-		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
-		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
-		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
-		        self.gameStartPending = false
-		        self.gameStartCountdown = 0.0
-		    end
-		    self:UpdateLobbySeatOrder()
-		    self:UpdateReadyStatusList()
-		    log("[Mafia] leave room requested userId=" .. userId)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:RemoveMember(tostring(senderUserId)) end
 	end
 
 	@ExecSpace("Server")
 	method void SetRoomSettings(string roomTitle, boolean isPrivate, string password, integer maxPlayers, integer mafiaCount)
-		    if self.CurrentPhase ~= self.PHASE_LOBBY or self.GameStarted then return end
-		    if roomTitle == nil or roomTitle == "" then roomTitle = "커닝시티 마피아" end
-		    if string.len(roomTitle) > 20 then roomTitle = string.sub(roomTitle, 1, 20) end
-		    if password == nil then password = "" end
-		    if string.len(password) > 16 then password = string.sub(password, 1, 16) end
-		    if maxPlayers ~= 6 and maxPlayers ~= 7 and maxPlayers ~= 8 then maxPlayers = 8 end
-		    if mafiaCount ~= 1 and mafiaCount ~= 2 and mafiaCount ~= 3 then mafiaCount = 2 end
-		
-		    self.RoomTitle = roomTitle
-		    self.IsPrivateRoom = isPrivate
-		    self.RoomPassword = password
-		    self.MAX_PLAYERS = maxPlayers
-		    self.RoomMaxPlayers = maxPlayers
-		    self.MafiaPlayerCount = mafiaCount
-		    log("[Lobby] room settings saved title=" .. roomTitle ..
-		        " private=" .. tostring(isPrivate) ..
-		        " max=" .. tostring(maxPlayers) ..
-		        " mafia=" .. tostring(mafiaCount))
-	end
-
-	@ExecSpace("ServerOnly")
-	method void CheckNewLobbyPlayers()
-		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
-		                    "RoomSpawn_5", "RoomSpawn_6", "RoomSpawn_7", "RoomSpawn_8"}
-		    -- Only seat users who opted into the room lobby; a user who left is not re-seated.
-		    for _, uid in ipairs(self:GetLobbyUserIds()) do
-		        if self.playerRooms[uid] == nil then
-		            local playerEnt = _UserService:GetUserEntityByUserId(uid)
-		            if playerEnt ~= nil then
-		                self:AssignLobbyRoom(uid)
-		                local roomId = self.playerRooms[uid]
-		                if roomId ~= nil and roomId >= 1 and roomId <= 8 then
-		                    local floorEnt = _EntityService:GetEntityByPath("/maps/map01/" .. floors[roomId])
-		                    if floorEnt ~= nil then
-		                        _TeleportService:TeleportToEntity(playerEnt, floorEnt)
-		                        log("[Lobby] 입장 배정: " .. uid .. " → 방 " .. roomId)
-		                    end
-		                end
-		            end
-		        end
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void UpdateLobbySeatOrder()
-		    local seats = {}
-		    local nicknames = {}
-		    for i = 1, 8 do
-		        seats[i] = ""
-		        nicknames[i] = ""
-		    end
-		    for seatIndex = 1, 8 do
-		        local seatUserId = ""
-		        for uid, roomIndex in pairs(self.playerRooms) do
-		            if roomIndex == seatIndex then
-		                seatUserId = uid
-		                break
-		            end
-		        end
-		        seats[seatIndex] = seatUserId
-		        if seatUserId ~= "" then
-		            local user = _UserService.Users[seatUserId]
-		            if user ~= nil and user.Nickname ~= nil and user.Nickname ~= "" then
-		                nicknames[seatIndex] = user.Nickname
-		            else
-		                nicknames[seatIndex] = seatUserId
-		            end
-		        end
-		    end
-		    self.LobbySeatOrder = table.concat(seats, ",")
-		    self.LobbySeatNicknames = table.concat(nicknames, ",")
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SetRoomSettings(roomTitle, isPrivate, password, maxPlayers, mafiaCount) end
 	end
 
 	@ExecSpace("Server")
 	method void SetDayAvatarMotion(string userId, number avatarX, boolean flipX, string actionState)
-		    if self.GameStarted == false then return end
-		    if userId == nil or userId == "" then return end
-		    local assigned = false
-		    for token in string.gmatch((self.LobbySeatOrder or "") .. ",", "(.-),") do
-		        if token == userId then
-		            assigned = true
-		            break
-		        end
-		    end
-		    if assigned == false then return end
-		    if actionState ~= "walk" then actionState = "idle" end
-		    avatarX = math.max(-2000, math.min(2000, avatarX))
-		    if self.dayAvatarMotionByUser == nil then self.dayAvatarMotionByUser = {} end
-		    self.dayAvatarMotionByUser[userId] = {
-		        x = avatarX,
-		        flip = flipX,
-		        state = actionState
-		    }
-		    self:RebuildDayAvatarMotionData()
-	end
-
-	@ExecSpace("ServerOnly")
-	method void RebuildDayAvatarMotionData()
-		    local records = {}
-		    if self.dayAvatarMotionByUser == nil then
-		        self.DayAvatarMotionData = ""
-		        return
-		    end
-		    for token in string.gmatch((self.LobbySeatOrder or "") .. ",", "(.-),") do
-		        if token ~= "" then
-		            local motion = self.dayAvatarMotionByUser[token]
-		            if motion ~= nil then
-		                records[#records + 1] = token
-		                    .. "|" .. tostring(motion.x)
-		                    .. "|" .. (motion.flip and "1" or "0")
-		                    .. "|" .. tostring(motion.state)
-		            end
-		        end
-		    end
-		    self.DayAvatarMotionData = table.concat(records, ";")
-	end
-
-	@ExecSpace("ServerOnly")
-	method void SetPhase(integer phase, number duration)
-		    local wasGameOver = self.CurrentPhase == self.PHASE_GAME_OVER
-		    self.CurrentPhase  = phase
-		    self.InternalTimer = duration
-		    self.PhaseTimer    = duration
-		    self.MaxPhaseTime  = duration
-		    -- Unlock the room on the single transition into game-over, not on every later call.
-		    if phase == self.PHASE_GAME_OVER and wasGameOver == false then
-		        self:MarkRoomPlaying(false)
-		    end
-		    log("[Mafia] 페이즈 " .. phase .. " duration=" .. duration)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void OnPhaseEnd()
-		    if self.CurrentPhase == self.PHASE_FREE_ROAM then
-		        self:BeginMeeting()
-		    elseif self.CurrentPhase == self.PHASE_NIGHT then
-		        if self.NightSubPhase == self.PHASE_NIGHT_MAFIA then
-		            self:BeginNightPolice()
-		        elseif self.NightSubPhase == self.PHASE_NIGHT_POLICE then
-		            self:BeginNightDoctor()
-		        else
-		            self.NightSubPhase = 0
-		            self:BeginMorning()
-		        end
-		    elseif self.CurrentPhase == self.PHASE_MORNING then
-		        self:BeginFreeRoam()
-		    elseif self.CurrentPhase == self.PHASE_MEETING then
-		        self:BeginMeetingResult()
-		    elseif self.CurrentPhase == self.PHASE_MEETING_RESULT then
-		        self:CheckWinAndContinue()
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void StartGame()
-		    if self.GameStarted then return end
-		    self.GameStarted = true
-		    self:MarkRoomPlaying(true)
-		    self.DayCount    = 1
-		    if self.DebugMode then self:AddBots() end
-		    self:AssignRoles()
-		    self:AssignRooms()
-		    self:TeleportPlayersToRooms()
-		    local allUsers = self:GetAllUserIds()
-		    local roleParts = {}
-		    for _, uid in ipairs(allUsers) do
-		        local r = self.playerRoles[uid]
-		        if string.sub(tostring(uid), 1, 4) ~= "BOT_" and _QAAchievementManager ~= nil then
-		            _QAAchievementManager:ReportServerAction(uid, "GAME_PLAY", "")
-		            if r ~= nil then
-		                _QAAchievementManager:ReportServerAction(uid, "ROLE_ASSIGNED", tostring(r))
-		            end
-		        end
-		        -- 도감은 업적과 별개다: 업적의 roles는 매달 초기화되지만 도감 해금은 영구다.
-		        if string.sub(tostring(uid), 1, 4) ~= "BOT_" and r ~= nil and _CollectionManager ~= nil then
-		            _CollectionManager:UnlockRole(tostring(uid), tostring(r))
-		        end
-		        if r ~= nil then
-		            roleParts[#roleParts + 1] = uid
-		            roleParts[#roleParts + 1] = tostring(r)
-		        end
-		    end
-		    self.RoleData = table.concat(roleParts, ",")
-		    self:UpdateAlivePlayersList()
-		    self.skipPlayers       = {}
-		    self.DaySkipStatusList = ""
-		    -- 게임 시작 시 채팅 초기화 (로비 채팅과 게임 채팅 분리)
-		    self.ChatLog           = ""
-		    self.DeadChatLog       = ""
-		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME + self.LOADING_SCREEN_BUFFER)
-		    log("[Mafia] 게임 시작!")
-	end
-
-	@ExecSpace("ServerOnly")
-	method void AssignRoles()
-		    local users = self:GetAllUserIds()
-		    local n = #users
-		    local roles = {}
-		    local mafiaCount = math.min(self.MafiaPlayerCount, n)
-		    for i = 1, mafiaCount do roles[i] = self.ROLE_MAFIA end
-		    local nextIndex = mafiaCount + 1
-		    if nextIndex <= n then roles[nextIndex] = self.ROLE_POLICE; nextIndex = nextIndex + 1 end
-		    if nextIndex <= n then roles[nextIndex] = self.ROLE_DOCTOR; nextIndex = nextIndex + 1 end
-		    for i = nextIndex, n do roles[i] = self.ROLE_CITIZEN end
-		    -- 7인 기준: 마피아2 경찰1 의사1 시민3
-		    for i = n, 2, -1 do
-		        local j = _UtilLogic:RandomIntegerRange(1, i)
-		        local tmp = roles[i]; roles[i] = roles[j]; roles[j] = tmp
-		    end
-		    self.playerRoles = {}
-		    self.playerAlive = {}
-		    for i, uid in ipairs(users) do
-		        self.playerRoles[uid] = roles[i]
-		        self.playerAlive[uid] = true
-		        log("[Mafia] 역할 배정: " .. uid .. " -> " .. roles[i])
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void AssignRooms()
-		    local users = self:GetAllUserIds()
-		    local n = #users
-		    local rooms = {}
-		    for i = 1, n do rooms[i] = i end
-		    for i = n, 2, -1 do
-		        local j = _UtilLogic:RandomIntegerRange(1, i)
-		        local tmp = rooms[i]; rooms[i] = rooms[j]; rooms[j] = tmp
-		    end
-		    self.playerRooms = {}
-		    for i, uid in ipairs(users) do
-		        self.playerRooms[uid] = rooms[i]
-		        log("[Mafia] 방 배정: " .. uid .. " -> " .. rooms[i])
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginNight()
-		    self.MafiaTarget  = ""
-		    self.DoctorTarget = ""
-		    self.PoliceTarget = ""
-		    self.MafiaChatLog = ""
-		    self.PoliceResult = false
-		    self.DoctorSaved = false
-		    self:TeleportPlayersToRooms()
-		    self:BeginNightMafia()
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginNightMafia()
-		    -- 살아있는 마피아 중 랜덤으로 결정권자 선정
-		    local mafiaList = {}
-		    if self.playerRoles ~= nil and self.playerAlive ~= nil then
-		        for uid, role in pairs(self.playerRoles) do
-		            if role == self.ROLE_MAFIA and self.playerAlive[uid] == true then
-		                table.insert(mafiaList, uid)
-		            end
-		        end
-		    end
-		    if #mafiaList > 0 then
-		        self.MafiaDeciderId = mafiaList[math.random(1, #mafiaList)]
-		    else
-		        self.MafiaDeciderId = ""
-		    end
-		    self.NightSubPhase = self.PHASE_NIGHT_MAFIA
-		    self:SetPhase(self.PHASE_NIGHT, self.MAFIA_NIGHT_TIME)
-		    log("[Mafia] 밤-마피아단계 시작. 결정권자=" .. self.MafiaDeciderId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginNightPolice()
-		    self.NightSubPhase = self.PHASE_NIGHT_POLICE
-		    self:SetPhase(self.PHASE_NIGHT, self.POLICE_NIGHT_TIME)
-		    log("[Mafia] 밤-경찰단계 시작")
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginNightDoctor()
-		    -- 시간 초과로 대상 미선택 시 랜덤 선택 + 마피아 여부 즉시 계산
-		    local policeId = self:GetPlayerByRole(self.ROLE_POLICE)
-		    if self.PoliceTarget == "" then
-		        if policeId ~= "" then
-		            self.PoliceTarget = self:GetRandomAliveExcept(policeId)
-		            self.PoliceResult = (self.playerRoles ~= nil) and (self.playerRoles[self.PoliceTarget] == self.ROLE_MAFIA) or false
-		            log("[Mafia] 경찰 랜덤 선택: " .. self.PoliceTarget .. " isMafia=" .. tostring(self.PoliceResult))
-		        end
-		    end
-		    -- 경찰 플레이어에게만 조사결과 애니메이션 RPC 전송 (수동 확정·랜덤 공통)
-		    if policeId ~= "" and self.PoliceTarget ~= "" then
-		        _MafiaUIFlow:ShowPoliceResultAnime(self.PoliceTarget, self.PoliceResult, policeId)
-		    end
-		    self.NightSubPhase = self.PHASE_NIGHT_DOCTOR
-		    self:SetPhase(self.PHASE_NIGHT, self.DOCTOR_NIGHT_TIME)
-		    log("[Mafia] 밤-의사단계 시작")
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginMorning()
-		    local killed = ""
-		    local mafiaTarget = self.MafiaTarget
-		    if mafiaTarget == "" then
-		        local mafiaId = self:GetPlayerByRole(self.ROLE_MAFIA)
-		        if mafiaId ~= "" then
-		            mafiaTarget = self:GetRandomAliveExcept(mafiaId)
-		        end
-		    end
-		    if self.DoctorTarget == "" then
-		        local doctorId = self:GetPlayerByRole(self.ROLE_DOCTOR)
-		        if doctorId ~= "" then
-		            self.DoctorTarget = self:GetRandomAliveExcept("")
-		            log("[Mafia] 의사 랜덤 선택: " .. self.DoctorTarget)
-		        end
-		    end
-		    if mafiaTarget ~= "" then
-		        if self.DoctorTarget == mafiaTarget then
-		            log("[Mafia] 의사 보호: " .. mafiaTarget)
-		        else
-		            killed = mafiaTarget
-		            self:KillPlayer(killed)
-		        end
-		    end
-		    self.MorningKilled = killed
-		    self.DoctorSaved = (mafiaTarget ~= "" and self.DoctorTarget == mafiaTarget)
-		    self:SetPhase(self.PHASE_MORNING, self.MORNING_TIME)
-		    log("[Mafia] 아침. 사망=" .. killed)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginFreeRoam()
-		    -- Resets skip state and starts the daytime discussion phase (called after morning).
-		    -- Check win after night kill before starting free roam.
-		    do
-		        local mafiaAlive   = 0
-		        local citizenAlive = 0
-		        local users = self:GetAllUserIds()
-		        for _, uid in ipairs(users) do
-		            if self.playerAlive[uid] then
-		                local role = self.playerRoles[uid]
-		                if role == self.ROLE_MAFIA then
-		                    mafiaAlive = mafiaAlive + 1
-		                else
-		                    citizenAlive = citizenAlive + 1
-		                end
-		            end
-		        end
-		        if mafiaAlive == 0 then
-		            self.WinnerRole = self.ROLE_CITIZEN
-		            self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		            log("[Mafia] citizen win after night")
-		            return
-		        elseif mafiaAlive >= citizenAlive then
-		            self.WinnerRole = self.ROLE_MAFIA
-		            self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		            log("[Mafia] mafia win after night")
-		            return
-		        end
-		    end
-		    if self.skipPlayers == nil then self.skipPlayers = {} end
-		    for k in pairs(self.skipPlayers) do self.skipPlayers[k] = nil end
-		    self.DaySkipStatusList = ""
-		    self.DayCount = self.DayCount + 1
-		    self:SetPhase(self.PHASE_FREE_ROAM, self.FREE_ROAM_TIME)
-		    log("[Mafia] free roam started DayCount=" .. tostring(self.DayCount))
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginMeeting()
-		    self.voteCount     = {}
-		    self.voteSubmitted = {}
-		    self.VoteStatusList = ""
-		    self.ExecuteTarget = ""
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if self.playerAlive[uid] then
-		            self.voteCount[uid] = 0
-		        end
-		    end
-		    self:SetPhase(self.PHASE_MEETING, self.MEETING_TIME)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SetDayAvatarMotion(tostring(senderUserId), avatarX, flipX, actionState) end
 	end
 
 	@ExecSpace("Server")
 	method void RequestSkipToMeeting(string requesterId)
-		    if self.CurrentPhase ~= self.PHASE_FREE_ROAM then return end
-		    -- 사망한 플레이어의 스킵은 무시 (AlivePlayersList 기준)
-		    if self.GameStarted and self.AlivePlayersList ~= "" then
-		        local isAlive = false
-		        for uid in string.gmatch(self.AlivePlayersList, "[^,]+") do
-		            if uid == requesterId then isAlive = true; break end
-		        end
-		        if not isAlive then return end
-		    end
-		    if self.skipPlayers == nil then self.skipPlayers = {} end
-		    self.skipPlayers[requesterId] = true
-		    -- Rebuild DaySkipStatusList from the skip map.
-		    local parts = {}
-		    for uid, _ in pairs(self.skipPlayers) do parts[#parts + 1] = uid end
-		    self.DaySkipStatusList = table.concat(parts, ",")
-		    log("[Mafia] skip: " .. tostring(requesterId) .. " skipCount=" .. tostring(#parts))
-		    -- Transition only when every alive real player (non-bot) has skipped.
-		    local aliveCount = 0
-		    local allSkipped = true
-		    for uid in string.gmatch(self.AlivePlayersList ~= "" and self.AlivePlayersList or "x", "[^,]+") do
-		        if string.sub(uid, 1, 4) ~= "Bot_" then
-		            aliveCount = aliveCount + 1
-		            if self.skipPlayers[uid] == nil then allSkipped = false end
-		        end
-		    end
-		    log("[Mafia] skip check: aliveCount=" .. tostring(aliveCount) .. " allSkipped=" .. tostring(allSkipped))
-		    if allSkipped and aliveCount > 0 then
-		        wait(2.0)
-		        self:BeginMeeting()
-		    end
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:RequestSkipToMeeting(tostring(senderUserId)) end
 	end
 
 	@ExecSpace("Server")
 	method void SubmitVote(string voterId, string targetId)
-		    if self.CurrentPhase ~= self.PHASE_MEETING then return end
-		    if self.voteSubmitted[voterId] ~= nil then return end
-		    -- 사망한 플레이어의 투표는 서버에서 차단
-		    if self.GameStarted and self.playerAlive ~= nil and not self.playerAlive[voterId] then return end
-		    -- 스킵(targetId="")은 생존 여부 체크 없이 허용
-		    if targetId ~= "" and not self.playerAlive[targetId] then return end
-		    local recorded = (targetId ~= "") and targetId or "skip"
-		    self.voteSubmitted[voterId] = recorded
-		    if targetId ~= "" then
-		        self.voteCount[targetId] = (self.voteCount[targetId] or 0) + 1
-		    end
-		    self:UpdateVoteStatusList()
-		    log("[Mafia] 투표: " .. voterId .. " -> " .. recorded)
-		    if string.sub(tostring(voterId), 1, 4) ~= "BOT_" and _QAAchievementManager ~= nil then
-		        _QAAchievementManager:ReportServerAction(voterId, "VOTE_COMPLETE", recorded)
-		    end
-		    if self:AllVoted() then
-		        self.InternalTimer = 0.0
-		        wait(1.5)
-		        self:BeginMeetingResult()
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void UpdateVoteStatusList()
-		    local parts = {}
-		    for uid, _ in pairs(self.voteSubmitted) do
-		        parts[#parts + 1] = uid
-		    end
-		    self.VoteStatusList = table.concat(parts, ",")
-	end
-
-	@ExecSpace("ServerOnly")
-	method boolean AllVoted()
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if string.sub(tostring(uid), 1, 4) ~= "Bot_" and self.playerAlive[uid] and self.voteSubmitted[uid] == nil then
-		            return false
-		        end
-		    end
-		    return true
-	end
-
-	@ExecSpace("ServerOnly")
-	method void BeginMeetingResult()
-		    local maxVotes = 0
-		    local maxUser  = ""
-		    local tie      = false
-		    for uid, v in pairs(self.voteCount) do
-		        if v > maxVotes then
-		            maxVotes = v; maxUser = uid; tie = false
-		        elseif v == maxVotes and v > 0 then
-		            tie = true
-		        end
-		    end
-		    if not tie and maxUser ~= "" and maxVotes > 0 then
-		        self.ExecuteTarget = maxUser
-		        self:KillPlayer(maxUser)
-		        log("[Mafia] 처형: " .. maxUser)
-		    else
-		        self.ExecuteTarget = ""
-		        log("[Mafia] 처형 없음 (동점)")
-		    end
-		    self:SetPhase(self.PHASE_MEETING_RESULT, self.RESULT_TIME)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void CheckWinAndContinue()
-		    local mafiaAlive   = 0
-		    local citizenAlive = 0
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if self.playerAlive[uid] then
-		            local role = self.playerRoles[uid]
-		            if role == self.ROLE_MAFIA then
-		                mafiaAlive = mafiaAlive + 1
-		            else
-		                citizenAlive = citizenAlive + 1
-		            end
-		        end
-		    end
-		    if mafiaAlive == 0 then
-		        self.WinnerRole = self.ROLE_CITIZEN
-		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] 시민 승리")
-		    elseif mafiaAlive >= citizenAlive then
-		        self.WinnerRole = self.ROLE_MAFIA
-		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] 마피아 승리")
-		    else
-		        self:BeginNight()
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void OnEndPlay()
-		    -- Releases the user-leave subscription.
-		    if self.userLeaveHandler ~= nil then
-		        _UserService:DisconnectEvent(UserLeaveEvent, self.userLeaveHandler)
-		        self.userLeaveHandler = nil
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void OnUserLeft(UserLeaveEvent event)
-		    -- On permanent exit, clears the user's game state and re-checks win while a game is in progress.
-		    local userId = tostring(event.UserId)
-		    if userId == nil or userId == "" then return end
-		    if self.readyPlayers ~= nil then self.readyPlayers[userId] = nil end
-		    if self.lobbyPresent ~= nil then self.lobbyPresent[userId] = nil end
-		    if self.playerRooms ~= nil then self.playerRooms[userId] = nil end
-		    if self.playerRoles ~= nil then self.playerRoles[userId] = nil end
-		    if self.playerAlive ~= nil then self.playerAlive[userId] = nil end
-		    if self.voteSubmitted ~= nil then self.voteSubmitted[userId] = nil end
-		    if self.skipPlayers ~= nil then self.skipPlayers[userId] = nil end
-		    if self.CurrentPhase == self.PHASE_LOBBY and self.GameStarted == false then
-		        self:UpdateReadyStatusList()
-		        return
-		    end
-		    if self.GameStarted and self.CurrentPhase ~= self.PHASE_GAME_OVER then
-		        self:UpdateAlivePlayersList()
-		        self:CheckWinOnly()
-		    end
-		    log("[Mafia] user left cleaned userId=" .. userId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void CheckWinOnly()
-		    -- Ends the game only if a win condition is now met; never forces a phase transition otherwise.
-		    if self.CurrentPhase == self.PHASE_GAME_OVER then return end
-		    local mafiaAlive   = 0
-		    local citizenAlive = 0
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if self.playerAlive[uid] then
-		            if self.playerRoles[uid] == self.ROLE_MAFIA then
-		                mafiaAlive = mafiaAlive + 1
-		            else
-		                citizenAlive = citizenAlive + 1
-		            end
-		        end
-		    end
-		    if mafiaAlive == 0 then
-		        self.WinnerRole = self.ROLE_CITIZEN
-		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] 시민 승리 (이탈로 재판정)")
-		    elseif mafiaAlive >= citizenAlive then
-		        self.WinnerRole = self.ROLE_MAFIA
-		        self:SetPhase(self.PHASE_GAME_OVER, 0.0)
-		        log("[Mafia] 마피아 승리 (이탈로 재판정)")
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method void KillPlayer(string userId)
-		    self.playerAlive[userId] = false
-		    self:UpdateAlivePlayersList()
-		    log("[Mafia] 사망: " .. userId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void UpdateAlivePlayersList()
-		    local parts = {}
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if self.playerAlive[uid] then
-		            parts[#parts + 1] = uid
-		        end
-		    end
-		    self.AlivePlayersList = table.concat(parts, ",")
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SubmitVote(tostring(senderUserId), targetId) end
 	end
 
 	@ExecSpace("Server")
 	method void MafiaChooseTarget(string mafiaId, string targetId)
-		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
-		    if self.NightSubPhase ~= self.PHASE_NIGHT_MAFIA then return end
-		    if self.playerRoles[mafiaId] ~= self.ROLE_MAFIA then return end
-		    if mafiaId ~= self.MafiaDeciderId then return end
-		    self.MafiaTarget = targetId
-			self.InternalTimer = 0.001
-		    log("[Mafia] 마피아 지목: " .. targetId)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:MafiaChooseTarget(tostring(senderUserId), targetId) end
 	end
 
 	@ExecSpace("Server")
 	method void PoliceInvestigate(string policeId, string targetId)
-		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
-		    if self.NightSubPhase ~= self.PHASE_NIGHT_POLICE then return end
-		    if self.playerRoles[policeId] ~= self.ROLE_POLICE then return end
-		    self.PoliceTarget = targetId
-		    self.PoliceResult = (self.playerRoles[targetId] == self.ROLE_MAFIA)
-		    self.InternalTimer = 0.001
-			log("[Mafia] 경찰 조사: " .. targetId .. " 마피아=" .. tostring(self.PoliceResult))
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:PoliceInvestigate(tostring(senderUserId), targetId) end
 	end
 
 	@ExecSpace("Server")
 	method void DoctorProtect(string doctorId, string targetId)
-		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
-		    if self.NightSubPhase ~= self.PHASE_NIGHT_DOCTOR then return end
-		    if self.playerRoles[doctorId] ~= self.ROLE_DOCTOR then return end
-		    self.DoctorTarget = targetId
-			self.InternalTimer = 0.001
-		    log("[Mafia] 의사 보호: " .. targetId)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:DoctorProtect(tostring(senderUserId), targetId) end
 	end
 
 	@ExecSpace("Server")
 	method void RestartGame()
-		    -- Client-reachable entry: refuse unless the game actually ended, otherwise a losing
-		    -- player could reset the match to void the defeat.
-		    if self.CurrentPhase ~= self.PHASE_GAME_OVER then
-		        log_warning("[Mafia] RestartGame rejected: game is still in progress phase=" .. tostring(self.CurrentPhase))
-		        return
-		    end
-		    self:ResetGameState()
-	end
-
-	@ExecSpace("ServerOnly")
-	method void ResetGameState()
-		    -- Unconditional reset. Server-side callers only (no client can reach this).
-		    self.GameStarted     = false
-		    self.InternalTimer   = 0.0
-		    self.LobbyTimer      = 0.0
-		    self.WinnerRole      = -1
-		    self.ExecuteTarget   = ""
-		    self.MorningKilled   = ""
-		    self.DayCount        = 0
-		    self.MafiaTarget     = ""
-		    self.DoctorTarget    = ""
-		    self.PoliceTarget    = ""
-		    self.playerRoles   = {}
-		    self.playerAlive   = {}
-		    self.playerRooms   = {}
-		    self.botIds        = {}
-		    self.voteCount     = {}
-		    self.voteSubmitted = {}
-		    self.readyPlayers   = {}
-		    self.RoleData        = ""
-		    self.VoteStatusList  = ""
-		    self.ChatLog         = ""
-		    self.MafiaChatLog     = ""
-		    self.DeadChatLog      = ""
-		    self.LobbyPlayerCount = 0
-		    self.ReadyCount = 0
-		    self.ReadyStatusList = ""
-		    self.LobbySeatOrder = ""
-		    self.LobbySeatNicknames = ""
-		    self.DayAvatarMotionData = ""
-		    self.dayAvatarMotionByUser = {}
-		    self:ResetLocalRole()
-		    self:SetPhase(self.PHASE_LOBBY, 0.0)
-		    self:TeleportAllToLobbyRooms()
-		    log("[Mafia] restart")
-	end
-
-	@ExecSpace("ServerOnly")
-	method void TeleportPlayersToRooms()
-		    local roomFloors = {}
-		    roomFloors[1] = "RoomSpawn_1"
-		    roomFloors[2] = "RoomSpawn_2"
-		    roomFloors[3] = "RoomSpawn_3"
-		    roomFloors[4] = "RoomSpawn_4"
-		    roomFloors[5] = "RoomSpawn_5"
-		    roomFloors[6] = "RoomSpawn_6"
-		    roomFloors[7] = "RoomSpawn_7"
-		    roomFloors[8] = "RoomSpawn_8"
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if string.sub(uid, 1, 4) ~= "Bot_" and self.playerAlive[uid] then
-		            local playerEntity = _UserService:GetUserEntityByUserId(uid)
-		            if playerEntity ~= nil then
-		                local roomId = self.playerRooms[uid]
-		                if roomId ~= nil then
-		                    local floorName = roomFloors[roomId]
-		                    if floorName ~= nil then
-		                        local floorEntity = _EntityService:GetEntityByPath("/maps/map01/" .. floorName)
-		                        if floorEntity ~= nil then
-		                            _TeleportService:TeleportToEntity(playerEntity, floorEntity)
-		                            log("[Mafia] 방 텔레포트: " .. uid .. " -> " .. floorName)
-		                        end
-		                    end
-		                end
-		            end
-		        end
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method table GetAllUserIds()
-		    -- Roster for role assignment / win checks: room-lobby members plus bots.
-		    local list = self:GetLobbyUserIds()
-		    for _, bid in ipairs(self.botIds) do list[#list + 1] = bid end
-		    return list
-	end
-
-	@ExecSpace("ServerOnly")
-	method string GetPlayerByRole(integer role)
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if self.playerRoles[uid] == role and self.playerAlive[uid] then
-		            return uid
-		        end
-		    end
-		    return ""
-	end
-
-	@ExecSpace("ServerOnly")
-	method string GetRandomAliveExcept(string excludeId)
-		    local aliveList = {}
-		    local users = self:GetAllUserIds()
-		    for _, uid in ipairs(users) do
-		        if uid ~= excludeId and self.playerAlive[uid] then
-		            aliveList[#aliveList + 1] = uid
-		        end
-		    end
-		    if #aliveList == 0 then return "" end
-		    return aliveList[_UtilLogic:RandomIntegerRange(1, #aliveList)]
-	end
-
-	@ExecSpace("ServerOnly")
-	method void AddBots()
-		    self.botIds = {}
-		    local realCount = #(self:GetLobbyUserIds())
-		    local needed    = self.MAX_PLAYERS - realCount
-		    for i = 1, needed do
-		        local botId = "Bot_" .. i
-		        self.botIds[#self.botIds + 1] = botId
-		        log("[Mafia] 봇 추가: " .. botId)
-		    end
-	end
-
-	@ExecSpace("ServerOnly")
-	method string GetRoleName(integer role)
-		    if role == self.ROLE_MAFIA      then return "마피아"
-		    elseif role == self.ROLE_POLICE then return "경찰"
-		    elseif role == self.ROLE_DOCTOR then return "의사"
-		    else return "시민" end
-	end
-
-	@ExecSpace("ServerOnly")
-	method string GetPlayerByRoom(integer roomIndex)
-		    for uid, room in pairs(self.playerRooms) do
-		        if room == roomIndex then return uid end
-		    end
-		    return ""
+		local userId = tostring(senderUserId)
+		local room = self:GetRoomLogicForUser(userId)
+		if room ~= nil then room:RestartGameForUser(userId) end
 	end
 
 	@ExecSpace("Server")
 	method void SubmitNightAction(string actorId, integer targetRoom)
-		    if self.CurrentPhase ~= self.PHASE_NIGHT then
-		        log("[Mafia] SubmitNightAction: 밤이 아님")
-		        return
-		    end
-		    local role = self.playerRoles[actorId]
-		    if role == nil then return end
-		    local targetId = self:GetPlayerByRoom(targetRoom)
-		    if targetId == "" then
-		        log("[Mafia] SubmitNightAction: 방 " .. targetRoom .. " 에 플레이어 없음")
-		        return
-		    end
-		    if role == self.ROLE_MAFIA then
-		        self:MafiaChooseTarget(actorId, targetId)
-		    elseif role == self.ROLE_POLICE then
-		        self:PoliceInvestigate(actorId, targetId)
-		    elseif role == self.ROLE_DOCTOR then
-		        self:DoctorProtect(actorId, targetId)
-		    end
-		    log("[Mafia] SubmitNightAction: " .. actorId .. " 역할=" .. role .. " 방 " .. targetRoom .. " 대상=" .. targetId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method integer FindEmptyRoom()
-		    local used = {}
-		    for uid, room in pairs(self.playerRooms) do
-		        used[room] = true
-		    end
-		    for i = 1, 8 do
-		        if not used[i] then return i end
-		    end
-		    return -1
-	end
-
-	@ExecSpace("ServerOnly")
-	method void AssignLobbyRoom(string userId)
-		    if self.playerRooms[userId] ~= nil then return end
-		    local roomId = self:FindEmptyRoom()
-		    if roomId < 1 then
-		        log("[Lobby] 빈 방 없음: " .. userId)
-		        return
-		    end
-		    self.playerRooms[userId] = roomId
-		    self:UpdateLobbySeatOrder()
-		    log("[Lobby] " .. userId .. " → 방 " .. roomId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method integer GetLobbyRoom(string userId)
-		    local room = self.playerRooms[userId]
-		    if room == nil then return -1 end
-		    return room
-	end
-
-	@ExecSpace("ServerOnly")
-	method void TeleportAllToLobbyRooms()
-		    local floors = {"RoomSpawn_1", "RoomSpawn_2", "RoomSpawn_3", "RoomSpawn_4",
-		                    "RoomSpawn_5", "RoomSpawn_6", "RoomSpawn_7", "RoomSpawn_8"}
-		    local keys = _UserService.Users.Keys
-		    for _, uid in ipairs(keys) do
-		        self:AssignLobbyRoom(uid)
-		        local roomId = self.playerRooms[uid]
-		        if roomId ~= nil and roomId >= 1 and roomId <= 8 then
-		            local floorEnt = _EntityService:GetEntityByPath("/maps/map01/" .. floors[roomId])
-		            local playerEnt = _UserService:GetUserEntityByUserId(uid)
-		            if floorEnt ~= nil and playerEnt ~= nil then
-		                _TeleportService:TeleportToEntity(playerEnt, floorEnt)
-		                log("[Lobby] 텔레포트: " .. uid .. " → " .. floors[roomId])
-		            end
-		        end
-		    end
-		    self:UpdateLobbySeatOrder()
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SubmitNightAction(tostring(senderUserId), targetRoom) end
 	end
 
 	@ExecSpace("Server")
 	method void SendChat(string userId, string message)
-		    if self.CurrentPhase ~= self.PHASE_LOBBY and
-		       self.CurrentPhase ~= self.PHASE_FREE_ROAM and
-		       self.CurrentPhase ~= self.PHASE_MEETING then return end
-		    if message == nil or message == "" then return end
-		    -- 메시지 길이 제한 (100자)
-		    if string.len(message) > 100 then
-		        message = string.sub(message, 1, 100)
-		    end
-		    -- 죽은 플레이어(게임 진행 중 탈락) 메시지는 DeadChatLog로 분리
-		    local aliveStr = self.AlivePlayersList or ""
-		    local isDead = self.GameStarted and aliveStr ~= ""
-		    if isDead then
-		        local found = false
-		        for uid in string.gmatch(aliveStr, "[^,]+") do
-		            if uid == userId then found = true; break end
-		        end
-		        isDead = not found
-		    end
-		    -- 형식: "userId\t메시지" 줄들을 "\n"으로 구분, 최근 20줄 유지
-		    local entry = userId .. "\t" .. message
-		    if isDead then
-		        if self.DeadChatLog == "" then
-		            self.DeadChatLog = entry
-		        else
-		            local lines = {}
-		            for line in string.gmatch(self.DeadChatLog, "[^\n]+") do lines[#lines+1] = line end
-		            lines[#lines+1] = entry
-		            if #lines > 20 then table.remove(lines, 1) end
-		            self.DeadChatLog = table.concat(lines, "\n")
-		        end
-		        log("[DeadChat] " .. userId .. ": " .. message)
-		        return
-		    end
-		    if self.ChatLog == "" then
-		        self.ChatLog = entry
-		    else
-		        local lines = {}
-		        for line in string.gmatch(self.ChatLog, "[^\n]+") do
-		            lines[#lines + 1] = line
-		        end
-		        lines[#lines + 1] = entry
-		        if #lines > 20 then
-		            table.remove(lines, 1)
-		        end
-		        self.ChatLog = table.concat(lines, "\n")
-		    end
-		    log("[Chat] " .. userId .. ": " .. message)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SendChat(tostring(senderUserId), message) end
 	end
 
+	@ExecSpace("Server")
 	method void SendMafiaChat(string userId, string message)
-		    if self.CurrentPhase ~= self.PHASE_NIGHT then return end
-		    if message == nil or message == "" then return end
-		    if string.len(message) > 100 then
-		        message = string.sub(message, 1, 100)
-		    end
-		    local entry = userId .. "\t" .. message
-		    if self.MafiaChatLog == "" then
-		        self.MafiaChatLog = entry
-		    else
-		        local lines = {}
-		        for line in string.gmatch(self.MafiaChatLog, "[^\n]+") do
-		            lines[#lines + 1] = line
-		        end
-		        lines[#lines + 1] = entry
-		        if #lines > 20 then
-		            table.remove(lines, 1)
-		        end
-		        self.MafiaChatLog = table.concat(lines, "\n")
-		    end
-		    log("[MafiaChat] " .. userId .. ": " .. message)
+		local room = self:GetRoomLogicForUser(tostring(senderUserId))
+		if room ~= nil then room:SendMafiaChat(tostring(senderUserId), message) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer GetLobbyRoom(string userId)
+		if _InvestigationRoomManager == nil then return -1 end
+		local room = _InvestigationRoomManager:GetLogicalRoomLogicForUser(userId)
+		if room == nil then return -1 end
+		return room:GetLobbyRoom(userId)
 	end
 
 	@ExecSpace("Client")
 	method void ResetLocalRole()
-		    self.LocalPlayerRole = -1
+		self.LocalPlayerRole = -1
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResetRoomState()
+		-- Compatibility entry used by registry cleanup. Per-room instances own real state.
 	end
 
 end

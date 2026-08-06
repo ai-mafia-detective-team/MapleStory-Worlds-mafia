@@ -11,29 +11,11 @@ script MafiaUIFlow extends Logic
 
 	property integer roomTransitionReadyAttempts = 0
 
-	property integer roomTransitionStableReadyFrames = 0
-
 	property boolean roomTransitionFadingOut = false
 
 	property number roomTransitionFadeAlpha = 1
 
-	property number roomTransitionFadeDuration = 0.8
-
-	property number roomTransitionMinimumHoldDuration = 2.5
-
-	property number roomTransitionHoldRemaining = 0.0
-
-	property boolean roomTransitionReleaseWhenHoldEnds = false
-
-	property boolean staticBootstrapResolved = false
-
-	property boolean staticBootstrapWaiting = false
-
-	property number staticBootstrapWaitSeconds = 0
-
-	property boolean staticReturnLobbyFadePending = false
-
-	property number staticReturnLobbyFadeDelay = 0
+	property number roomTransitionFadeDuration = 0.45
 
 	property Entity dayRoot = nil
 
@@ -127,13 +109,10 @@ script MafiaUIFlow extends Logic
 
 	property number lobbyAvatarBaseHeight = 180
 
-	-- Extra clearance above the scaled avatar rectangle. The final offset is
-	-- lobbyAvatarBaseHeight * lobbyAvatarScale + this padding.
-	property number lobbyNicknameOffsetY = 24
+	-- Negative values place the nickname below the avatar's foothold point.
+	property number lobbyNicknameOffsetY = -18
 
 	property number dayNicknameSafetyOffsetY = 10
-
-	property string localProfileNickname = ""
 
 	property boolean lobbyAvatarFollowLogged = false
 
@@ -170,10 +149,6 @@ script MafiaUIFlow extends Logic
 	property table dayRoomBadgeBgs = nil
 
 	property table dayRoomBadgeAvatars = nil
-
-	property table dayRoomBadgeDeadMarkers = nil
-
-	property table dayRoomBadgeAliveStates = nil
 
 	property table dayRoomBadgeFloorLeft = nil
 
@@ -258,14 +233,6 @@ script MafiaUIFlow extends Logic
 	property string lastDayChatLog = "__UNSET__"
 
 	property string lastNightChatLog = "__UNSET__"
-
-	property string currentChatHudName = ""
-
-	property string cachedLocalUserId = ""
-
-	property boolean nightChatLayoutLogged = false
-
-	property boolean nightWrappedRowPreservationLogged = false
 
 	property string lastLobbySentMessage = ""
 
@@ -789,10 +756,6 @@ script MafiaUIFlow extends Logic
 
 	property string nightOverlayMsg = ""
 
-	property Entity nightTurnTitleEnt = nil
-
-	property any nightTurnTitleTextComp = nil
-
 	property Entity nightMafiaChatPanelEnt = nil
 
 	property Entity nightMafiaActionEnt = nil
@@ -846,8 +809,6 @@ script MafiaUIFlow extends Logic
 		    self.dayRoomBadgeDungeonBgs = {}
 		    self.dayRoomBadgeBgs = {}
 		    self.dayRoomBadgeAvatars = {}
-		    self.dayRoomBadgeDeadMarkers = {}
-		    self.dayRoomBadgeAliveStates = {}
 		    self.dayRoomBadgeFloorLeft = {}
 		    self.dayRoomBadgeFloorRight = {}
 		    self.dayRoomBadgeFloorLine = {}
@@ -929,72 +890,21 @@ script MafiaUIFlow extends Logic
 		        -- same boot frame exposes the map and the partially initialized lobby.
 		        self.roomTransitionAwaitingLobbyReady = true
 		        self.roomTransitionReadyAttempts = 0
-		        self.roomTransitionStableReadyFrames = 0
-		        self:HideNonRoomScreensForInstanceTransition()
 		        self:EnterRoomLobby()
 		        log("[MafiaUIFlow] instance room client boot restored roomKey=" .. tostring(_RoomService.RoomKey))
 		        return
 		    end
 		    -- Keep the Mafia in-room HUD hidden until the main flow finishes room creation.
-		    -- Normal boots retain Intro -> Nickname -> Lobby. A RoomService return consumes a
-		    -- per-user one-shot marker and opens UI_Lobby without replaying the startup flow.
+		    -- Desired flow: Intro -> Nickname -> Create Room -> MafiaLobbyHUD.
 		    self.mafiaHudUnlocked = false
-		    self.staticBootstrapResolved = false
-		    self.staticBootstrapWaiting = true
-		    self.staticBootstrapWaitSeconds = 0
-		    self:ShowStartupLoadingCover()
-		    if _IntroFlowController ~= nil then
-		        _IntroFlowController:ResolveStaticRoomBootstrap()
-		        log("[MafiaUIFlow] static bootstrap requested")
-		    else
-		        self:OnStaticRoomBootstrapResolved(false, "")
-		        log_warning("[MafiaUIFlow] IntroFlowController missing; normal startup fallback")
-		    end
-		    log("[MafiaUIFlow] initialized; awaiting static bootstrap")
+		    self:BeginStartupLoadingFlow()
+		    log("[MafiaUIFlow] initialized")
 	end
 
 	method void OnUpdate(number delta)
-		    if self.roomTransitionHoldRemaining > 0 then
-		        self.roomTransitionHoldRemaining =
-		            math.max(0, self.roomTransitionHoldRemaining - math.max(delta, 0))
-		    end
-		    if self.roomTransitionReleaseWhenHoldEnds
-		        and self.roomTransitionHoldRemaining <= 0
-		        and self.roomTransitionFadingOut == false then
-		        self.roomTransitionReleaseWhenHoldEnds = false
-		        self:BeginRoomTransitionFadeOut()
-		        log("[MafiaUIFlow] room transition minimum hold completed; fade-out started")
-		    end
-		    if _RoomService:IsInstanceRoom()
-		        and (self.roomTransitionAwaitingLobbyReady or self.roomTransitionFadingOut) then
-		        -- Other global UI controllers initialize independently during a new Room
-		        -- client boot. Keep their roots suppressed until the Mafia lobby is stable.
-		        self:HideNonRoomScreensForInstanceTransition()
-		    end
-		    if self.staticBootstrapWaiting then
-		        self.staticBootstrapWaitSeconds = self.staticBootstrapWaitSeconds + delta
-		        if self.staticBootstrapWaitSeconds >= 3.0 then
-		            log_warning("[MafiaUIFlow] static bootstrap timed out; normal startup fallback")
-		            self:OnStaticRoomBootstrapResolved(false, "")
-		        end
-		    end
-		    if self.staticReturnLobbyFadePending then
-		        self.staticReturnLobbyFadeDelay = self.staticReturnLobbyFadeDelay - delta
-		        if self.staticReturnLobbyFadeDelay <= 0 then
-		            self.staticReturnLobbyFadePending = false
-		            self:BeginRoomTransitionFadeOut()
-		            log("[MafiaUIFlow] static return transition fade-out started")
-		        end
-		    end
 		    if self.roomTransitionFadingOut then
 		        local duration = math.max(0.1, self.roomTransitionFadeDuration)
-		        -- A RoomService destination boot can report one abnormally large first-frame
-		        -- delta. Consuming it raw completes the entire fade in one frame, so the
-		        -- transition appears to cut instantly. Clamp only this visual animation step;
-		        -- game timers and the established startup order remain untouched.
-		        local visualDelta = math.min(math.max(delta, 0), 0.05)
-		        self.roomTransitionFadeAlpha =
-		            math.max(0, self.roomTransitionFadeAlpha - (visualDelta / duration))
+		        self.roomTransitionFadeAlpha = math.max(0, self.roomTransitionFadeAlpha - (delta / duration))
 		        local groupRoot = _EntityService:GetEntityByPath("/ui/MafiaRoomTransitionHUD")
 		        local transitionRoot = _EntityService:GetEntityByPath("/ui/MafiaRoomTransitionHUD/TransitionRoot")
 		        local transitionBackground =
@@ -1021,10 +931,7 @@ script MafiaUIFlow extends Logic
 		        end
 		        if self.lobbyRoot ~= nil and isvalid(self.lobbyRoot)
 		            and self.lobbyRoot.CanvasGroupComponent ~= nil then
-		            -- The destination lobby is already visually ready. Keep it fully opaque
-		            -- and fade only the transition cover above it; cross-fading both layers
-		            -- exposed map01 through the temporary combined-alpha gap.
-		            self.lobbyRoot.CanvasGroupComponent.GroupAlpha = 1
+		            self.lobbyRoot.CanvasGroupComponent.GroupAlpha = 1 - self.roomTransitionFadeAlpha
 		        end
 		        if self.roomTransitionFadeAlpha <= 0 then
 		            self.roomTransitionFadingOut = false
@@ -1075,10 +982,6 @@ script MafiaUIFlow extends Logic
 		            local fc = self.nightOverlayTextComp.FontColor
 		            self.nightOverlayTextComp.FontColor = Color(fc.r, fc.g, fc.b, self.nightFadeOutAlpha)
 		        end
-		        if self.nightTurnTitleTextComp ~= nil then
-		            local fc = self.nightTurnTitleTextComp.FontColor
-		            self.nightTurnTitleTextComp.FontColor = Color(fc.r, fc.g, fc.b, self.nightFadeOutAlpha)
-		        end
 		        if self.nightFadeOutAlpha <= 0 then
 		            self.nightFadingOut = false
 		            local foe2 = self.nightFadeOutEnt
@@ -1112,10 +1015,6 @@ script MafiaUIFlow extends Logic
 		        if self.nightOverlayTextComp ~= nil then
 		            local fc = self.nightOverlayTextComp.FontColor
 		            self.nightOverlayTextComp.FontColor = Color(fc.r, fc.g, fc.b, a)
-		        end
-		        if self.nightTurnTitleTextComp ~= nil then
-		            local fc = self.nightTurnTitleTextComp.FontColor
-		            self.nightTurnTitleTextComp.FontColor = Color(fc.r, fc.g, fc.b, a)
 		        end
 		        if a >= 1.0 then self.nightFadingIn = false end
 		    end
@@ -1232,17 +1131,12 @@ script MafiaUIFlow extends Logic
 		                if ctx == "vote" then
 		                    self:HideVotePanel()
 		                elseif ctx == "morning" then
-		                    -- Prepare the day HUD as transparent before RefreshUI enables it.
-		                    -- Enabling at alpha 1 and resetting to 0 afterwards produced a
-		                    -- one-frame flash at the morning -> free-roam boundary.
+		                    self:RefreshUI(true)
 		                    local dayCg = (self.dayRoot ~= nil) and self.dayRoot.CanvasGroupComponent or nil
 		                    if dayCg ~= nil then
 		                        self.dayFadeInAlpha = 0.0
 		                        self.dayFadeInPlaying = true
 		                        dayCg.GroupAlpha = 0.0
-		                    end
-		                    self:RefreshUI(true)
-		                    if dayCg ~= nil then
 		                        log("[MafiaUIFlow] morning result faded out; MafiaDayHUD fade-in started")
 		                    end
 		                end
@@ -1266,8 +1160,8 @@ script MafiaUIFlow extends Logic
 		    end
 		    -- 경찰 조사결과 애니메이션 상태머신 (경찰 클라이언트 전용)
 		    -- Phase 1: ResultDimBg 서서히 어두워짐 + PoliceResultDisplay 페이드인
-		    -- Phase 2: 결과를 읽을 수 있도록 잠시 유지
-		    -- Phase 3: 페이드아웃 + dim 해제 → 공통 야간 패널 전환
+		    -- Phase 2: 2초 대기
+		    -- Phase 3: 페이드아웃 + dim 해제 → DoctorAction 페이드인 트리거
 		    if self.policeResultPlaying then
 		        local SPEED = 2.5
 		        if self.policeResultPhase == 1 then
@@ -1275,16 +1169,6 @@ script MafiaUIFlow extends Logic
 		            if self.policeResultDisplayEnt ~= nil then
 		                local cg = self.policeResultDisplayEnt.CanvasGroupComponent
 		                if cg ~= nil then cg.GroupAlpha = self.policeResultAlpha end
-		                local sprite = self.policeResultDisplayEnt.SpriteGUIRendererComponent
-		                if sprite ~= nil then
-		                    local color = sprite.Color
-		                    sprite.Color = Color(color.r, color.g, color.b, self.policeResultAlpha)
-		                end
-		            end
-		            if self.policeResultDisplayTextComp ~= nil then
-		                local fc = self.policeResultDisplayTextComp.FontColor
-		                self.policeResultDisplayTextComp.FontColor =
-		                    Color(fc.r, fc.g, fc.b, self.policeResultAlpha)
 		            end
 		            if self.resultDimEnt ~= nil then
 		                local dimCg = self.resultDimEnt.CanvasGroupComponent
@@ -1296,7 +1180,7 @@ script MafiaUIFlow extends Logic
 		            end
 		        elseif self.policeResultPhase == 2 then
 		            self.policeResultTimer = self.policeResultTimer + delta
-		            if self.policeResultTimer >= 2.5 then
+		            if self.policeResultTimer >= 2.0 then
 		                self.policeResultPhase = 3
 		            end
 		        elseif self.policeResultPhase == 3 then
@@ -1304,16 +1188,6 @@ script MafiaUIFlow extends Logic
 		            if self.policeResultDisplayEnt ~= nil then
 		                local cg = self.policeResultDisplayEnt.CanvasGroupComponent
 		                if cg ~= nil then cg.GroupAlpha = self.policeResultAlpha end
-		                local sprite = self.policeResultDisplayEnt.SpriteGUIRendererComponent
-		                if sprite ~= nil then
-		                    local color = sprite.Color
-		                    sprite.Color = Color(color.r, color.g, color.b, self.policeResultAlpha)
-		                end
-		            end
-		            if self.policeResultDisplayTextComp ~= nil then
-		                local fc = self.policeResultDisplayTextComp.FontColor
-		                self.policeResultDisplayTextComp.FontColor =
-		                    Color(fc.r, fc.g, fc.b, self.policeResultAlpha)
 		            end
 		            if self.resultDimEnt ~= nil then
 		                local dimCg = self.resultDimEnt.CanvasGroupComponent
@@ -1325,14 +1199,15 @@ script MafiaUIFlow extends Logic
 		                if self.policeResultDisplayEnt ~= nil then self.policeResultDisplayEnt.Enable = false end
 		                if self.policeResultTextEnt ~= nil then self.policeResultTextEnt.Enable = false end
 		                if self.resultDimEnt ~= nil then self.resultDimEnt.Enable = false end
-		                -- Do not enable DoctorAction directly here. The common path also
-		                -- configures the waiting overlay, message and fade consistently.
-		                self.nightUIShown = false
-		                self.nightManuallyHidden = false
-		                self.nightFadingOut = false
-		                self.nightFadeOutEnt = nil
-		                self:ShowNightPanel()
-		                log("[MafiaUIFlow] police result finished; resumed common night panel transition")
+		                -- DoctorAction 페이드인: GroupAlpha=0으로 enable 후 nightFadingIn 시작
+		                if self.nightDoctorActionEnt ~= nil then
+		                    self.nightDoctorActionEnt.Enable = true
+		                    local cg = self.nightDoctorActionEnt.CanvasGroupComponent
+		                    if cg ~= nil then cg.GroupAlpha = 0 end
+		                end
+		                self.nightActionAlpha = 0
+		                self.nightFadingIn    = true
+		                self.nightUIShown     = true  -- ShowNightPanel 중복 호출 방지
 		            end
 		        end
 		    end
@@ -1349,21 +1224,11 @@ script MafiaUIFlow extends Logic
 		        self.roomTransitionReadyAttempts = self.roomTransitionReadyAttempts + 1
 		        local lobbyReady = self:IsRoomLobbyVisuallyReady()
 		        if lobbyReady then
-		            self.roomTransitionStableReadyFrames = self.roomTransitionStableReadyFrames + 1
-		            if self.roomTransitionStableReadyFrames >= 4
-		                and self.roomTransitionHoldRemaining <= 0 then
-		                self.roomTransitionAwaitingLobbyReady = false
-		                self:HideNonRoomScreensForInstanceTransition()
-		                self:BeginRoomTransitionFadeOut()
-		                log("[MafiaUIFlow] room transition fade-out started after stable lobby visual attempts="
-		                    .. tostring(self.roomTransitionReadyAttempts)
-		                    .. " stableFrames=" .. tostring(self.roomTransitionStableReadyFrames))
-		            end
-		        else
-		            self.roomTransitionStableReadyFrames = 0
-		        end
-		        if self.roomTransitionAwaitingLobbyReady
-		            and self.roomTransitionReadyAttempts >= 100 then
+		            self.roomTransitionAwaitingLobbyReady = false
+		            self:BeginRoomTransitionFadeOut()
+		            log("[MafiaUIFlow] room transition fade-out started after lobby visual ready attempts="
+		                .. tostring(self.roomTransitionReadyAttempts))
+		        elseif self.roomTransitionReadyAttempts >= 100 then
 		            -- Never leave the player trapped behind the cover if a malformed avatar
 		            -- prevents the visual-ready signal. Ten seconds is only a failure escape.
 		            self.roomTransitionAwaitingLobbyReady = false
@@ -1371,51 +1236,6 @@ script MafiaUIFlow extends Logic
 		            log_warning("[MafiaUIFlow] room transition released by visual-ready timeout")
 		        end
 		    end
-	end
-
-	@ExecSpace("ClientOnly")
-	method void HideNonRoomScreensForInstanceTransition()
-		    -- UI logics survive as project-wide definitions but their roots are recreated for
-		    -- each Room client. Suppress every pre-room screen while map02 finishes booting.
-		    local paths = {
-		        "/ui/UI_Lobby",
-		        "/ui/UI_InvestigationRoomSearch",
-		        "/ui/UI_IntroSequence",
-		        "/ui/UI_StorySequence",
-		        "/ui/UI_NicknameSetup",
-		        "/ui/UI_AchievementPopup",
-		        "/ui/MafiaLoadingHUD",
-		        "/ui/DefaultGroup",
-		    }
-		    for _, path in ipairs(paths) do
-		        self:HideUiRootByPath(path)
-		    end
-	end
-
-	@ExecSpace("ClientOnly")
-	method void OnStaticRoomBootstrapResolved(boolean returningFromRoom, string nickname)
-		    if self.staticBootstrapResolved then return end
-		    self.staticBootstrapResolved = true
-		    self.staticBootstrapWaiting = false
-		    self.staticBootstrapWaitSeconds = 0
-		    if returningFromRoom == false then
-		        -- The established startup order is unchanged for ordinary launches.
-		        self:BeginStartupLoadingFlow()
-		        log("[MafiaUIFlow] normal static bootstrap continued")
-		        return
-		    end
-
-		    self.startupIntroRequested = true
-		    self:ShowRoomTransition("메인 로비로 이동 중입니다...")
-		    if _IntroFlowController ~= nil then
-		        _IntroFlowController:ShowLobby(nickname)
-		    else
-		        self:ReturnToMainLobbyFromRoom()
-		    end
-		    self.staticReturnLobbyFadePending = true
-		    self.staticReturnLobbyFadeDelay = 0.2
-		    log("[MafiaUIFlow] static room return restored directly to UI_Lobby nickname=" ..
-		        tostring(nickname))
 	end
 
 	method void OnEndPlay()
@@ -1656,15 +1476,7 @@ script MafiaUIFlow extends Logic
 		        self.lobbyAvatarEntities[i] = avatarEntity
 		        self.lobbyFootholdLeftEntities[i] = leftFoothold
 		        self.lobbyFootholdRightEntities[i] = rightFoothold
-		        if textEntity ~= nil then
-		            self.lobbyRoomTexts[i] = textEntity.TextComponent
-		            textEntity.Enable = true
-		            textEntity.Visible = true
-		            if textEntity.TextComponent ~= nil then textEntity.TextComponent.Enable = true end
-		            if textEntity.UITransformComponent ~= nil then
-		                _UILogic:SetSiblingIndex(textEntity.UITransformComponent, 1000000)
-		            end
-		        end
+		        if textEntity ~= nil then self.lobbyRoomTexts[i] = textEntity.TextComponent end
 		        if avatarEntity ~= nil and leftFoothold ~= nil and rightFoothold ~= nil and footholdLine ~= nil
 		            and avatarEntity.UITransformComponent ~= nil
 		            and leftFoothold.UITransformComponent ~= nil
@@ -1691,7 +1503,7 @@ script MafiaUIFlow extends Logic
 		        end
 		    end
 		    log("[MafiaUIFlow] lobby avatar layout configured scale=" .. tostring(self.lobbyAvatarScale)
-		        .. " nicknameHeightOffsetY=" .. tostring(self:GetLobbyNicknameHeightOffset()))
+		        .. " nicknameOffsetY=" .. tostring(self.lobbyNicknameOffsetY))
 		
 		    local entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ReadyButton")
 		    if entity ~= nil then
@@ -1726,7 +1538,7 @@ script MafiaUIFlow extends Logic
 		        self.lobbyChatLogText = entity.TextComponent
 		        entity.Enable = false
 		    end
-		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatInput/InputText")
+		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatInput")
 		    if entity ~= nil then self.lobbyChatInput = entity.TextInputComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/CenterPanel/ChatSendButton")
 		    if entity ~= nil then self.lobbyChatSendButton = entity.ButtonComponent end
@@ -1934,7 +1746,7 @@ script MafiaUIFlow extends Logic
 		    if entity ~= nil then self.dayVoteStatusText = entity.TextComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/VoteHintText")
 		    if entity ~= nil then self.dayVoteHintText = entity.TextComponent end
-		    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatInput/InputText")
+		    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatInput")
 		    if entity ~= nil then self.dayChatInput = entity.TextInputComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/ChatSendButton")
 		    if entity ~= nil then self.dayChatSendButton = entity.ButtonComponent end
@@ -1943,14 +1755,10 @@ script MafiaUIFlow extends Logic
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/CenterPanel/SkipCountText")
 		    if entity ~= nil then self.daySkipCountText = entity.TextComponent end
 		
-		    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput/InputText")
+		    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput")
 		    if entity ~= nil then self.nightChatInput = entity.TextInputComponent end
 		    entity = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_5")
 		    if entity ~= nil then self.nightChatSendButton = entity.ButtonComponent end
-
-		    self:ConfigureChatInputField(self.lobbyChatInput, 500, "MafiaLobbyHUD")
-		    self:ConfigureChatInputField(self.dayChatInput, 500, "MafiaDayHUD")
-		    self:ConfigureChatInputField(self.nightChatInput, 310, "MafiaNightHUD")
 		
 		    if self.lobbyReadyButton ~= nil and self.readyClickHandler == nil then
 		        self.readyClickHandler = self.lobbyReadyButton.Entity:ConnectEvent(ButtonClickEvent, self.HandleReadyClick)
@@ -2184,52 +1992,12 @@ script MafiaUIFlow extends Logic
 		            end
 		        end
 		    end
-		    self:ApplyMapleFontToMafiaGameHUDs()
 		    self.uiResolved = self.lobbyReadyButton ~= nil and self.dayPlayerCountText ~= nil
 		    if self.uiResolved then log("[MafiaUIFlow] UI references resolved") end
 	end
 
-	@ExecSpace("ClientOnly")
-	method void ApplyMapleFontToMafiaGameHUDs()
-		    -- Normalize only the in-room Mafia flow. Preserve every authored size,
-		    -- color, alignment and layout property; runtime clones inherit this font.
-		    local hudPaths = {
-		        "/ui/MafiaLobbyHUD",
-		        "/ui/MafiaLoadingHUD",
-		        "/ui/MafiaDayHUD",
-		        "/ui/MafiaNightHUD",
-		        "/ui/MafiaCitizenWinHUD",
-		        "/ui/MafiaMafiaWinHUD",
-		    }
-		    local totalApplied = 0
-		    for _, path in ipairs(hudPaths) do
-		        local root = _EntityService:GetEntityByPath(path)
-		        local applied = 0
-		        if root ~= nil and isvalid(root) then
-		            if root.TextComponent ~= nil then
-		                root.TextComponent.Font = FontType.Maple
-		                applied = applied + 1
-		            end
-		            local textComponents = root:GetChildComponentsByTypeName("TextComponent", true)
-		            if textComponents ~= nil then
-		                for _, textComponent in pairs(textComponents) do
-		                    if textComponent ~= nil then
-		                        textComponent.Font = FontType.Maple
-		                        applied = applied + 1
-		                    end
-		                end
-		            end
-		        end
-		        totalApplied = totalApplied + applied
-		        log("[MafiaUIFlow] Maple font normalized hud=" .. path
-		            .. " textCount=" .. tostring(applied))
-		    end
-		    log("[MafiaUIFlow] Maple font normalization completed total=" .. tostring(totalApplied))
-	end
-
 	method void ResolvePhaseChatContext(string hudName)
 		    local rootPath = "/ui/" .. hudName
-		    self.currentChatHudName = hudName
 		    local entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/ChatScroll")
 		    if entity ~= nil then self.lobbyChatScroll = entity.ScrollLayoutGroupComponent end
 		    entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/ChatScroll/ChatLogText")
@@ -2249,22 +2017,14 @@ script MafiaUIFlow extends Logic
 		    local resolvedSlots = 0
 		    for i = 1, self.lobbyChatSlotCount do
 		        local slotIndex = tostring(i)
-		        local slotBasePath = ""
-		        local slotRoot = nil
-		        -- MafiaNightHUD also contains unused shared placeholders. Prefer the
-		        -- nested MafiaChat list and suppress the duplicate center-panel slots.
-		        if hudName == "MafiaNightHUD" then
-		            slotBasePath = rootPath .. "/CenterPanel/MafiaChat/Chat_3/LobbyChatSlot" .. slotIndex
-		            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
-		            local inactiveSlot = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/LobbyChatSlot" .. slotIndex)
-		            if inactiveSlot ~= nil then inactiveSlot.Enable = false end
-		        end
-		        if slotRoot == nil then
-		            slotBasePath = rootPath .. "/CenterPanel/LobbyChatSlot" .. slotIndex
-		            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
-		        end
+		        local slotBasePath = rootPath .. "/CenterPanel/LobbyChatSlot" .. slotIndex
+		        local slotRoot = _EntityService:GetEntityByPath(slotBasePath)
 		        if slotRoot == nil then
 		            slotBasePath = rootPath .. "/LobbyChatSlot" .. slotIndex
+		            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
+		        end
+		        if slotRoot == nil then
+		            slotBasePath = rootPath .. "/CenterPanel/MafiaChat/Chat_3/LobbyChatSlot" .. slotIndex
 		            slotRoot = _EntityService:GetEntityByPath(slotBasePath)
 		        end
 		        self.lobbyChatSlotRoots[i] = slotRoot
@@ -2310,13 +2070,6 @@ script MafiaUIFlow extends Logic
 		    end
 		
 		    if hudName == "MafiaNightHUD" then
-		        -- TextInputComponent forwards its value to the TextComponent on the same
-		        -- entity. Force that rendered input text to the left without editing .ui.
-		        if self.nightChatInput ~= nil and self.nightChatInput.Entity ~= nil
-		            and self.nightChatInput.Entity.TextComponent ~= nil then
-		            self.nightChatInput.Entity.TextComponent.Alignment = TextAlignmentType.MiddleLeft
-		        end
-		        self:ConfigureNightMafiaChatLayout()
 		        entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/MafiaChat/Chat_2/Chat_2_1")
 		        if entity ~= nil then self.lobbyScrollUpButton = entity.ButtonComponent end
 		        entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/MafiaChat/Chat_2/Chat_2_2")
@@ -2324,11 +2077,6 @@ script MafiaUIFlow extends Logic
 		        self.lobbyScrollTrack = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/MafiaChat/Chat_2/NightScrollTrack")
 		        entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/MafiaChat/Chat_2/NightScrollThumb")
 		        if entity ~= nil then self.lobbyScrollThumb = entity end
-		        if self.nightChatLayoutLogged == false then
-		            self.nightChatLayoutLogged = true
-		            log("[MafiaUIFlow] night mafia chat resolved slots=" .. tostring(resolvedSlots) ..
-		                " inputLeftAligned=" .. tostring(self.nightChatInput ~= nil))
-		        end
 		    else
 		        entity = _EntityService:GetEntityByPath(rootPath .. "/UISprite_2")
 		        if entity ~= nil then self.lobbyScrollUpButton = entity.ButtonComponent end
@@ -2400,11 +2148,7 @@ script MafiaUIFlow extends Logic
 		            self:StartMorningResultAnime()
 		        end
 		        local inLobby = (phase == _MafiaGameLogic.PHASE_LOBBY)
-		        -- Keep the night/result HUD active until the morning result animation itself
-		        -- finishes, even if the server has already advanced to FREE_ROAM.
-		        local morningResultVisible = self.resultAnimePlaying
-		            and self.resultAnimeContext == "morning"
-		        local inNight = (phase == _MafiaGameLogic.PHASE_NIGHT) or morningResultVisible
+		        local inNight = (phase == _MafiaGameLogic.PHASE_NIGHT) or (phase == _MafiaGameLogic.PHASE_MORNING and self.resultAnimePlaying)
 		        local inGameOver = (phase == _MafiaGameLogic.PHASE_GAME_OVER)
 		        local inDay = (not inLobby) and (not inNight) and (not inGameOver)
 		        self:SetHudActive(self.lobbyRoot, inLobby)
@@ -2541,13 +2285,7 @@ script MafiaUIFlow extends Logic
 		        if worldPlayer.MovementComponent.InputSpeed <= 0 then worldPlayer.MovementComponent.InputSpeed = 1 end
 		    end
 		    if worldPlayer.RigidbodyComponent ~= nil then worldPlayer.RigidbodyComponent.Enable = true end
-		    if worldPlayer.NameTagComponent ~= nil then
-		        local localNickname = self:GetUserDisplayName(self:GetLocalUserId())
-		        if localNickname ~= nil and localNickname ~= "" then
-		            worldPlayer.NameTagComponent.Name = localNickname
-		        end
-		        worldPlayer.NameTagComponent.Enable = true
-		    end
+		    if worldPlayer.NameTagComponent ~= nil then worldPlayer.NameTagComponent.Enable = false end
 	end
 
 	method void RequestLobbyRoomPlacementOnce()
@@ -2580,11 +2318,7 @@ script MafiaUIFlow extends Logic
 		    if roomText == nil or roomText.Entity == nil or isvalid(roomText.Entity) == false then return end
 		    local textTransform = roomText.Entity.UITransformComponent
 		    if textTransform == nil then return end
-		    textTransform.anchoredPosition = Vector2(avatarX, floorY + self:GetLobbyNicknameHeightOffset())
-	end
-
-	method number GetLobbyNicknameHeightOffset()
-		    return self.lobbyAvatarBaseHeight * self.lobbyAvatarScale + self.lobbyNicknameOffsetY
+		    textTransform.anchoredPosition = Vector2(avatarX, floorY + self.lobbyNicknameOffsetY)
 	end
 
 	method void CopyUISlotTransform(Entity sourceEntity, Entity targetEntity)
@@ -2751,38 +2485,6 @@ script MafiaUIFlow extends Logic
 		    self:CopyUISlotTransform(lobbyAvatarArea, dayAvatarArea)
 		    self:CopyAvatarTemplateBindings(lobbyAvatarArea, dayAvatarArea)
 		    if dayAvatarArea ~= nil then self.dayRoomBadgeAvatars[slotIndex] = dayAvatarArea end
-
-		    -- Prefer the grave entity manually positioned in each RoomBadge. These names
-		    -- reflect the editor-created entities and their transform/size must stay intact.
-		    local graveNames = { "Grave", "Grave_1", "Grave_2", "Grave_1",
-		        "Grave_2", "Grave_1", "Grave_2", "Grave_1" }
-		    local graveTemplate = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/RoomBadge1/Grave")
-		    local deadTemplate = graveTemplate
-		    local deadMarker = _EntityService:GetEntityByPath(dayBase .. "/" .. graveNames[slotIndex])
-		    if deadTemplate == nil then
-		        -- Compatibility fallback for worlds that have not received the Grave entity.
-		        deadTemplate = _EntityService:GetEntityByPath("/ui/MafiaDayHUD/Vote/Dead")
-		        deadMarker = _EntityService:GetEntityByPath(dayBase .. "/DeadMarker")
-		        if deadMarker == nil then
-		            deadMarker = self:EnsureDayRoomBadgeChild(deadTemplate, daySlot, "DeadMarker")
-		        end
-		    elseif deadMarker == nil then
-		        -- Only missing slots receive a runtime clone. Existing editor-positioned
-		        -- graves are never resized or repositioned by this script.
-		        deadMarker = self:EnsureDayRoomBadgeChild(deadTemplate, daySlot, "Grave")
-		    end
-		    if deadTemplate ~= nil and deadMarker ~= nil
-		        and _EntityService:GetEntityByPath(dayBase .. "/" .. graveNames[slotIndex]) == nil then
-		        self:CopyUISpriteTemplate(deadTemplate, deadMarker)
-		    end
-		    if deadMarker ~= nil then
-		        deadMarker.Enable = false
-		        deadMarker.Visible = false
-		        if deadMarker.UITransformComponent ~= nil then
-		            _UILogic:SetSiblingIndex(deadMarker.UITransformComponent, 900000)
-		        end
-		        self.dayRoomBadgeDeadMarkers[slotIndex] = deadMarker
-		    end
 		
 		    local lobbyPlayerAvatar = _EntityService:GetEntityByPath(lobbyBase .. "/PlayerAvatar")
 		    local dayPlayerAvatar = _EntityService:GetEntityByPath(dayBase .. "/PlayerAvatar")
@@ -2870,45 +2572,41 @@ script MafiaUIFlow extends Logic
 		    self:SyncDayLobbyTemplatesFromLobby()
 		    if self.dayRoomBadgeAvatars == nil then return end
 		    if self.dayRoomBadgeBoundUsers == nil then self.dayRoomBadgeBoundUsers = {} end
-		    if self.dayRoomBadgeDeadMarkers == nil then self.dayRoomBadgeDeadMarkers = {} end
-		    if self.dayRoomBadgeAliveStates == nil then self.dayRoomBadgeAliveStates = {} end
 
 		    local seats = self:GetLobbySeatOrderForDisplay()
 		    local nicknames = self:GetLobbySeatNicknamesForDisplay(seats)
-		    local aliveSet = {}
-		    local alivePlayers = _MafiaGameLogic.AlivePlayersList or ""
-		    -- A non-empty authoritative alive roster is sufficient to identify active-game
-		    -- death state. Do not gate this on the client facade's GameStarted timing.
-		    local hasAliveState = alivePlayers ~= ""
-		    if hasAliveState then
-		        for aliveUserId in string.gmatch(alivePlayers, "[^,]+") do
-		            aliveSet[aliveUserId] = true
-		        end
-		    end
 
 		    for i = 1, 8 do
 		        local userId = seats[i]
 		        local dayAvatar = self.dayRoomBadgeAvatars[i]
-		        local deadMarker = self.dayRoomBadgeDeadMarkers[i]
 		        local dayText = self.dayRoomBadgeTexts[i]
 		        if userId ~= nil and userId ~= "" and dayAvatar ~= nil and isvalid(dayAvatar) then
-		            local isAlive = (not hasAliveState) or aliveSet[userId] == true
+		            local sourceAvatar = self.lobbyAvatarEntities[i]
+		            local sourceCostume = nil
+		            if sourceAvatar ~= nil and isvalid(sourceAvatar) then
+		                sourceCostume = sourceAvatar.CostumeManagerComponent
+		            end
+
 		            local targetCostume = dayAvatar.CostumeManagerComponent
 		            local targetRenderer = dayAvatar.AvatarGUIRendererComponent
-		            local desiredEquipUserId = self:GetVisualEquipUserId(userId)
-		            local currentEquipUserId = ""
-		            if targetCostume ~= nil then
-		                currentEquipUserId = tostring(targetCostume.DefaultEquipUserId or "")
-		            end
-		            local needsBinding = self.dayRoomBadgeBoundUsers[i] ~= userId
-		                or currentEquipUserId ~= desiredEquipUserId
-		                or (targetCostume ~= nil and targetCostume.UseCustomEquipOnly == true)
+		            local needsBinding = (self.dayRoomBadgeBoundUsers[i] ~= userId)
 		            if needsBinding and targetRenderer ~= nil then targetRenderer.Enable = false end
 		            if needsBinding and targetCostume ~= nil then
 		                targetCostume.Enable = false
-		                targetCostume.UseCustomEquipOnly = false
-		                targetCostume.DefaultEquipUserId = ""
-		                targetCostume.DefaultEquipUserId = desiredEquipUserId
+		                if string.sub(userId, 1, 4) == "Bot_" then
+		                    -- Debug bots are logical players without an MSW account costume.
+		                    -- Always use the local tester as their visual source, even though
+		                    -- the prebuilt lobby slot itself has a CostumeManagerComponent.
+		                    targetCostume.UseCustomEquipOnly = false
+		                    targetCostume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+		                elseif sourceCostume ~= nil then
+		                    targetCostume.UseCustomEquipOnly = sourceCostume.UseCustomEquipOnly
+		                    local equipUserId = tostring(sourceCostume.DefaultEquipUserId or "")
+		                    targetCostume.DefaultEquipUserId = (equipUserId ~= "") and equipUserId or userId
+		                else
+		                    targetCostume.UseCustomEquipOnly = false
+		                    targetCostume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+		                end
 		                targetCostume.Enable = true
 		            end
 		            if targetRenderer ~= nil then
@@ -2922,36 +2620,15 @@ script MafiaUIFlow extends Logic
 		                    -- Their next movement input/sync is allowed to override this direction.
 		                    targetRenderer.FlipX = (i <= 4)
 		                end
-		                targetRenderer.Enable = isAlive
+		                targetRenderer.Enable = true
 		            end
-		            dayAvatar.Enable = isAlive
-		            dayAvatar.Visible = isAlive
-		            if deadMarker ~= nil and isvalid(deadMarker) then
-		                deadMarker.Enable = not isAlive
-		                deadMarker.Visible = not isAlive
-		            end
-		            if self.dayRoomBadgeAliveStates[i] ~= isAlive then
-		                self.dayRoomBadgeAliveStates[i] = isAlive
-		                log("[MafiaUIFlow] Day room death visual updated slot=" .. tostring(i)
-		                    .. " userId=" .. tostring(userId)
-		                    .. " alive=" .. tostring(isAlive)
-		                    .. " avatarVisible=" .. tostring(isAlive)
-		                    .. " deadMarkerVisible=" .. tostring(not isAlive))
-		            end
+		            dayAvatar.Enable = true
+		            dayAvatar.Visible = true
 
 		            if dayText ~= nil then
 		                local nickname = nicknames[i]
 		                if nickname == nil or nickname == "" then nickname = "플레이어" end
-		                if not isAlive then nickname = nickname .. " (사망)" end
 		                dayText.Text = nickname
-		                dayText.Enable = true
-		                if dayText.Entity ~= nil then
-		                    dayText.Entity.Enable = true
-		                    dayText.Entity.Visible = true
-		                    if dayText.Entity.UITransformComponent ~= nil then
-		                        _UILogic:SetSiblingIndex(dayText.Entity.UITransformComponent, 1000000)
-		                    end
-		                end
 		                if dayAvatar.UITransformComponent ~= nil then
 		                    self:PositionDayNickname(i,
 		                        dayAvatar.UITransformComponent.anchoredPosition.x,
@@ -2968,8 +2645,7 @@ script MafiaUIFlow extends Logic
 		                log("[MafiaUIFlow] Day avatar bound 1:1 slot=" .. tostring(i)
 		                    .. " userId=" .. tostring(userId)
 		                    .. " flipToCenter=" .. tostring(targetRenderer ~= nil and targetRenderer.FlipX or false)
-		                    .. " nicknameFront=true"
-		                    .. " alive=" .. tostring(isAlive))
+		                    .. " nicknameFront=true")
 		            end
 		else
 		            if dayAvatar ~= nil and isvalid(dayAvatar) then
@@ -2977,13 +2653,8 @@ script MafiaUIFlow extends Logic
 		                if dayAvatar.AvatarGUIRendererComponent ~= nil then dayAvatar.AvatarGUIRendererComponent.Enable = false end
 		                if dayAvatar.CostumeManagerComponent ~= nil then dayAvatar.CostumeManagerComponent.Enable = false end
 		            end
-		            if deadMarker ~= nil and isvalid(deadMarker) then
-		                deadMarker.Enable = false
-		                deadMarker.Visible = false
-		            end
 		            if dayText ~= nil then dayText.Text = "" end
 		            self.dayRoomBadgeBoundUsers[i] = nil
-		            self.dayRoomBadgeAliveStates[i] = nil
 		        end
 		    end
 	end
@@ -2996,7 +2667,7 @@ script MafiaUIFlow extends Logic
 		    if textTransform == nil then return end
 		    textTransform.anchoredPosition = Vector2(
 		        avatarX,
-		        floorY + self:GetLobbyNicknameHeightOffset() + self.dayNicknameSafetyOffsetY
+		        floorY + self.lobbyNicknameOffsetY + self.dayNicknameSafetyOffsetY
 		    )
 	end
 
@@ -3154,26 +2825,24 @@ script MafiaUIFlow extends Logic
 		    end
 		    if localUserId == "" or localUserId ~= tostring(userId) then return false end
 
+		    local lobbyRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby")
+		    if lobbyRoot == nil or isvalid(lobbyRoot) == false then return false end
+
+		    local uiLobbyAvatar = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/LobbyAvatarArea/LobbyAvatar")
+		    if uiLobbyAvatar == nil or isvalid(uiLobbyAvatar) == false then return false end
+		    local uiCostume = uiLobbyAvatar.CostumeManagerComponent
 		    local uiBodyState = self:GetMainLobbyAvatarState()
 
 		    local targetCostume = avatarEntity.CostumeManagerComponent
-		    local targetRenderer = avatarEntity.AvatarGUIRendererComponent
 		    if applyAction == nil then applyAction = false end
-		    if targetCostume ~= nil then
-		        -- Bind identity from LocalPlayer, not from the disabled main-lobby preview.
-		        -- The preview can retain another/stale user while UI groups transition.
-		        local boundUserId = tostring(targetCostume.DefaultEquipUserId or "")
-		        local needsRebind = boundUserId ~= localUserId or targetCostume.UseCustomEquipOnly == true
-		        if needsRebind then
-		            if targetRenderer ~= nil then targetRenderer.Enable = false end
-		            targetCostume.Enable = false
-		            targetCostume.UseCustomEquipOnly = false
-		            targetCostume.DefaultEquipUserId = ""
-		            targetCostume.DefaultEquipUserId = localUserId
-		            targetCostume.Enable = true
-		            if targetRenderer ~= nil then targetRenderer.Enable = true end
-		            log("[MafiaUIFlow] local lobby avatar rebound userId=" .. tostring(localUserId))
+		    if uiCostume ~= nil and targetCostume ~= nil then
+		        local sourceAvatarUserId = tostring(uiCostume.DefaultEquipUserId or "")
+		        if sourceAvatarUserId == "" then
+		            sourceAvatarUserId = localUserId
 		        end
+		        targetCostume.UseCustomEquipOnly = uiCostume.UseCustomEquipOnly
+		        targetCostume.DefaultEquipUserId = sourceAvatarUserId
+		        targetCostume.Enable = true
 		    end
 		    if applyAction == true then
 		        if uiBodyState == "" then uiBodyState = "idle" end
@@ -3321,11 +2990,6 @@ script MafiaUIFlow extends Logic
 	method void EnterRoomLobby()
 		    -- Called by LobbyController after room creation or join. Unlocks the Mafia HUD flow.
 		    self.lobbyLeavePending = false
-		    self.lobbyLeaveRoomId = ""
-		    self.lobbyLeaveRetryCount = 0
-		    if self.lobbyInviteButton ~= nil then
-		        self.lobbyInviteButton.Enable = true
-		    end
 		    self.mafiaHudUnlocked = true
 		    self.cachedPhase = -1
 		    self.dayLobbyTemplateSynced = false
@@ -3344,102 +3008,7 @@ script MafiaUIFlow extends Logic
 		    self:RequestLobbyRoomPlacementOnce()
 		    if not self.uiResolved then self:ResolveUI() end
 		    self:RefreshUI(true)
-		    log("[MafiaUIFlow] EnterRoomLobby: mafia HUD unlocked; exit button re-enabled localProfileNickname="
-		        .. tostring(self.localProfileNickname))
-	end
-
-	method void ConfigureNightMafiaChatLayout()
-		    -- Keep the input/send controls inside the lower edge of the mafia-chat frame.
-		    local inputFrame = _EntityService:GetEntityByPath(
-		        "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4")
-		    if inputFrame ~= nil and inputFrame.UITransformComponent ~= nil then
-		        local inputPos = inputFrame.UITransformComponent.anchoredPosition
-		        inputFrame.UITransformComponent.anchoredPosition = Vector2(inputPos.x, -285)
-		    end
-		    local sendFrame = _EntityService:GetEntityByPath(
-		        "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_5")
-		    if sendFrame ~= nil and sendFrame.UITransformComponent ~= nil then
-		        local sendPos = sendFrame.UITransformComponent.anchoredPosition
-		        sendFrame.UITransformComponent.anchoredPosition = Vector2(sendPos.x, -286)
-		    end
-
-		    -- The authored message slots have a lower display order than the Chat_3
-		    -- background. Raise their sibling order and use the available chat width.
-		    for i = 1, self.lobbyChatSlotCount do
-		        local slot = self.lobbyChatSlotRoots[i]
-		        if slot ~= nil and slot.UITransformComponent ~= nil then
-		            _UILogic:SetSiblingIndex(slot.UITransformComponent, 100 + i)
-		            -- ResolvePhaseChatContext runs every RefreshNight frame. Never reset
-		            -- a rendered multi-line row back to the authored 52px height here;
-		            -- LayoutLobbyChatRow owns the current height.
-		            local currentSize = slot.UITransformComponent.RectSize
-		            slot.UITransformComponent.RectSize = Vector2(500, math.max(52, currentSize.y))
-		            if currentSize.y > 52 and self.nightWrappedRowPreservationLogged == false then
-		                self.nightWrappedRowPreservationLogged = true
-		                log("[MafiaUIFlow] night wrapped row height preserved slot="
-		                    .. tostring(i) .. " height=" .. tostring(currentSize.y))
-		            end
-		        end
-		        local messageText = self.lobbyChatSlotOtherMessages[i]
-		        if messageText ~= nil then
-		            -- Night messages already contain explicit width-measured newlines.
-		            -- Re-enabling ConstraintX every frame can override that final layout.
-		            messageText.UseConstraintX = false
-		            messageText.ConstraintX = 480
-		        end
-		    end
-	end
-
-	method void ConfigureChatInputField(any inputComponent, number textWidth, string hudName)
-		    if inputComponent == nil or inputComponent.Entity == nil then return end
-		    inputComponent.LineType = InputLineType.SingleLine
-		    inputComponent.CharacterLimit = 100
-		    local inputText = inputComponent.Entity.TextComponent
-		    if inputText == nil then return end
-		    -- The parent entity is now a real Mask viewport. Leave the input renderer
-		    -- unconstrained so TextInput can shift it horizontally to follow the caret;
-		    -- the parent clips everything outside the authored input frame.
-		    inputText.Alignment = TextAlignmentType.MiddleLeft
-		    inputText.Overflow = OverflowType.Overflow
-		    inputText.SizeFit = false
-		    inputText.UseNBSP = true
-		    inputText.UseConstraintX = false
-		    inputText.UseConstraintY = false
-		    self:FollowChatInputCaret(inputComponent, inputComponent.Text or "", textWidth, hudName)
-		    log("[MafiaUIFlow] chat input constrained hud=" .. tostring(hudName)
-		        .. " width=" .. tostring(textWidth) .. " lineType=SingleLine")
-	end
-
-	method void FollowChatInputCaret(any inputComponent, string value, number viewportWidth, string hudName)
-		    if inputComponent == nil or inputComponent.Entity == nil then return end
-		    local inputEntity = inputComponent.Entity
-		    local inputText = inputEntity.TextComponent
-		    local inputTransform = inputEntity.UITransformComponent
-		    if inputText == nil or inputTransform == nil then return end
-
-		    local safeValue = value or ""
-		    local preferredWidth = 0
-		    if safeValue ~= "" then
-		        preferredWidth = inputText:GetPreferredWidth(safeValue)
-		    end
-
-		    -- Keep the complete TextInput value and move only its visual rectangle.
-		    -- The parent Mask clips the old prefix, while the newest text and caret
-		    -- stay anchored to the right edge of the authored input viewport.
-		    local caretPadding = 18
-		    local displayWidth = math.max(viewportWidth, preferredWidth + caretPadding)
-		    local oldSize = inputTransform.RectSize
-		    inputTransform.RectSize = Vector2(displayWidth, oldSize.y)
-		    local oldPosition = inputTransform.anchoredPosition
-		    local offsetX = -math.max(0, displayWidth - viewportWidth) / 2
-		    inputTransform.anchoredPosition = Vector2(offsetX, oldPosition.y)
-
-		    if displayWidth > viewportWidth then
-		        log("[MafiaUIFlow] chat input caret follow hud=" .. tostring(hudName)
-		            .. " preferredWidth=" .. tostring(preferredWidth)
-		            .. " viewportWidth=" .. tostring(viewportWidth)
-		            .. " offsetX=" .. tostring(offsetX))
-		    end
+		    log("[MafiaUIFlow] EnterRoomLobby: mafia HUD unlocked")
 	end
 
 	method void RefreshLobby()
@@ -3477,26 +3046,14 @@ script MafiaUIFlow extends Logic
 		    if self.lobbyReadyText ~= nil then
 		        self.lobbyReadyText.Text = localReady and "준비완료" or "준비"
 		    end
-		    self:HideLobbyRawChatLog()
 		    local lobbyChatLog = _MafiaGameLogic.ChatLog or ""
 		    if lobbyChatLog ~= self.lastLobbyChatLog then
 		        self.lastLobbyChatLog = lobbyChatLog
 		        self.lobbyChatBubbleScrollOffset = 0
+		        self:HideLobbyRawChatLog()
 		        self:ApplyLobbyChatBubbles(lobbyChatLog)
 		    end
 		    self:RefreshLobbyAvatars()
-		    -- Legacy local-avatar name text can be enabled by the authored HUD even
-		    -- though the active seats use RoomBadge/Text. Keep it synchronized too.
-		    local legacyNameEnt = _EntityService:GetEntityByPath("/ui/MafiaLobbyHUD/LobbyAvatarArea/AvatarNameText")
-		    if legacyNameEnt ~= nil and isvalid(legacyNameEnt) and legacyNameEnt.TextComponent ~= nil then
-		        local localNickname = self.localProfileNickname
-		        if localNickname == nil or localNickname == "" then
-		            localNickname = self:GetUserDisplayName(self:GetLocalUserId())
-		        end
-		        if localNickname ~= nil and localNickname ~= "" then
-		            legacyNameEnt.TextComponent.Text = localNickname
-		        end
-		    end
 		    if self.lobbyReadyEntities ~= nil and self.cachedLobbySeats ~= nil then
 		        local readySet = {}
 		        for uid in string.gmatch(_MafiaGameLogic.ReadyStatusList or "", "[^,]+") do
@@ -3597,13 +3154,7 @@ script MafiaUIFlow extends Logic
 		    for i = 1, 8 do
 		        local uid = seatOrder[i]
 		        if uid ~= nil and uid ~= "" then
-		            -- Never let a stale synchronized fallback such as "수사관"
-		            -- override this client's confirmed profile nickname.
-		            if uid == self:GetLocalUserId() then
-		                names[i] = self:GetUserDisplayName(uid)
-		            else
-		                names[i] = savedNamesByUserId[uid] or self:GetUserDisplayName(uid)
-		            end
+		            names[i] = savedNamesByUserId[uid] or self:GetUserDisplayName(uid)
 		        end
 		    end
 
@@ -3668,7 +3219,13 @@ script MafiaUIFlow extends Logic
 							self.lobbyAvatarActionStates[i] = nil
 						end
 						-- Apply the user's equipment before the first rendered frame.
-						self:BindAvatarCostumeToUser(avatarEntity, userId)
+						if avatarRenderer ~= nil then avatarRenderer.Enable = false end
+						if costume ~= nil then
+							costume.Enable = false
+							costume.UseCustomEquipOnly = false
+							costume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+							costume.Enable = true
+						end
 
 						self.cachedLobbySeats[i] = userId
 						log("[MafiaUIFlow] lobby avatar initialized seat=" .. tostring(i)
@@ -3687,7 +3244,9 @@ script MafiaUIFlow extends Logic
 						end
 						self:ApplyLobbyAvatarFromMainLobby(i, userId, avatarEntity, false)
 					elseif costume ~= nil then
-						self:BindAvatarCostumeToUser(avatarEntity, userId)
+						costume.UseCustomEquipOnly = false
+						costume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+						costume.Enable = true
 					end
 
 					if isNewLocalSeat and avatarRenderer ~= nil then
@@ -3704,21 +3263,8 @@ script MafiaUIFlow extends Logic
 
 				if roomText ~= nil then
 					local nickname = nicknames[i]
-					if nickname == nil or nickname == "" then nickname = "플레이어" end
+					if nickname == "" then nickname = "플레이어" end
 					roomText.Text = nickname
-					roomText.Enable = true
-					if roomText.Entity ~= nil then
-						roomText.Entity.Enable = true
-						roomText.Entity.Visible = true
-						if roomText.Entity.UITransformComponent ~= nil then
-							_UILogic:SetSiblingIndex(roomText.Entity.UITransformComponent, 1000000)
-						end
-					end
-					if userId == localUserId and isNewLocalSeat then
-						log("[MafiaUIFlow] local room badge nickname applied seat=" .. tostring(i)
-							.. " nickname=" .. tostring(nickname)
-							.. " cachedProfile=" .. tostring(self.localProfileNickname))
-					end
 				end
 			else
 				if avatarEntity ~= nil then
@@ -3736,15 +3282,7 @@ script MafiaUIFlow extends Logic
 	method void RefreshDay(integer phase)
 		    self:ResolvePhaseChatContext("MafiaDayHUD")
 		    self:RefreshDayRoomBadgeAvatars()
-		    -- Count only this logical investigation room. World users can include players
-		    -- waiting in the main lobby or playing in another room.
-		    local roomSeats = self:GetLobbySeatOrderForDisplay()
-		    local playerCount = 0
-		    for i = 1, 8 do
-		        if roomSeats[i] ~= nil and roomSeats[i] ~= "" then playerCount += 1 end
-		    end
-		    local alivePlayerCount = self:CountCsv(_MafiaGameLogic.AlivePlayersList or "")
-		    if alivePlayerCount <= 0 then alivePlayerCount = playerCount end
+		    local playerCount = #(_UserService.Users.Keys)
 		    if self.dayPlayerCountText ~= nil then
 		        self.dayPlayerCountText.Text = "플레이어 " .. tostring(playerCount) .. "/" .. tostring(_MafiaGameLogic.MAX_PLAYERS)
 		    end
@@ -3757,22 +3295,6 @@ script MafiaUIFlow extends Logic
 		        elseif phase == _MafiaGameLogic.PHASE_MEETING then
 		            self.dayPhaseTitleText.Text = "투표"
 		            self.dayPhaseDescriptionText.Text = "의심되는 플레이어를 선택하거나 스킵하세요."
-		        elseif phase == _MafiaGameLogic.PHASE_MEETING_RESULT then
-		            self.dayPhaseTitleText.Text = "투표 결과"
-		            if _MafiaGameLogic.ExecuteTarget ~= nil and _MafiaGameLogic.ExecuteTarget ~= "" then
-		                self.dayPhaseDescriptionText.Text = "투표로 지목된 플레이어의 정체를 확인합니다."
-		            else
-		                self.dayPhaseDescriptionText.Text = "이번 투표에서는 처형 대상이 결정되지 않았습니다."
-		            end
-		        elseif phase == _MafiaGameLogic.PHASE_MORNING then
-		            self.dayPhaseTitleText.Text = "지난밤의 사건"
-		            if _MafiaGameLogic.DoctorSaved then
-		                self.dayPhaseDescriptionText.Text = "의사의 보호로 희생자가 발생하지 않았습니다."
-		            elseif _MafiaGameLogic.MorningKilled ~= nil and _MafiaGameLogic.MorningKilled ~= "" then
-		                self.dayPhaseDescriptionText.Text = "지난밤 희생자가 발생했습니다."
-		            else
-		                self.dayPhaseDescriptionText.Text = "간밤에 아무 일도 일어나지 않았습니다."
-		            end
 		        else
 		            self.dayPhaseTitleText.Text = "게임 진행 중"
 		            self.dayPhaseDescriptionText.Text = "현재 페이즈가 진행 중입니다."
@@ -3800,11 +3322,11 @@ script MafiaUIFlow extends Logic
 		    end
 		    if self.dayVoteStatusText ~= nil then
 		        local count = self:CountCsv(_MafiaGameLogic.VoteStatusList)
-		        self.dayVoteStatusText.Text = tostring(count) .. "/" .. tostring(alivePlayerCount) .. " 투표"
+		        self.dayVoteStatusText.Text = tostring(count) .. "/" .. tostring(playerCount) .. " 투표"
 		    end
 		    if self.daySkipCountText ~= nil then
 		        local skipCount = self:CountCsv(_MafiaGameLogic.DaySkipStatusList)
-		        self.daySkipCountText.Text = tostring(skipCount) .. "/" .. tostring(alivePlayerCount)
+		        self.daySkipCountText.Text = tostring(skipCount) .. "/" .. tostring(playerCount)
 		        local showSkip = (phase == _MafiaGameLogic.PHASE_FREE_ROAM) and not self:IsLocalPlayerDead()
 		        self.daySkipCountText.Entity.Enable = showSkip
 		        if self.daySkipButton ~= nil then
@@ -4034,15 +3556,12 @@ script MafiaUIFlow extends Logic
 		        return
 		    end
 
-		    -- Logical rooms live in the current static Room, so leaving is an immediate UI
-		    -- transition after authoritative registry cleanup; no client reboot is involved.
-		    self.lobbyLeavePending = false
+		    -- Keep the exit locked until RoomService destroys this instance-room client.
+		    self.lobbyLeavePending = true
 		    self.lobbyLeaveRetryCount = 0
 		    self:ClearJoinedInvestigationRoomId()
-		    self:ReturnToMainLobbyFromRoom()
-		    self.roomTransitionReleaseWhenHoldEnds = true
 		    if _UIToast ~= nil then _UIToast:ShowMessage(message) end
-		    log("[MafiaUIFlow] leave result success; UI_Lobby ready behind transition cover")
+		    log("[MafiaUIFlow] leave result success; awaiting static room client")
 	end
 
 	@ExecSpace("ClientOnly")
@@ -4089,7 +3608,7 @@ script MafiaUIFlow extends Logic
 		    if self.lobbyRoot ~= nil and isvalid(self.lobbyRoot)
 		        and self.lobbyRoot.CanvasGroupComponent ~= nil then
 		        self.lobbyRoot.CanvasGroupComponent.Enable = true
-		        self.lobbyRoot.CanvasGroupComponent.GroupAlpha = 1
+		        self.lobbyRoot.CanvasGroupComponent.GroupAlpha = 0
 		    end
 	end
 
@@ -4119,8 +3638,6 @@ script MafiaUIFlow extends Logic
 		    end
 		    self.roomTransitionFadingOut = false
 		    self.roomTransitionFadeAlpha = 1
-		    self.roomTransitionHoldRemaining = self.roomTransitionMinimumHoldDuration
-		    self.roomTransitionReleaseWhenHoldEnds = false
 		    self.roomTransitionRoot = transitionRoot
 		    if transitionBackground ~= nil and isvalid(transitionBackground)
 		        and transitionBackground.SpriteGUIRendererComponent ~= nil then
@@ -4153,8 +3670,6 @@ script MafiaUIFlow extends Logic
 	method void HideRoomTransition()
 		    self.roomTransitionFadingOut = false
 		    self.roomTransitionFadeAlpha = 1
-		    self.roomTransitionHoldRemaining = 0
-		    self.roomTransitionReleaseWhenHoldEnds = false
 		    local transitionRoot = self.roomTransitionRoot
 		    if transitionRoot == nil or isvalid(transitionRoot) == false then
 		        transitionRoot = _EntityService:GetEntityByPath("/ui/MafiaRoomTransitionHUD/TransitionRoot")
@@ -4657,7 +4172,6 @@ script MafiaUIFlow extends Logic
 
 	method void HandleLobbyChatValueChange(TextInputValueChangeEvent event)
 		    self.lobbyChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.lobbyChatInput, self.lobbyChatDraft, 500, "MafiaLobbyHUD")
 		    if self.lobbyChatDraft ~= "" then
 		        self.lobbyChatLastNonEmptyDraft = self.lobbyChatDraft
 		    end
@@ -4665,7 +4179,6 @@ script MafiaUIFlow extends Logic
 
 	method void HandleDayChatValueChange(TextInputValueChangeEvent event)
 		    self.dayChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.dayChatInput, self.dayChatDraft, 500, "MafiaDayHUD")
 		    if self.dayChatDraft ~= "" then
 		        self.dayChatLastNonEmptyDraft = self.dayChatDraft
 		    end
@@ -4673,7 +4186,6 @@ script MafiaUIFlow extends Logic
 
 	method void HandleNightChatValueChange(TextInputValueChangeEvent event)
 		    self.nightChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.nightChatInput, self.nightChatDraft, 310, "MafiaNightHUD")
 		    if self.nightChatDraft ~= "" then
 		        self.nightChatLastNonEmptyDraft = self.nightChatDraft
 		    end
@@ -4689,7 +4201,6 @@ script MafiaUIFlow extends Logic
 		    _MafiaGameLogic:SendMafiaChat(userId, message)
 		    if self.nightChatInput ~= nil then
 		        self.nightChatInput.Text = ""
-		        self:FollowChatInputCaret(self.nightChatInput, "", 310, "MafiaNightHUD")
 		        self.nightChatInput:ActivateInputField()
 		    end
 	end
@@ -4712,13 +4223,6 @@ script MafiaUIFlow extends Logic
 		    _MafiaGameLogic:SendChat(userId, message)
 		    if input ~= nil then
 		        input.Text = ""
-		        if input == self.lobbyChatInput then
-		            self:FollowChatInputCaret(input, "", 500, "MafiaLobbyHUD")
-		        elseif input == self.dayChatInput then
-		            self:FollowChatInputCaret(input, "", 500, "MafiaDayHUD")
-		        elseif input == self.nightChatInput then
-		            self:FollowChatInputCaret(input, "", 310, "MafiaNightHUD")
-		        end
 		        input:ActivateInputField()
 		    end
 	end
@@ -4745,38 +4249,12 @@ script MafiaUIFlow extends Logic
 
 	method string GetLocalUserId()
 		    local localPlayer = _UserService.LocalPlayer
-		    if localPlayer == nil then return self.cachedLocalUserId or "" end
-		    if localPlayer.PlayerComponent ~= nil then
-		        local directUserId = tostring(localPlayer.PlayerComponent.UserId or "")
-		        if directUserId ~= "" and directUserId ~= "nil" then
-		            if self.cachedLocalUserId == "" then
-		                self.cachedLocalUserId = directUserId
-		                -- Force one clean re-render if chat synchronized before local identity.
-		                self.lastLobbyChatLog = "__LOCAL_ID_READY__"
-		                self.lastDayChatLog = "__LOCAL_ID_READY__"
-		                self.lastNightChatLog = "__LOCAL_ID_READY__"
-		                self.lastDeadChatLog = "__LOCAL_ID_READY__"
-		                log("[MafiaUIFlow] local user id cached directly=" .. directUserId)
-		            end
-		            return directUserId
-		        end
-		    end
+		    if localPlayer == nil then return "" end
 		    for _, userId in ipairs(_UserService.Users.Keys) do
 		        local entity = _UserService:GetUserEntityByUserId(tostring(userId))
-		        if entity == localPlayer then
-		            local resolvedUserId = tostring(userId)
-		            if self.cachedLocalUserId == "" then
-		                self.cachedLocalUserId = resolvedUserId
-		                self.lastLobbyChatLog = "__LOCAL_ID_READY__"
-		                self.lastDayChatLog = "__LOCAL_ID_READY__"
-		                self.lastNightChatLog = "__LOCAL_ID_READY__"
-		                self.lastDeadChatLog = "__LOCAL_ID_READY__"
-		                log("[MafiaUIFlow] local user id cached by entity=" .. resolvedUserId)
-		            end
-		            return resolvedUserId
-		        end
+		        if entity == localPlayer then return tostring(userId) end
 		    end
-		    return self.cachedLocalUserId or ""
+		    return ""
 	end
 
 	method string FormatChat(string chatLog)
@@ -4811,106 +4289,20 @@ script MafiaUIFlow extends Logic
 		    end
 	end
 
-	method string NormalizeChatUserId(string userId)
-		    local raw = tostring(userId or "")
-		    -- Player IDs are numeric. Extracting the numeric token also removes any
-		    -- invisible sync/control character attached to the first chat record.
-		    local numericId = string.match(raw, "%d+")
-		    if numericId ~= nil and numericId ~= "" then return numericId end
-		    raw = string.gsub(raw, "^%s+", "")
-		    raw = string.gsub(raw, "%s+$", "")
-		    return raw
-	end
-
-	method boolean IsSameChatUser(string leftUserId, string rightUserId)
-		    local left = self:NormalizeChatUserId(leftUserId)
-		    local right = self:NormalizeChatUserId(rightUserId)
-		    return left ~= "" and right ~= "" and left == right
-	end
-
-	method string GetChatMessageForDisplay(string userId, string message, string localUserId)
-		    if self:IsSameChatUser(userId, localUserId) then
-		        return message or ""
-		    end
-		    local nickname = self:GetUserDisplayName(self:NormalizeChatUserId(userId))
-		    if nickname == nil or nickname == "" then nickname = "플레이어" end
-		    return "[" .. nickname .. "] " .. (message or "")
-	end
-
-	method table ParseChatMessages(string chatLog)
-		    local messages = {}
-		    if chatLog == nil or chatLog == "" then return messages end
-		    local localUserId = self:GetLocalUserId()
-		    for line in string.gmatch(chatLog, "[^\n]+") do
-		        local splitIndex = string.match(line, "()\t")
-		        if splitIndex ~= nil then
-		            local userId = self:NormalizeChatUserId(string.sub(line, 1, splitIndex - 1))
-		            local message = string.sub(line, splitIndex + 1)
-		            messages[#messages + 1] = self:GetChatMessageForDisplay(userId, message, localUserId)
-		        end
-		    end
-		    return messages
-	end
-
-	method table SelectVisibleChatIndices(table messages, integer visibleLastIndex, any measureText)
-		    local visibleIndices = {}
-		    if messages == nil or #messages <= 0 or visibleLastIndex <= 0 then return visibleIndices end
-		    if visibleLastIndex > #messages then visibleLastIndex = #messages end
-		    local heightBudget = 416
-		    local measuredHeight = 0
-		    local oldestCandidate = math.max(1, visibleLastIndex - self.lobbyChatSlotCount + 1)
-		    for i = visibleLastIndex, oldestCandidate, -1 do
-		        local rowHeight = self:MeasureLobbyChatRowHeight(measureText, messages[i])
-		        local gap = (#visibleIndices > 0) and 14 or 0
-		        if #visibleIndices > 0 and measuredHeight + gap + rowHeight > heightBudget then break end
-		        table.insert(visibleIndices, 1, i)
-		        measuredHeight = measuredHeight + gap + rowHeight
-		    end
-		    return visibleIndices
-	end
-
-	method integer CalculateChatMaxOffset(table messages, any measureText)
-		    local total = (messages ~= nil) and #messages or 0
-		    if total <= 0 then return 0 end
-		    -- Find the fullest top page that still contains message 1. Offsets then move the
-		    -- last visible message one record at a time without making old wrapped rows unreachable.
-		    local oldestPageLastIndex = 1
-		    for candidateLast = 1, total do
-		        local candidateIndices = self:SelectVisibleChatIndices(messages, candidateLast, measureText)
-		        if #candidateIndices > 0 and candidateIndices[1] == 1 then
-		            oldestPageLastIndex = candidateLast
-		        else
-		            break
-		        end
-		    end
-		    return math.max(0, total - oldestPageLastIndex)
-	end
-
-	method integer GetChatMaxOffsetForLog(string chatLog)
-		    local messages = self:ParseChatMessages(chatLog)
-		    local measureText = nil
-		    if self.lobbyChatSlotOtherMessages ~= nil then measureText = self.lobbyChatSlotOtherMessages[1] end
-		    -- Measurement must be read-only. Styling this shared component after rows
-		    -- render overwrites slot 1, making only the first own message white/left.
-		    return self:CalculateChatMaxOffset(messages, measureText)
-	end
-
 	method void ApplyLobbyChatBubbles(string chatLog)
 		    -- Renders each chat entry into its own speech-bubble slot.
 		    local localUserId = self:GetLocalUserId()
 		    local userIds = {}
 		    local messages = {}
-		    local displayMessages = {}
 		
 		    if chatLog ~= nil and chatLog ~= "" then
 		        for line in string.gmatch(chatLog, "[^\n]+") do
 		            local splitIndex = string.match(line, "()\t")
 		            if splitIndex ~= nil then
-		                local userId = self:NormalizeChatUserId(string.sub(line, 1, splitIndex - 1))
+		                local userId = string.sub(line, 1, splitIndex - 1)
 		                local message = string.sub(line, splitIndex + 1)
 		                userIds[#userIds + 1] = userId
 		                messages[#messages + 1] = message
-		                displayMessages[#displayMessages + 1] = self:GetChatMessageForDisplay(userId, message, localUserId)
 		            end
 		        end
 		    end
@@ -4925,62 +4317,33 @@ script MafiaUIFlow extends Logic
 		        return
 		    end
 		
-		    local measureText = nil
-		    if self.lobbyChatSlotOtherMessages ~= nil then measureText = self.lobbyChatSlotOtherMessages[1] end
-		    local maxOffset = self:CalculateChatMaxOffset(displayMessages, measureText)
+		    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
 		    if self.lobbyChatBubbleScrollOffset < 0 then self.lobbyChatBubbleScrollOffset = 0 end
 		    if self.lobbyChatBubbleScrollOffset > maxOffset then self.lobbyChatBubbleScrollOffset = maxOffset end
 		
 		    local visibleLastIndex = total - self.lobbyChatBubbleScrollOffset
-		    -- Select newest rows that fit the existing chat viewport. Long wrapped messages
-		    -- consume more than one authored 52px row instead of overlapping the next row.
-		    local visibleIndices = self:SelectVisibleChatIndices(displayMessages, visibleLastIndex, measureText)
-		    local startIndex = visibleIndices[1] or visibleLastIndex
-		    local baseTopY = 26
-		    if self.lobbyChatSlotRoots ~= nil and self.lobbyChatSlotRoots[1] ~= nil
-		        and self.lobbyChatSlotRoots[1].UITransformComponent ~= nil then
-		        local firstTransform = self.lobbyChatSlotRoots[1].UITransformComponent
-		        baseTopY = firstTransform.anchoredPosition.y + firstTransform.RectSize.y * 0.5
+		    local startIndex = visibleLastIndex - self.lobbyChatSlotCount + 1
+		    if startIndex < 1 then
+		        startIndex = 1
 		    end
-		    local usedHeight = 0
+		
 		    local slotIndex = 1
-		    for _, i in ipairs(visibleIndices) do
+		    for i = startIndex, visibleLastIndex do
 		        local userId = userIds[i]
 		        local message = messages[i]
-		        local isOwn = self:IsSameChatUser(userId, localUserId)
-		        log("[MafiaUIFlow] chat row identity hud=" .. tostring(self.currentChatHudName)
-		            .. " slot=" .. tostring(slotIndex)
-		            .. " sender=" .. tostring(userId)
-		            .. " local=" .. tostring(self:NormalizeChatUserId(localUserId))
-		            .. " own=" .. tostring(isOwn))
-		
-		        local displayMessage = displayMessages[i]
-		        self:RenderLobbyChatSlot(slotIndex, userId, message, displayMessage, isOwn)
-		        local slotText = self.lobbyChatSlotOtherMessages[slotIndex]
-		        local renderedMessage = displayMessage
-		        if slotText ~= nil and slotText.Text ~= nil and slotText.Text ~= "" then
-		            renderedMessage = slotText.Text
+		        local isOwn = false
+		        if localUserId ~= "" and userId == localUserId then
+		            isOwn = true
+		        elseif self.lastLobbySentMessage ~= "" and message == self.lastLobbySentMessage then
+		            isOwn = true
 		        end
-		        local rowHeight = self:MeasureLobbyChatRowHeight(slotText, renderedMessage)
-		        local rowY = baseTopY - usedHeight - rowHeight * 0.5
-		        self:LayoutLobbyChatRow(slotIndex, rowY, rowHeight)
-		        usedHeight = usedHeight + rowHeight + 14
+		
+		        self:RenderLobbyChatSlot(slotIndex, userId, message, isOwn)
 		        slotIndex = slotIndex + 1
 		    end
 		
 		    self:UpdateLobbyChatBubbleScrollVisual(total)
-		    local firstRenderedText = nil
-		    if self.lobbyChatSlotOtherMessages ~= nil then firstRenderedText = self.lobbyChatSlotOtherMessages[1] end
-		    if firstRenderedText ~= nil then
-		        log("[MafiaUIFlow] chat slot1 final style hud=" .. tostring(self.currentChatHudName)
-		            .. " alignment=" .. tostring(firstRenderedText.Alignment))
-		    end
-		    log("[MafiaUIFlow] lobby chat bubble list updated; total=" .. tostring(total)
-		        .. " visibleRows=" .. tostring(#visibleIndices)
-		        .. " layoutHeight=" .. tostring(usedHeight)
-		        .. " offset=" .. tostring(self.lobbyChatBubbleScrollOffset)
-		        .. " start=" .. tostring(startIndex)
-		        .. " last=" .. tostring(visibleLastIndex))
+		    log("[MafiaUIFlow] lobby chat bubble list updated; total=" .. tostring(total) .. " offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " start=" .. tostring(startIndex) .. " last=" .. tostring(visibleLastIndex))
 	end
 
 	method void HideLobbyRawChatLog()
@@ -4989,18 +4352,6 @@ script MafiaUIFlow extends Logic
 		        self.lobbyChatLogText.Text = ""
 		        if self.lobbyChatLogText.Entity ~= nil then
 		            self.lobbyChatLogText.Entity.Enable = false
-		        end
-		    end
-		    -- These two one-message prototypes predate the reusable slot list. Parent HUD
-		    -- activation can restore authored children, so suppress them on every refresh.
-		    if self.currentChatHudName == "MafiaLobbyHUD" then
-		        if self.lobbyOtherChatBubble ~= nil and isvalid(self.lobbyOtherChatBubble) then
-		            self.lobbyOtherChatBubble.Enable = false
-		            self.lobbyOtherChatBubble.Visible = false
-		        end
-		        if self.lobbyOwnChatBubble ~= nil and isvalid(self.lobbyOwnChatBubble) then
-		            self.lobbyOwnChatBubble.Enable = false
-		            self.lobbyOwnChatBubble.Visible = false
 		        end
 		    end
 	end
@@ -5029,7 +4380,7 @@ script MafiaUIFlow extends Logic
 		    end
 	end
 
-	method void RenderLobbyChatSlot(integer slotIndex, string userId, string message, string displayMessage, boolean isOwn)
+	method void RenderLobbyChatSlot(integer slotIndex, string userId, string message, boolean isOwn)
 		    if self.lobbyChatSlotRoots == nil then return end
 		    local root = self.lobbyChatSlotRoots[slotIndex]
 		    if root == nil then return end
@@ -5052,143 +4403,24 @@ script MafiaUIFlow extends Logic
 		        end
 		        local messageText = self.lobbyChatSlotOtherMessages[slotIndex]
 		        if messageText ~= nil then
+		            messageText.Text = message or ""
 		            self:StyleLobbyOwnChatText(messageText)
-		            local renderedMessage = message or ""
-		            if self.currentChatHudName == "MafiaNightHUD" then
-		                renderedMessage = self:WrapChatMessageByRenderedWidth(messageText, renderedMessage, 460)
-		            end
-		            messageText.Text = renderedMessage
-		            self:ResizeLobbyChatBubble(rowBubble, messageText, nameText, renderedMessage)
+		            self:ResizeLobbyChatBubble(rowBubble, messageText, nameText, message or "")
 		        end
 		    else
 		        self:StyleLobbyChatRow(rowBubble, rowFrame, false)
 		        local nameText = self.lobbyChatSlotOtherNames[slotIndex]
 		        if nameText ~= nil then
-		            -- The authored HUDs do not consistently include a visible name lane.
-		            -- Render the sender in the message itself and suppress any duplicate label.
-		            nameText.Text = ""
-		            if nameText.Entity ~= nil then nameText.Entity.Enable = false end
+		            nameText.Text = self:GetUserDisplayName(userId)
+		            if nameText.Entity ~= nil then nameText.Entity.Enable = true end
+		            self:StyleLobbyChatName(nameText)
 		        end
 		        local otherText = self.lobbyChatSlotOtherMessages[slotIndex]
 		        if otherText ~= nil then
+		            otherText.Text = message or ""
 		            self:StyleLobbyChatText(otherText)
-		            local renderedMessage = displayMessage or message or ""
-		            if self.currentChatHudName == "MafiaNightHUD" then
-		                renderedMessage = self:WrapChatMessageByRenderedWidth(otherText, renderedMessage, 460)
-		            end
-		            otherText.Text = renderedMessage
-		            self:ResizeLobbyChatBubble(rowBubble, otherText, nil, renderedMessage)
+		            self:ResizeLobbyChatBubble(rowBubble, otherText, nameText, message or "")
 		        end
-		    end
-		    -- Common bubble styling may resize/reposition the entity. Apply the compact
-		    -- MafiaNightHUD lane as the final write so the authored center position cannot
-		    -- overwrite the intended left/right chat placement.
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        self:ApplyNightMafiaChatMessagePlacement(rowBubble, slotIndex, isOwn)
-		        if rowBubble ~= nil and rowBubble.UITransformComponent ~= nil then
-		            local finalPos = rowBubble.UITransformComponent.anchoredPosition
-		            log("[MafiaUIFlow] night mafia chat message placed slot="
-		                .. tostring(slotIndex)
-		                .. " own=" .. tostring(isOwn)
-		                .. " x=" .. tostring(finalPos.x)
-		                .. " y=" .. tostring(finalPos.y))
-		        end
-		    end
-	end
-
-	method string WrapChatMessageByRenderedWidth(any textComponent, string message, number maximumWidth)
-		    if textComponent == nil or message == nil or message == "" then return message or "" end
-		    local characterCount = utf8.len(message)
-		    if characterCount == nil or characterCount == false then return message end
-
-		    local wrappedLines = {}
-		    local currentLine = ""
-		    for characterIndex = 1, characterCount do
-		        local byteStart = utf8.offset(message, characterIndex)
-		        local nextByteStart = utf8.offset(message, characterIndex + 1)
-		        local byteEnd = string.len(message)
-		        if nextByteStart ~= nil then byteEnd = nextByteStart - 1 end
-		        local character = string.sub(message, byteStart, byteEnd)
-
-		        if character == "\n" then
-		            wrappedLines[#wrappedLines + 1] = currentLine
-		            currentLine = ""
-		        else
-		            local candidate = currentLine .. character
-		            local candidateWidth = textComponent:GetPreferredWidth(candidate)
-		            if currentLine ~= "" and candidateWidth > maximumWidth then
-		                wrappedLines[#wrappedLines + 1] = currentLine
-		                currentLine = character
-		            else
-		                currentLine = candidate
-		            end
-		        end
-		    end
-		    wrappedLines[#wrappedLines + 1] = currentLine
-		    local wrappedMessage = table.concat(wrappedLines, "\n")
-		    if #wrappedLines > 1 then
-		        log("[MafiaUIFlow] night chat manual wrap lines=" .. tostring(#wrappedLines)
-		            .. " width=" .. tostring(maximumWidth))
-		    end
-		    return wrappedMessage
-	end
-
-	method void ApplyNightMafiaChatMessagePlacement(Entity messageEntity, integer slotIndex, boolean isOwn)
-		    -- Keeps every row in one stable content lane and separates senders by text alignment.
-		    if messageEntity == nil or messageEntity.UITransformComponent == nil then return end
-		    local transform = messageEntity.UITransformComponent
-		    local currentPosition = transform.anchoredPosition
-		    transform.RectSize = Vector2(500, transform.RectSize.y)
-		    transform.anchoredPosition = Vector2(0, currentPosition.y)
-
-		    local textComponent = messageEntity.TextComponent
-		    if textComponent ~= nil then
-		        -- Night rows already contain deterministic newlines; the 500px row rect
-		        -- is the clipping boundary and no second automatic constraint is needed.
-		        textComponent.UseConstraintX = false
-		        textComponent.ConstraintX = 480
-		        if isOwn then
-		            textComponent.Alignment = TextAlignmentType.MiddleRight
-		        else
-		            textComponent.Alignment = TextAlignmentType.MiddleLeft
-		        end
-		    end
-	end
-
-	method number MeasureLobbyChatRowHeight(any textComponent, string message)
-		    local minimumHeight = 52
-		    if textComponent == nil then return minimumHeight end
-		    local width = 248
-		    if self.currentChatHudName == "MafiaNightHUD" then width = 480 end
-		    local preferredHeight = textComponent:GetPreferredHeight(message or "", width)
-		    if preferredHeight == nil then return minimumHeight end
-		    if self.currentChatHudName == "MafiaNightHUD" and preferredHeight > minimumHeight then
-		        log("[MafiaUIFlow] night chat wrapped row measured preferredHeight="
-		            .. tostring(preferredHeight) .. " width=" .. tostring(width))
-		    end
-		    -- A single server-accepted 100-character message must be able to consume the
-		    -- viewport instead of being clipped after only a few wrapped lines.
-		    return math.max(minimumHeight, math.min(416, preferredHeight + 12))
-	end
-
-	method void LayoutLobbyChatRow(integer slotIndex, number rowY, number rowHeight)
-		    local root = self.lobbyChatSlotRoots[slotIndex]
-		    local width = (self.currentChatHudName == "MafiaNightHUD") and 500 or 284
-		    if root ~= nil and root.UITransformComponent ~= nil then
-		        local rootPosition = root.UITransformComponent.anchoredPosition
-		        root.UITransformComponent.RectSize = Vector2(width, rowHeight)
-		        root.UITransformComponent.anchoredPosition = Vector2(rootPosition.x, rowY)
-		    end
-		    local frame = self.lobbyChatSlotFrames[slotIndex]
-		    if frame ~= nil and frame.UITransformComponent ~= nil then
-		        local framePosition = frame.UITransformComponent.anchoredPosition
-		        frame.UITransformComponent.RectSize = Vector2(width, rowHeight)
-		        frame.UITransformComponent.anchoredPosition = Vector2(framePosition.x, rowY)
-		    end
-		    local nameText = self.lobbyChatSlotOtherNames[slotIndex]
-		    if nameText ~= nil and nameText.Entity ~= nil and nameText.Entity.UITransformComponent ~= nil then
-		        local namePosition = nameText.Entity.UITransformComponent.anchoredPosition
-		        nameText.Entity.UITransformComponent.anchoredPosition = Vector2(namePosition.x, rowY)
 		    end
 	end
 
@@ -5196,11 +4428,6 @@ script MafiaUIFlow extends Logic
 		    -- Moves the chat row into the invisible left/right lane while preserving the row's vertical slot.
 		    local x = -176
 		    if isOwn then x = 122 end
-		    -- MafiaChat uses a compact two-lane layout. Own messages appear in the
-		    -- right-side target area; other mafia messages remain on the left.
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        x = isOwn and 125 or -125
-		    end
 		
 		    if rowFrame ~= nil and rowFrame.UITransformComponent ~= nil then
 		        local framePos = rowFrame.UITransformComponent.anchoredPosition
@@ -5237,20 +4464,12 @@ script MafiaUIFlow extends Logic
 		    textComponent.FontSize = 25
 		    textComponent.Bold = true
 		    textComponent.Alignment = TextAlignmentType.MiddleLeft
-		    textComponent.Overflow = OverflowType.Truncate
-		    -- MafiaNightHUD receives explicit newlines from WrapChatMessageByRenderedWidth.
-		    -- Fixed sizing lets LayoutLobbyChatRow own the final row rectangle.
-		    textComponent.SizeFit = false
-		    textComponent.UseNBSP = false
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        textComponent.UseConstraintX = false
-		        textComponent.ConstraintX = 480
-		    else
-		        textComponent.UseConstraintX = true
-		        textComponent.ConstraintX = 248
-		    end
-		    textComponent.UseConstraintY = false
-		    textComponent.LineSpacing = 1.05
+		    textComponent.Overflow = OverflowType.Overflow
+		    textComponent.UseConstraintX = true
+		    textComponent.ConstraintX = 248
+		    textComponent.UseConstraintY = true
+		    textComponent.ConstraintY = 46
+		    textComponent.LineSpacing = 0.78
 		    textComponent.FontColor = Color(1, 1, 1, 1)
 		    textComponent.DropShadow = true
 		    textComponent.DropShadowColor = Color(0, 0, 0, 0.9)
@@ -5263,23 +4482,13 @@ script MafiaUIFlow extends Logic
 		    textComponent.Font = FontType.Maple
 		    textComponent.FontSize = 25
 		    textComponent.Bold = true
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        textComponent.Alignment = TextAlignmentType.MiddleRight
-		    else
-		        textComponent.Alignment = TextAlignmentType.MiddleRight
-		    end
-		    textComponent.Overflow = OverflowType.Truncate
-		    textComponent.SizeFit = false
-		    textComponent.UseNBSP = false
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        textComponent.UseConstraintX = false
-		        textComponent.ConstraintX = 480
-		    else
-		        textComponent.UseConstraintX = true
-		        textComponent.ConstraintX = 248
-		    end
-		    textComponent.UseConstraintY = false
-		    textComponent.LineSpacing = 1.05
+		    textComponent.Alignment = TextAlignmentType.MiddleRight
+		    textComponent.Overflow = OverflowType.Overflow
+		    textComponent.UseConstraintX = true
+		    textComponent.ConstraintX = 248
+		    textComponent.UseConstraintY = true
+		    textComponent.ConstraintY = 46
+		    textComponent.LineSpacing = 0.78
 		    textComponent.FontColor = Color(1, 0.84, 0.42, 1)
 		    textComponent.DropShadow = true
 		    textComponent.DropShadowColor = Color(0, 0, 0, 0.9)
@@ -5303,34 +4512,29 @@ script MafiaUIFlow extends Logic
 
 	method void ResizeLobbyChatBubble(Entity bubble, any messageText, any nameText, string message)
 		    if bubble == nil or messageText == nil then return end
-		    local rowHeight = self:MeasureLobbyChatRowHeight(messageText, message)
 		    if messageText.Entity == bubble then
 		        local directTransform = bubble.UITransformComponent
 		        if directTransform ~= nil then
-		            if self.currentChatHudName == "MafiaNightHUD" then
-		                directTransform.RectSize = Vector2(500, rowHeight)
-		            else
-		                directTransform.RectSize = Vector2(284, rowHeight)
-		            end
+		            directTransform.RectSize = Vector2(284, 52)
 		        end
 		        return
 		    end
 		
 		    local bubbleTransform = bubble.UITransformComponent
 		    if bubbleTransform ~= nil then
-		        bubbleTransform.RectSize = Vector2(284, rowHeight)
+		        bubbleTransform.RectSize = Vector2(284, 52)
 		        bubbleTransform.anchoredPosition = Vector2(0, 0)
 		    end
 		
 		    local messageTransform = messageText.Entity.UITransformComponent
 		    if messageTransform ~= nil then
 		        if messageText.Entity == bubble then
-		            messageTransform.RectSize = Vector2(642, rowHeight)
+		            messageTransform.RectSize = Vector2(642, 34)
 		        elseif nameText ~= nil then
-		            messageTransform.RectSize = Vector2(430, rowHeight)
+		            messageTransform.RectSize = Vector2(430, 30)
 		            messageTransform.anchoredPosition = Vector2(182, 0)
 		        else
-		            messageTransform.RectSize = Vector2(594, rowHeight)
+		            messageTransform.RectSize = Vector2(594, 30)
 		            messageTransform.anchoredPosition = Vector2(-24, 0)
 		        end
 		    end
@@ -5357,21 +4561,6 @@ script MafiaUIFlow extends Logic
 		        if botNumber > 0 then return "AI 수사관 " .. tostring(botNumber) end
 		        return "AI 수사관"
 		    end
-		        -- The main-lobby profile is the authoritative local display name. During
-		        -- an instance-room boot, LobbySeatNicknames can arrive a few frames after
-		        -- the HUD is first populated, so never replace the local saved nickname
-		        -- with the platform/world nickname during that synchronization window.
-		        local localUserId = self:GetLocalUserId()
-		        if localUserId ~= "" and userId == localUserId then
-		            if self.localProfileNickname ~= nil and self.localProfileNickname ~= ""
-		                and self.localProfileNickname ~= "수사관" then
-		                return self.localProfileNickname
-		            end
-		            local profileNickname = self:GetMainLobbyProfileNickname()
-		            if profileNickname ~= nil and profileNickname ~= "" and profileNickname ~= "수사관" then
-		                return profileNickname
-		            end
-		        end
 		        -- LobbySeatNicknames is synchronized from the server-side saved profile and
 		        -- must win over the platform/world nickname.
 		        local seats = self:ParseLobbySeatString(tostring(_MafiaGameLogic ~= nil and _MafiaGameLogic.LobbySeatOrder or ""))
@@ -5394,34 +4583,6 @@ script MafiaUIFlow extends Logic
 		        if localUserId ~= "" then return localUserId end
 		    end
 		    return userId or ""
-	end
-
-	method boolean BindAvatarCostumeToUser(Entity avatarEntity, string userId)
-		    if avatarEntity == nil or isvalid(avatarEntity) == false then return false end
-		    local costume = avatarEntity.CostumeManagerComponent
-		    local renderer = avatarEntity.AvatarGUIRendererComponent
-		    if costume == nil then
-		        if renderer ~= nil then renderer.Enable = true end
-		        return false
-		    end
-
-		    local desiredEquipUserId = self:GetVisualEquipUserId(userId)
-		    local currentEquipUserId = tostring(costume.DefaultEquipUserId or "")
-		    local needsRebind = currentEquipUserId ~= desiredEquipUserId
-		        or costume.UseCustomEquipOnly == true
-		    if needsRebind then
-		        if renderer ~= nil then renderer.Enable = false end
-		        costume.Enable = false
-		        costume.UseCustomEquipOnly = false
-		        costume.DefaultEquipUserId = ""
-		        costume.DefaultEquipUserId = desiredEquipUserId
-		        costume.Enable = true
-		        log("[MafiaUIFlow] avatar costume rebound userId=" .. tostring(userId)
-		            .. " equipUserId=" .. tostring(desiredEquipUserId))
-		    end
-		    costume.Enable = true
-		    if renderer ~= nil then renderer.Enable = true end
-		    return true
 	end
 
 	method integer CountChatEntries(string chatLog)
@@ -5450,22 +4611,12 @@ script MafiaUIFlow extends Logic
 		    return string.format("%02d:%02d", math.floor(safeSeconds / 60), safeSeconds % 60)
 	end
 
-	method string GetCurrentPhaseChatLog()
-		    if _MafiaGameLogic == nil then return "" end
-		    if self.currentChatHudName == "MafiaNightHUD" then
-		        return _MafiaGameLogic.MafiaChatLog or ""
-		    end
-		    if self.currentChatHudName == "MafiaDayHUD" and self:IsLocalPlayerDead() then
-		        return _MafiaGameLogic.DeadChatLog or ""
-		    end
-		    return _MafiaGameLogic.ChatLog or ""
-	end
-
 	method void HandleScrollUpClick()
 		    -- 위로 스크롤 (오래된 메시지 방향)
-		    local chatLog = self:GetCurrentPhaseChatLog()
+		    local chatLog = ""
+		    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
 		    local total = self:CountChatEntries(chatLog)
-		    local maxOffset = self:GetChatMaxOffsetForLog(chatLog)
+		    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
 		    if self.lobbyChatBubbleScrollOffset >= maxOffset then
 		        log("[MafiaUIFlow] lobby bubble scroll up ignored; offset=" .. tostring(self.lobbyChatBubbleScrollOffset) .. " max=" .. tostring(maxOffset))
 		        return
@@ -5477,7 +4628,8 @@ script MafiaUIFlow extends Logic
 
 	method void HandleScrollDownClick()
 		    -- 아래로 스크롤 (최신 메시지 방향)
-		    local chatLog = self:GetCurrentPhaseChatLog()
+		    local chatLog = ""
+		    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
 		    local total = self:CountChatEntries(chatLog)
 		    if self.lobbyChatBubbleScrollOffset <= 0 then
 		        log("[MafiaUIFlow] lobby bubble scroll down ignored; offset=0 total=" .. tostring(total))
@@ -5490,8 +4642,8 @@ script MafiaUIFlow extends Logic
 
 	method void HandleLobbyMouseScroll(MouseScrollEvent event)
 		    if _MafiaGameLogic == nil then return end
-		    local chatLog = self:GetCurrentPhaseChatLog()
-		    if self:GetChatMaxOffsetForLog(chatLog) <= 0 then return end
+		    local total = self:CountChatEntries(_MafiaGameLogic.ChatLog or "")
+		    if total <= self.lobbyChatSlotCount then return end
 		
 		    if event.ScrollDelta > 0 then
 		        self:HandleScrollUpClick()
@@ -5517,8 +4669,10 @@ script MafiaUIFlow extends Logic
 		    -- Converts scrollbar-thumb drag distance into a lobby chat scroll offset.
 		    if self.lobbyScrollThumb == nil then return end
 		    if self.lobbyScrollThumb.UITransformComponent == nil then return end
-		    local chatLog = self:GetCurrentPhaseChatLog()
-		    if self:GetChatMaxOffsetForLog(chatLog) <= 0 then return end
+		    local chatLog = ""
+		    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+		    local total = self:CountChatEntries(chatLog)
+		    if total <= self.lobbyChatSlotCount then return end
 		
 		    local pos = self.lobbyScrollThumb.UITransformComponent.anchoredPosition
 		    local targetY = pos.y + event.TouchDelta.y
@@ -5576,8 +4730,8 @@ script MafiaUIFlow extends Logic
 		    if _MafiaGameLogic == nil then return false end
 		    if self.lobbyScrollTrack == nil then return false end
 		    if self.lobbyScrollTrack.UITransformComponent == nil then return false end
-		    local chatLog = self:GetCurrentPhaseChatLog()
-		    if self:GetChatMaxOffsetForLog(chatLog) <= 0 then return false end
+		    local total = self:CountChatEntries(_MafiaGameLogic.ChatLog or "")
+		    if total <= self.lobbyChatSlotCount then return false end
 		
 		    local localPos = _UILogic:ScreenToLocalUIPosition(touchPoint, self.lobbyScrollTrack.UITransformComponent)
 		    local trackY = self.lobbyScrollTrack.UITransformComponent.anchoredPosition.y
@@ -5591,8 +4745,10 @@ script MafiaUIFlow extends Logic
 		    -- Converts a screen touch position to a scrollbar thumb position.
 		    if self.lobbyScrollTrack == nil then return end
 		    if self.lobbyScrollTrack.UITransformComponent == nil then return end
-		    local chatLog = self:GetCurrentPhaseChatLog()
-		    if self:GetChatMaxOffsetForLog(chatLog) <= 0 then return end
+		    local chatLog = ""
+		    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
+		    local total = self:CountChatEntries(chatLog)
+		    if total <= self.lobbyChatSlotCount then return end
 		
 		    local trackTransform = self.lobbyScrollTrack.UITransformComponent
 		    local trackPos = trackTransform.anchoredPosition
@@ -5603,9 +4759,10 @@ script MafiaUIFlow extends Logic
 
 	method void ApplyLobbyChatScrollByThumbY(number targetY, string reason)
 		    -- Applies a scrollbar Y position to the chat list and clamps it to the available range.
-		    local chatLog = self:GetCurrentPhaseChatLog()
+		    local chatLog = ""
+		    if _MafiaGameLogic ~= nil then chatLog = _MafiaGameLogic.ChatLog or "" end
 		    local total = self:CountChatEntries(chatLog)
-		    local maxOffset = self:GetChatMaxOffsetForLog(chatLog)
+		    local maxOffset = math.max(0, total - self.lobbyChatSlotCount)
 		    if maxOffset <= 0 then
 		        self.lobbyChatBubbleScrollOffset = 0
 		        self:UpdateLobbyChatBubbleScrollVisual(total)
@@ -5669,11 +4826,11 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void UpdateLobbyChatBubbleScrollVisual(integer total)
-		    local maxOffset = self:GetChatMaxOffsetForLog(self:GetCurrentPhaseChatLog())
-		    local hasOverflow = maxOffset > 0
+		    local hasOverflow = total > self.lobbyChatSlotCount
 		    if self.lobbyScrollThumb ~= nil then
 		        self.lobbyScrollThumb.Enable = hasOverflow
 		        if hasOverflow and self.lobbyScrollThumb.UITransformComponent ~= nil then
+		            local maxOffset = math.max(1, total - self.lobbyChatSlotCount)
 		            local ratio = self.lobbyChatBubbleScrollOffset / maxOffset
 		            if ratio < 0 then ratio = 0 end
 		            if ratio > 1 then ratio = 1 end
@@ -5960,88 +5117,40 @@ script MafiaUIFlow extends Logic
 	@ExecSpace("Client")
 	method void ShowPoliceResultAnime(string targetId, boolean isMafia)
 		    -- 경찰 플레이어에게만 전송되는 조사결과 애니메이션. BeginNightDoctor에서 호출.
-		    -- UUID bindings can remain non-nil even when they point at a stale UI entity.
-		    -- Resolve the authored root-level entities by path on every result display.
-		    self:ResolvePoliceResultEntities()
-		    if self.policeResultDisplayEnt == nil or isvalid(self.policeResultDisplayEnt) == false then
-		        log_warning("[MafiaUIFlow] ShowPoliceResultAnime: PoliceResultDisplay unresolved, skipping")
-		        return
+		    -- policeResultDisplayEnt가 nil이면 ResolveNightUI로 재시도
+		    if self.policeResultDisplayEnt == nil then
+		        if self.nightRoot ~= nil then self:ResolveNightUI() end
+		        if self.policeResultDisplayEnt == nil then
+		            log("[MafiaUIFlow] ShowPoliceResultAnime: policeResultDisplayEnt nil, skipping")
+		            return
+		        end
 		    end
 		    local nickname = self:GetUserDisplayName(targetId)
-		    if nickname == nil or nickname == "" then nickname = "플레이어" end
 		    if isMafia then
-		        self.policeResultText = "조사 결과, " .. nickname .. "은(는) 마피아입니다!"
+		        self.policeResultText = "조사 결과,  " .. nickname .. "  은(는) 마피아입니다!"
 		    else
-		        -- A police investigation only reveals mafia/non-mafia. Do not expose
-		        -- whether a non-mafia target is a citizen or doctor.
-		        self.policeResultText = "조사 결과, " .. nickname .. "은(는) 마피아가 아닙니다."
+		        self.policeResultText = "조사 결과,  " .. nickname .. "  은(는) 시민입니다."
 		    end
-		    -- Keep the authored PoliceResultText layout and style. Runtime owns only
-		    -- the message, readable Maple font styling and synchronized fade timing.
+		    -- 조사결과 텍스트 설정
 		    if self.policeResultDisplayTextComp ~= nil then
 		        self.policeResultDisplayTextComp.Text = self.policeResultText
-		        self.policeResultDisplayTextComp.Font = FontType.Maple
-		        self.policeResultDisplayTextComp.FontSize = 28
-		        local fc = self.policeResultDisplayTextComp.FontColor
-		        self.policeResultDisplayTextComp.FontColor = Color(fc.r, fc.g, fc.b, 0)
 		    end
 		    -- ResultDimBg(dim 오버레이) 초기화: 활성화 + GroupAlpha=0
 		    if self.resultDimEnt ~= nil then
-		        -- The authored PoliceResult is a child of the Police panel. A root-level
-		        -- dim entity would render over it, so this result visual owns its backdrop.
-		        self.resultDimEnt.Enable = false
+		        self.resultDimEnt.Enable = true
 		        local dimCg = self.resultDimEnt.CanvasGroupComponent
 		        if dimCg ~= nil then dimCg.GroupAlpha = 0 end
 		    end
 		    -- PoliceResultDisplay 초기화: 활성화 + GroupAlpha=0
-		    if self.nightPolicePanel ~= nil then
-		        self.nightPolicePanel:SetEnable(true)
-		        local policeCg = self.nightPolicePanel.CanvasGroupComponent
-		        if policeCg ~= nil then policeCg.GroupAlpha = 1 end
-		    end
-		    self.policeResultDisplayEnt:SetEnable(true)
-		    self.policeResultDisplayEnt.Visible = true
-		    local displaySprite = self.policeResultDisplayEnt.SpriteGUIRendererComponent
-		    if displaySprite ~= nil then
-		        displaySprite.Enable = true
-		        local color = displaySprite.Color
-		        displaySprite.Color = Color(color.r, color.g, color.b, 0)
-		    end
-		    if self.policeResultTextEnt ~= nil then
-		        self.policeResultTextEnt:SetEnable(true)
-		        self.policeResultTextEnt.Visible = true
-		    end
+		    self.policeResultDisplayEnt.Enable = true
+		    if self.policeResultTextEnt ~= nil then self.policeResultTextEnt.Enable = true end
 		    local cg = self.policeResultDisplayEnt.CanvasGroupComponent
 		    if cg ~= nil then cg.GroupAlpha = 0 end
 		    self.policeResultAlpha   = 0.0
 		    self.policeResultPhase   = 1
 		    self.policeResultTimer   = 0.0
 		    self.policeResultPlaying = true
-		    log("[MafiaUIFlow] ShowPoliceResultAnime visual active display=true text="
-		        .. tostring(self.policeResultDisplayTextComp ~= nil) .. " message=" .. self.policeResultText)
-	end
-
-	method void ResolvePoliceResultEntities()
-		    -- Use the authored investigation-result sprite under the Police panel.
-		    -- UUID 4b8ea5b6-6635-433a-8e49-0dba0ac75de4, RUID
-		    -- 4fea64a3307cda641809ad8be0d4890b.
-		    local displayEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/Police/PoliceResult")
-		    local textEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/PoliceResultText")
-		    if displayEnt ~= nil and isvalid(displayEnt) then
-		        self.policeResultDisplayEnt = displayEnt
-		    end
-		    if textEnt ~= nil and isvalid(textEnt) then
-		        self.policeResultTextEnt = textEnt
-		    end
-		    if self.policeResultTextEnt ~= nil and isvalid(self.policeResultTextEnt) then
-		        self.policeResultDisplayTextComp = self.policeResultTextEnt.TextComponent
-		    else
-		        self.policeResultDisplayTextComp = nil
-		    end
-		    log("[MafiaUIFlow] authored police result resolved path=/ui/MafiaNightHUD/Police/PoliceResult display="
-		        .. tostring(self.policeResultDisplayEnt ~= nil and isvalid(self.policeResultDisplayEnt))
-		        .. " textEntity=" .. tostring(self.policeResultTextEnt ~= nil and isvalid(self.policeResultTextEnt))
-		        .. " textComponent=" .. tostring(self.policeResultDisplayTextComp ~= nil))
+		    log("[MafiaUIFlow] ShowPoliceResultAnime: " .. self.policeResultText)
 	end
 
 	method void PlayVoteResultAnime(string executeTarget)
@@ -6082,7 +5191,7 @@ script MafiaUIFlow extends Logic
 		            textComp = self.voteAnime2TextComp
 		        end
 		        local nickname = self:GetUserDisplayName(executeTarget)
-					if nickname == nil or nickname == "" then nickname = "플레이어" end
+		        if nickname == "" then nickname = "플레이어" end
 		        if roleNum == _MafiaGameLogic.ROLE_MAFIA then
 		            msg = nickname .. "의 정체는 마피아였습니다! 마을에 평화가 가까워집니다."
 		        else
@@ -6655,8 +5764,13 @@ script MafiaUIFlow extends Logic
 		                    tf.anchoredPosition = Vector2(x, y)
 		                    tf.RectSize = Vector2(125, 190)
 		                end
+		                local costume = avEnt.CostumeManagerComponent
 		                local renderer = avEnt.AvatarGUIRendererComponent
-		                self:BindAvatarCostumeToUser(avEnt, userId)
+		                if costume ~= nil then
+		                    costume.UseCustomEquipOnly = false
+		                costume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+		                    costume.Enable = true
+		                end
 		                if renderer ~= nil then
 		                    renderer.Enable = true
 		                    renderer.FlipX = flipX
@@ -6674,7 +5788,7 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void TriggerLoadingScreen()
-		    -- Intercepts LOBBY→FREE_ROAM: waits briefly for role sync, then reveals it for 4s.
+		    -- Intercepts LOBBY→FREE_ROAM transition: shows loading screen for 7s then reveals day HUD.
 		    self.loadingActive = true
 		    log("[MafiaUIFlow] TriggerLoadingScreen called; loadingRoot=" .. tostring(self.loadingRoot ~= nil))
 		    if self.loadingRoot == nil then
@@ -6721,24 +5835,11 @@ script MafiaUIFlow extends Logic
 		        local tEnt = _EntityService:GetEntityByPath("/ui/MafiaLoadingHUD/TipText")
 		        if tEnt ~= nil then self.loadingTipComp = tEnt.TextComponent end
 		    end
-		    -- Phase and RoleData are synchronized independently.  Do not reveal a default
-		    -- citizen screen (or stale avatars) while this client's role is still unknown.
 		    local role = self:GetLocalPlayerRole()
-		    local roleSyncAttempts = 0
-		    while role < _MafiaGameLogic.ROLE_CITIZEN or role > _MafiaGameLogic.ROLE_DOCTOR do
-		        if roleSyncAttempts >= 30 then break end
-		        roleSyncAttempts += 1
-		        wait(0.1)
-		        role = self:GetLocalPlayerRole()
-		    end
-		    local roleIsReady = role >= _MafiaGameLogic.ROLE_CITIZEN and role <= _MafiaGameLogic.ROLE_DOCTOR
-		    local roleName = "역할 확인 중"
-		    local roleDesc = "역할 정보를 불러오고 있습니다."
+		    local roleName = "시민"
+		    local roleDesc = "토론과 추리로 마피아를 찾아내 투표로 제거하세요."
 		    if _MafiaGameLogic ~= nil then
-		        if role == _MafiaGameLogic.ROLE_CITIZEN then
-		            roleName = "시민"
-		            roleDesc = "토론과 추리로 마피아를 찾아내 투표로 제거하세요."
-		        elseif role == _MafiaGameLogic.ROLE_MAFIA then
+		        if role == _MafiaGameLogic.ROLE_MAFIA then
 		            roleName = "마피아"
 		            roleDesc = "밤마다 한 명의 시민을 제거하고, 낮에는 의심을 피하세요."
 		        elseif role == _MafiaGameLogic.ROLE_POLICE then
@@ -6748,10 +5849,6 @@ script MafiaUIFlow extends Logic
 		            roleName = "의사"
 		            roleDesc = "매 밤 한 명을 보호해 마피아의 공격을 막으세요."
 		        end
-		    end
-		    if not roleIsReady then
-		        log_warning("[MafiaUIFlow] loading role reveal deferred data missing; attempts="
-		            .. tostring(roleSyncAttempts) .. " role=" .. tostring(role))
 		    end
 		    -- 역할 공개 배경: 마피아만 전용 배경(BgSprite_1), 나머지는 기본 배경(BgSprite).
 		    local loadingBgEnt = _EntityService:GetEntityByPath("/ui/MafiaLoadingHUD/BgSprite")
@@ -6804,25 +5901,13 @@ script MafiaUIFlow extends Logic
 		            self.loadingAvatarEntities[i] = avEnt
 		        end
 		    end
-		    -- RoleData is the authoritative roster for this logical room.  Only players
-		    -- whose assigned role matches the local reveal may appear in the avatar bar.
+		    -- Collect player userIds in join order (up to 8)
+		    local _loadSeat = 1
 		    local _loadUserIds = {}
-		    if roleIsReady and _MafiaGameLogic.RoleData ~= nil and _MafiaGameLogic.RoleData ~= "" then
-		        local roleParts = self:SplitString(_MafiaGameLogic.RoleData, ",")
-		        local roleIndex = 1
-		        while roleIndex + 1 <= #roleParts do
-		            local userId = roleParts[roleIndex]
-		            local assignedRole = tonumber(roleParts[roleIndex + 1])
-		            if userId ~= nil and userId ~= "" and assignedRole == role and #_loadUserIds < 8 then
-		                _loadUserIds[#_loadUserIds + 1] = userId
-		            end
-		            roleIndex += 2
-		        end
+		    for _, uid in ipairs(_UserService.Users.Keys) do
+		        if _loadSeat <= 8 then _loadUserIds[_loadSeat] = tostring(uid); _loadSeat = _loadSeat + 1 end
 		    end
-		    local _total = #_loadUserIds
-		    log("[MafiaUIFlow] loading role avatars filtered; role=" .. tostring(role)
-		        .. " count=" .. tostring(_total)
-		        .. " users=" .. table.concat(_loadUserIds, ","))
+		    local _total = _loadSeat - 1
 		    -- Left/right split: odd total assigns one extra to left
 		    local _leftCount = math.ceil(_total / 2)
 		    -- Layout constants: center gap=60px total (30 each side), avatar pitch=100px
@@ -6849,23 +5934,20 @@ script MafiaUIFlow extends Logic
 		                end
 		                local tf = avEnt.UITransformComponent
 		                if tf ~= nil then tf.anchoredPosition = Vector2(x, 0) end
+		                local costume = avEnt.CostumeManagerComponent
 		                local renderer = avEnt.AvatarGUIRendererComponent
-		                self:BindAvatarCostumeToUser(avEnt, userId)
+		                if costume ~= nil then
+		                    costume.UseCustomEquipOnly = false
+		                    costume.DefaultEquipUserId = self:GetVisualEquipUserId(userId)
+		                    costume.Enable = true
+		                end
 		                if renderer ~= nil then
 		                    renderer.Enable = true
 		                    renderer.FlipX = flipX
 		                end
 		                avEnt.Enable = true
-		                avEnt.Visible = true
 		            else
 		                avEnt.Enable = false
-		                avEnt.Visible = false
-		                if avEnt.AvatarGUIRendererComponent ~= nil then
-		                    avEnt.AvatarGUIRendererComponent.Enable = false
-		                end
-		                if avEnt.CostumeManagerComponent ~= nil then
-		                    avEnt.CostumeManagerComponent.Enable = false
-		                end
 		            end
 		        end
 		    end
@@ -6999,8 +6081,8 @@ script MafiaUIFlow extends Logic
 		    }
 		    -- Doctor 슬롯 circle/circleOff: 각 슬롯의 UISprite 이름이 NightCircle/NightCircleOff가 아닌 UISprite_N 형태
 		    -- 작은 번호 = 회색(Off), 큰 번호 = 노란색(On)
-		    local doctorCircleOffNames = { "UISprite", "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_12" }
-		    local doctorCircleNames    = { "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_13", "UISprite_13" }
+		    local doctorCircleOffNames = { "UISprite", "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_13" }
+		    local doctorCircleNames    = { "UISprite_7", "UISprite_8", "UISprite_9", "UISprite_10", "UISprite_11", "UISprite_12", "UISprite_13", "UISprite_14" }
 		
 		    local function resolveSlots(paths, cards, avatars, names, circles, circlesOff, handlers, role)
 		        for i, sp in ipairs(paths) do
@@ -7086,24 +6168,6 @@ script MafiaUIFlow extends Logic
 	        self.nightOverlayTextComp.FontSize = 35
 	        log("[MafiaUIFlow] Night action text font size set to 35")
 	    end
-	    -- 역할명은 기존 랜덤 대기 멘트와 색상이 달라야 하므로 별도 텍스트로 한 번만 복제한다.
-	    self.nightTurnTitleEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/NightTurnTitleText")
-	    if self.nightTurnTitleEnt == nil and self.nightMsgTextEnt ~= nil then
-	        self.nightTurnTitleEnt = self.nightMsgTextEnt:Clone("NightTurnTitleText")
-	        local titleTransform = self.nightTurnTitleEnt.UITransformComponent
-	        if titleTransform ~= nil then
-	            local basePos = titleTransform.anchoredPosition
-	            titleTransform.anchoredPosition = Vector2(basePos.x, basePos.y + 60)
-	        end
-	        log("[MafiaUIFlow] Night turn title text cloned above waiting message")
-	    end
-	    self.nightTurnTitleTextComp =
-	        (self.nightTurnTitleEnt ~= nil) and self.nightTurnTitleEnt.TextComponent or nil
-	    if self.nightTurnTitleTextComp ~= nil then
-	        self.nightTurnTitleTextComp.Font = FontType.Maple
-	        self.nightTurnTitleTextComp.FontSize = 44
-	    end
-	    if self.nightTurnTitleEnt ~= nil then self.nightTurnTitleEnt.Enable = false end
 	    -- 역할별 액션 이미지 엔티티
 	    self.nightMafiaActionEnt  = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/MafiaAction")
 	    self.nightPoliceActionEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/PoliceAction")
@@ -7130,12 +6194,13 @@ script MafiaUIFlow extends Logic
 	    end
 	    log("[MafiaUIFlow] Doctor dead overlays resolved=" .. tostring(resolvedDoctorDeadCount) .. "/8")
 	    -- 경찰 조사결과 표시 오버레이 (루트 레벨, ResultDimBg 위)
-	    self:ResolvePoliceResultEntities()
-	    if self.policeResultDisplayEnt ~= nil and isvalid(self.policeResultDisplayEnt) then
-	        self.policeResultDisplayEnt:SetEnable(false)
+	    if self.policeResultDisplayEnt ~= nil then
+	        self.policeResultDisplayEnt.Enable = false
 	    end
-	    if self.policeResultTextEnt ~= nil and isvalid(self.policeResultTextEnt) then
-	        self.policeResultTextEnt:SetEnable(false)
+	    if self.policeResultTextEnt ~= nil then self.policeResultTextEnt.Enable = false end
+	    do
+	        local textEnt = _EntityService:GetEntityByPath("/ui/MafiaNightHUD/PoliceResultText")
+	        self.policeResultDisplayTextComp = (textEnt ~= nil) and textEnt.TextComponent or nil
 	    end
 	    log("[MafiaUIFlow] night UI resolved")
 	end
@@ -7170,22 +6235,9 @@ script MafiaUIFlow extends Logic
 		    elseif subPhase == _MafiaGameLogic.PHASE_NIGHT_DOCTOR then
 		        activeRole = _MafiaGameLogic.ROLE_DOCTOR
 		    end
-		    local turnTitle = "밤 행동 진행 중"
-		    if subPhase == _MafiaGameLogic.PHASE_NIGHT_MAFIA then
-		        turnTitle = "마피아의 밤"
-		    elseif subPhase == _MafiaGameLogic.PHASE_NIGHT_POLICE then
-		        turnTitle = "경찰 조사 시간"
-		    elseif subPhase == _MafiaGameLogic.PHASE_NIGHT_DOCTOR then
-		        turnTitle = "의사 보호 시간"
-		    end
 		    local isDead = self:IsLocalPlayerDead()
 		    -- 사망한 플레이어: 현재 활동 역할의 패널을 관전 모드(읽기 전용)로 표시
 		    local panelRole = (localRole == activeRole) and localRole or -1
-		    if panelRole == _MafiaGameLogic.ROLE_MAFIA
-		        and self:GetLocalUserId() ~= _MafiaGameLogic.MafiaDeciderId then
-		        panelRole = -1
-		        self.nightOverlayMsg = "다른 마피아의 결정을 기다리는 중입니다."
-		    end
 		    if isDead and activeRole ~= -1 then
 		        panelRole = activeRole
 		    end
@@ -7205,7 +6257,6 @@ script MafiaUIFlow extends Logic
 		    if self.nightPoliceActionEnt ~= nil then self.nightPoliceActionEnt.Enable = false end
 		    if self.nightDoctorActionEnt ~= nil then self.nightDoctorActionEnt.Enable = false end
 		    if self.nightMsgTextEnt ~= nil then self.nightMsgTextEnt.Enable = false end
-		    if self.nightTurnTitleEnt ~= nil then self.nightTurnTitleEnt.Enable = false end
 
 		    self.nightManuallyHidden = false
 		    self.nightActiveRole = panelRole
@@ -7244,22 +6295,8 @@ script MafiaUIFlow extends Logic
 		                self.nightOverlayTextComp.FontColor = Color(0.909, 0.835, 0.627, 0)
 		            end
 		        end
-		        if self.nightTurnTitleEnt ~= nil then
-		            self.nightTurnTitleEnt.Enable = true
-		            if self.nightTurnTitleTextComp ~= nil then
-		                self.nightTurnTitleTextComp.Text = turnTitle
-		                if subPhase == _MafiaGameLogic.PHASE_NIGHT_MAFIA then
-		                    self.nightTurnTitleTextComp.FontColor = Color(1.0, 0.22, 0.22, 0)
-		                elseif subPhase == _MafiaGameLogic.PHASE_NIGHT_POLICE then
-		                    self.nightTurnTitleTextComp.FontColor = Color(0.25, 0.62, 1.0, 0)
-		                else
-		                    self.nightTurnTitleTextComp.FontColor = Color(0.30, 1.0, 0.42, 0)
-		                end
-		            end
-		        end
 		        self.nightUIShown = true
-		        log("[MafiaUIFlow] night: waiting overlay; localRole=" .. tostring(localRole) ..
-		            " subPhase=" .. tostring(subPhase) .. " title=" .. turnTitle)
+		        log("[MafiaUIFlow] night: waiting overlay; localRole=" .. tostring(localRole) .. " subPhase=" .. tostring(subPhase))
 		        return
 		    end
 
@@ -7389,16 +6426,17 @@ script MafiaUIFlow extends Logic
 		            end
 		            if av ~= nil then
 		                if hasUser then
+		                    local costume = av.CostumeManagerComponent
 		                    local renderer = av.AvatarGUIRendererComponent
-		                    self:BindAvatarCostumeToUser(av, uid)
+		                    if costume ~= nil then
+		                        costume.UseCustomEquipOnly = false
+		                    costume.DefaultEquipUserId = self:GetVisualEquipUserId(uid)
+		                        costume.Enable = true
+		                    end
 		                    if renderer ~= nil then renderer.Enable = true end
 		                    av.Enable = true
-		                    av.Visible = true
 		                else
 		                    av.Enable = false
-		                    av.Visible = false
-		                    if av.AvatarGUIRendererComponent ~= nil then av.AvatarGUIRendererComponent.Enable = false end
-		                    if av.CostumeManagerComponent ~= nil then av.CostumeManagerComponent.Enable = false end
 		                end
 		            end
 		            if nt ~= nil then
@@ -7473,18 +6511,7 @@ script MafiaUIFlow extends Logic
 		        self.lastNightStageVersion = currentStageVersion
 		        self.lastNightSubPhase = currentSubPhase
 		        -- 현재 활성 엔티티를 찾아 페이드아웃 시작
-		        if self.policeResultPlaying
-		            and currentSubPhase == _MafiaGameLogic.PHASE_NIGHT_DOCTOR then
-		            -- Keep the Police parent visible while its authored PoliceResult child
-		            -- plays. ShowPoliceResultAnime will hand off to the Doctor panel.
-		            self.nightFadingOut = false
-		            self.nightFadeOutEnt = nil
-		            if self.nightPolicePanel ~= nil then
-		                self.nightPolicePanel:SetEnable(true)
-		                local policeCg = self.nightPolicePanel.CanvasGroupComponent
-		                if policeCg ~= nil then policeCg.GroupAlpha = 1 end
-		            end
-		        elseif not self.nightFadingOut then
+		        if not self.nightFadingOut then
 		            local prevEnt = nil
 		            if self.nightMafiaActionEnt ~= nil and self.nightMafiaActionEnt.Enable then
 		                prevEnt = self.nightMafiaActionEnt

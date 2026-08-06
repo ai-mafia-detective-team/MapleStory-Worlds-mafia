@@ -80,17 +80,24 @@
 
 ### 3.1 수사방 Registry API
 
-`InvestigationRoomManager.mlua`의 현재 API:
+`InvestigationRoomManager.mlua`의 현재 API (클라이언트에서 호출 가능한 `@ExecSpace("Server")` 메서드):
 
 ```text
+CreateRoom(roomName, mode, maxPlayers, isPrivate, password, hostNickname)
+GetRoomList()
+RefreshRooms()
+SearchRooms(keyword, modeFilter, statusFilter, hidePrivate)
 JoinRoom(roomId, password)
+QuickJoin()
+EnterJoinedInstanceRoom(roomId)
 LeaveRoom(roomId)
-UpdateRoomStatus(roomId)
 ```
 
 - 서버 사용자 식별은 별도의 `userId` 매개변수가 아니라 `senderUserId`를 사용한다.
 - `JoinRoom(roomId, userId)`, `LeaveRoom(roomId, userId)`는 현재 계약이 아니다.
+- `EnterJoinedInstanceRoom(roomId)`은 방 생성·참가 성공 후 호출한다. 서버는 `senderUserId`가 Registry의 해당 방 멤버인지 다시 검증한 뒤 `roomId`를 Instance Room Key로 사용해 `map02`로 이동시킨다.
 - `GetRoomSnapshot`, `UpdateReadyState`, `RemoveDisconnectedPlayer`는 현재 구현된 API가 아니다.
+- `UpdateRoomStatus(roomId, userId)`와 `SetRoomPlayingByMember(userId, playing)`는 `@ExecSpace("ServerOnly")`로, 클라이언트가 직접 호출할 수 없다. 서버 스크립트(`MafiaGameLogic` 등)가 내부적으로만 호출한다. (`UpdateRoomStatus`는 과거 클라이언트 호출 가능이었으나, 동일 ETag에 대한 무제한 쓰기로 다른 사용자의 join/leave를 굶길 수 있어 `ServerOnly`로 격하됨.)
 - 추가 API가 필요하면 구현 전 두 담당자가 인터페이스를 합의하고 `[계획]` 또는 `[제안]`으로만 문서화한다.
 
 ### 3.2 공개 방 DTO

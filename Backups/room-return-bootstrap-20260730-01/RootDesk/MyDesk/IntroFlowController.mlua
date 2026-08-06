@@ -7,13 +7,10 @@ script IntroFlowController extends Logic
 
 	property boolean DEBUG_RESET_NICKNAME = false
 
+	-- ── 스토리지 키 상수 (StorageKeyConfig.mlua 참고) ───────────────────────────
 	property string KEY_STORAGE_INTRO = "IntroProgress"
-
-	property string KEY_NICKNAME = "player_nickname_v1"
-
-	property string KEY_NICKNAME_SET = "nickname_set_v1"
-
-	property string KEY_ROOM_RETURN_PENDING = "pending_static_lobby_return_v1"
+	property string KEY_NICKNAME      = "player_nickname_v1"
+	property string KEY_NICKNAME_SET  = "nickname_set_v1"
 
 	property any storage = nil
 
@@ -184,40 +181,6 @@ script IntroFlowController extends Logic
 		return true
 	end
 
-	@ExecSpace("Server")
-	method void ResolveStaticRoomBootstrap()
-		-- A RoomService transfer creates a new static-room client. Consume the one-shot marker
-		-- before deciding whether this boot is a normal launch or a return from MafiaLobbyHUD.
-		local userId = tostring(senderUserId)
-		local userStorage = _DataStorageService:GetUserDataStorage(userId)
-		local markerCode, marker = userStorage:GetAndWait(self.KEY_ROOM_RETURN_PENDING)
-		local returningFromRoom = markerCode == 0 and marker == "true"
-		local nickname = "수사관"
-		if returningFromRoom then
-			local clearCode = userStorage:SetAndWait(self.KEY_ROOM_RETURN_PENDING, "")
-			if clearCode ~= 0 then
-				log_warning("[IntroFlowController] Failed to consume room-return marker userId=" ..
-					userId .. " code=" .. tostring(clearCode))
-			end
-			local nicknameCode, storedNickname = userStorage:GetAndWait(self.KEY_NICKNAME)
-			if nicknameCode == 0 and storedNickname ~= nil and storedNickname ~= "" then
-				nickname = tostring(storedNickname)
-			end
-		end
-		log("[IntroFlowController] Static bootstrap resolved userId=" .. userId ..
-			" returningFromRoom=" .. tostring(returningFromRoom))
-		self:DeliverStaticRoomBootstrap(returningFromRoom, nickname, userId)
-	end
-
-	@ExecSpace("Client")
-	method void DeliverStaticRoomBootstrap(boolean returningFromRoom, string nickname)
-		if _MafiaUIFlow == nil then
-			log_warning("[IntroFlowController] MafiaUIFlow missing for static bootstrap")
-			return
-		end
-		_MafiaUIFlow:OnStaticRoomBootstrapResolved(returningFromRoom, nickname)
-	end
-
 	@ExecSpace("Client")
 	method void ShowNicknameSetup()
 		-- Server dispatches to the target client to directly show NicknameRoot.
@@ -233,7 +196,7 @@ script IntroFlowController extends Logic
 		end
 		nicknameUI:SetEnable(true)
 		nicknameUI.Visible = true
-		
+
 		local nicknameRoot = _EntityService:GetEntityByPath("/ui/UI_NicknameSetup/NicknameRoot")
 		log("[IntroFlowController] NicknameRoot found=" .. tostring(nicknameRoot ~= nil and isvalid(nicknameRoot)))
 		if nicknameRoot == nil or isvalid(nicknameRoot) == false then
@@ -254,6 +217,7 @@ script IntroFlowController extends Logic
 			log("[IntroFlowController] NicknameSetupController added dynamically found=" .. tostring(ctrl ~= nil))
 		end
 		if ctrl ~= nil then
+			---@type NicknameSetupController
 			local typedCtrl = ctrl
 			typedCtrl:ShowNicknameSetup()
 		end
@@ -286,6 +250,7 @@ script IntroFlowController extends Logic
 		if nicknameUI ~= nil and isvalid(nicknameUI) then
 			local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
 			if ctrl ~= nil then
+				---@type NicknameSetupController
 				local typedCtrl = ctrl
 				typedCtrl:ShowError("저장에 실패했습니다. 다시 시도해주세요.")
 			end
@@ -312,6 +277,7 @@ script IntroFlowController extends Logic
 		if nicknameUI ~= nil and isvalid(nicknameUI) then
 			local ctrl = nicknameUI:GetComponent("script.NicknameSetupController")
 			if ctrl ~= nil then
+				---@type NicknameSetupController
 				local typedCtrl = ctrl
 				typedCtrl:HideNicknameSetup()
 				log("[IntroFlowController] Lobby shown after nickname setup")
@@ -334,6 +300,7 @@ script IntroFlowController extends Logic
 				log("[IntroFlowController] LobbyController added dynamically found=" .. tostring(lobbyCtrl ~= nil))
 			end
 			if lobbyCtrl ~= nil then
+				---@type LobbyController
 				local typedLobbyCtrl = lobbyCtrl
 				typedLobbyCtrl:ShowLobby(nickname)
 				log("[IntroFlowController] LobbyController.ShowLobby called with nickname=" .. tostring(nickname))
@@ -347,7 +314,7 @@ script IntroFlowController extends Logic
 			mapsRoot:SetEnable(true)
 			mapsRoot.Visible = true
 		end
-		
+
 		local defaultGroup = _EntityService:GetEntityByPath("/ui/DefaultGroup")
 		if defaultGroup ~= nil and isvalid(defaultGroup) then
 			if defaultGroup.Enable == false then
@@ -355,7 +322,7 @@ script IntroFlowController extends Logic
 			end
 			defaultGroup.Visible = true
 		end
-		
+
 		local player = _UserService.LocalPlayer
 		if player == nil then
 			player = _EntityService:GetEntityByPath("/maps/map01/MapleMapPlayer")
@@ -364,7 +331,7 @@ script IntroFlowController extends Logic
 			player:SetEnable(true)
 			player.Visible = true
 		end
-		
+
 		log("[IntroFlowController] Lobby shown")
 	end
 

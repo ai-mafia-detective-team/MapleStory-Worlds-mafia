@@ -399,7 +399,7 @@ script ShopController extends Logic
 		
 		if self.categoryHandlers ~= nil then
 			for _, rec in ipairs(self.categoryHandlers) do
-				if rec.entity ~= nil and isvalid(rec.entity) then
+				if rec.entity ~= nil and isvalid(rec.entity) and rec.eventHandler ~= nil then
 					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
 				end
 			end
@@ -408,7 +408,7 @@ script ShopController extends Logic
 		
 		if self.cardHandlers ~= nil then
 			for _, rec in ipairs(self.cardHandlers) do
-				if rec.entity ~= nil and isvalid(rec.entity) then
+				if rec.entity ~= nil and isvalid(rec.entity) and rec.eventHandler ~= nil then
 					rec.entity:DisconnectEvent(ButtonClickEvent, rec.eventHandler)
 				end
 			end

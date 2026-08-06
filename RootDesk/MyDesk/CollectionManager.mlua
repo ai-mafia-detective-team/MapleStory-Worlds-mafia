@@ -110,7 +110,6 @@ script CollectionManager extends Logic
 		-- Forwards server-owned collection data to the lobby UI controller.
 		local lobby = _EntityService:GetEntityByPath("/ui/UI_Lobby")
 		if lobby == nil or not isvalid(lobby) then return end
-		---@type LobbyController
 		local controller = lobby:GetComponent("script.LobbyController")
 		if controller ~= nil then
 			controller:ApplyRoleCollection(payloadJson)

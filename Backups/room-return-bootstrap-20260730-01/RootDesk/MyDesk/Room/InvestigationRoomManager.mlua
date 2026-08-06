@@ -5,28 +5,17 @@ script InvestigationRoomManager extends Logic
 
 	property string REGISTRY_VARIABLE = "RoomsV1"
 
-	property string ROOM_RETURN_PENDING_KEY = "pending_static_lobby_return_v1"
-
+	-- 3 proved thin for an 8-player room where joins and leaves collide on the same ETag.
 	property integer MAX_WRITE_RETRIES = 5
 
 	property any userLeaveHandler = nil
 
 	property table pendingInstanceMoves = nil
 
-	property table logicalRoomEntities = nil
-
-	property table userLogicalRoomIds = nil
-
-	property string currentLogicalRoomEntityId = ""
-
-	property string currentLogicalRoomId = ""
-
 	@ExecSpace("ServerOnly")
 	method void OnBeginPlay()
 		-- Subscribes to user-leave so departed players are purged from the room registry (no ghosts).
 		self.pendingInstanceMoves = {}
-		self.logicalRoomEntities = {}
-		self.userLogicalRoomIds = {}
 		self.userLeaveHandler = _UserService:ConnectEvent(UserLeaveEvent, self.OnUserLeft)
 		log("[InvestigationRoomManager] server shared registry ready")
 	end
@@ -45,10 +34,6 @@ script InvestigationRoomManager extends Logic
 		-- On permanent exit, removes the user from every room (host migrates; empty rooms deleted).
 		local userId = tostring(event.UserId)
 		if userId == nil or userId == "" then return end
-		local logicalRoomId = ""
-		if self.userLogicalRoomIds ~= nil and self.userLogicalRoomIds[userId] ~= nil then
-			logicalRoomId = self.userLogicalRoomIds[userId]
-		end
 		-- Moving from the static room to an Instance Room also emits UserLeaveEvent in the
 		-- source room. It is a room transition, not a disconnect, so the Registry membership
 		-- must survive and become the authoritative membership of the destination room.
@@ -69,10 +54,6 @@ script InvestigationRoomManager extends Logic
 			if writeCode == SharedMemoryResultCode.OK then
 				log("[InvestigationRoomManager] User-left cleanup done userId=" .. userId .. " rooms=" .. tostring(removedCount))
 				self:BroadcastRoomListToMembers(snapshot.Rooms)
-				if logicalRoomId ~= "" then
-					self:ReleaseLogicalRoomMember(userId, logicalRoomId,
-						self:FindRoomIndex(snapshot.Rooms, logicalRoomId) > 0)
-				end
 				return
 			end
 			if writeCode ~= SharedMemoryResultCode.PreconditionFailed then
@@ -419,11 +400,10 @@ script InvestigationRoomManager extends Logic
 			if writeCode == SharedMemoryResultCode.OK then
 				local publicJson = _HttpService:JSONEncode(self:ToPublicRoom(room))
 				log("[InvestigationRoomManager] Room created successfully roomId=" .. room.roomId)
-				if self:EnsureLogicalRoom(room.roomId, userId) == nil then
-					self:RemoveMemberFromRoom(snapshot.Rooms, self:FindRoomIndex(snapshot.Rooms, room.roomId), userId)
-					self:WriteRegistrySnapshot(snapshot, snapshot.Rooms)
-					self:DeliverCreateResult(false, "수사방 게임 상태를 준비하지 못했습니다.", "", userId)
-					return
+				-- 이전 게임이 PHASE_GAME_OVER 상태로 남아있으면 새 게임을 위해 리셋
+				if _MafiaGameLogic ~= nil and _MafiaGameLogic.CurrentPhase == _MafiaGameLogic.PHASE_GAME_OVER then
+					_MafiaGameLogic:ResetRoomState()
+					log("[InvestigationRoomManager] Reset Mafia room state from PHASE_GAME_OVER for new room")
 				end
 				self:DeliverCreateResult(true, "수사방을 만들었습니다.", publicJson, userId)
 				return
@@ -586,10 +566,6 @@ script InvestigationRoomManager extends Logic
 			end
 		
 			if self:ContainsUser(room, userId) then
-				if self:EnsureLogicalRoom(roomId, userId) == nil then
-					self:DeliverJoinResult(false, "ROOM_STATE_ERROR", "수사방 게임 상태를 준비하지 못했습니다.", "", userId)
-					return
-				end
 				self:DeliverJoinResult(true, "OK", "이미 입장한 수사방입니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
 				return
 			end
@@ -604,10 +580,6 @@ script InvestigationRoomManager extends Logic
 			if writeCode == SharedMemoryResultCode.OK then
 				log("[InvestigationRoomManager] Join room success roomId=" .. roomId .. " quick=" .. tostring(quickJoin))
 				self:BroadcastRoomListToMembers(snapshot.Rooms)
-				if self:EnsureLogicalRoom(roomId, userId) == nil then
-					self:DeliverJoinResult(false, "ROOM_STATE_ERROR", "수사방 게임 상태를 준비하지 못했습니다.", "", userId)
-					return
-				end
 				self:DeliverJoinResult(true, "OK", "수사방에 입장했습니다.", _HttpService:JSONEncode(self:ToPublicRoom(room)), userId)
 				return
 			end
@@ -654,103 +626,12 @@ script InvestigationRoomManager extends Logic
 		self:DeliverJoinResult(false, "NO_ROOM", "빠르게 입장할 수 있는 공개 수사방이 없습니다.", "", userId)
 	end
 
-	@ExecSpace("ServerOnly")
-	method any EnsureLogicalRoom(string roomId, string userId)
-		if roomId == nil or roomId == "" then return nil end
-		if self.logicalRoomEntities == nil then self.logicalRoomEntities = {} end
-		if self.userLogicalRoomIds == nil then self.userLogicalRoomIds = {} end
-		local entity = self.logicalRoomEntities[roomId]
-		local logic = nil
-		if entity ~= nil and isvalid(entity) then
-			logic = entity:GetComponent("script.MafiaRoomGameLogic")
-		end
-		if logic == nil then
-			local mapRoot = _EntityService:GetEntityByPath("/maps/map01")
-			local template = _EntityService:GetEntityByPath("/maps/map01/MapObject")
-			if mapRoot == nil or template == nil then
-				log_error("[InvestigationRoomManager] Logical room template missing roomId=" .. roomId)
-				return nil
-			end
-			entity = _SpawnService:SpawnByEntity(template, "MafiaRoomLogic_" .. roomId,
-				Vector3(0, 0, 0), mapRoot, false)
-			if entity == nil then
-				log_error("[InvestigationRoomManager] Logical room entity spawn failed roomId=" .. roomId)
-				return nil
-			end
-			entity.Visible = false
-			logic = entity:AddComponent("script.MafiaRoomGameLogic")
-			if logic == nil then
-				entity:Destroy()
-				log_error("[InvestigationRoomManager] MafiaRoomGameLogic add failed roomId=" .. roomId)
-				return nil
-			end
-			logic.RoomId = roomId
-			local config = self:GetRuntimeRoomConfig(roomId)
-			if config ~= nil then
-				logic:ApplyRuntimeRoomSettings(config.roomTitle, config.isPrivate, config.password,
-					config.maxPlayers, config.mafiaCount)
-			end
-			self.logicalRoomEntities[roomId] = entity
-			log("[InvestigationRoomManager] Logical room created roomId=" .. roomId ..
-				" entityId=" .. tostring(entity.Id))
-		end
-		self.userLogicalRoomIds[userId] = roomId
-		self:BindLogicalRoomClient(roomId, tostring(entity.Id), userId)
-		return logic
-	end
-
-	@ExecSpace("ServerOnly")
-	method any GetLogicalRoomLogicForUser(string userId)
-		if self.userLogicalRoomIds == nil or self.logicalRoomEntities == nil then return nil end
-		local roomId = self.userLogicalRoomIds[userId]
-		if roomId == nil or roomId == "" then return nil end
-		local entity = self.logicalRoomEntities[roomId]
-		if entity == nil or isvalid(entity) == false then return nil end
-		return entity:GetComponent("script.MafiaRoomGameLogic")
-	end
-
-	@ExecSpace("Client")
-	method void BindLogicalRoomClient(string roomId, string entityId)
-		self.currentLogicalRoomId = roomId or ""
-		self.currentLogicalRoomEntityId = entityId or ""
-		log("[InvestigationRoomManager] Logical room bound roomId=" .. self.currentLogicalRoomId ..
-			" entityId=" .. self.currentLogicalRoomEntityId)
-	end
-
-	@ExecSpace("Client")
-	method void ClearLogicalRoomClient()
-		self.currentLogicalRoomId = ""
-		self.currentLogicalRoomEntityId = ""
-	end
-
-	@ExecSpace("ServerOnly")
-	method void ReleaseLogicalRoomMember(string userId, string roomId, boolean roomStillExists)
-		if self.userLogicalRoomIds ~= nil then self.userLogicalRoomIds[userId] = nil end
-		if self.logicalRoomEntities ~= nil then
-			local entity = self.logicalRoomEntities[roomId]
-			if entity ~= nil and isvalid(entity) then
-				local logic = entity:GetComponent("script.MafiaRoomGameLogic")
-				if logic ~= nil then logic:RemoveMember(userId) end
-				if roomStillExists == false then
-					entity:Destroy()
-					self.logicalRoomEntities[roomId] = nil
-					log("[InvestigationRoomManager] Logical room destroyed roomId=" .. roomId)
-				end
-			end
-		end
-		self:ClearLogicalRoomClient(userId)
-	end
-
 	@ExecSpace("Server")
 	method void EnterJoinedInstanceRoom(string roomId)
 		-- Never trust the client roomId by itself. The authenticated sender must already be a
 		-- Registry member before the server creates/enters the matching instance room.
 		local userId = tostring(senderUserId)
 		roomId = roomId or ""
-		local logicalRoomId = roomId
-		if self.userLogicalRoomIds ~= nil and self.userLogicalRoomIds[userId] ~= nil then
-			logicalRoomId = self.userLogicalRoomIds[userId]
-		end
 		local snapshot = self:ReadRegistrySnapshot()
 		if snapshot.Ok == false then
 			self:DeliverInstanceRoomEnterResult(false, "수사방 정보를 확인하지 못했습니다.", userId)
@@ -763,20 +644,6 @@ script InvestigationRoomManager extends Logic
 			self:DeliverInstanceRoomEnterResult(false, "수사방 참가 정보가 일치하지 않습니다.", userId)
 			return
 		end
-		-- Compatibility path for legacy callers: remain in the static Room and bind the
-		-- authenticated member to the roomId-scoped logical game instance.
-		local logicalRoom = self:EnsureLogicalRoom(roomId, userId)
-		if logicalRoom == nil then
-			self:DeliverInstanceRoomEnterResult(false, "논리 수사방을 준비하지 못했습니다.", userId)
-			return
-		end
-		self:BindLogicalRoomClient(userId, roomId, logicalRoom.Entity.Id)
-		self:DeliverInstanceRoomEnterResult(true, "", userId)
-		log("[InvestigationRoomManager] Legacy instance entry routed to logical room roomId=" ..
-			roomId .. " userId=" .. userId)
-		return
-
-		--[[
 		if _RoomService:IsInstanceRoom() then
 			log_warning("[InvestigationRoomManager] Instance entry rejected: request did not originate in static room" ..
 				" roomKey=" .. tostring(_RoomService.RoomKey) .. " userId=" .. userId)
@@ -809,7 +676,6 @@ script InvestigationRoomManager extends Logic
 			return
 		end
 		log("[InvestigationRoomManager] Instance room move success roomId=" .. roomId .. " userId=" .. userId)
-		]]
 	end
 
 	@ExecSpace("ServerOnly")
@@ -914,7 +780,24 @@ script InvestigationRoomManager extends Logic
 			local removedCount = self:RemoveUserFromAllRooms(snapshot.Rooms, userId)
 			if removedCount <= 0 then
 				log("[InvestigationRoomManager] Leave room requested but no membership found roomId=" .. tostring(roomId) .. " userId=" .. userId)
-				self:ReleaseLogicalRoomMember(userId, logicalRoomId, false)
+				-- Registry cleanup is idempotent, but returning from an Instance Room is a
+				-- separate obligation. Never strand the client in map02 merely because an
+				-- earlier cleanup already removed its membership.
+				if _RoomService:IsInstanceRoom() then
+					-- This request always moves exactly one authenticated caller. Use the
+					-- single-user API so RoomService returns a definitive boolean result.
+					local moved = _RoomService:MoveUserToStaticRoom(userId, "map01")
+					log("[InvestigationRoomManager] Static lobby return without membership userId=" .. userId ..
+						" success=" .. tostring(moved))
+					if moved ~= true then
+						self:DeliverLeaveResult(false, "메인 로비 이동에 실패했습니다. 다시 시도해 주세요.", userId)
+						return
+					end
+					-- The successful Room move destroys the old Instance Room client. Do not
+					-- send a Client RPC to that invalid target after the yielding move returns.
+					log("[InvestigationRoomManager] Leave completed by static room transfer userId=" .. userId)
+					return
+				end
 				self:DeliverLeaveResult(true, "이미 종료된 수사방입니다.", userId)
 				return
 			end
@@ -922,8 +805,21 @@ script InvestigationRoomManager extends Logic
 			if writeCode == SharedMemoryResultCode.OK then
 				log("[InvestigationRoomManager] Leave room success roomId=" .. tostring(roomId) .. " removedCount=" .. tostring(removedCount))
 				self:BroadcastRoomListToMembers(snapshot.Rooms)
-				local roomStillExists = self:FindRoomIndex(snapshot.Rooms, logicalRoomId) > 0
-				self:ReleaseLogicalRoomMember(userId, logicalRoomId, roomStillExists)
+				if _RoomService:IsInstanceRoom() then
+					-- LeaveRoom handles one authenticated caller, so use the matching
+					-- single-user RoomService operation and explicit static lobby map.
+					local moved = _RoomService:MoveUserToStaticRoom(userId, "map01")
+					log("[InvestigationRoomManager] Static lobby return userId=" .. userId ..
+						" success=" .. tostring(moved))
+					if moved ~= true then
+						self:DeliverLeaveResult(false, "메인 로비 이동에 실패했습니다. 다시 시도해 주세요.", userId)
+						return
+					end
+					-- MoveUserToStaticRoom resumes after the previous client has left this Room.
+					-- The new Static Room client owns all UI initialization from this point.
+					log("[InvestigationRoomManager] Leave completed by static room transfer userId=" .. userId)
+					return
+				end
 				self:DeliverLeaveResult(true, "수사방에서 나왔습니다.", userId)
 				return
 			end
@@ -933,23 +829,6 @@ script InvestigationRoomManager extends Logic
 			end
 		end
 		self:DeliverLeaveResult(false, "나가기 요청이 많습니다. 다시 시도하세요.", userId)
-	end
-
-	@ExecSpace("ServerOnly")
-	method void SetStaticLobbyReturnPending(string userId, boolean pending)
-		-- UserDataStorage survives the RoomService client replacement and is scoped per user,
-		-- so simultaneous rooms cannot consume one another's return handoff.
-		local userStorage = _DataStorageService:GetUserDataStorage(userId)
-		local value = ""
-		if pending then value = "true" end
-		local errorCode = userStorage:SetAndWait(self.ROOM_RETURN_PENDING_KEY, value)
-		if errorCode ~= 0 then
-			log_warning("[InvestigationRoomManager] Static lobby return marker write failed userId=" ..
-				userId .. " pending=" .. tostring(pending) .. " code=" .. tostring(errorCode))
-			return
-		end
-		log("[InvestigationRoomManager] Static lobby return marker pending=" ..
-			tostring(pending) .. " userId=" .. userId)
 	end
 
 	@ExecSpace("ServerOnly")

@@ -22,7 +22,9 @@ script RoomTouchZone extends Component
 		    log("[TouchZone] 방 " .. self.roomIndex .. " 클릭됨")
 		
 		    -- MapController의 MafiaNightCinematic에 방 선택 전달
-		    local mapCtrl = _EntityService:GetEntityByPath("/maps/map01/MapController")
+		    local mapRoot = "/maps/map01"
+		    if _RoomService:IsInstanceRoom() then mapRoot = "/maps/map02" end
+		    local mapCtrl = _EntityService:GetEntityByPath(mapRoot .. "/MapController")
 		    if mapCtrl == nil then
 		        log("[TouchZone][ERR] MapController 없음")
 		        return
