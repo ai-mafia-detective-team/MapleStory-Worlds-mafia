@@ -462,7 +462,7 @@ script InvestigationRoomManager extends Logic
 			return
 		end
 		self:SelfHealRegistry(snapshot)
-
+		
 		local filtered = {}
 		for _, room in ipairs(snapshot.Rooms) do
 			local keywordOk = keyword == "" or string.find(string.lower(room.roomName or ""), keyword, 1, true) ~= nil
@@ -775,7 +775,7 @@ script InvestigationRoomManager extends Logic
 		log("[InvestigationRoomManager] Legacy instance entry routed to logical room roomId=" ..
 			roomId .. " userId=" .. userId)
 		return
-
+		
 		--[[
 		if _RoomService:IsInstanceRoom() then
 			log_warning("[InvestigationRoomManager] Instance entry rejected: request did not originate in static room" ..

@@ -441,7 +441,7 @@ script LobbyController extends Component
 		else
 			log_warning("[LobbyController] LobbyRoot not found")
 		end
-
+		
 		-- Keep custom lobby controls clear of the native MSW friend/settings area.
 		local topLayoutPaths = {
 			"/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay",
@@ -465,7 +465,7 @@ script LobbyController extends Component
 			end
 		end
 		log("[LobbyController] Top layout applied money=230 alert=472 shop=550 friend=630 settings=710")
-
+		
 		self:ApplyLobbyBackgroundVisuals()
 		self:DisableBlackOverlayBlockers()
 		
