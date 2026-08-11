@@ -416,6 +416,9 @@ script LobbyController extends Component
 		-- Reset the state as well so a recreated lobby never inherits an invisible-open modal.
 		self.findRoomModalOpen = false
 		self:SetInvestigationRoomSearchVisible(false)
+		-- The profile modal UIGroup follows the same MSW 26.7 rule as the search group above.
+		self.profileModalOpen = false
+		self:SetProfileModalVisible(false)
 		self:WireKeyboardInput()
 		-- Attaching this now lets QAAchievementUI:OnBeginPlay close its popup before the
 		-- lobby is shown; otherwise the achievement window covers the screen from the start.
@@ -3081,6 +3084,23 @@ script LobbyController extends Component
 		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
 	end
 
+	method void SetProfileModalVisible(boolean visible)
+		-- Keep the profile modal UIGroup root alive and toggle only its child entities.
+		-- Disabling the UIGroup root can leave it non-rendering after SetEnable(true) (MSW 26.7).
+		local modal = self.modalGroup
+		if modal ~= nil and isvalid(modal) then modal:SetEnable(true) end
+		local dim = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/DimOverlay")
+		local panel = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/ModalPanel")
+		if visible then
+			if dim ~= nil and isvalid(dim) then dim:SetEnable(true) end
+			if panel ~= nil and isvalid(panel) then panel:SetEnable(true) end
+		else
+			if panel ~= nil and isvalid(panel) then panel:SetEnable(false) end
+			if dim ~= nil and isvalid(dim) then dim:SetEnable(false) end
+		end
+		log("[ProfileModal] visible=" .. tostring(visible))
+	end
+
 	method void SetFindRoomModalVisible(boolean visible)
 		self:SetInvestigationRoomSearchVisible(visible)
 	end
@@ -4334,10 +4354,7 @@ script LobbyController extends Component
 		self:SetLobbyAvatarAreaVisible(false)
 		self:SetAvatarNameTextVisible(false)
 		_ProfileStorageLogic:RequestLoadAllProfile()
-		local modal = self.modalGroup
-		if modal ~= nil and isvalid(modal) then
-			modal.Enable = true
-		end
+		self:SetProfileModalVisible(true)
 		self:SetLobbyUIDimmed(true)
 		self:RefreshProfileModalFields()
 		self:UpdateSelectedIndicators()
@@ -4420,10 +4437,7 @@ script LobbyController extends Component
 			self.modalDimOverlay:DisconnectEvent(ButtonClickEvent, self.dimOverlayHandler)
 			self.dimOverlayHandler = nil
 		end
-		local modal = self.modalGroup
-		if modal ~= nil and isvalid(modal) then
-			modal.Enable = false
-		end
+		self:SetProfileModalVisible(false)
 		log("[LobbyController] ProfileModal closed handlers disconnected")
 	end
 
