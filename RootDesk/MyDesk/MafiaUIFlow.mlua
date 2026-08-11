@@ -1395,7 +1395,7 @@ script MafiaUIFlow extends Logic
 		    -- each Room client. Suppress every pre-room screen while map02 finishes booting.
 		    local paths = {
 		        "/ui/UI_Lobby",
-		        "/ui/UI_InvestigationRoomSearch",
+		        "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch",
 		        "/ui/UI_IntroSequence",
 		        "/ui/UI_StorySequence",
 		        "/ui/UI_NicknameSetup",

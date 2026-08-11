@@ -2105,7 +2105,7 @@ script LobbyController extends Component
 			base .. "Matchmaking/Dimmer",
 			base .. "PopupRoot/Dim",
 			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/DimOverlay",
-			"/ui/UI_InvestigationRoomSearch/CloseBackdrop",
+			"/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/CloseBackdrop",
 		}
 		for _, path in ipairs(paths) do
 			local ent = _EntityService:GetEntityByPath(path)
@@ -3036,21 +3036,21 @@ script LobbyController extends Component
 		self.searchButtonHandlers = {}
 		self:SetInvestigationRoomSearchVisible(false)
 		
-		self:ConnectInvestigationSearchButton("Close", "/ui/UI_InvestigationRoomSearch/SearchRoot/CloseButton")
-		self:ConnectInvestigationSearchButton("ModeFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton")
-		self:ConnectInvestigationSearchButton("StatusFilter", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton")
-		self:ConnectInvestigationSearchButton("HidePasswordRoom", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
-		self:ConnectInvestigationSearchButton("Refresh", "/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/RefreshButton")
-		self:ConnectInvestigationSearchButton("PagePrev", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PagePrevButton")
-		self:ConnectInvestigationSearchButton("PageNext", "/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageNextButton")
-		self:ConnectInvestigationSearchButton("QuickJoin", "/ui/UI_InvestigationRoomSearch/SearchRoot/CreateRoomButton")
-		self:ConnectInvestigationSearchButton("Cancel", "/ui/UI_InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
+		self:ConnectInvestigationSearchButton("Close", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/CloseButton")
+		self:ConnectInvestigationSearchButton("ModeFilter", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton")
+		self:ConnectInvestigationSearchButton("StatusFilter", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton")
+		self:ConnectInvestigationSearchButton("HidePasswordRoom", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
+		self:ConnectInvestigationSearchButton("Refresh", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/RefreshButton")
+		self:ConnectInvestigationSearchButton("PagePrev", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/PagingPanel/PagePrevButton")
+		self:ConnectInvestigationSearchButton("PageNext", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/PagingPanel/PageNextButton")
+		self:ConnectInvestigationSearchButton("QuickJoin", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/CreateRoomButton")
+		self:ConnectInvestigationSearchButton("Cancel", "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/EnterRoomCodeButton")
 		
 		for i = 1, 8 do
-			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
-			self:ConnectInvestigationSearchButton("JoinRoom" .. tostring(i), "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i) .. "/RoomStatusText")
+			self:ConnectInvestigationSearchButton("RoomRow" .. tostring(i), "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i))
+			self:ConnectInvestigationSearchButton("JoinRoom" .. tostring(i), "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(i) .. "/RoomStatusText")
 		end
-		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/SearchInput")
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/SearchInput")
 		if searchInput ~= nil and isvalid(searchInput) and searchInput.TextInputComponent ~= nil then
 			self.findRoomSearchInputHandler = searchInput:ConnectEvent(TextInputValueChangeEvent, function(evt)
 				self.findRoomSearchKeyword = searchInput.TextInputComponent.Text or ""
@@ -3066,24 +3066,23 @@ script LobbyController extends Component
 	end
 
 	method void SetInvestigationRoomSearchVisible(boolean visible)
-		-- The published client paints a group's subtree as of the root enable
-		-- transition; children enabled afterwards never repaint (verified live
-		-- 2026-08-11). So: enable the children FIRST, then toggle the group ROOT
-		-- so the enable transition happens with the content already active —
-		-- the same lifecycle UI_Lobby itself uses at intro→lobby handoff.
-		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
-		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
-		local searchBackdrop = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/CloseBackdrop")
+		-- The search UI now lives inside UI_Lobby (the standalone UIGroup never
+		-- rendered in the published client). Plain container toggle — the same
+		-- pattern as the other lobby popups — plus a sibling raise so the search
+		-- always sits above the lobby chrome.
+		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch")
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot")
+		local searchBackdrop = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/CloseBackdrop")
 		if visible then
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(true) end
-			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
-			if searchRoot ~= nil and isvalid(searchRoot) and searchRoot.UITransformComponent ~= nil then
-				_UILogic:SetSiblingIndex(searchRoot.UITransformComponent, 1000000)
+			if searchGroup ~= nil and isvalid(searchGroup) then
+				searchGroup:SetEnable(true)
+				if searchGroup.UITransformComponent ~= nil then
+					_UILogic:SetSiblingIndex(searchGroup.UITransformComponent, 1000000)
+				end
 			end
 		else
-			-- Hide by disabling the root only; children keep their state so the next
-			-- open's root transition carries the full content.
 			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
 		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
@@ -3211,7 +3210,7 @@ script LobbyController extends Component
 			end
 			self.searchButtonHandlers = nil
 		end
-		local searchInput = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/SearchInput")
+		local searchInput = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/SearchInput")
 		if self.findRoomSearchInputHandler ~= nil and searchInput ~= nil and isvalid(searchInput) then
 			searchInput:DisconnectEvent(TextInputValueChangeEvent, self.findRoomSearchInputHandler)
 		end
@@ -3227,7 +3226,7 @@ script LobbyController extends Component
 		self.findRoomModalOpen = true
 		self.findRoomSelectedIndex = 0
 		self:WireInvestigationRoomSearchEvents()
-		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot")
 		if searchRoot == nil or not isvalid(searchRoot) then
 			log_warning("[FindRoomModal] SearchRoot not found")
 			return
@@ -3300,14 +3299,14 @@ script LobbyController extends Component
 
 	method void SetFindRoomEmptyStateVisible(boolean visible)
 		-- Shows one centered empty-state image instead of repeating it in every status cell.
-		local emptyState = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/EmptyStateImage")
+		local emptyState = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/EmptyStateImage")
 		if emptyState == nil or not isvalid(emptyState) then return end
 		emptyState:SetEnable(visible)
 		emptyState.Visible = visible
 	end
 
 	method void LegacyRefreshRoomList()
-		local base = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
+		local base = "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
 		local rooms = self:GetFindRoomMockData()
 		for i = 1, 8 do
 			local rowPath = base .. "RoomRow_" .. tostring(i)
@@ -3339,7 +3338,7 @@ script LobbyController extends Component
 	end
 
 	method void SetFindRoomRowHighlight(integer index, boolean selected)
-		local rowPath = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(index)
+		local rowPath = "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/RoomRow_" .. tostring(index)
 		local row = _EntityService:GetEntityByPath(rowPath)
 		if row == nil or not isvalid(row) then return end
 		local sprite = row.SpriteGUIRendererComponent
@@ -3378,7 +3377,7 @@ script LobbyController extends Component
 	end
 
 	method void LegacyUpdateFindRoomPageText()
-		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
+		local pageText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
 		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
 			pageText.TextComponent.Text = "1 / 3"
 		end
@@ -3415,7 +3414,7 @@ script LobbyController extends Component
 		self.findRoomSelectedRoomId = ""
 		self.findRoomCurrentPage = 1
 		self:WireInvestigationRoomSearchEvents()
-		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot")
 		if searchRoot == nil or not isvalid(searchRoot) then
 			self.findRoomModalOpen = false
 			log_warning("[Room] RoomFindModal SearchRoot missing")
@@ -3520,7 +3519,7 @@ script LobbyController extends Component
 
 	method void RenderFindRoomList()
 		-- Renders the current page and keeps room columns and empty-state visibility consistent.
-		local base = "/ui/UI_InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
+		local base = "/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/RoomListPanel/RoomRowContainer/"
 		local rooms = self.findRoomVisibleRooms
 		if rooms == nil then rooms = {} end
 		local firstIndex = (self.findRoomCurrentPage - 1) * self.findRoomPageSize
@@ -3595,11 +3594,11 @@ script LobbyController extends Component
 	end
 
 	method void SetFindRoomDetailMessage(string text)
-		self:SetFindRoomDetailText("/ui/UI_InvestigationRoomSearch/SearchRoot/SelectedRoomDetailText", text)
+		self:SetFindRoomDetailText("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/SelectedRoomDetailText", text)
 	end
 
 	method void SetFindRoomPasswordInputVisible(boolean visible)
-		local input = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
+		local input = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
 		if input ~= nil and isvalid(input) then
 			input:SetEnable(visible)
 			input.Visible = visible
@@ -3608,7 +3607,7 @@ script LobbyController extends Component
 	end
 
 	method void UpdateFindRoomPageText()
-		local pageText = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
+		local pageText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/PagingPanel/PageTextBox_Border/PageText")
 		if pageText ~= nil and isvalid(pageText) and pageText.TextComponent ~= nil then
 			pageText.TextComponent.Text = tostring(self.findRoomCurrentPage) .. " / " .. tostring(self.findRoomTotalPages)
 		end
@@ -3641,7 +3640,7 @@ script LobbyController extends Component
 			return
 		end
 		local password = ""
-		local input = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
+		local input = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/JoinPasswordInput")
 		if room.hasPassword == true and input ~= nil and isvalid(input) and input.TextInputComponent ~= nil then password = self:TrimCreateRoomText(input.TextInputComponent.Text or "") end
 		if room.hasPassword == true and password == "" then
 			log_warning("[Room] Password required id=" .. room.roomId)
@@ -3752,10 +3751,10 @@ script LobbyController extends Component
 	method void UpdateFindRoomFilterLabels()
 		local modeText = self.findRoomModeFilter == "ALL" and "모드: 전체" or "모드: " .. self.findRoomModeFilter
 		local statusText = self.findRoomStatusFilter == "ALL" and "상태: 전체" or "상태: " .. self:GetFindRoomStatusText(self.findRoomStatusFilter)
-		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton", modeText)
-		self:SetFindRoomFilterButtonText("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton", statusText)
+		self:SetFindRoomFilterButtonText("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/ModeFilterButton", modeText)
+		self:SetFindRoomFilterButtonText("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/StatusFilterButton", statusText)
 		
-		local toggle = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
+		local toggle = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot/FilterBar/HidePasswordCheckbox")
 		if toggle ~= nil and isvalid(toggle) and toggle.SpriteGUIRendererComponent ~= nil then
 			local toggleRuid = self.findRoomHidePrivate and "695b16b6c24d46a3bb4b1eb85169b7b2" or "b045be0151a34dfaab745edb8dd83946"
 			toggle.SpriteGUIRendererComponent.ImageRUID = DataRef(toggleRuid)
@@ -4296,8 +4295,8 @@ script LobbyController extends Component
 		local targets = {
 			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot",
 			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/ModalPanel",
-			"/ui/UI_InvestigationRoomSearch",
-			"/ui/UI_InvestigationRoomSearch/SearchRoot"
+			"/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch",
+			"/ui/UI_Lobby/LobbyRoot/InvestigationRoomSearch/SearchRoot"
 		}
 		for i = 1, #targets do
 			local e = _EntityService:GetEntityByPath(targets[i])
