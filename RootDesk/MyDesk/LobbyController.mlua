@@ -3066,25 +3066,25 @@ script LobbyController extends Component
 	end
 
 	method void SetInvestigationRoomSearchVisible(boolean visible)
-		-- Keep the standalone UIGroup alive and toggle only its child entities.
-		-- Disabling the UIGroup root can leave it non-rendering after SetEnable(true).
+		-- The published client paints a group's subtree as of the root enable
+		-- transition; children enabled afterwards never repaint (verified live
+		-- 2026-08-11). So: enable the children FIRST, then toggle the group ROOT
+		-- so the enable transition happens with the content already active —
+		-- the same lifecycle UI_Lobby itself uses at intro→lobby handoff.
 		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
 		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
-		-- Full-screen outside-click backdrop: kept disabled until the search opens so
-		-- it never covers (and blocks) the intro/other screens.
 		local searchBackdrop = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/CloseBackdrop")
-		if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
 		if visible then
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(true) end
-			-- The published client may not repaint children enabled inside an already-shown
-			-- group; a sibling reorder forces it (same convention as the lobby modals).
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
 			if searchRoot ~= nil and isvalid(searchRoot) and searchRoot.UITransformComponent ~= nil then
 				_UILogic:SetSiblingIndex(searchRoot.UITransformComponent, 1000000)
 			end
 		else
-			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(false) end
-			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
+			-- Hide by disabling the root only; children keep their state so the next
+			-- open's root transition carries the full content.
+			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
 		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
 	end
