@@ -408,6 +408,9 @@ script LobbyController extends Component
 		-- ShowLobby(nickname) is called immediately after.
 		log("[LobbyController] OnBeginPlay")
 		log("[LobbyController] self.Entity.Path=" .. tostring(self.Entity.Path))
+		-- The search UIGroup itself must remain enabled. Only its child content is toggled.
+		-- Reset the state as well so a recreated lobby never inherits an invisible-open modal.
+		self.findRoomModalOpen = false
 		self:SetInvestigationRoomSearchVisible(false)
 		self:WireKeyboardInput()
 		-- Attaching this now lets QAAchievementUI:OnBeginPlay close its popup before the
@@ -3056,20 +3059,20 @@ script LobbyController extends Component
 	end
 
 	method void SetInvestigationRoomSearchVisible(boolean visible)
-		-- Toggles the hidden-on-start search UI group only through the lobby flow.
+		-- Keep the standalone UIGroup alive and toggle only its child entities.
+		-- Disabling the UIGroup root can leave it non-rendering after SetEnable(true).
 		local searchGroup = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch")
 		local searchRoot = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/SearchRoot")
 		-- Full-screen outside-click backdrop: kept disabled until the search opens so
 		-- it never covers (and blocks) the intro/other screens.
 		local searchBackdrop = _EntityService:GetEntityByPath("/ui/UI_InvestigationRoomSearch/CloseBackdrop")
+		if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
 		if visible then
-			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(true) end
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(true) end
 		else
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(false) end
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
-			if searchGroup ~= nil and isvalid(searchGroup) then searchGroup:SetEnable(false) end
 		end
 		log("[InvestigationRoomSearch] visible=" .. tostring(visible))
 	end
@@ -3367,7 +3370,11 @@ script LobbyController extends Component
 	end
 
 	method void OpenFindRoomModal()
-		if self.findRoomModalOpen then return end
+		if self.findRoomModalOpen then
+			-- Repair visibility if state and rendered UI became out of sync.
+			self:SetInvestigationRoomSearchVisible(true)
+			return
+		end
 		self.findRoomModalOpen = true
 		self.findRoomSelectedIndex = 0
 		self.findRoomSelectedRoomId = ""
