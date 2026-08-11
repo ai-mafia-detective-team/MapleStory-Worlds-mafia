@@ -4199,6 +4199,7 @@ script LobbyController extends Component
 		-- Opens the profile image selection modal.
 		log("[LobbyController] ProfileButton clicked → opening modal")
 		self:OpenProfileModal()
+		self:ShowLiveDiag("P")
 	end
 
 	method void OnFriendClicked(ButtonClickEvent event)
@@ -4270,6 +4271,31 @@ script LobbyController extends Component
 	method void OnFindRoomClicked(ButtonClickEvent event)
 		log("[LobbyController] FindRoomButton clicked")
 		self:OpenFindRoomModal()
+		self:ShowLiveDiag("F")
+	end
+
+	method string DescribeModalEntity(string path)
+		-- TEMP live diagnostic helper: encodes an entity's render-relevant state.
+		-- X = entity missing, E/V = Enable/Visible, A = CanvasGroup alpha x10.
+		local e = _EntityService:GetEntityByPath(path)
+		if e == nil or isvalid(e) == false then return "X" end
+		local v = "E" .. (e.Enable and "1" or "0") .. "V" .. (e.Visible and "1" or "0")
+		if e.CanvasGroupComponent ~= nil then
+			v = v .. "A" .. tostring(math.floor(e.CanvasGroupComponent.GroupAlpha * 10))
+		end
+		return v
+	end
+
+	method void ShowLiveDiag(string tag)
+		-- TEMP live diagnostic: release builds strip log(), so surface modal state in
+		-- the always-visible top-bar money text. Remove after the live issue is fixed.
+		local t = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/FreeMoneyBar/FreeMoneyText")
+		if t == nil or isvalid(t) == false or t.TextComponent == nil then return end
+		t.TextComponent.Text = "D2." .. tag
+			.. " pm=" .. self:DescribeModalEntity("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot")
+			.. "," .. self:DescribeModalEntity("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/ModalPanel")
+			.. " fs=" .. self:DescribeModalEntity("/ui/UI_InvestigationRoomSearch")
+			.. "," .. self:DescribeModalEntity("/ui/UI_InvestigationRoomSearch/SearchRoot")
 	end
 
 	method void OnShopClicked(ButtonClickEvent event)
