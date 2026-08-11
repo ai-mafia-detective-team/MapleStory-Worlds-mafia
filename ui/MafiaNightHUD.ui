@@ -7363,12 +7363,12 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 142.0,
-                "y": 208.0
+                "x": 248.1024,
+                "y": 299.4014
               },
               "OffsetMin": {
-                "x": -142.0,
-                "y": 156.0
+                "x": -35.8976,
+                "y": 247.4014
               },
               "Pivot": {
                 "x": 0.5,
@@ -7386,8 +7386,8 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": 182.0
+                "x": 106.1024,
+                "y": 273.4014
               },
               "Rotation": {
                 "x": 0.0,
@@ -7395,8 +7395,8 @@
                 "z": 0.0
               },
               "Position": {
-                "x": 0.0,
-                "y": 182.0,
+                "x": 106.1024,
+                "y": 273.4014,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -7571,12 +7571,12 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 142.0,
-                "y": 156.0
+                "x": 237.043,
+                "y": 222.2866
               },
               "OffsetMin": {
-                "x": -142.0,
-                "y": 104.0
+                "x": -46.957,
+                "y": 170.2866
               },
               "Pivot": {
                 "x": 0.5,
@@ -7594,8 +7594,8 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": 130.0
+                "x": 95.043,
+                "y": 196.2866
               },
               "Rotation": {
                 "x": 0.0,
@@ -7603,8 +7603,8 @@
                 "z": 0.0
               },
               "Position": {
-                "x": 0.0,
-                "y": 130.0,
+                "x": 95.043,
+                "y": 196.2866,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -9773,7 +9773,7 @@
       {
         "id": "35eeee6c-dd84-4f56-9fa9-6d4909ae97b7",
         "path": "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent,MOD.Core.TextInputComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.MaskComponent",
         "jsonString": {
           "name": "NightChatInput",
           "path": "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput",
@@ -9807,20 +9807,20 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 0.0,
-                "y": 0.0
+                "x": -47.6760941,
+                "y": -38.93273
               },
               "OffsetMin": {
-                "x": 0.0,
-                "y": 0.0
+                "x": 48.9966965,
+                "y": 48.10453
               },
               "Pivot": {
                 "x": 0.5,
                 "y": 0.5
               },
               "RectSize": {
-                "x": 440.37323,
-                "y": 141.584671
+                "x": 343.700439,
+                "y": 54.54741
               },
               "UIMode": 1,
               "UIScale": {
@@ -9830,8 +9830,8 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": 0.0
+                "x": 0.660299838,
+                "y": 4.5859
               },
               "Rotation": {
                 "x": 0.0,
@@ -9839,8 +9839,8 @@
                 "z": 0.0
               },
               "Position": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": 0.6602936,
+                "y": 4.58589935,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -9918,6 +9918,172 @@
               "Enable": true
             },
             {
+              "@type": "MOD.Core.MaskComponent",
+              "Padding": {
+                "left": 14,
+                "right": 14,
+                "top": 5,
+                "bottom": 5
+              },
+              "Shape": 0,
+              "Softness": {
+                "x": 0,
+                "y": 0
+              },
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "d4983f2b-c69d-4bc4-b2b7-796cb750ce5a",
+        "path": "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput/InputText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent,MOD.Core.TextInputComponent",
+        "jsonString": {
+          "name": "InputText",
+          "path": "/ui/MafiaNightHUD/CenterPanel/MafiaChat/Chat_4/NightChatInput/InputText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "///////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 157.5,
+                "y": 22.0
+              },
+              "OffsetMin": {
+                "x": -157.5,
+                "y": -22.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 315.0,
+                "y": 44.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": true,
+              "Type": 0,
+              "Enable": true
+            },
+            {
               "@type": "MOD.Core.TextComponent",
               "Alignment": 4,
               "AllowAutomaticTranslation": true,
@@ -9934,7 +10100,7 @@
                 "a": 0.72
               },
               "DropShadowDistance": 3.0,
-              "Font": 0,
+              "Font": 1,
               "FontColor": {
                 "r": 1.0,
                 "g": 1.0,
@@ -9971,6 +10137,7 @@
               "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
+              "UseNBSP": true,
               "UseOutLine": false,
               "Enable": true
             },
@@ -9987,9 +10154,9 @@
               "OverrideSorting": false,
               "PlaceHolder": "채팅 입력...",
               "PlaceHolderColor": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
+                "r": 0.1953125,
+                "g": 0.1953125,
+                "b": 0.1953125,
                 "a": 0.5
               },
               "SortingLayer": "UI",
@@ -27125,12 +27292,12 @@
               },
               "MobileOnly": false,
               "OffsetMax": {
-                "x": 445.0,
-                "y": 445.0
+                "x": 444.9998,
+                "y": 235.540375
               },
               "OffsetMin": {
-                "x": -445.0,
-                "y": -445.0
+                "x": -445.0002,
+                "y": -110.481384
               },
               "Pivot": {
                 "x": 0.5,
@@ -27138,7 +27305,7 @@
               },
               "RectSize": {
                 "x": 890.0,
-                "y": 890.0
+                "y": 346.021759
               },
               "UIMode": 1,
               "UIScale": {
@@ -27148,8 +27315,8 @@
               },
               "UIVersion": 2,
               "anchoredPosition": {
-                "x": 0.0,
-                "y": 0.0
+                "x": -0.0002,
+                "y": 62.5295
               },
               "Rotation": {
                 "x": 0.0,
@@ -27157,8 +27324,8 @@
                 "z": 0.0
               },
               "Position": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": -0.0002,
+                "y": 62.5295,
                 "z": 0.0
               },
               "QuaternionRotation": {
@@ -27181,7 +27348,7 @@
               "EndFrameIndex": 2147483647,
               "IgnoreMapLayerCheck": false,
               "ImageRUID": {
-                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+                "DataId": "1c1fd654e055437fbd67a7fe4bf7ee46"
               },
               "LocalPosition": {
                 "x": 0.0,

@@ -2374,7 +2374,7 @@
       {
         "id": "a99ccc28-6b83-484f-ba05-04379dd5bb7c",
         "path": "/ui/MafiaLobbyHUD/CenterPanel/ChatInput",
-        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent,MOD.Core.TextInputComponent",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.MaskComponent",
         "jsonString": {
           "name": "ChatInput",
           "path": "/ui/MafiaLobbyHUD/CenterPanel/ChatInput",
@@ -2519,8 +2519,174 @@
               "Enable": true
             },
             {
+              "@type": "MOD.Core.MaskComponent",
+              "Padding": {
+                "left": 14,
+                "right": 14,
+                "top": 5,
+                "bottom": 5
+              },
+              "Shape": 0,
+              "Softness": {
+                "x": 0,
+                "y": 0
+              },
+              "Enable": true
+            }
+          ],
+          "@version": 1
+        }
+      },
+      {
+        "id": "44182537-7dff-43f6-9d98-21db91406785",
+        "path": "/ui/MafiaLobbyHUD/CenterPanel/ChatInput/InputText",
+        "componentNames": "MOD.Core.UITransformComponent,MOD.Core.SpriteGUIRendererComponent,MOD.Core.TextComponent,MOD.Core.TextInputComponent",
+        "jsonString": {
+          "name": "InputText",
+          "path": "/ui/MafiaLobbyHUD/CenterPanel/ChatInput/InputText",
+          "nameEditable": true,
+          "enable": true,
+          "visible": true,
+          "localize": true,
+          "displayOrder": 0,
+          "pathConstraints": "/////",
+          "revision": 0,
+          "origin": {
+            "type": "Model",
+            "entry_id": "UIEmpty",
+            "sub_entity_id": null,
+            "root_entity_id": null,
+            "replaced_model_id": null
+          },
+          "modelId": "uiempty",
+          "@components": [
+            {
+              "@type": "MOD.Core.UITransformComponent",
+              "ActivePlatform": 255,
+              "AlignmentOption": 0,
+              "AnchorsMax": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "AnchorsMin": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "MobileOnly": false,
+              "OffsetMax": {
+                "x": 253.5,
+                "y": 22.0
+              },
+              "OffsetMin": {
+                "x": -253.5,
+                "y": -22.0
+              },
+              "Pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "RectSize": {
+                "x": 507.0,
+                "y": 44.0
+              },
+              "UIMode": 1,
+              "UIScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "UIVersion": 2,
+              "anchoredPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "QuaternionRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "ZRotation": 0.0,
+              "Enable": true
+            },
+            {
+              "@type": "MOD.Core.SpriteGUIRendererComponent",
+              "AnimClipPlayType": 0,
+              "EndFrameIndex": 2147483647,
+              "IgnoreMapLayerCheck": false,
+              "ImageRUID": {
+                "DataId": "4fea64a3307cda641809ad8be0d4890b"
+              },
+              "LocalPosition": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "LocalScale": {
+                "x": 1.0,
+                "y": 1.0
+              },
+              "MaterialId": "",
+              "OrderInLayer": 0,
+              "OverrideSorting": false,
+              "PlayRate": 1.0,
+              "PreserveSprite": 0,
+              "SortingLayer": "UI",
+              "StartFrameIndex": 0,
+              "Color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 0.0
+              },
+              "DropShadow": false,
+              "DropShadowAngle": 120.0,
+              "DropShadowColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 0.72
+              },
+              "DropShadowDistance": 3.0,
+              "FillAmount": 1.0,
+              "FillCenter": true,
+              "FillClockWise": true,
+              "FillMethod": 0,
+              "FillOrigin": 0,
+              "FlipX": false,
+              "FlipY": false,
+              "FrameColumn": 1,
+              "FrameRate": 0,
+              "FrameRow": 1,
+              "Outline": false,
+              "OutlineColor": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "a": 1.0
+              },
+              "OutlineWidth": 3.0,
+              "RaycastTarget": true,
+              "Type": 0,
+              "Enable": true
+            },
+            {
               "@type": "MOD.Core.TextComponent",
-              "Alignment": 3,
+              "Alignment": 4,
               "AllowAutomaticTranslation": true,
               "BestFit": false,
               "Bold": false,
@@ -2572,13 +2738,14 @@
               "Text": "",
               "UseConstraintX": false,
               "UseConstraintY": false,
+              "UseNBSP": true,
               "UseOutLine": false,
               "Enable": true
             },
             {
               "@type": "MOD.Core.TextInputComponent",
               "AllowAutomaticTranslation": true,
-              "AutoClear": false,
+              "AutoClear": true,
               "CharacterLimit": 100,
               "ContentType": 0,
               "IgnoreMapLayerCheck": false,
@@ -2588,10 +2755,10 @@
               "OverrideSorting": false,
               "PlaceHolder": "채팅을 입력하세요!!",
               "PlaceHolderColor": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
+                "r": 0.1953125,
+                "g": 0.1953125,
+                "b": 0.1953125,
+                "a": 0.5
               },
               "SortingLayer": "UI",
               "Text": "",
