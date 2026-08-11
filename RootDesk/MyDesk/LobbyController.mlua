@@ -3077,6 +3077,11 @@ script LobbyController extends Component
 		if visible then
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(true) end
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(true) end
+			-- The published client may not repaint children enabled inside an already-shown
+			-- group; a sibling reorder forces it (same convention as the lobby modals).
+			if searchRoot ~= nil and isvalid(searchRoot) and searchRoot.UITransformComponent ~= nil then
+				_UILogic:SetSiblingIndex(searchRoot.UITransformComponent, 1000000)
+			end
 		else
 			if searchBackdrop ~= nil and isvalid(searchBackdrop) then searchBackdrop:SetEnable(false) end
 			if searchRoot ~= nil and isvalid(searchRoot) then searchRoot:SetEnable(false) end
