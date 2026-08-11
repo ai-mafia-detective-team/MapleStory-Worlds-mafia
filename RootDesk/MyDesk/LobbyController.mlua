@@ -3094,6 +3094,12 @@ script LobbyController extends Component
 		if visible then
 			if dim ~= nil and isvalid(dim) then dim:SetEnable(true) end
 			if panel ~= nil and isvalid(panel) then panel:SetEnable(true) end
+			-- Maker save renormalizes authored displayOrder, so force the modal above its
+			-- siblings at open time instead of relying on the .ui value (same convention
+			-- as SetCreateRoomModalVisible).
+			if modal ~= nil and isvalid(modal) and modal.UITransformComponent ~= nil then
+				_UILogic:SetSiblingIndex(modal.UITransformComponent, 1000000)
+			end
 		else
 			if panel ~= nil and isvalid(panel) then panel:SetEnable(false) end
 			if dim ~= nil and isvalid(dim) then dim:SetEnable(false) end
