@@ -4274,28 +4274,30 @@ script LobbyController extends Component
 		self:ShowLiveDiag("F")
 	end
 
-	method string DescribeModalEntity(string path)
-		-- TEMP live diagnostic helper: encodes an entity's render-relevant state.
-		-- X = entity missing, E/V = Enable/Visible, A = CanvasGroup alpha x10.
-		local e = _EntityService:GetEntityByPath(path)
-		if e == nil or isvalid(e) == false then return "X" end
-		local v = "E" .. (e.Enable and "1" or "0") .. "V" .. (e.Visible and "1" or "0")
-		if e.CanvasGroupComponent ~= nil then
-			v = v .. "A" .. tostring(math.floor(e.CanvasGroupComponent.GroupAlpha * 10))
-		end
-		return v
-	end
-
 	method void ShowLiveDiag(string tag)
 		-- TEMP live diagnostic: release builds strip log(), so surface modal state in
 		-- the always-visible top-bar money text. Remove after the live issue is fixed.
-		local t = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/FreeMoneyBar/FreeMoneyText")
-		if t == nil or isvalid(t) == false or t.TextComponent == nil then return end
-		t.TextComponent.Text = "D2." .. tag
-			.. " pm=" .. self:DescribeModalEntity("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot")
-			.. "," .. self:DescribeModalEntity("/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/ModalPanel")
-			.. " fs=" .. self:DescribeModalEntity("/ui/UI_InvestigationRoomSearch")
-			.. "," .. self:DescribeModalEntity("/ui/UI_InvestigationRoomSearch/SearchRoot")
+		local moneyText = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/MoneyDisplay/FreeMoneyBar/FreeMoneyText")
+		if moneyText == nil then return end
+		if isvalid(moneyText) == false then return end
+		if moneyText.TextComponent == nil then return end
+		local msg = "D3." .. tag
+		local targets = {
+			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot",
+			"/ui/UI_Lobby/LobbyRoot/ProfileSettingModalRoot/ModalPanel",
+			"/ui/UI_InvestigationRoomSearch",
+			"/ui/UI_InvestigationRoomSearch/SearchRoot"
+		}
+		for i = 1, #targets do
+			local e = _EntityService:GetEntityByPath(targets[i])
+			local mark = "X"
+			if e ~= nil and isvalid(e) then
+				if e.Enable then mark = "E1" else mark = "E0" end
+				if e.Visible then mark = mark .. "V1" else mark = mark .. "V0" end
+			end
+			msg = msg .. " " .. mark
+		end
+		moneyText.TextComponent.Text = msg
 	end
 
 	method void OnShopClicked(ButtonClickEvent event)
