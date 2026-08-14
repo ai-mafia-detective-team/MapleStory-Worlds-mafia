@@ -255,6 +255,18 @@ script MafiaUIFlow extends Logic
 
 	property string currentChatHudName = ""
 
+	property string lastChatContextCacheLogHud = ""
+
+	property table chatRowTweens = nil
+
+	property string pendingChatHudName = ""
+
+	property string pendingChatBaseLog = ""
+
+	property string pendingChatPreviewLog = ""
+
+	property number pendingChatDeadline = 0
+
 	property string cachedLocalUserId = ""
 
 	property boolean nightChatLayoutLogged = false
@@ -2244,6 +2256,17 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void ResolvePhaseChatContext(string hudName)
+		    -- Reuses valid chat bindings so typing does not reapply the whole chat layout every refresh tick.
+		    if self.currentChatHudName == hudName and self.lobbyChatSlotRoots ~= nil then
+		        local firstSlot = self.lobbyChatSlotRoots[1]
+		        if firstSlot ~= nil and isvalid(firstSlot) then
+		            if self.lastChatContextCacheLogHud ~= hudName then
+		                self.lastChatContextCacheLogHud = hudName
+		                log("[MafiaUIFlow] chat context cache active hud=" .. tostring(hudName))
+		            end
+		            return
+		        end
+		    end
 		    local rootPath = "/ui/" .. hudName
 		    self.currentChatHudName = hudName
 		    local entity = _EntityService:GetEntityByPath(rootPath .. "/CenterPanel/ChatScroll")
@@ -3413,17 +3436,21 @@ script MafiaUIFlow extends Logic
 		    inputComponent.CharacterLimit = 100
 		    local inputText = inputComponent.Entity.TextComponent
 		    if inputText == nil then return end
-		    -- The parent entity is now a real Mask viewport. Leave the input renderer
-		    -- unconstrained so TextInput can shift it horizontally to follow the caret;
-		    -- the parent clips everything outside the authored input frame.
+		    -- Keep the rendered text inside a stable left-aligned viewport so each
+		    -- keystroke extends in place instead of shifting the whole text entity.
 		    inputText.Alignment = TextAlignmentType.MiddleLeft
-		    inputText.Overflow = OverflowType.Overflow
+		    inputText.Overflow = OverflowType.Truncate
 		    inputText.SizeFit = false
-		    inputText.UseNBSP = true
+		    inputText.UseNBSP = false
 		    inputText.UseConstraintX = false
 		    inputText.UseConstraintY = false
-		    log("[MafiaUIFlow] chat input constrained hud=" .. tostring(hudName)
-		        .. " width=" .. tostring(textWidth) .. " lineType=SingleLine")
+		    local inputTransform = inputComponent.Entity.UITransformComponent
+		    if inputTransform ~= nil then
+		        local size = inputTransform.RectSize
+		        inputTransform.RectSize = Vector2(textWidth, size.y)
+		    end
+		    log("[MafiaUIFlow] chat input viewport stabilized hud=" .. tostring(hudName)
+		        .. " width=" .. tostring(textWidth) .. " overflow=Truncate")
 	end
 
 	method void RefreshLobby()
@@ -3463,7 +3490,8 @@ script MafiaUIFlow extends Logic
 		    end
 		    self:HideLobbyRawChatLog()
 		    local lobbyChatLog = _MafiaGameLogic.ChatLog or ""
-		    if lobbyChatLog ~= self.lastLobbyChatLog then
+		    if not self:ShouldHoldPendingChat("MafiaLobbyHUD", lobbyChatLog)
+		        and lobbyChatLog ~= self.lastLobbyChatLog then
 		        self.lastLobbyChatLog = lobbyChatLog
 		        self.lobbyChatBubbleScrollOffset = 0
 		        self:ApplyLobbyChatBubbles(lobbyChatLog)
@@ -3766,7 +3794,8 @@ script MafiaUIFlow extends Logic
 		    local dayChatLog
 		    if self:IsLocalPlayerDead() then
 		        dayChatLog = _MafiaGameLogic.DeadChatLog or ""
-		        if dayChatLog ~= self.lastDeadChatLog then
+		        if not self:ShouldHoldPendingChat("MafiaDayHUD", dayChatLog)
+		            and dayChatLog ~= self.lastDeadChatLog then
 		            self.lastDeadChatLog = dayChatLog
 		            self.lastDayChatLog  = ""
 		            self.lobbyChatBubbleScrollOffset = 0
@@ -3776,7 +3805,9 @@ script MafiaUIFlow extends Logic
 		    else
 		        dayChatLog = _MafiaGameLogic.ChatLog or ""
 		    end
-		    if not self:IsLocalPlayerDead() and dayChatLog ~= self.lastDayChatLog then
+		    if not self:IsLocalPlayerDead()
+		        and not self:ShouldHoldPendingChat("MafiaDayHUD", dayChatLog)
+		        and dayChatLog ~= self.lastDayChatLog then
 		        self.lastDayChatLog = dayChatLog
 		        self.lobbyChatBubbleScrollOffset = 0
 		        self:HideLobbyRawChatLog()
@@ -4670,6 +4701,7 @@ script MafiaUIFlow extends Logic
 		    if userId == "" then return end
 		    self.nightChatDraft = ""
 		    self.nightChatLastNonEmptyDraft = ""
+		    self:ShowOptimisticChat(userId, message, "MafiaNightHUD")
 		    _MafiaGameLogic:SendMafiaChat(userId, message)
 		    if self.nightChatInput ~= nil then
 		        self.nightChatInput.Text = ""
@@ -4693,6 +4725,9 @@ script MafiaUIFlow extends Logic
 		        self.nightChatDraft = ""
 		        self.nightChatLastNonEmptyDraft = ""
 		    end
+		    local hudName = "MafiaLobbyHUD"
+		    if input == self.dayChatInput then hudName = "MafiaDayHUD" end
+		    self:ShowOptimisticChat(userId, message, hudName)
 		    _MafiaGameLogic:SendChat(userId, message)
 		    if input ~= nil then
 		        input.Text = ""
@@ -4892,11 +4927,10 @@ script MafiaUIFlow extends Logic
 		        end
 		    end
 		
-		    self:ClearLobbyChatSlots()
-		
 		    local total = #messages
 		    self.lobbyChatBubbleTotalCount = total
 		    if total <= 0 then
+		        self:ClearLobbyChatSlots()
 		        self:UpdateLobbyChatBubbleScrollVisual(0)
 		        log("[MafiaUIFlow] lobby chat bubbles cleared")
 		        return
@@ -4925,12 +4959,6 @@ script MafiaUIFlow extends Logic
 		        local userId = userIds[i]
 		        local message = messages[i]
 		        local isOwn = self:IsSameChatUser(userId, localUserId)
-		        log("[MafiaUIFlow] chat row identity hud=" .. tostring(self.currentChatHudName)
-		            .. " slot=" .. tostring(slotIndex)
-		            .. " sender=" .. tostring(userId)
-		            .. " local=" .. tostring(self:NormalizeChatUserId(localUserId))
-		            .. " own=" .. tostring(isOwn))
-		
 		        local displayMessage = displayMessages[i]
 		        self:RenderLobbyChatSlot(slotIndex, userId, message, displayMessage, isOwn)
 		        local slotText = self.lobbyChatSlotOtherMessages[slotIndex]
@@ -4944,14 +4972,9 @@ script MafiaUIFlow extends Logic
 		        usedHeight = usedHeight + rowHeight + 14
 		        slotIndex = slotIndex + 1
 		    end
+		    self:HideUnusedLobbyChatSlots(slotIndex)
 		
 		    self:UpdateLobbyChatBubbleScrollVisual(total)
-		    local firstRenderedText = nil
-		    if self.lobbyChatSlotOtherMessages ~= nil then firstRenderedText = self.lobbyChatSlotOtherMessages[1] end
-		    if firstRenderedText ~= nil then
-		        log("[MafiaUIFlow] chat slot1 final style hud=" .. tostring(self.currentChatHudName)
-		            .. " alignment=" .. tostring(firstRenderedText.Alignment))
-		    end
 		    log("[MafiaUIFlow] lobby chat bubble list updated; total=" .. tostring(total)
 		        .. " visibleRows=" .. tostring(#visibleIndices)
 		        .. " layoutHeight=" .. tostring(usedHeight)
@@ -4983,8 +5006,60 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void ClearLobbyChatSlots()
+		    -- Clears every chat row when the active chat log becomes empty.
+		    self:HideUnusedLobbyChatSlots(1)
+	end
+
+	method void ShowOptimisticChat(string userId, string message, string hudName)
+		    -- Displays the sender's message immediately while the authoritative server log is in flight.
+		    self:ResolvePhaseChatContext(hudName)
+		    local authoritativeLog = self:GetCurrentPhaseChatLog()
+		    local renderBase = authoritativeLog
+		    if self.pendingChatHudName == hudName
+		        and self.pendingChatBaseLog == authoritativeLog
+		        and _UtilLogic.ElapsedSeconds < self.pendingChatDeadline then
+		        renderBase = self.pendingChatPreviewLog
+		    end
+		    local entry = tostring(userId) .. "\t" .. tostring(message)
+		    local previewLog = entry
+		    if renderBase ~= nil and renderBase ~= "" then previewLog = renderBase .. "\n" .. entry end
+		    self.pendingChatHudName = hudName
+		    self.pendingChatBaseLog = authoritativeLog
+		    self.pendingChatPreviewLog = previewLog
+		    self.pendingChatDeadline = _UtilLogic.ElapsedSeconds + 1.5
+		    self.lobbyChatBubbleScrollOffset = 0
+		    self:HideLobbyRawChatLog()
+		    self:ApplyLobbyChatBubbles(previewLog)
+		    log("[MafiaUIFlow] optimistic chat displayed hud=" .. tostring(hudName))
+	end
+
+	method boolean ShouldHoldPendingChat(string hudName, string authoritativeLog)
+		    -- Keeps the instant preview visible until the server log changes or the request times out.
+		    if self.pendingChatHudName ~= hudName then return false end
+		    if authoritativeLog == self.pendingChatBaseLog
+		        and _UtilLogic.ElapsedSeconds < self.pendingChatDeadline then
+		        return true
+		    end
+		    log("[MafiaUIFlow] optimistic chat reconciled hud=" .. tostring(hudName))
+		    self.pendingChatHudName = ""
+		    self.pendingChatBaseLog = ""
+		    self.pendingChatPreviewLog = ""
+		    self.pendingChatDeadline = 0
+		    if hudName == "MafiaLobbyHUD" then
+		        self.lastLobbyChatLog = "__PENDING_RECONCILE__"
+		    elseif hudName == "MafiaDayHUD" then
+		        self.lastDayChatLog = "__PENDING_RECONCILE__"
+		        self.lastDeadChatLog = "__PENDING_RECONCILE__"
+		    elseif hudName == "MafiaNightHUD" then
+		        self.lastNightChatLog = "__PENDING_RECONCILE__"
+		    end
+		    return false
+	end
+
+	method void HideUnusedLobbyChatSlots(integer firstUnusedSlot)
+		    -- Hides only rows that were not reused by the current render pass.
 		    if self.lobbyChatSlotRoots == nil then return end
-		    for i = 1, self.lobbyChatSlotCount do
+		    for i = firstUnusedSlot, self.lobbyChatSlotCount do
 		        local root = self.lobbyChatSlotRoots[i]
 		        if root ~= nil then root.Enable = false end
 		        if self.lobbyChatSlotFrames ~= nil and self.lobbyChatSlotFrames[i] ~= nil then
@@ -5007,13 +5082,12 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void RenderLobbyChatSlot(integer slotIndex, string userId, string message, string displayMessage, boolean isOwn)
+		    -- Updates a row in place and enables it only after its text and layout are ready.
 		    if self.lobbyChatSlotRoots == nil then return end
 		    local root = self.lobbyChatSlotRoots[slotIndex]
 		    if root == nil then return end
-		    root.Enable = true
 		
 		    local rowBubble = self.lobbyChatSlotOtherBubbles[slotIndex]
-		    if rowBubble ~= nil then rowBubble.Enable = true end
 		    ---@type Entity
 		    local rowFrame = nil
 		    if self.lobbyChatSlotFrames ~= nil then rowFrame = self.lobbyChatSlotFrames[slotIndex] end
@@ -5062,15 +5136,9 @@ script MafiaUIFlow extends Logic
 		    -- overwrite the intended left/right chat placement.
 		    if self.currentChatHudName == "MafiaNightHUD" then
 		        self:ApplyNightMafiaChatMessagePlacement(rowBubble, slotIndex, isOwn)
-		        if rowBubble ~= nil and rowBubble.UITransformComponent ~= nil then
-		            local finalPos = rowBubble.UITransformComponent.anchoredPosition
-		            log("[MafiaUIFlow] night mafia chat message placed slot="
-		                .. tostring(slotIndex)
-		                .. " own=" .. tostring(isOwn)
-		                .. " x=" .. tostring(finalPos.x)
-		                .. " y=" .. tostring(finalPos.y))
-		        end
 		    end
+		    if rowBubble ~= nil then rowBubble.Enable = true end
+		    root.Enable = true
 	end
 
 	method string WrapChatMessageByRenderedWidth(any textComponent, string message, number maximumWidth)
@@ -5149,24 +5217,55 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void LayoutLobbyChatRow(integer slotIndex, number rowY, number rowHeight)
+		    -- Slides reused rows to their new position and introduces new rows from just below the target.
 		    local root = self.lobbyChatSlotRoots[slotIndex]
+		    if root == nil or root.UITransformComponent == nil then return end
 		    local width = (self.currentChatHudName == "MafiaNightHUD") and 500 or 284
-		    if root ~= nil and root.UITransformComponent ~= nil then
-		        local rootPosition = root.UITransformComponent.anchoredPosition
-		        root.UITransformComponent.RectSize = Vector2(width, rowHeight)
-		        root.UITransformComponent.anchoredPosition = Vector2(rootPosition.x, rowY)
-		    end
 		    local frame = self.lobbyChatSlotFrames[slotIndex]
-		    if frame ~= nil and frame.UITransformComponent ~= nil then
-		        local framePosition = frame.UITransformComponent.anchoredPosition
-		        frame.UITransformComponent.RectSize = Vector2(width, rowHeight)
-		        frame.UITransformComponent.anchoredPosition = Vector2(framePosition.x, rowY)
-		    end
 		    local nameText = self.lobbyChatSlotOtherNames[slotIndex]
-		    if nameText ~= nil and nameText.Entity ~= nil and nameText.Entity.UITransformComponent ~= nil then
-		        local namePosition = nameText.Entity.UITransformComponent.anchoredPosition
-		        nameText.Entity.UITransformComponent.anchoredPosition = Vector2(namePosition.x, rowY)
+		    local rootTransform = root.UITransformComponent
+		    local frameTransform = nil
+		    local nameTransform = nil
+		    if frame ~= nil then frameTransform = frame.UITransformComponent end
+		    if nameText ~= nil and nameText.Entity ~= nil then nameTransform = nameText.Entity.UITransformComponent end
+		    rootTransform.RectSize = Vector2(width, rowHeight)
+		    if frameTransform ~= nil then frameTransform.RectSize = Vector2(width, rowHeight) end
+
+		    if self.chatRowTweens == nil then self.chatRowTweens = {} end
+		    local previousTween = self.chatRowTweens[slotIndex]
+		    if previousTween ~= nil and isvalid(previousTween) and previousTween.IsPlaying then
+		        previousTween:Complete()
 		    end
+
+		    local startY = rootTransform.anchoredPosition.y
+		    if root.Enable == false then startY = rowY - 4 end
+		    local rootX = rootTransform.anchoredPosition.x
+		    local frameX = (frameTransform ~= nil) and frameTransform.anchoredPosition.x or 0
+		    local nameX = (nameTransform ~= nil) and nameTransform.anchoredPosition.x or 0
+		    rootTransform.anchoredPosition = Vector2(rootX, startY)
+		    if frameTransform ~= nil then frameTransform.anchoredPosition = Vector2(frameX, startY) end
+		    if nameTransform ~= nil then nameTransform.anchoredPosition = Vector2(nameX, startY) end
+
+		    if math.abs(startY - rowY) < 0.5 then
+		        rootTransform.anchoredPosition = Vector2(rootX, rowY)
+		        if frameTransform ~= nil then frameTransform.anchoredPosition = Vector2(frameX, rowY) end
+		        if nameTransform ~= nil then nameTransform.anchoredPosition = Vector2(nameX, rowY) end
+		        self.chatRowTweens[slotIndex] = nil
+		        return
+		    end
+
+		    self.chatRowTweens[slotIndex] = _TweenLogic:PlayTween(startY, rowY, 0.06, EaseType.QuadEaseOut, function(value)
+		        if root ~= nil and isvalid(root) and root.UITransformComponent ~= nil then
+		            root.UITransformComponent.anchoredPosition = Vector2(rootX, value)
+		        end
+		        if frame ~= nil and isvalid(frame) and frame.UITransformComponent ~= nil then
+		            frame.UITransformComponent.anchoredPosition = Vector2(frameX, value)
+		        end
+		        if nameText ~= nil and nameText.Entity ~= nil and isvalid(nameText.Entity)
+		            and nameText.Entity.UITransformComponent ~= nil then
+		            nameText.Entity.UITransformComponent.anchoredPosition = Vector2(nameX, value)
+		        end
+		    end)
 	end
 
 	method void PositionLobbyChatSlot(Entity rowBubble, Entity rowFrame, any nameText, boolean isOwn)
@@ -7430,7 +7529,8 @@ script MafiaUIFlow extends Logic
 		    -- Called every frame-batch during PHASE_NIGHT.
 		    self:ResolvePhaseChatContext("MafiaNightHUD")
 		    local nightChatLog = _MafiaGameLogic.MafiaChatLog or ""
-		    if nightChatLog ~= self.lastNightChatLog then
+		    if not self:ShouldHoldPendingChat("MafiaNightHUD", nightChatLog)
+		        and nightChatLog ~= self.lastNightChatLog then
 		        self.lastNightChatLog = nightChatLog
 		        self.lobbyChatBubbleScrollOffset = 0
 		        self:HideLobbyRawChatLog()
