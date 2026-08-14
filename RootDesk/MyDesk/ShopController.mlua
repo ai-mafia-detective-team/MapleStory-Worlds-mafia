@@ -1,44 +1,39 @@
 @Logic
-@ExecSpace("ClientOnly")
 script ShopController extends Logic
 
-	-- Retargeted onto the current ShopPopup layout. The previous version drove
-	-- Panel/GridPanel/ItemCard_* + Panel/UseBar/*, which no longer exist in the .ui
-	-- (they survive only as disabled 10x10 stubs), so every GetEntityByPath returned
-	-- nil and the shop never showed real data. The live layout is:
-	--   Panel/Body/ProductPanel/ProductGrid/ProductCard_01..08
-	--   Panel/Body/ProductPanel/Pagination/{PrevBtn,PageText,NextBtn}
-	--   Panel/Body/ProductDetailPanel/*
-	--   Panel/CategoryBar/Category_*  ·  Panel/PurchaseBar/*  ·  Panel/Header/CurrencyPanel/*
 	property string PANEL_PATH = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/ShopPopup/Panel"
 
-	-- The grid has 8 slots, so a page holds 8 items.
 	property integer PAGE_SIZE = 8
 
 	property string CATEGORY_ACTIVE_RUID = "1bbac083829c4c738b351ea238bef7fd"
+
 	property string CATEGORY_INACTIVE_RUID = "10c10be2edab40e0a5be2c78492f8ab9"
 
-	-- ── Handler storage ──────────────────────────────────────────────────────
 	property any categoryHandlers = nil
-	property any cardHandlers     = nil
-	property any purchaseHandler  = nil
-	property any prevPageHandler  = nil
-	property any nextPageHandler  = nil
 
-	-- ── Selection state ───────────────────────────────────────────────────────
+	property any cardHandlers = nil
+
+	property any purchaseHandler = nil
+
+	property any prevPageHandler = nil
+
+	property any nextPageHandler = nil
+
 	property string selectedCategory = "전체"
-	property integer selectedItemId  = -1
-	property integer currentPage     = 1
 
-	-- ── Costume catalog (dummy data; replace once real data is available) ─────
+	property integer selectedItemId = -1
+
+	property integer currentPage = 1
+
 	property any costumeData = nil
+
 	property string pendingOwnedJson = ""
 
 	method void OnBeginPlay()
 		-- The shop is a pure view: the Logic also spins up server-side, where none of the
 		-- UI entities exist, so bail out there instead of warning about every missing node.
 		if self:IsServer() then return end
-
+		
 		self:InitCostumeData()
 		self:WireButtons()
 		self:HighlightCategory(self.selectedCategory)
@@ -46,10 +41,6 @@ script ShopController extends Logic
 		self:RefreshCardGrid()
 		log("[ShopController] initialized")
 	end
-
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Data
-	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void InitCostumeData()
 		-- 10 entries so every CategoryBar button has content and the grid spans 2 pages.
@@ -130,10 +121,6 @@ script ShopController extends Logic
 		self:SetText(header .. "/FreeMoneyBox/ValueText", tostring(freeMoney))
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Small helpers
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void SetText(string path, string value)
 		-- Guarded text write so one missing node cannot abort a whole repaint.
 		local ent = _EntityService:GetEntityByPath(path)
@@ -152,14 +139,10 @@ script ShopController extends Logic
 		return math.ceil(totalItems / self.PAGE_SIZE)
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Wiring
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void WireButtons()
 		-- Category bar, product cards, pagination arrows, purchase button.
 		local panel = self.PANEL_PATH
-
+		
 		if self.categoryHandlers == nil then
 			self.categoryHandlers = {}
 			for _, entry in ipairs(self:GetCategoryButtons()) do
@@ -173,7 +156,7 @@ script ShopController extends Logic
 				end
 			end
 		end
-
+		
 		if self.cardHandlers == nil then
 			self.cardHandlers = {}
 			for slot = 1, self.PAGE_SIZE do
@@ -185,7 +168,7 @@ script ShopController extends Logic
 				end
 			end
 		end
-
+		
 		if self.prevPageHandler == nil then
 			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/PrevBtn")
 			if ent ~= nil and isvalid(ent) then
@@ -198,20 +181,16 @@ script ShopController extends Logic
 				self.nextPageHandler = ent:ConnectEvent(ButtonClickEvent, self.OnNextPage)
 			end
 		end
-
+		
 		if self.purchaseHandler == nil then
 			local ent = _EntityService:GetEntityByPath(panel .. "/PurchaseBar/PurchaseBtn")
 			if ent ~= nil and isvalid(ent) then
 				self.purchaseHandler = ent:ConnectEvent(ButtonClickEvent, self.OnPurchaseClicked)
 			end
 		end
-
+		
 		log("[ShopController] buttons wired categories=" .. tostring(#self.categoryHandlers) .. " cards=" .. tostring(#self.cardHandlers))
 	end
-
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Category
-	-- ─────────────────────────────────────────────────────────────────────────
 
 	method void SelectCategory(string category)
 		-- Switch active category; reset to page 1 and drop the selection.
@@ -241,10 +220,6 @@ script ShopController extends Logic
 		end
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Card grid + pagination
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void RefreshCardGrid()
 		-- Fills the 8 product slots with the current category's page of costumes.
 		local grid = self.PANEL_PATH .. "/Body/ProductPanel/ProductGrid"
@@ -252,7 +227,7 @@ script ShopController extends Logic
 		local totalPages = self:GetPageCount(#filtered)
 		if self.currentPage > totalPages then self.currentPage = totalPages end
 		if self.currentPage < 1 then self.currentPage = 1 end
-
+		
 		local offset = (self.currentPage - 1) * self.PAGE_SIZE
 		for slot = 1, self.PAGE_SIZE do
 			local cardPath = grid .. "/ProductCard_0" .. tostring(slot)
@@ -269,20 +244,20 @@ script ShopController extends Logic
 					else
 						self:SetText(cardPath .. "/PriceRow/PriceText", self:FormatPrice(costume))
 					end
-
+		
 					-- Grade badge only for anything above 일반.
 					local isSpecial = costume.grade ~= "일반"
 					self:SetEnabled(cardPath .. "/GradeBadge", isSpecial)
 					if isSpecial then
 						self:SetText(cardPath .. "/GradeBadge/GradeText", costume.grade)
 					end
-
+		
 					self:SetEnabled(cardPath .. "/OwnedBadge", costume.owned == true)
 					self:SetEnabled(cardPath .. "/SelectedBorder", costume.id == self.selectedItemId)
 				end
 			end
 		end
-
+		
 		self:UpdatePaginationUI(self.currentPage, totalPages)
 		log("[ShopController] grid refreshed category=" .. self.selectedCategory ..
 			" page=" .. tostring(self.currentPage) .. "/" .. tostring(totalPages) ..
@@ -293,7 +268,7 @@ script ShopController extends Logic
 		-- "n / m" plus greyed-out arrows at the ends of the range.
 		local pagination = self.PANEL_PATH .. "/Body/ProductPanel/Pagination"
 		self:SetText(pagination .. "/PageText", tostring(page) .. " / " .. tostring(totalPages))
-
+		
 		local prev = _EntityService:GetEntityByPath(pagination .. "/PrevBtn")
 		if prev ~= nil and isvalid(prev) and prev.SpriteGUIRendererComponent ~= nil then
 			if page > 1 then
@@ -325,10 +300,6 @@ script ShopController extends Logic
 		self:RefreshCardGrid()
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Card interaction
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void OnCardClicked(integer slot)
 		-- `slot` is the 1..8 grid position; map it onto the filtered+paged list.
 		local filtered = self:GetFilteredCostumes()
@@ -340,15 +311,11 @@ script ShopController extends Logic
 		log("[ShopController] card selected slot=" .. tostring(slot) .. " id=" .. tostring(costume.id))
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Detail panel + purchase bar
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void ShowDetailPanel(any costume)
 		-- Fills ProductDetailPanel and the bottom PurchaseBar for the selected costume.
 		local panel = self.PANEL_PATH
 		local detail = panel .. "/Body/ProductDetailPanel"
-
+		
 		self:SetEnabled(detail .. "/EmptyState", false)
 		self:SetText(detail .. "/ItemNameText", costume.name)
 		self:SetText(detail .. "/CategoryRow/ValueText", costume.category)
@@ -359,7 +326,7 @@ script ShopController extends Logic
 		else
 			self:SetText(detail .. "/OwnershipText", "미보유")
 		end
-
+		
 		local bar = panel .. "/PurchaseBar"
 		self:SetText(bar .. "/SelectedItemText", costume.name)
 		if costume.owned == true then
@@ -375,14 +342,14 @@ script ShopController extends Logic
 		-- Back to the "pick an item" state.
 		local panel = self.PANEL_PATH
 		local detail = panel .. "/Body/ProductDetailPanel"
-
+		
 		self:SetEnabled(detail .. "/EmptyState", true)
 		self:SetText(detail .. "/ItemNameText", "")
 		self:SetText(detail .. "/CategoryRow/ValueText", "")
 		self:SetText(detail .. "/GradeRow/ValueText", "")
 		self:SetText(detail .. "/DescriptionText", "")
 		self:SetText(detail .. "/OwnershipText", "")
-
+		
 		local bar = panel .. "/PurchaseBar"
 		self:SetText(bar .. "/SelectedItemText", "의상을 선택하세요")
 		self:SetText(bar .. "/PriceBox/PriceText", "-")
@@ -416,7 +383,7 @@ script ShopController extends Logic
 			log("[ShopController] purchase completed itemId=" .. tostring(itemId))
 			return
 		end
-
+		
 		local message = "구매에 실패했습니다."
 		if resultCode == "NOT_ENOUGH_FREE" then message = "메소가 부족합니다." end
 		if resultCode == "NOT_ENOUGH_PAID" then message = "캐시가 부족합니다." end
@@ -426,14 +393,10 @@ script ShopController extends Logic
 		log_warning("[ShopController] purchase failed itemId=" .. tostring(itemId) .. " code=" .. resultCode)
 	end
 
-	-- ─────────────────────────────────────────────────────────────────────────
-	-- Cleanup
-	-- ─────────────────────────────────────────────────────────────────────────
-
 	method void OnEndPlay()
 		-- Disconnects every handler wired in WireButtons.
 		local panel = self.PANEL_PATH
-
+		
 		if self.categoryHandlers ~= nil then
 			for _, rec in ipairs(self.categoryHandlers) do
 				if rec.entity ~= nil and isvalid(rec.entity) and rec.eventHandler ~= nil then
@@ -442,7 +405,7 @@ script ShopController extends Logic
 			end
 			self.categoryHandlers = nil
 		end
-
+		
 		if self.cardHandlers ~= nil then
 			for _, rec in ipairs(self.cardHandlers) do
 				if rec.entity ~= nil and isvalid(rec.entity) and rec.eventHandler ~= nil then
@@ -451,7 +414,7 @@ script ShopController extends Logic
 			end
 			self.cardHandlers = nil
 		end
-
+		
 		if self.prevPageHandler ~= nil then
 			local ent = _EntityService:GetEntityByPath(panel .. "/Body/ProductPanel/Pagination/PrevBtn")
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.prevPageHandler) end
@@ -467,7 +430,7 @@ script ShopController extends Logic
 			if ent ~= nil and isvalid(ent) then ent:DisconnectEvent(ButtonClickEvent, self.purchaseHandler) end
 			self.purchaseHandler = nil
 		end
-
+		
 		self.costumeData = nil
 		log("[ShopController] cleanup done")
 	end

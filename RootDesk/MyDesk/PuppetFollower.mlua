@@ -51,20 +51,20 @@ script PuppetFollower extends Component
 			log("[PuppetFollower] initialized userId=" .. self.OwnerUserId)
 			return
 		end
-
+		
 		if isvalid(self.OwnerEntity) == false then return end
-
+		
 		local ownerTf = self.OwnerEntity.TransformComponent
 		if isvalid(ownerTf) == false then return end
-
+		
 		local ownerPos = ownerTf.WorldPosition
 		local myMove = self.Entity.MovementComponent
-
+		
 		if isvalid(myMove) then
 			-- Teleport Puppet to owner's world position
 			myMove:SetWorldPosition(Vector2(ownerPos.x, ownerPos.y))
 			myMove:Stop()
-
+		
 			-- Sync facing direction (only update when it changes)
 			local ownerMove = self.OwnerEntity.MovementComponent
 			if isvalid(ownerMove) then
@@ -77,7 +77,7 @@ script PuppetFollower extends Component
 				end
 			end
 		end
-
+		
 		-- Sync animation state
 		local ownerState = self.OwnerEntity.StateComponent
 		local myState = self.Entity.StateComponent
@@ -88,4 +88,5 @@ script PuppetFollower extends Component
 			end
 		end
 	end
+
 end

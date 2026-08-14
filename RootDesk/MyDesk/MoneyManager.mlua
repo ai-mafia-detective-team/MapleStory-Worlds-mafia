@@ -2,10 +2,15 @@
 script MoneyManager extends Logic
 
 	property string KEY_PAID_MONEY = "player_paid_money_v1"
+
 	property string KEY_FREE_MONEY = "player_free_money_v1"
+
 	property string KEY_OWNED_COSTUMES = "player_owned_costumes_v1"
+
 	property integer DEFAULT_PAID_MONEY = 0
+
 	property integer DEFAULT_FREE_MONEY = 3000
+
 	property table UserMoney = {}
 
 	@ExecSpace("ServerOnly")
@@ -26,7 +31,7 @@ script MoneyManager extends Logic
 	method table LoadUserMoney(string userId)
 		local cached = self.UserMoney[userId]
 		if cached ~= nil then return cached end
-
+		
 		local storage = _DataStorageService:GetUserDataStorage(userId)
 		local paidError, paidRaw = storage:GetAndWait(self.KEY_PAID_MONEY)
 		local freeError, freeRaw = storage:GetAndWait(self.KEY_FREE_MONEY)
@@ -35,7 +40,7 @@ script MoneyManager extends Logic
 			log_error("[MoneyManager] Load failed userId=" .. userId .. " paidError=" .. tostring(paidError) .. " freeError=" .. tostring(freeError) .. " ownedError=" .. tostring(ownedError))
 			return nil
 		end
-
+		
 		local state = self:CreateDefaultState()
 		local needsInitialSave = false
 		if paidRaw == nil or paidRaw == "" then
@@ -56,7 +61,7 @@ script MoneyManager extends Logic
 		end
 		state.owned = state.owned or {}
 		state.owned.__schema = true
-
+		
 		if needsInitialSave and self:SaveMoney(userId, state) == false then
 			return nil
 		end
@@ -78,9 +83,11 @@ script MoneyManager extends Logic
 			[self.KEY_OWNED_COSTUMES] = _HttpService:JSONEncode(state.owned),
 		}
 		local storage = _DataStorageService:GetUserDataStorage(userId)
-		local errorCode = storage:BatchSetAndWait(saveData)
+		local errorCode, savedKeys = storage:BatchSetAndWait(saveData)
 		if errorCode ~= nil and errorCode ~= 0 then
-			log_error("[MoneyManager] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode))
+			local savedCount = 0
+			if savedKeys ~= nil then savedCount = savedKeys.Count end
+			log_error("[MoneyManager] Save failed userId=" .. userId .. " errorCode=" .. tostring(errorCode) .. " savedKeys=" .. tostring(savedCount))
 			return false
 		end
 		log("[MoneyManager] Saved userId=" .. userId .. " paid=" .. tostring(state.paid) .. " free=" .. tostring(state.free))
@@ -210,7 +217,7 @@ script MoneyManager extends Logic
 			self:PurchaseResult(false, "NOT_ENOUGH_PAID", itemId, state.paid, state.free, _HttpService:JSONEncode(state.owned), senderUserId)
 			return
 		end
-
+		
 		local previousPaid = state.paid
 		local previousFree = state.free
 		if item.priceType == "free" then state.free -= item.price else state.paid -= item.price end

@@ -1,10 +1,8 @@
 @Logic
 script QAAchievementManager extends Logic
 
-	-- Safe, namespaced integration of MSWPackages quest-achievement-package.
-	-- It intentionally does not attach PlayerDBManager/PlayerAchievement to
-	-- DefaultPlayer, preventing a second load/save pipeline beside ProfileStorageLogic.
 	property string KEY_PROGRESS = "qa_achievement_progress_v1"
+
 	property table UserStates = {}
 
 	@ExecSpace("ServerOnly")
@@ -58,7 +56,7 @@ script QAAchievementManager extends Logic
 			self:ResetCyclesIfNeeded(userId, cached)
 			return cached
 		end
-
+		
 		local state = self:CreateState()
 		local storage = _DataStorageService:GetUserDataStorage(userId)
 		local err, raw = storage:GetAndWait(self.KEY_PROGRESS)
@@ -69,7 +67,7 @@ script QAAchievementManager extends Logic
 			end
 		end
 		self:EnsureStateTables(state)
-
+		
 		self.UserStates[userId] = state
 		self:ResetCyclesIfNeeded(userId, state)
 		log("[QAAchievement] Loaded userId=" .. userId)
@@ -98,7 +96,7 @@ script QAAchievementManager extends Logic
 			state.nextMonthly = 0
 			changed = true
 		end
-
+		
 		if state.nextDaily == nil or state.nextDaily <= 0 then
 			state.nextDaily = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Day, now)
 			changed = true
@@ -108,7 +106,7 @@ script QAAchievementManager extends Logic
 			log("[QAAchievement] DAILY reset userId=" .. userId)
 			changed = true
 		end
-
+		
 		if state.nextWeekly == nil or state.nextWeekly <= 0 then
 			state.nextWeekly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Week, now)
 			changed = true
@@ -118,7 +116,7 @@ script QAAchievementManager extends Logic
 			log("[QAAchievement] WEEKLY reset userId=" .. userId)
 			changed = true
 		end
-
+		
 		if state.nextMonthly == nil or state.nextMonthly <= 0 then
 			state.nextMonthly = _QADateTimeLogic:GetNextCycleBaseTime(_QACycleEnum.Month, now)
 			changed = true
@@ -128,7 +126,7 @@ script QAAchievementManager extends Logic
 			log("[QAAchievement] MONTHLY reset userId=" .. userId)
 			changed = true
 		end
-
+		
 		state.lastSeen = now
 		if changed then self:SaveUser(userId, state) end
 	end

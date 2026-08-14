@@ -6,8 +6,6 @@ script MafiaRoomGameLogic extends Component
 
 	property boolean DebugMode = true
 
-	-- DebugMode에서 첫 실제 사용자의 역할을 고정한다.
-	-- -1: 무작위, 0: 시민, 1: 마피아, 2: 경찰, 3: 의사
 	property integer DEBUG_FORCE_FIRST_HUMAN_ROLE = -1
 
 	property number LOBBY_MIN_TIME = 5.0
@@ -192,13 +190,8 @@ script MafiaRoomGameLogic extends Component
 
 	property table readyPlayers = nil
 
-	-- Users who explicitly entered the investigation room lobby. Seating, ready checks and role
-	-- assignment read this instead of every connected user, so someone idling on the main lobby
-	-- screen neither occupies a seat nor blocks the game from starting.
 	property table lobbyPresent = nil
 
-	-- Authoritative in-world nicknames loaded once from each user's saved profile when
-	-- they enter this instance lobby. Mafia UI must not fall back to platform nicknames.
 	property table playerDisplayNames = nil
 
 	property table pendingNameTagUsers = nil
@@ -222,7 +215,7 @@ script MafiaRoomGameLogic extends Component
 		    self.playerDisplayNames = {}
 		    self.pendingNameTagUsers = {}
 		    self.nameTagRetryElapsed = 0.0
-
+		
 		    self.MafiaTarget   = ""
 		    self.DoctorTarget  = ""
 		    self.PoliceTarget  = ""
@@ -651,7 +644,6 @@ script MafiaRoomGameLogic extends Component
 		    end
 	end
 
-	-- Lobby: sync user seat order for deterministic UI rendering by room index.
 	@ExecSpace("ServerOnly")
 	method void UpdateLobbySeatOrder()
 		    local seats = {}
@@ -1213,7 +1205,7 @@ script MafiaRoomGameLogic extends Component
 		    end
 		    local alivePlayersList = table.concat(parts, ",")
 		    self.AlivePlayersList = alivePlayersList
-
+		
 		    -- Keep this room component as the single source of truth. Explicit delivery
 		    -- complements @Sync for dynamically-created logical room entities, whose
 		    -- initial snapshot can arrive while later revisions miss the client facade.
@@ -1548,7 +1540,7 @@ script MafiaRoomGameLogic extends Component
 		    message = string.gsub(message, "^%s+", "")
 		    message = string.gsub(message, "%s+$", "")
 		    if message == "" then return "" end
-
+		
 		    -- Apply the advertised 100-character limit without cutting a Korean UTF-8 sequence.
 		    local characterCount = utf8.len(message)
 		    if characterCount ~= nil and characterCount ~= false and characterCount > 100 then
@@ -1560,7 +1552,7 @@ script MafiaRoomGameLogic extends Component
 		        -- Invalid UTF-8 is not safe to synchronize through the shared chat log.
 		        return ""
 		    end
-
+		
 		    -- Conservative built-in list. Masking is authoritative on the server so every
 		    -- normal/dead/mafia chat consumer receives the same sanitized message.
 		    local forbiddenWords = {
@@ -1586,7 +1578,7 @@ script MafiaRoomGameLogic extends Component
 		            searchFrom = firstByte + string.len(mask)
 		        end
 		    end
-
+		
 		    -- Also catch the most common separator-based evasions ("씨 발", "f.u.c.k",
 		    -- jamo separated by punctuation, and similar forms). The whole matched span is
 		    -- masked so punctuation cannot leave a readable fragment behind.

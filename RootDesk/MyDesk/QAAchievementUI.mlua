@@ -2,21 +2,37 @@
 script QAAchievementUI extends Component
 
 	property Entity popupRoot = "01a4c1cd-0b0e-4f3e-ba6f-35c9c5fb9c9d"
+
 	property ButtonComponent closeButton = "ca172943-cb0a-4398-9105-1f27b0eec0cc"
+
 	property ButtonComponent dailyTabButton = "afa3f9da-757e-4aa6-8354-9d1fdf75220e"
+
 	property ButtonComponent weeklyTabButton = "72ccddce-a143-428d-9ada-7747eb29e80e"
+
 	property ButtonComponent monthlyTabButton = "14e65093-e1d7-4f4e-88ca-4c98ffb33ec4"
+
 	property ButtonComponent claimAllButton = "38ed5c69-ede5-4d95-ad9b-8f1edb5f15d0"
+
 	property TextComponent balanceText = "fa2521c5-fa67-47b6-b354-ff613a427d08"
+
 	property TextComponent statusText = "d3619e56-df87-423a-8106-2c20cf44a9fb"
+
 	property table serverItems = {}
+
 	property table rowAchievementIds = {}
+
 	property string currentPeriod = "DAILY"
+
 	property any closeHandler = nil
+
 	property any dailyHandler = nil
+
 	property any weeklyHandler = nil
+
 	property any monthlyHandler = nil
+
 	property any claimAllHandler = nil
+
 	property table rowHandlers = {}
 
 	method void OnBeginPlay()
@@ -52,7 +68,7 @@ script QAAchievementUI extends Component
 		self.claimAllHandler = self.claimAllButton.Entity:ConnectEvent(ButtonClickEvent, function(event)
 			_QAAchievementManager:ClaimAll(self.currentPeriod)
 		end)
-
+		
 		for i = 1, 4 do
 			local index = i
 			local buttonEntity = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" .. tostring(index) .. "/ClaimButton")
@@ -93,7 +109,7 @@ script QAAchievementUI extends Component
 		local path = "/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/SummaryPanel/" .. nodeName
 		local entity = _EntityService:GetEntityByPath(path)
 		if entity == nil or isvalid(entity) == false then return end
-
+		
 		if entity.TextGUIRendererComponent ~= nil then
 			entity.TextGUIRendererComponent.Text = value
 		elseif entity.TextComponent ~= nil then
@@ -107,14 +123,14 @@ script QAAchievementUI extends Component
 		local claimableCount = 0
 		local periodTotals = { DAILY = 0, WEEKLY = 0, MONTHLY = 0 }
 		local periodCompleted = { DAILY = 0, WEEKLY = 0, MONTHLY = 0 }
-
+		
 		for _, item in ipairs(self.serverItems) do
 			totalCount = totalCount + 1
 			local period = item.period or ""
 			if periodTotals[period] ~= nil then
 				periodTotals[period] = periodTotals[period] + 1
 			end
-
+		
 			local completed = (item.progress or 0) >= math.max(1, item.target or 1)
 			if completed then
 				completedCount = completedCount + 1
@@ -126,12 +142,12 @@ script QAAchievementUI extends Component
 				end
 			end
 		end
-
+		
 		local percent = 0
 		if totalCount > 0 then
 			percent = math.floor((completedCount / totalCount) * 100 + 0.5)
 		end
-
+		
 		self:SetSummaryText("PercentText", tostring(percent) .. "%")
 		self:SetSummaryText("CompletionText", tostring(completedCount) .. " / " .. tostring(totalCount))
 		self:SetSummaryText("DailyValue", tostring(periodCompleted.DAILY) .. " / " .. tostring(periodTotals.DAILY))
@@ -162,7 +178,7 @@ script QAAchievementUI extends Component
 		for _, item in ipairs(self.serverItems) do
 			if item.period == self.currentPeriod then filtered[#filtered + 1] = item end
 		end
-
+		
 		for i = 1, 4 do
 			local row = _EntityService:GetEntityByPath("/ui/UI_Lobby/LobbyRoot/ButtonGroup/PopupRoot/Window/List/Row" .. tostring(i))
 			local item = filtered[i]
@@ -178,13 +194,13 @@ script QAAchievementUI extends Component
 			self:SetRowText(i, "Description", item.description)
 			self:SetRowText(i, "ProgressText", tostring(item.progress) .. " / " .. tostring(item.target))
 			self:SetRowText(i, "RewardText", "메소 " .. tostring(item.reward))
-
+		
 			local fill = _EntityService:GetEntityByPath(row.Path .. "/ProgressBar/Fill")
 			if fill ~= nil and isvalid(fill) and fill.UITransformComponent ~= nil then
 				local ratio = math.min(1, (item.progress or 0) / math.max(1, item.target or 1))
 				fill.UITransformComponent.RectSize = Vector2(390 * ratio, 14)
 			end
-
+		
 			local claimEntity = _EntityService:GetEntityByPath(row.Path .. "/ClaimButton")
 			if claimEntity ~= nil and isvalid(claimEntity) then
 				local completed = (item.progress or 0) >= (item.target or 1)

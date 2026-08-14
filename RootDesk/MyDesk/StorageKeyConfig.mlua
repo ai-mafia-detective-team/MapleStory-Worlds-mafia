@@ -1,26 +1,26 @@
 @Component
 script StorageKeyConfig extends Component
 
-	-- ── 스토리지 버킷 이름 ────────────────────────────────────────────────────────
 	property string STORAGE_PLAYER_PROFILE = "PlayerProfile"
+
 	property string STORAGE_INTRO_PROGRESS = "IntroProgress"
 
-	-- ── 플레이어 프로필 스토리지 키 ───────────────────────────────────────────────
-	property string KEY_NICKNAME     = "player_nickname_v1"
-	property string KEY_TITLE        = "player_title_v1"
-	property string KEY_PROFILE_IMG  = "selected_profile_image_ruid_v1"
+	property string KEY_NICKNAME = "player_nickname_v1"
+
+	property string KEY_TITLE = "player_title_v1"
+
+	property string KEY_PROFILE_IMG = "selected_profile_image_ruid_v1"
+
 	property string KEY_NICKNAME_SET = "nickname_set_v1"
 
-	-- ── 인트로 / 진행 스토리지 키 ─────────────────────────────────────────────────
-	property string KEY_INTRO = "player_nickname_v1"   -- IntroProgress 버킷 내
+	property string KEY_INTRO = "player_nickname_v1"
 
-	-- ── BGM 설정 키 ──────────────────────────────────────────────────────────────
-	-- MainFlowBgmController는 이미 property BGM_SETTING_KEY = "bgm_enabled_v1" 로 관리 중.
 	property string KEY_BGM = "bgm_enabled_v1"
 
-	-- ── 레거시 키 접두사 (마이그레이션용 — 신규 저장 시 사용 금지) ─────────────────
-	property string LEGACY_PREFIX_NICKNAME    = "player_nickname_v1_"
-	property string LEGACY_PREFIX_TITLE       = "player_title_v1_"
+	property string LEGACY_PREFIX_NICKNAME = "player_nickname_v1_"
+
+	property string LEGACY_PREFIX_TITLE = "player_title_v1_"
+
 	property string LEGACY_PREFIX_PROFILE_IMG = "player_profile_image_v1_"
 
 end

@@ -24,8 +24,7 @@
         "MOD.Core.AvatarStateAnimationComponent",
         "MOD.Core.StateComponent",
         "MOD.Core.MovementComponent",
-        "MOD.Core.RigidbodyComponent",
-        "script.PuppetFollower"
+        "MOD.Core.RigidbodyComponent"
       ],
       "Properties": [],
       "Values": [
