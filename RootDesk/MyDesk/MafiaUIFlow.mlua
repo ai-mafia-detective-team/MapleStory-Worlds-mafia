@@ -3407,6 +3407,7 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void ConfigureChatInputField(any inputComponent, number textWidth, string hudName)
+		    -- Configures static input rendering once; TextInput owns caret scrolling while typing.
 		    if inputComponent == nil or inputComponent.Entity == nil then return end
 		    inputComponent.LineType = InputLineType.SingleLine
 		    inputComponent.CharacterLimit = 100
@@ -3421,41 +3422,8 @@ script MafiaUIFlow extends Logic
 		    inputText.UseNBSP = true
 		    inputText.UseConstraintX = false
 		    inputText.UseConstraintY = false
-		    self:FollowChatInputCaret(inputComponent, inputComponent.Text or "", textWidth, hudName)
 		    log("[MafiaUIFlow] chat input constrained hud=" .. tostring(hudName)
 		        .. " width=" .. tostring(textWidth) .. " lineType=SingleLine")
-	end
-
-	method void FollowChatInputCaret(any inputComponent, string value, number viewportWidth, string hudName)
-		    if inputComponent == nil or inputComponent.Entity == nil then return end
-		    local inputEntity = inputComponent.Entity
-		    local inputText = inputEntity.TextComponent
-		    local inputTransform = inputEntity.UITransformComponent
-		    if inputText == nil or inputTransform == nil then return end
-		
-		    local safeValue = value or ""
-		    local preferredWidth = 0
-		    if safeValue ~= "" then
-		        preferredWidth = inputText:GetPreferredWidth(safeValue)
-		    end
-		
-		    -- Keep the complete TextInput value and move only its visual rectangle.
-		    -- The parent Mask clips the old prefix, while the newest text and caret
-		    -- stay anchored to the right edge of the authored input viewport.
-		    local caretPadding = 18
-		    local displayWidth = math.max(viewportWidth, preferredWidth + caretPadding)
-		    local oldSize = inputTransform.RectSize
-		    inputTransform.RectSize = Vector2(displayWidth, oldSize.y)
-		    local oldPosition = inputTransform.anchoredPosition
-		    local offsetX = -math.max(0, displayWidth - viewportWidth) / 2
-		    inputTransform.anchoredPosition = Vector2(offsetX, oldPosition.y)
-		
-		    if displayWidth > viewportWidth then
-		        log("[MafiaUIFlow] chat input caret follow hud=" .. tostring(hudName)
-		            .. " preferredWidth=" .. tostring(preferredWidth)
-		            .. " viewportWidth=" .. tostring(viewportWidth)
-		            .. " offsetX=" .. tostring(offsetX))
-		    end
 	end
 
 	method void RefreshLobby()
@@ -4672,31 +4640,31 @@ script MafiaUIFlow extends Logic
 	end
 
 	method void HandleLobbyChatValueChange(TextInputValueChangeEvent event)
+		    -- Caches the draft without mutating layout on every keystroke.
 		    self.lobbyChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.lobbyChatInput, self.lobbyChatDraft, 500, "MafiaLobbyHUD")
 		    if self.lobbyChatDraft ~= "" then
 		        self.lobbyChatLastNonEmptyDraft = self.lobbyChatDraft
 		    end
 	end
 
 	method void HandleDayChatValueChange(TextInputValueChangeEvent event)
+		    -- Caches the draft without mutating layout on every keystroke.
 		    self.dayChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.dayChatInput, self.dayChatDraft, 500, "MafiaDayHUD")
 		    if self.dayChatDraft ~= "" then
 		        self.dayChatLastNonEmptyDraft = self.dayChatDraft
 		    end
 	end
 
 	method void HandleNightChatValueChange(TextInputValueChangeEvent event)
+		    -- Caches the draft without mutating layout on every keystroke.
 		    self.nightChatDraft = event.text or ""
-		    self:FollowChatInputCaret(self.nightChatInput, self.nightChatDraft, 310, "MafiaNightHUD")
 		    if self.nightChatDraft ~= "" then
 		        self.nightChatLastNonEmptyDraft = self.nightChatDraft
 		    end
 	end
 
 	method void SendNightMafiaChat(string message)
-		    -- 마피아 전용 야간 채팅 전송. 서버에서 역할 검증 후 MafiaChatLog에 기록.
+		    -- Sends mafia-only night chat; the server validates the role before recording it.
 		    if message == nil or message == "" then return end
 		    local userId = self:GetLocalUserId()
 		    if userId == "" then return end
@@ -4705,12 +4673,12 @@ script MafiaUIFlow extends Logic
 		    _MafiaGameLogic:SendMafiaChat(userId, message)
 		    if self.nightChatInput ~= nil then
 		        self.nightChatInput.Text = ""
-		        self:FollowChatInputCaret(self.nightChatInput, "", 310, "MafiaNightHUD")
 		        self.nightChatInput:ActivateInputField()
 		    end
 	end
 
 	method void SendChat(string message, any input)
+		    -- Sends common chat and clears the input without forcing a layout refresh.
 		    if message == nil or message == "" then return end
 		    local userId = self:GetLocalUserId()
 		    if userId == "" then return end
@@ -4728,13 +4696,6 @@ script MafiaUIFlow extends Logic
 		    _MafiaGameLogic:SendChat(userId, message)
 		    if input ~= nil then
 		        input.Text = ""
-		        if input == self.lobbyChatInput then
-		            self:FollowChatInputCaret(input, "", 500, "MafiaLobbyHUD")
-		        elseif input == self.dayChatInput then
-		            self:FollowChatInputCaret(input, "", 500, "MafiaDayHUD")
-		        elseif input == self.nightChatInput then
-		            self:FollowChatInputCaret(input, "", 310, "MafiaNightHUD")
-		        end
 		        input:ActivateInputField()
 		    end
 	end
