@@ -7,7 +7,6 @@ script InvestigationRoomManager extends Logic
 
 	property string ROOM_RETURN_PENDING_KEY = "pending_static_lobby_return_v1"
 
-	-- 3 proved thin for an 8-player room where joins and leaves collide on the same ETag.
 	property integer MAX_WRITE_RETRIES = 5
 
 	property any userLeaveHandler = nil
@@ -463,7 +462,7 @@ script InvestigationRoomManager extends Logic
 			return
 		end
 		self:SelfHealRegistry(snapshot)
-
+		
 		local filtered = {}
 		for _, room in ipairs(snapshot.Rooms) do
 			local keywordOk = keyword == "" or string.find(string.lower(room.roomName or ""), keyword, 1, true) ~= nil
@@ -776,7 +775,7 @@ script InvestigationRoomManager extends Logic
 		log("[InvestigationRoomManager] Legacy instance entry routed to logical room roomId=" ..
 			roomId .. " userId=" .. userId)
 		return
-
+		
 		--[[
 		if _RoomService:IsInstanceRoom() then
 			log_warning("[InvestigationRoomManager] Instance entry rejected: request did not originate in static room" ..

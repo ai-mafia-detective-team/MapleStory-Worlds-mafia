@@ -21,29 +21,29 @@ script IntroSequenceBootstrap extends Component
 		self.elapsed = 0
 		self.attached = false
 		self:ShowStartupLoading()
-
+		
 		if self.timerId > 0 then
 			_TimerService:ClearTimer(self.timerId)
 			self.timerId = 0
 		end
-
+		
 		self.timerId = _TimerService:SetTimerRepeat(function()
 			self.elapsed = self.elapsed + 0.1
-
+		
 			if self.elapsed < self.startupLoadingSeconds then
 				self:ShowStartupLoading()
 				return
 			end
-
+		
 			self:HideStartupLoading()
 			self:TryAttach()
-
+		
 			if self.attached == true or self.elapsed >= 5 then
 				if self.timerId > 0 then
 					_TimerService:ClearTimer(self.timerId)
 					self.timerId = 0
 				end
-
+		
 				if self.attached == false then
 					log_warning("[IntroSequenceBootstrap] /ui/UI_IntroSequence was not found")
 				end
@@ -60,7 +60,7 @@ script IntroSequenceBootstrap extends Component
 		self:HideEntityByPath("/ui/MafiaNightHUD")
 		self:HideEntityByPath("/ui/MafiaCitizenWinHUD")
 		self:HideEntityByPath("/ui/MafiaMafiaWinHUD")
-
+		
 		if self.startupLoadingRoot == nil or isvalid(self.startupLoadingRoot) == false then
 			self.startupLoadingRoot = _EntityService:GetEntityByPath("/ui/MafiaLoadingHUD")
 		end
@@ -68,7 +68,7 @@ script IntroSequenceBootstrap extends Component
 			self.startupLoadingRoot:SetEnable(true)
 			self.startupLoadingRoot.Visible = true
 		end
-
+		
 		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleLabelText", "LOADING")
 		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleNameText", "커닝시티 마피아")
 		self:SetTextByPath("/ui/MafiaLoadingHUD/RoleDescText", "게임 화면을 불러오는 중입니다.")

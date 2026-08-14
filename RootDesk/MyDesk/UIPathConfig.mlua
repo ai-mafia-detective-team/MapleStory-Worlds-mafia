@@ -1,0 +1,20 @@
+@Component
+script UIPathConfig extends Component
+
+	property string ROOT_LOBBY = "/ui/UI_Lobby"
+
+	property string ROOT_NICKNAME_SETUP = "/ui/UI_NicknameSetup"
+
+	property string ROOT_FIND_ROOM = "/ui/UI_FindRoom"
+
+	property string LOBBY_BG = "/ui/UI_Lobby/LobbyRoot/LobbyBackground"
+
+	property string LOBBY_ROOT = "/ui/UI_Lobby/LobbyRoot"
+
+	property string NICKNAME_ROOT = "/ui/UI_NicknameSetup/NicknameRoot"
+
+	property string NICKNAME_BG = "/ui/UI_NicknameSetup/NicknameRoot/NicknameBackground"
+
+	property string NICKNAME_CENTER = "/ui/UI_NicknameSetup/NicknameRoot/CenterPanel"
+
+end

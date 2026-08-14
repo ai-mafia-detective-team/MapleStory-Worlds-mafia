@@ -2,58 +2,107 @@
 script MafiaGameLogic extends Logic
 
 	property boolean DebugMode = true
+
 	property integer PHASE_LOBBY = 0
+
 	property integer PHASE_FREE_ROAM = 1
+
 	property integer PHASE_NIGHT = 2
+
 	property integer PHASE_MORNING = 3
+
 	property integer PHASE_MEETING = 4
+
 	property integer PHASE_MEETING_RESULT = 5
+
 	property integer PHASE_GAME_OVER = 6
+
 	property integer PHASE_NIGHT_MAFIA = 21
+
 	property integer PHASE_NIGHT_POLICE = 22
+
 	property integer PHASE_NIGHT_DOCTOR = 23
+
 	property integer ROLE_CITIZEN = 0
+
 	property integer ROLE_MAFIA = 1
+
 	property integer ROLE_POLICE = 2
+
 	property integer ROLE_DOCTOR = 3
+
 	property integer MAX_PLAYERS = 8
+
 	property integer MIN_PLAYERS = 6
 
 	property string RoomTitle = "커닝시티 마피아"
+
 	property boolean IsPrivateRoom = true
+
 	property string RoomPassword = ""
+
 	property integer RoomMaxPlayers = 8
+
 	property integer MafiaPlayerCount = 2
+
 	property integer CurrentPhase = 0
+
 	property integer RoundResetVersion = 0
+
 	property number PhaseTimer = 0.0
+
 	property number MaxPhaseTime = 0.0
+
 	property integer DayCount = 0
+
 	property integer WinnerRole = -1
+
 	property boolean PoliceResult = false
+
 	property string ExecuteTarget = ""
+
 	property string MorningKilled = ""
+
 	property boolean DoctorSaved = false
+
 	property integer LocalPlayerRole = -1
+
 	property string RoleData = ""
+
 	property string AlivePlayersList = ""
+
 	property integer NightSubPhase = 0
+
 	property integer NightStageVersion = 0
+
 	property string MafiaDeciderId = ""
+
 	property string VoteStatusList = ""
+
 	property string ChatLog = ""
+
 	property string MafiaChatLog = ""
+
 	property string DeadChatLog = ""
+
 	property integer LobbyPlayerCount = 0
+
 	property integer ReadyCount = 0
+
 	property string ReadyStatusList = ""
+
 	property string LobbySeatOrder = ""
+
 	property string LobbySeatNicknames = ""
+
 	property string DayAvatarMotionData = ""
+
 	property string DaySkipStatusList = ""
+
 	property boolean GameStarted = false
 
 	property string activeRoomEntityId = ""
+
 	property string activeRoomId = ""
 
 	@ExecSpace("ClientOnly")

@@ -1,29 +1,20 @@
 @Component
 script ResourceConfig extends Component
 
-	-- ── 토글 버튼 이미지 ────────────────────────────────────────────────────────
-	-- 설정 팝업 사운드 토글과 방 만들기 비공개방 토글이 공용으로 사용합니다.
-	-- 이 property 값을 Maker에서 변경하면 두 토글 모두에 반영됩니다.
-	property string TOGGLE_ON  = "fa19757f61774010aa40c38df7127bde"
+	property string TOGGLE_ON = "fa19757f61774010aa40c38df7127bde"
+
 	property string TOGGLE_OFF = "10c17c89f4604376abd28854f5628c3a"
 
-	-- ── 비밀번호 입력창 이미지 ───────────────────────────────────────────────────
-	property string PASSWORD_BOX_ACTIVE   = "ab06ee62fa5446a187655d369e7f9ef3"
+	property string PASSWORD_BOX_ACTIVE = "ab06ee62fa5446a187655d369e7f9ef3"
+
 	property string PASSWORD_BOX_INACTIVE = "c79b19bcc42246f89c1343278e7c9a99"
 
-	-- ── 프로필 이미지 슬롯 ───────────────────────────────────────────────────────
-	-- ProfileStorageLogic.DEFAULT_RUID 와 RUID_PROFILE_1 은 동일한 값입니다.
 	property string RUID_PROFILE_1 = "ef1ba8b05d0a4d9e8d4033c9e797f708"
-	property string RUID_PROFILE_2 = "ba1ad8baabb5492b8030f62062bac632"
-	property string RUID_PROFILE_3 = "889918f7b8454392867298470d9ed43a"
-	property string RUID_PROFILE_4 = "f54ce587be5a462d846f64b2de315e3d"
 
-	-- ── 사용 방법 ────────────────────────────────────────────────────────────────
-	-- 이 컴포넌트를 영구적인 UI 엔티티(예: /ui/DefaultGroup)에 부착하면
-	-- 다른 스크립트에서 아래와 같이 참조할 수 있습니다:
-	--   local cfg = _EntityService:GetEntityByPath("/ui/DefaultGroup")
-	--               :GetComponent("script.ResourceConfig")
-	-- 현재 LobbyController는 이 파일과 동일한 값을 property 상수로 직접 선언합니다.
-	-- 서버 연동 후 단일 진실 소스로 전환 시 이 컴포넌트를 사용하세요.
+	property string RUID_PROFILE_2 = "ba1ad8baabb5492b8030f62062bac632"
+
+	property string RUID_PROFILE_3 = "889918f7b8454392867298470d9ed43a"
+
+	property string RUID_PROFILE_4 = "f54ce587be5a462d846f64b2de315e3d"
 
 end
